@@ -12,13 +12,13 @@
 为了便于数字身份在不同客户端和去中心应用中可以通用，需要制定一套数据存储规范。Wallet 按照此规范组织数据格式，根据需要可以存储到文件系统，也可以存储到数据库系统。
 ```
 {
-    name: string;
-    createTime: string;
-    version: string;
+    name: String;
+    createTime: String;
+    version: String;
     scrypt: {
-        "n": number;
-        "r": number;
-        "p": number;
+        "n": int;
+        "r": int;
+        "p": int;
     };
     identities: Array<Identity>;
     accounts: Array<Account>;
@@ -68,7 +68,7 @@ public class Identity {
 Account account = ontSdk.getWalletMgr().createAccount("123456");
 
 //Step4 将身份注册到链上
-ontSdk.getOntIdTx().register(identity);
+ontSdk.getOntIdTx().register("password",identity);
 
 ```
 
@@ -156,7 +156,7 @@ map.put("Subject", dids.get(1).ontid);
 //密码是签发人的秘密，钱包文件ontid中必须要有该签发人。
 String claim = ontSdk.getOntIdTx().createOntIdClaim("passwordtest","claim:context",map,map);
 System.out.println(claim);
-boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(claim);
+boolean b = ontSdk.getOntIdTx().verifyOntIdClaim("passwordtest",ontid,claim);
 ```
 
 
@@ -233,6 +233,7 @@ System.out.println(func);
 //调用智能合约
 String hash = ontSdk.getSmartcodeTx().invokeTransaction("passwordtest",did.ontid,func);
 
+//如果需要等待推送结果，需要启动websocket线程
 ```
 
 ## 智能合约websocket推送event

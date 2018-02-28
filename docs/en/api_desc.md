@@ -77,7 +77,7 @@ ontSdk.getOntIdTx().register("password",identity);
 链上身份将以DDO的形式存放，可以通过ONT ID进行查询。
 ```
 //通过ONT ID获取DDO
-String ddo = ontSdk.getOntIdTx().getDDO(ontid);
+String ddo = ontSdk.getOntIdTx().getDDO("passwordtest",ontid,ontid);
 
 //返回DDO格式
 {

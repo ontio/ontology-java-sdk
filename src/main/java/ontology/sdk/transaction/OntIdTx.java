@@ -402,12 +402,12 @@ public class OntIdTx {
         return null;
     }
 
-    private String getDDO(String ontid) throws Exception {
-        if (codeHash == null) {
-            throw new SDKException(Error.getDescArgError("null codeHash"));
-        }
-        return sdk.getConnectMgr().getDDO(codeHash, ontid.replace("did:ont:", ""));
-    }
+//    private String getDDO(String ontid) throws Exception {
+//        if (codeHash == null) {
+//            throw new SDKException(Error.getDescArgError("null codeHash"));
+//        }
+//        return sdk.getConnectMgr().getDDO(codeHash, ontid.replace("did:ont:", ""));
+//    }
 
     private Map parseData(String ontid,String obj) {
         byte[] bys = Helper.hexToBytes(obj);
@@ -487,7 +487,7 @@ public class OntIdTx {
         return map;
     }
 
-    public Map getDDO(String password, String ontid, String queryOntid) throws Exception {
+    public String getDDO(String password, String ontid, String queryOntid) throws Exception {
         if (codeHash == null) {
             throw new SDKException(Error.getDescArgError("null codeHash"));
         }
@@ -506,7 +506,7 @@ public class OntIdTx {
         for (int i = 0; i < listResult.size(); i++) {
             map = parseData(ontid,(String) ((List) listResult.get(0)).get(i));
         }
-        return map;
+        return JSON.toJSONString(map);
     }
 
     public String[] getPubKeys(String did) throws Exception {
@@ -594,7 +594,7 @@ public class OntIdTx {
     }
 
     //验证claim
-    public boolean verifyOntIdClaim(String claim) throws Exception {
+    public boolean verifyOntIdClaim(String password,String reqDid,String claim) throws Exception {
         DataSignature sign = null;
         try {
             JSONObject obj = JSON.parseObject(claim);
@@ -607,7 +607,7 @@ public class OntIdTx {
             String addr = str[2];
             byte[] pubkeyBys = null;
 
-            String issuerDdo = getDDO(issuerDid);//.getIdentityUpdate(method, addr);
+            String issuerDdo = getDDO(password,reqDid,issuerDid);//.getIdentityUpdate(method, addr);
             String pubkeyStr = JSON.parseObject(issuerDdo).getJSONArray("Owners").getJSONObject(0).getString("Value");
 //            String publicKeyBase64 = JSON.parseObject(issuerDdo).getJSONArray("Owners").getJSONObject(0).getString("publicKeyBase64");
 //            pubkeyBys = Base64.getDecoder().decode(publicKeyBase64);

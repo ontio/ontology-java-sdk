@@ -86,7 +86,7 @@ public class OntIdWsDemoTest {
 
             System.out.println("===============getDDO==================");
             //查询ontid 的 ddo内容
-            String ddo = ontSdk.getOntIdTx().getDDO(ontid);
+            String ddo = ontSdk.getOntIdTx().getDDO("passwordtest", ontid,ontid);
             System.out.println("Ddo内容:"+ddo);
 
             //解析ontid 中Attributes 内容

@@ -77,7 +77,7 @@ public class InvokeSmartCodeDemo {
 
             //Transaction tx = ontSdk.getConnectManager().getRawTransaction(hash);
 //            Thread.sleep(6000);
-            Map ddo = ontSdk.getOntIdTx().getDDO("passwordtest",did.ontid,did.ontid);
+            String ddo = ontSdk.getOntIdTx().getDDO("passwordtest",did.ontid,did.ontid);
             System.out.println("Ddo内容:"+ddo);
             //System.out.println(tx);
 

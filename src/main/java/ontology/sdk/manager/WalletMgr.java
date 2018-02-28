@@ -133,7 +133,23 @@ public class WalletMgr {
         AccountInfo info = createIdentity(password, ECC.generateKey());
         return info;
     }
-
+    public AccountInfo getIdentityInfo(String ontid,String password) {
+        String prikeyStr = (String)identityPriKeyMap.get(ontid+","+password);
+        if(prikeyStr == null){
+            return null;
+        }
+        byte[] prikey = Helper.hexToBytes(prikeyStr);
+        Acct acct = createAccount(password, prikey, false);
+        AccountInfo info = new AccountInfo();
+        info.address = ontology.core.contract.Contract.createSignatureContract(acct.publicKey).address();
+        info.pubkey = Helper.toHexString(acct.publicKey.getEncoded(true));
+        info.setPrikey(Helper.toHexString(acct.privateKey));
+        info.setPriwif(acct.export());
+        info.encryptedprikey = acct.export(password);
+        info.pkhash = acct.scriptHash.toString();
+        storePrivateKey(identityPriKeyMap, "did:ont:" + info.address, password, Helper.toHexString(prikey));
+        return info;
+    }
     private AccountInfo createIdentity(String password, byte[] prikey) {
         Acct acct = createAccount(password, prikey, false);
         AccountInfo info = new AccountInfo();

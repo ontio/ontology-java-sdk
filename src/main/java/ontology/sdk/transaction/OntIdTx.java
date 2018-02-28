@@ -54,6 +54,27 @@ public class OntIdTx {
     }
 
     //注册ontid
+    public Identity register(String password, Identity ident) throws Exception {
+        AccountInfo info = sdk.getWalletMgr().getIdentityInfo(ident.ontid, password);
+        String ontid = "did:ont:" + info.address;
+        byte[] pk = Helper.hexToBytes(info.pubkey);
+        List list = new ArrayList<Object>();
+        list.add("RegIdByPublicKey".getBytes());
+        List tmp = new ArrayList<Object>();
+        tmp.add(ontid.getBytes());
+        tmp.add(pk);
+        list.add(tmp);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(sdk.getSmartcodeTx().createCodeParamsScript(list), codeHash, info.address, info.pubkey);
+        String txHex = sdk.getWalletMgr().signatureData(password, tx);
+        Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedprikey, info.address);
+        sdk.getWalletMgr().writeWallet();
+        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, txHex);
+        if (!b) {
+            throw new SDKException(Error.getDescArgError("sendRawTransaction error"));
+        }
+        System.out.println("hash:" + tx.hash().toString());
+        return identity;
+    }
     public Identity register(String password) throws Exception {
         if (codeHash == null) {
             throw new SDKException(Error.getDescArgError("null codeHash"));
@@ -500,7 +521,7 @@ public class OntIdTx {
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(password, sdk.getSmartcodeTx().createCodeParamsScript(list), codeHash, addr);
         String txHex = sdk.getWalletMgr().signatureData(password, tx);
         String result = (String) sdk.getConnectMgr().sendRawTransactionPreExec(txHex);
-        //System.out.println(result);
+        System.out.println(result);
         List listResult = JSON.parseObject(result, List.class);
         Map map = new HashMap();
         for (int i = 0; i < listResult.size(); i++) {

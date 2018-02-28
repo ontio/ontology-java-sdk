@@ -430,9 +430,9 @@ public class WalletMgr {
                 }
             }
         } catch (Exception e) {
-            throw new AccountException(Error.getDescDatabaseError("getContract err"), e);
+            throw new AccountException(Error.getDescArgError("getContract err"), e);
         }
-        return null;
+        throw new AccountException(Error.getDescArgError("getContract err"));
     }
 
     private ontology.core.contract.Contract getContract(String password, UInt160 scriptHash) {

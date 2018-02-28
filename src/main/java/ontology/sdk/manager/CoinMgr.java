@@ -86,7 +86,7 @@ public class CoinMgr {
 		try {
 			canUseCoin = connManager.getBalance(scriptHash,assetId.toString());
 		} catch (Exception e){
-			throw new CoinRuntimeException(Error.getDescDatabaseError(String.format("cann't find sufficient balance by scriptHash:%s, assetId:%s", scriptHash, assetId)), e);
+			throw new CoinRuntimeException(Error.getDescArgError(String.format("can't find sufficient balance by scriptHash:%s, assetId:%s", scriptHash, assetId)), e);
 		}
 		long l = amount.toLong();
 		if(canUseCoin < l) {
@@ -111,7 +111,7 @@ public class CoinMgr {
 				list.add(coin);
 			}
 		} catch (Exception e){
-			throw new CoinRuntimeException(Error.getDescDatabaseError(String.format("cann't find sufficient utxo by scriptHash:%s, assetId:%s", scriptHash, assetId)), e);
+			throw new CoinRuntimeException(Error.getDescArgError(String.format("can't find sufficient utxo by scriptHash:%s, assetId:%s", scriptHash, assetId)), e);
 		}
 
 		//return list.toArray(DNA.Account.Coin[]::new);
@@ -188,7 +188,7 @@ public class CoinMgr {
 					list.add(coin);
 				}
 			} catch (Exception e){
-				throw new CoinRuntimeException(Error.getDescDatabaseError(String.format("cann't find sufficient utxo by scriptHash:%s, assetId:%s", address, assetId)), e);
+				throw new CoinRuntimeException(Error.getDescArgError(String.format("can't find sufficient utxo by scriptHash:%s, assetId:%s", address, assetId)), e);
 			}
 			return to(list);
 		} catch (Exception e) {
@@ -224,7 +224,7 @@ public class CoinMgr {
 					}
 				}
 			} catch (Exception e){
-				throw new CoinRuntimeException(Error.getDescDatabaseError(String.format("cann't find sufficient utxo by scriptHash:%s", address)), e);
+				throw new CoinRuntimeException(Error.getDescArgError(String.format("can't find sufficient utxo by scriptHash:%s", address)), e);
 			}
 			return to(list);
 		} catch (Exception e) {

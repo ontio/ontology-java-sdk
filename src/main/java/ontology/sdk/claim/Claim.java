@@ -22,7 +22,7 @@ public class Claim {
         context = ctx;
         claim.put("Context", context);
         if (claimMap != null) {
-            claim.put("Claim", claimMap);
+            claim.put("Content", claimMap);
         }
         claim.put("Metadata", new MetaData(issuer, subject, metadata).getJson());
         id = Helper.toHexString(Digest.sha256(JSON.toJSONString(claim).getBytes()));

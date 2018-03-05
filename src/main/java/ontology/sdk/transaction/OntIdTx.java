@@ -615,7 +615,7 @@ public class OntIdTx {
     }
 
     //验证claim
-    public boolean verifyOntIdClaim(String password,String reqOntid,String claim) throws Exception {
+    public boolean verifyOntIdClaim(String reqOntid,String password,String claim) throws Exception {
         DataSignature sign = null;
         try {
             JSONObject obj = JSON.parseObject(claim);

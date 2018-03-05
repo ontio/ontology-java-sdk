@@ -162,7 +162,7 @@ map.put("Subject", dids.get(1).ontid);
 //密码是签发人的秘密，钱包文件ontid中必须要有该签发人。
 String claim = ontSdk.getOntIdTx().createOntIdClaim("passwordtest","claim:context",map,map);
 System.out.println(claim);
-boolean b = ontSdk.getOntIdTx().verifyOntIdClaim("passwordtest",ontid,claim);
+boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(ontid,"passwordtest",claim);
 ```
 
 

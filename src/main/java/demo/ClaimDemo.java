@@ -36,7 +36,7 @@ public class ClaimDemo {
             //密码是签发人的秘密，钱包文件ontid中必须要有该签发人。
             String claim = ontSdk.getOntIdTx().createOntIdClaim("passwordtest","claim:context",map,map);
             System.out.println(claim);
-            boolean b = ontSdk.getOntIdTx().verifyOntIdClaim("passwordtest",dids.get(0).ontid,claim);
+            boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(dids.get(0).ontid,"passwordtest",claim);
             System.out.println(b);
 
         } catch (Exception e) {

@@ -68,7 +68,7 @@ public class Identity {
 Account account = ontSdk.getWalletMgr().createAccount("123456");
 
 //Step4 将身份注册到链上
-ontSdk.getOntIdTx().register("password",identity);
+ontSdk.getOntIdTx().register(identity,"password");
 
 ```
 
@@ -110,6 +110,12 @@ Account account = ontSdk.getWalletMgr().importAccount("6PYMpk8DjWzaEvneyaqxMBap9
 Identity identity = ontSdk.getWalletMgr().importIdentity("6PYMpk8DjWzaEvneyaqxMBap9DuUPH72W6BsWWTtpWE4JJZkGq5ENtfYbT","passwordtest");
 ```
 
+### 验证用户签名
+
+```
+ontSdk.getOntIdTx().verifySign(String reqOntid, String password, String ontid, byte[] data, byte[] signature);
+reqOntid和password 是发起查询的人的ontid和密码。
+```
 
 ### 设置为钱包默认数字身份
 
@@ -356,10 +362,7 @@ System.out.println(ontSdk.getConnectMgr().getGenerateBlockTime());
 
 
 
-
-
-
-## 错误代码
+## 错误码
 
 | 返回代码 | 描述信息 | 说明 |
 | :---- | ----------------------------- | ----------------- |

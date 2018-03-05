@@ -354,9 +354,12 @@ System.out.println(ontSdk.getConnectMgr().getGenerateBlockTime());
 ```
 
 
+## 其它接口
 
-
-
+```
+ontSdk.getOntIdTx().verifySign(String password, String reqOntid, String ontid, byte[] data, byte[] signature);
+password和reqOntid 是发起查询的人的ontid和密码。
+```
 
 
 ## 错误代码

@@ -615,7 +615,7 @@ public class OntIdTx {
     }
 
     //验证claim
-    public boolean verifyOntIdClaim(String password,String reqDid,String claim) throws Exception {
+    public boolean verifyOntIdClaim(String password,String reqOntid,String claim) throws Exception {
         DataSignature sign = null;
         try {
             JSONObject obj = JSON.parseObject(claim);
@@ -628,7 +628,7 @@ public class OntIdTx {
             String addr = str[2];
             byte[] pubkeyBys = null;
 
-            String issuerDdo = getDDO(password,reqDid,issuerDid);//.getIdentityUpdate(method, addr);
+            String issuerDdo = getDDO(password,reqOntid,issuerDid);//.getIdentityUpdate(method, addr);
             String pubkeyStr = JSON.parseObject(issuerDdo).getJSONArray("Owners").getJSONObject(0).getString("Value");
 //            String publicKeyBase64 = JSON.parseObject(issuerDdo).getJSONArray("Owners").getJSONObject(0).getString("publicKeyBase64");
 //            pubkeyBys = Base64.getDecoder().decode(publicKeyBase64);
@@ -644,5 +644,17 @@ public class OntIdTx {
         }
     }
 
+    public boolean verifySign(String password, String reqOntid, String ontid, byte[] data, byte[] signature) throws Exception {
+        DataSignature sign = null;
+        try {
+            String issuerDdo = getDDO(password, reqOntid, ontid);
+            String pubkeyStr = JSON.parseObject(issuerDdo).getJSONArray("Owners").getJSONObject(0).getString("Value");
+            ECPoint pubkey = sdk.getWalletMgr().getPubkey(pubkeyStr);
+            sign = new DataSignature();
+            return sign.verifySignature(sdk.getWalletMgr().getAlgrithem(), pubkey, data, signature);
+        } catch (Exception e) {
+            throw new SDKException(e);
+        }
+    }
 
 }

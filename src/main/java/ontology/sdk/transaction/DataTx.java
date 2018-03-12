@@ -28,7 +28,7 @@ public class DataTx {
         tmp.add(admin);
         tmp.add(caller);
         list.add(tmp);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(password,sdk.getSmartcodeTx().createCodeParamsScript(list),codeHash,addr);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(addr,password,codeHash,sdk.getSmartcodeTx().createCodeParamsScript(list));
         String txHex = sdk.getWalletMgr().signatureData(password,tx);
         boolean b = sdk.getConnectMgr().sendRawTransaction(txHex);
         if(b){
@@ -42,7 +42,7 @@ public class DataTx {
         list.add("deposit".getBytes());
         List tmp = new ArrayList<Object>();
         list.add(tmp);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(password,sdk.getSmartcodeTx().createCodeParamsScript(list),codeHash,addr);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(addr,password,codeHash,sdk.getSmartcodeTx().createCodeParamsScript(list));
         tx.outputs = new TransactionOutput[1];
         tx.outputs[0] = new TransactionOutput();
         tx.outputs[0].assetId = UInt256.parse(assetId);
@@ -65,7 +65,7 @@ public class DataTx {
         tmp.add(admin);
         tmp.add(caller);
         list.add(tmp);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(password,sdk.getSmartcodeTx().createCodeParamsScript(list),codeHash,addr);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(addr,password,codeHash,sdk.getSmartcodeTx().createCodeParamsScript(list));
         String txHex = sdk.getWalletMgr().signatureData(password,tx);
         boolean b = sdk.getConnectMgr().sendRawTransaction(txHex);
         if(b){
@@ -81,11 +81,11 @@ public class DataTx {
         tmp.add(orderSig);
         tmp.add(orderId);
         tmp.add(Program.toScriptHash(Contract.createSignatureRedeemScript(buyerPk)).toArray());
-        tmp.add(Program.toScriptHash(Contract.createSignatureRedeemScript(sdk.getWalletMgr().getAccountInfo(password,sellerAddr).pubkey)).toArray());
+        tmp.add(Program.toScriptHash(Contract.createSignatureRedeemScript(sdk.getWalletMgr().getAccountInfo(sellerAddr,password).pubkey)).toArray());
         tmp.add(Helper.hexToBytes(buyerPk));
         tmp.add(amount);
         list.add(tmp);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(password,sdk.getSmartcodeTx().createCodeParamsScript(list),codeHash,sellerAddr);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(sellerAddr,password,codeHash,sdk.getSmartcodeTx().createCodeParamsScript(list));
         String txHex = sdk.getWalletMgr().signatureData(password,tx);
         boolean b = sdk.getConnectMgr().sendRawTransaction(txHex);
         if(b){
@@ -101,7 +101,7 @@ public class DataTx {
         tmp.add(orderId);
         tmp.add(buyer);
         list.add(tmp);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(password,sdk.getSmartcodeTx().createCodeParamsScript(list),codeHash,buyer);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(buyer,password,codeHash,sdk.getSmartcodeTx().createCodeParamsScript(list));
         String txHex = sdk.getWalletMgr().signatureData(password,tx);
         boolean b = sdk.getConnectMgr().sendRawTransaction(txHex);
         if(b){
@@ -117,7 +117,7 @@ public class DataTx {
         tmp.add(orderId);
         tmp.add(buyer);
         list.add(tmp);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(password,sdk.getSmartcodeTx().createCodeParamsScript(list),codeHash,buyer);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(buyer,password,codeHash,sdk.getSmartcodeTx().createCodeParamsScript(list));
         String txHex = sdk.getWalletMgr().signatureData(password,tx);
         boolean b = sdk.getConnectMgr().sendRawTransaction(txHex);
         if(b){
@@ -133,7 +133,7 @@ public class DataTx {
         tmp.add(orderId);
         tmp.add(seller);
         list.add(tmp);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(password,sdk.getSmartcodeTx().createCodeParamsScript(list),codeHash,seller);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(seller,password,codeHash,sdk.getSmartcodeTx().createCodeParamsScript(list));
         String txHex = sdk.getWalletMgr().signatureData(password,tx);
         boolean b = sdk.getConnectMgr().sendRawTransaction(txHex);
         if(b){

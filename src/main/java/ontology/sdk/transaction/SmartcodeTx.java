@@ -44,17 +44,17 @@ public class SmartcodeTx {
     public String getWsSessionId(){
         return wsSessionId;
     }
-    public String invokeTransaction(String password,String ontid,AbiFunction abiFunction) throws Exception {
-        return (String)invokeTransaction(false,password,ontid,abiFunction);
+    public String invokeTransaction(String ontid,String password,AbiFunction abiFunction) throws Exception {
+        return (String)invokeTransaction(false,ontid,password,abiFunction);
     }
-    public Object invokeTransactionPreExec(String password,String ontid,AbiFunction abiFunction) throws Exception {
-        return invokeTransaction(true,password,ontid,abiFunction);
+    public Object invokeTransactionPreExec(String ontid,String password,AbiFunction abiFunction) throws Exception {
+        return invokeTransaction(true,ontid,password,abiFunction);
     }
-    public Object invokeTransaction(boolean preExec,String password,String ontid,AbiFunction abiFunction) throws Exception {
+    public Object invokeTransaction(boolean preExec,String ontid,String password,AbiFunction abiFunction) throws Exception {
         if(codeHash == null){
             throw new SDKException(Error.getDescArgError("null codeHash"));
         }
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(password,ontid);
+        AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid,password);
         List list = new ArrayList<Object>();
         list.add(abiFunction.getName().getBytes());
         List tmp = new ArrayList<Object>();
@@ -92,7 +92,7 @@ public class SmartcodeTx {
         return tx.hash().toString();
     }
     public String DeployCodeTransaction(String codeHexStr,boolean needStorage, String name, String codeVersion, String author, String email, String desp, String returnType) throws Exception {
-        //AccountInfo info = sdk.getOepMgr().getAccountInfo(password,ontid);
+        //AccountInfo info = sdk.getOepMgr().getAccountInfo(ontid,password);
         //ContractParameterType.valueOf("Boolean")
         Transaction tx = makeDeployCodeTransaction(codeHexStr, needStorage, name ,codeVersion, author, email, desp, ContractParameterType.valueOf(returnType));
 
@@ -177,15 +177,15 @@ public class SmartcodeTx {
         return tx;
     }
 
-    public InvokeCodeTransaction makeInvokeCodeTransaction(String password,byte[] paramsHexStr, String codeHash, String addr) throws SDKException {
-        InvokeCodeTransaction tx = new InvokeCodeTransaction(sdk.getWalletMgr().getAccount(password,addr).publicKey);
+    public InvokeCodeTransaction makeInvokeCodeTransaction(String addr,String password,String codeHash,byte[] paramsHexStr) throws SDKException {
+        InvokeCodeTransaction tx = new InvokeCodeTransaction(sdk.getWalletMgr().getAccount(addr,password).publicKey);
         tx.attributes = new TransactionAttribute[2];
         tx.attributes[0] = new TransactionAttribute();
         tx.attributes[0].usage = TransactionAttributeUsage.Nonce;
         tx.attributes[0].data = UUID.randomUUID().toString().getBytes();//Common.generateKey64Bit();
         tx.attributes[1] = new TransactionAttribute();
         tx.attributes[1].usage = TransactionAttributeUsage.Script;
-        tx.attributes[1].data = Program.toScriptHash(Contract.createSignatureRedeemScript(sdk.getWalletMgr().getAccount(password,addr).publicKey)).toArray();
+        tx.attributes[1].data = Program.toScriptHash(Contract.createSignatureRedeemScript(sdk.getWalletMgr().getAccount(addr,password).publicKey)).toArray();
         tx.inputs = new TransactionInput[0];
         tx.outputs = new TransactionOutput[0];
         tx.code = paramsHexStr;

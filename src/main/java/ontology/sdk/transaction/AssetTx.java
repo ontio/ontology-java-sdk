@@ -42,9 +42,9 @@ public class AssetTx {
         this.sdk = sdk;
     }
 
-    public String registerTransaction(String password,String issuer, String name, long amount, String desc, String controller) throws Exception {
+    public String registerTransaction(String issuer,String password, String name, long amount, String desc, String controller) throws Exception {
         checkRegisterParameter(issuer, name, amount, desc, controller);
-        RegisterTransaction tx = makeRegisterTx(sdk.getWalletMgr().getAccount(password,issuer), name, amount, desc, AssetType.Token, controller, Fixed8.DefaultPrecision);
+        RegisterTransaction tx = makeRegisterTx(sdk.getWalletMgr().getAccount(issuer,password), name, amount, desc, AssetType.Token, controller, Fixed8.DefaultPrecision);
         String hex = sdk.getWalletMgr().signatureData(password,tx);
         boolean b = sdk.getConnectMgr().sendRawTransaction(hex);
         if(b) {
@@ -52,7 +52,7 @@ public class AssetTx {
         }
         return null;
     }
-    public String issueTransaction(String password,String sendAddr, String assetid, long amount, String recvAddr, String desc) throws Exception {
+    public String issueTransaction(String sendAddr,String password, String assetid, long amount, String recvAddr, String desc) throws Exception {
         checkIssueAndTransferParameter(sendAddr, assetid, amount, recvAddr, desc);
         IssueTransaction tx = makeIssueTx(assetid, amount, recvAddr, desc);
         String hex = sdk.getWalletMgr().signatureData(password,tx);
@@ -62,7 +62,7 @@ public class AssetTx {
         }
         return null;
     }
-    public String transferTransaction(String password,String sendAddr, String assetid, long amount, String recvAddr, String desc) throws Exception {
+    public String transferTransaction(String sendAddr,String password, String assetid, long amount, String recvAddr, String desc) throws Exception {
         checkIssueAndTransferParameter(sendAddr, assetid, amount, recvAddr, desc);
         TransferTransaction tx = makeTranferTx(assetid, amount, recvAddr, desc);
         sdk.getCoinManager().makeTransaction(sdk.getConnectMgr(),tx, Common.toScriptHash(sendAddr));
@@ -74,15 +74,15 @@ public class AssetTx {
         return null;
     }
     //构造注册资产交易
-    public RegisterTransaction makeRegisterTransaction(String password,String issuer, String name, long amount, String desc, String controller) throws SDKException {
+    public RegisterTransaction makeRegisterTransaction(String issuer,String password, String name, long amount, String desc, String controller) throws SDKException {
         checkRegisterParameter(issuer, name, amount, desc, controller);
-        RegisterTransaction tx = makeRegisterTx(sdk.getWalletMgr().getAccount(password,issuer), name, amount, desc, AssetType.Token, controller, Fixed8.DefaultPrecision);
+        RegisterTransaction tx = makeRegisterTx(sdk.getWalletMgr().getAccount(issuer,password), name, amount, desc, AssetType.Token, controller, Fixed8.DefaultPrecision);
         return tx;
     }
     //构造注册资产交易
-    public RegisterTransaction makeRegisterTransaction(String password,String issuer, String name, long amount, String desc, String controller, int precision) throws SDKException {
+    public RegisterTransaction makeRegisterTransaction(String issuer,String password, String name, long amount, String desc, String controller, int precision) throws SDKException {
         checkRegisterParameter(issuer, name, amount, desc, controller);
-        RegisterTransaction tx = makeRegisterTx(sdk.getWalletMgr().getAccount(password,issuer), name, amount, desc, AssetType.Token, controller, precision);
+        RegisterTransaction tx = makeRegisterTx(sdk.getWalletMgr().getAccount(issuer,password), name, amount, desc, AssetType.Token, controller, precision);
         return tx;
     }
 
@@ -303,12 +303,12 @@ public class AssetTx {
 
 
     //获取账户资产
-//    private AccountAsset getAccountAsset(String password, String address) throws SDKException {
+//    private AccountAsset getAccountAsset(String address,String password) throws SDKException {
 //        if (!ParamCheck.isValidAddress(address)) {
 //            throw new SDKException(Error.getDescAddrError(String.format("%s=%s", "address", address)));
 //        }
 //        AccountAsset asset = new AccountAsset();
-//        Contract con = sdk.getWalletMgr().getContract(password,address);
+//        Contract con = sdk.getWalletMgr().getContract(address,password);
 //        asset.address = con.address();
 //        asset.canUseAssets = new ArrayList<Asset>();
 //        asset.freezeAssets = new ArrayList<Asset>();
@@ -394,7 +394,7 @@ public class AssetTx {
         }
         return tx.outputs[input.prevIndex];
     }
-    public String claimTx(String password,String addr,String assetId) throws Exception {
+    public String claimTx(String addr,String password,String assetId) throws Exception {
         Claim tx = makeClaimTx(addr,assetId,10);
         String hex = sdk.getWalletMgr().signatureData(password,tx);
         System.out.println(hex);
@@ -420,8 +420,8 @@ public class AssetTx {
         tx.attributes[0].data = UUID.randomUUID().toString().getBytes();
         return tx;
     }
-    public String voteTx(String password,String addr,ECPoint... pubKeys) throws Exception {
-        Vote tx = makeVoteTx(sdk.getWalletMgr().getAccount(password,addr).scriptHash,pubKeys);
+    public String voteTx(String addr,String password,ECPoint... pubKeys) throws Exception {
+        Vote tx = makeVoteTx(sdk.getWalletMgr().getAccount(addr,password).scriptHash,pubKeys);
         String hex = sdk.getWalletMgr().signatureData(password,tx);
         System.out.println(hex);
         boolean b = sdk.getConnectMgr().sendRawTransaction(hex);

@@ -271,11 +271,11 @@ public class WalletMgr {
         }
     }
 
-    public Acct getAccount(String password, String address) throws SDKException {
+    public Acct getAccount(String address,String password) throws SDKException {
         if (!ParamCheck.isValidAddress(address)) {
             throw new SDKException(Error.getDescAddrError(String.format("%s=%s", "address", address)));
         }
-        return getAccountByScriptHash(password, Common.toScriptHash(address));
+        return getAccountByScriptHash( Common.toScriptHash(address),password);
     }
 
     public Acct createAccount(String password, String prikey) {
@@ -309,14 +309,14 @@ public class WalletMgr {
     }
 
     // 获取账户信息
-    public AccountInfo getAccountInfo(String password, String address) throws SDKException {
+    public AccountInfo getAccountInfo(String address,String password) throws SDKException {
         address = address.replace("did:ont:", "");
         if (!ParamCheck.isValidAddress(address)) {
             throw new SDKException(Error.getDescAddrError(String.format("%s=%s", "address", address)));
         }
         AccountInfo info = new AccountInfo();
-        ontology.core.contract.Contract con = getContract(password, address);
-        Acct acc = getAccountByScriptHash(password, Common.toScriptHash(address));
+        ontology.core.contract.Contract con = getContract(address,password);
+        Acct acc = getAccountByScriptHash(Common.toScriptHash(address),password);
         info.address = con.address();
         info.pubkey = Helper.toHexString(acc.publicKey.getEncoded(true));
         info.setPrikey(Helper.toHexString(acc.privateKey));
@@ -426,7 +426,7 @@ public class WalletMgr {
 //        }
 //    }
 
-    private ontology.core.contract.Contract getContract(String password, String addr) {
+    private ontology.core.contract.Contract getContract(String addr,String password) {
         try {
             for (Account e : wallet.getAccounts()) {
                 if (addr.equals(e.address)) {
@@ -451,9 +451,9 @@ public class WalletMgr {
         throw new AccountException(Error.getDescArgError("getContract err"));
     }
 
-    private ontology.core.contract.Contract getContract(String password, UInt160 scriptHash) {
+    private ontology.core.contract.Contract getContract(UInt160 scriptHash,String password) {
         try {
-            return getContract(password, Common.toAddress(scriptHash));
+            return getContract(Common.toAddress(scriptHash),password);
         } catch (Exception e) {
             throw new AccountException(Error.getDescDatabaseError("getContract err"), e);
         }
@@ -478,7 +478,7 @@ public class WalletMgr {
 //        return null;
 //    }
 
-    private Acct getAccountByScriptHash(String password, UInt160 scriptHash) {
+    private Acct getAccountByScriptHash(UInt160 scriptHash,String password) {
         try {
             for (Account e : wallet.getAccounts()) {
                 if (e.address.equals(Common.toAddress(scriptHash))) {
@@ -511,13 +511,13 @@ public class WalletMgr {
     public boolean sign(String password, SignatureContext context) {
         boolean fSuccess = false;
         for (UInt160 scriptHash : context.scriptHashes) {
-            ontology.core.contract.Contract contract = getContract(password, scriptHash);
+            ontology.core.contract.Contract contract = getContract(scriptHash,password);
             if (contract == null) {
                 continue;
             }
             Acct account = null;
             if (password != null) {
-                account = getAccountByScriptHash(password, scriptHash);
+                account = getAccountByScriptHash(scriptHash,password);
             }
             if (account == null) {
                 continue;

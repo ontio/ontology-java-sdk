@@ -82,7 +82,7 @@ public class WebsocketDemo {
 
                 //System.out.println(JSON.toJSONString(recordMap));
                 //System.out.println(ontid);
-                String hash = ontSdk.getOntIdTx().updateAttribute("passwordtest", ontid, attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
+                String hash = ontSdk.getOntIdTx().updateAttribute(ontid, "passwordtest",attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
                 System.out.println("hash:" + hash);
 
                 //等待推送结果

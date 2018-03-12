@@ -33,12 +33,12 @@ public class Demo {
             System.out.println(ontSdk.getConnectMgr().getNodeCount());
           //  System.out.println(ontSdk.getConnectManager().getGenerateBlockTime());
             //System.out.println(block.transactions[0].type);
-           // ontSdk.getOepMgr().getAccount("1234567",ontSdk.getOepMgr().getAccounts().get(0).address);
+           // ontSdk.getOepMgr().getAccount(ontSdk.getOepMgr().getAccounts().get(0).address,"1234567");
 
             Account info = ontSdk.getWalletMgr().createAccount("123456");
             ontSdk.getWalletMgr().writeWallet();
          //   ontSdk.getOepMgr().createOntId("123456");
-          //  AccountInfo info2 = ontSdk.getWalletMgr().getAccountInfo("123456", info.address);
+          //  AccountInfo info2 = ontSdk.getWalletMgr().getAccountInfo(info.address,"123456");
           //  System.out.println(info2);
         } catch (Exception e) {
             e.printStackTrace();

@@ -61,7 +61,7 @@ public class InvokeSmartCodeDemo {
                 //waitResult(ontSdk, lock);
             }
             Identity did = ontSdk.getWalletMgr().getIdentitys().get(0);
-            AccountInfo info = ontSdk.getWalletMgr().getAccountInfo("passwordtest",did.ontid);
+            AccountInfo info = ontSdk.getWalletMgr().getAccountInfo(did.ontid,"passwordtest");
 
             AbiFunction func = abiinfo.getFunction("AddAttribute");
             System.out.println(func.getParameters());
@@ -69,7 +69,7 @@ public class InvokeSmartCodeDemo {
             System.out.println(func);
 
             ontSdk.setCodeHash(abiinfo.getHash());
-            String hash = ontSdk.getSmartcodeTx().invokeTransaction("passwordtest",did.ontid,func);
+            String hash = ontSdk.getSmartcodeTx().invokeTransaction(did.ontid,"passwordtest",func);
 
             System.out.println("invokeTransaction hash:"+hash);
             List listResult = waitResult(ontSdk, lock);
@@ -77,7 +77,7 @@ public class InvokeSmartCodeDemo {
 
             //Transaction tx = ontSdk.getConnectManager().getRawTransaction(hash);
 //            Thread.sleep(6000);
-            String ddo = ontSdk.getOntIdTx().getDDO("passwordtest",did.ontid,did.ontid);
+            String ddo = ontSdk.getOntIdTx().getDDO(did.ontid,"passwordtest",did.ontid);
             System.out.println("Ddo内容:"+ddo);
             //System.out.println(tx);
 

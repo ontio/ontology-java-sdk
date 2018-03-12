@@ -77,7 +77,7 @@ ontSdk.getOntIdTx().register(identity,"password");
 链上身份将以DDO的形式存放，可以通过ONT ID进行查询。
 ```
 //通过ONT ID获取DDO
-String ddo = ontSdk.getOntIdTx().getDDO("passwordtest",ontid,ontid);
+String ddo = ontSdk.getOntIdTx().getDDO(ontid,"passwordtest",ontid);
 
 //返回DDO格式
 {
@@ -134,7 +134,7 @@ ontSdk.getWalletMgr().writeWallet();
 更新一个属性
 ```
 //更新一个属性
-String updateAttribute(String password,String ontid,byte[] key,byte[] type,byte[] value)
+String updateAttribute(String ontid,String password,byte[] key,byte[] type,byte[] value)
 ```
 | 参数      | 字段   | 类型  | 描述 |             说明 |
 | ----- | ------- | ------ | ------------- | ----------- |
@@ -151,7 +151,7 @@ Demo例子：
 Identity ident = ontSdk.getOntIdTx().register("passwordtest");
 String ontid = ident.ontid;
 //更新属性
-String hash = ontSdk.getOntIdTx().updateAttribute("passwordtest", ontid, attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
+String hash = ontSdk.getOntIdTx().updateAttribute(ontid,"passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
 ```
 Claim签发和验证：
 ```
@@ -228,7 +228,7 @@ ontSdk.setCodeHash(abiinfo.getHash());
 
 //获取账号信息
 Identity did = ontSdk.getWalletMgr().getIdentitys().get(0);
-AccountInfo info = ontSdk.getWalletMgr().getAccountInfo("passwordtest",did.ontid);
+AccountInfo info = ontSdk.getWalletMgr().getAccountInfo(did.ontid,"passwordtest");
 
 //构造智能合约函数
 AbiFunction func = abiinfo.getFunction("AddAttribute");
@@ -237,7 +237,7 @@ func.setParamsValue(did.ontid.getBytes(),"key".getBytes(),"bytes".getBytes(),"va
 System.out.println(func);
 
 //调用智能合约
-String hash = ontSdk.getSmartcodeTx().invokeTransaction("passwordtest",did.ontid,func);
+String hash = ontSdk.getSmartcodeTx().invokeTransaction(did.ontid,"passwordtest",func);
 
 //如果需要等待推送结果，需要启动websocket线程
 ```
@@ -302,7 +302,7 @@ public static void waitResult(OntSdk ontSdk, Object lock){
 
 ```
 AccountInfo info = ontSdk.getOntAccount().createAccount("password");
-AccountInfo info2 = ontSdk.getOntAccount().getAccountInfo("password", info.address);
+AccountInfo info2 = ontSdk.getOntAccount().getAccountInfo(info.address,"password");
 
 public class AccountInfo {
 	public String address;	// 合约地址
@@ -318,23 +318,23 @@ public class AccountInfo {
 Demo例子：
 ```
 //获取账号
- AccountInfo acct0 = ontSdk.getWalletMgr().getAccountInfo("passwordtest",ontSdk.getWalletMgr().getAccounts().get(0).address);
-AccountInfo acct1 = ontSdk.getWalletMgr().getAccountInfo("passwordtest",ontSdk.getWalletMgr().getAccounts().get(1).address);
+ AccountInfo acct0 = ontSdk.getWalletMgr().getAccountInfo(ontSdk.getWalletMgr().getAccounts().get(0).address,"passwordtest");
+AccountInfo acct1 = ontSdk.getWalletMgr().getAccountInfo(ontSdk.getWalletMgr().getAccounts().get(1).address,"passwordtest");
 System.out.println(acct0.address);
 //注册资产
-String hash = ontSdk.getAssetTx().registerTransaction("passwordtest",acct0.address, "JF005", 1000000L, new Date().toString(), acct0.address);
+String hash = ontSdk.getAssetTx().registerTransaction(acct0.address,"passwordtest", "JF005", 1000000L, new Date().toString(), acct0.address);
 System.out.println(hash);
 
 Thread.sleep(6000);
 System.out.println(acct0.encryptedprikey);
 String assetid = hash;
 //签发
-String hashIssue = ontSdk.getAssetTx().issueTransaction("passwordtest",acct0.address,assetid,100,acct0.address,"no");
+String hashIssue = ontSdk.getAssetTx().issueTransaction(acct0.address,"passwordtest",assetid,100,acct0.address,"no");
 System.out.println(hashIssue);
 
 Thread.sleep(6000);
 //转账
-String hashTransfer = ontSdk.getAssetTx().transferTransaction("passwordtest",acct1.address, assetid, 20L, acct0.address, "no");
+String hashTransfer = ontSdk.getAssetTx().transferTransaction(acct1.address,"passwordtest", assetid, 20L, acct0.address, "no");
 
 ```
 

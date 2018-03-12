@@ -36,7 +36,7 @@ public class SmartCodeRecordDemo {
 
             String ontid = ontSdk.getWalletMgr().getIdentitys().get(0).ontid;
 
-            String hash = ontSdk.getOntIdTx().addRecord("password", ontid, "attri".getBytes(), JSON.toJSONString(recordData).getBytes());
+            String hash = ontSdk.getOntIdTx().addRecord( ontid,"password","attri".getBytes(), JSON.toJSONString(recordData).getBytes());
 
             System.out.println("waiting...");
             Thread.sleep(6000);

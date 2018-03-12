@@ -17,7 +17,7 @@ public class AssetDemo {
         try {
             OntSdk ontSdk = getOntSdk();
 
-            //String cliamHash = ontSdk.getAssetTx().claimTx("passwordtest",ontSdk.getWalletMgr().getAccounts().get(0).address,"a9f1bf985b1ad4cec8ae372f79879523402711ec70f12d175bdc8daf418eb57d");
+            //String cliamHash = ontSdk.getAssetTx().claimTx(ontSdk.getWalletMgr().getAccounts().get(0).address,"passwordtest","a9f1bf985b1ad4cec8ae372f79879523402711ec70f12d175bdc8daf418eb57d");
             //System.out.println(cliamHash);
             //System.exit(0);
 
@@ -30,24 +30,24 @@ public class AssetDemo {
             //TransactionInfo txinfo = ontSdk.getAssetTx().getTransactionInfo("a2663da8fe0b8b7a5995f385cc3a708274da1bab7b7942dd5e5ca622f53aa623");
 //            System.out.println(assetinfo);
 //            System.exit(0);
-            AccountInfo acct0 = ontSdk.getWalletMgr().getAccountInfo("passwordtest",ontSdk.getWalletMgr().getAccounts().get(0).address);
-            AccountInfo acct1 = ontSdk.getWalletMgr().getAccountInfo("passwordtest",ontSdk.getWalletMgr().getAccounts().get(1).address);
+            AccountInfo acct0 = ontSdk.getWalletMgr().getAccountInfo(ontSdk.getWalletMgr().getAccounts().get(0).address,"passwordtest");
+            AccountInfo acct1 = ontSdk.getWalletMgr().getAccountInfo(ontSdk.getWalletMgr().getAccounts().get(1).address,"passwordtest");
             System.out.println(acct0.address);
 
-            String hash = ontSdk.getAssetTx().registerTransaction("passwordtest",acct0.address, "JF005", 1000000L, new Date().toString(), acct0.address);
+            String hash = ontSdk.getAssetTx().registerTransaction(acct0.address, "passwordtest","JF005", 1000000L, new Date().toString(), acct0.address);
             System.out.println(hash);
             //System.exit(0);
 
             Thread.sleep(6000);
             System.out.println(acct0.encryptedprikey);
             String assetid = hash;
-            String hashIssue = ontSdk.getAssetTx().issueTransaction("passwordtest",acct0.address,assetid,100,acct0.address,"no");
+            String hashIssue = ontSdk.getAssetTx().issueTransaction(acct0.address,"passwordtest",assetid,100,acct0.address,"no");
             System.out.println(hashIssue);
             //System.exit(0);
             Thread.sleep(6000);
 
             //79b6e2bfb51a0e8f8bfa5823d8896510386ec76738434c836fa96eefe0f7ba08
-            String hashTransfer = ontSdk.getAssetTx().transferTransaction("passwordtest",acct0.address, assetid, 20L, acct1.address, "no");
+            String hashTransfer = ontSdk.getAssetTx().transferTransaction(acct0.address, "passwordtest",assetid, 20L, acct1.address, "no");
             //ontoSdk.getConnectManager().getRawTransaction(Helper.reverse("e1c6e42ba3be652328780ce243cea9498204eb00e4fd515af4fdc58b72e9cf38"));
             System.out.println(hashTransfer);
         } catch (Exception e) {

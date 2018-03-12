@@ -75,7 +75,7 @@ public class OntIdWsDemoTest {
 
                 System.out.println(JSON.toJSONString(recordMap));
                 System.out.println(ontid);
-                String hash = ontSdk.getOntIdTx().updateAttribute("passwordtest", ontid, attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
+                String hash = ontSdk.getOntIdTx().updateAttribute(ontid, "passwordtest",attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
                 System.out.println("hash:" + hash);
 
                 //等待推送结果
@@ -86,7 +86,7 @@ public class OntIdWsDemoTest {
 
             System.out.println("===============getDDO==================");
             //查询ontid 的 ddo内容
-            String ddo = ontSdk.getOntIdTx().getDDO("passwordtest", ontid,ontid);
+            String ddo = ontSdk.getOntIdTx().getDDO(ontid,"passwordtest", ontid);
             System.out.println("Ddo内容:"+ddo);
 
             //解析ontid 中Attributes 内容
@@ -175,7 +175,7 @@ public class OntIdWsDemoTest {
         print(String.format("ConnectParam=[%s, %s]", url, ""));
 
         //设置 ontid合约hash
-        wm.setCodeHash("89ff0f39193ddaeeeab9de4873b549f71bbe809c");
+        wm.setCodeHash("263dbc0ca10aec184ceced7a998106733852c28a");
 
         //System.exit(0);
         return wm;

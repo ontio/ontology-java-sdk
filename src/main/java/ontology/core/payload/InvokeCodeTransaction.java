@@ -1,5 +1,7 @@
-package ontology.core;
+package ontology.core.payload;
 
+import ontology.core.Transaction;
+import ontology.core.TransactionType;
 import ontology.core.scripts.Program;
 import ontology.io.BinaryReader;
 import ontology.io.BinaryWriter;

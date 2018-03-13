@@ -1,7 +1,9 @@
-package ontology.core;
+package ontology.core.payload;
 
 import ontology.common.Fixed8;
 import ontology.common.UInt160;
+import ontology.core.*;
+import ontology.core.payload.RegisterTransaction;
 import ontology.io.BinaryReader;
 import ontology.io.BinaryWriter;
 

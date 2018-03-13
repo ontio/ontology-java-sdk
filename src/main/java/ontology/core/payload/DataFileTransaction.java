@@ -1,8 +1,10 @@
-package ontology.core;
+package ontology.core.payload;
 
 import java.io.IOException;
 import java.math.BigInteger;
 
+import ontology.core.Transaction;
+import ontology.core.TransactionType;
 import org.bouncycastle.math.ec.ECPoint;
 
 import ontology.common.Helper;

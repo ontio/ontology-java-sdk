@@ -1,7 +1,7 @@
 package demo;
 
 import ontology.common.Helper;
-import ontology.core.DeployCodeTransaction;
+import ontology.core.payload.DeployCodeTransaction;
 import ontology.core.contract.ContractParameterType;
 import ontology.OntSdk;
 

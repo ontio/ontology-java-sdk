@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import ontology.common.*;
-import ontology.core.IssueTransaction;
+import ontology.core.payload.IssueTransaction;
 import ontology.core.Transaction;
 import ontology.core.TransactionAttribute;
 import ontology.core.TransactionInput;

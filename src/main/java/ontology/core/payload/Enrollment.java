@@ -1,6 +1,8 @@
-package ontology.core;
+package ontology.core.payload;
 
 import ontology.common.Helper;
+import ontology.core.Transaction;
+import ontology.core.TransactionType;
 import ontology.crypto.ECC;
 import ontology.io.BinaryReader;
 import ontology.io.BinaryWriter;

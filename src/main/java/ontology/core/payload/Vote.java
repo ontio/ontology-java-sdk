@@ -1,7 +1,9 @@
-package ontology.core;
+package ontology.core.payload;
 
 import ontology.common.Helper;
 import ontology.common.UInt160;
+import ontology.core.Transaction;
+import ontology.core.TransactionType;
 import ontology.crypto.ECC;
 import ontology.io.BinaryReader;
 import ontology.io.BinaryWriter;
@@ -13,7 +15,7 @@ import java.math.BigInteger;
 /**
  *  投票信息
  */
-public class Vote extends Transaction{
+public class Vote extends Transaction {
     public ECPoint[] pubKeys;
     public UInt160 account;
     public Vote() {

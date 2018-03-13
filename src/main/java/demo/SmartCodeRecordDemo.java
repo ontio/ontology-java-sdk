@@ -1,6 +1,6 @@
 package demo;
 
-import ontology.core.InvokeCodeTransaction;
+import ontology.core.payload.InvokeCodeTransaction;
 import ontology.OntSdk;
 import ontology.sdk.info.RecordInfo;
 import com.alibaba.fastjson.JSON;

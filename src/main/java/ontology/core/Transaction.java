@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.stream.*;
 
 import ontology.common.*;
+import ontology.core.payload.RegisterTransaction;
 import ontology.core.scripts.Program;
 import ontology.io.*;
 import ontology.io.json.*;
@@ -180,7 +181,7 @@ public abstract class Transaction extends Inventory implements JsonSerializable 
 			} catch (Exception ex) {
 				throw new IllegalStateException(ex);
 			}
-            if (tx == null || !(tx instanceof RegisterTransaction)) { 
+            if (tx == null || !(tx instanceof RegisterTransaction)) {
             	throw new IllegalStateException();
             }
         }

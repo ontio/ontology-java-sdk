@@ -1,10 +1,9 @@
 package demo;
 
 import ontology.common.Helper;
-import ontology.core.InvokeCodeTransaction;
+import ontology.core.payload.InvokeCodeTransaction;
 import ontology.OntSdk;
 import ontology.sdk.info.RecordInfo;
-import ontology.sdk.info.account.AccountInfo;
 import ontology.sdk.wallet.Identity;
 import ontology.sdk.wallet.Wallet;
 import ontology.sdk.websocket.MsgQueue;

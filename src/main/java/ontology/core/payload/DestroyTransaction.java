@@ -1,4 +1,7 @@
-package ontology.core;
+package ontology.core.payload;
+
+import ontology.core.Transaction;
+import ontology.core.TransactionType;
 
 /**
  * 注销资产

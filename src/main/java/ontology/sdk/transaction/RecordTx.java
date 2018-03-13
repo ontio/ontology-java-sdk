@@ -2,6 +2,8 @@ package ontology.sdk.transaction;
 
 import ontology.common.Helper;
 import ontology.core.*;
+import ontology.core.payload.RecordTransaction;
+import ontology.core.payload.TransferTransaction;
 import ontology.core.scripts.Program;
 import ontology.OntSdk;
 import ontology.sdk.exception.Error;
@@ -42,7 +44,7 @@ public class RecordTx {
         innerMap.put("InnerTimestamp",nowTimeStamp);
         recordDataTimeStr = JSON.toJSONString(innerMap);
 
-        ontology.core.TransferTransaction conTx = new ontology.core.TransferTransaction();
+        TransferTransaction conTx = new TransferTransaction();
         //attri length limit
         int limit = 252;
 

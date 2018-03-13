@@ -6,6 +6,8 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import ontology.core.payload.RegisterTransaction;
+import ontology.core.payload.Vote;
 import org.bouncycastle.math.ec.ECPoint;
 
 import ontology.common.Fixed8;

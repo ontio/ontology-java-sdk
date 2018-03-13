@@ -10,10 +10,10 @@ import ontology.core.Block;
 import ontology.core.Blockchain;
 import ontology.core.BlockchainAbility;
 import ontology.core.Claimable;
-import ontology.core.RegisterTransaction;
+import ontology.core.payload.RegisterTransaction;
 import ontology.core.Transaction;
 import ontology.core.TransactionOutput;
-import ontology.core.Vote;
+import ontology.core.payload.Vote;
 
 public class RestBlockchain extends Blockchain {
 	private RestClient rest;

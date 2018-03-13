@@ -1,7 +1,9 @@
-package ontology.core;
+package ontology.core.payload;
 
 import java.io.IOException;
 
+import ontology.core.Transaction;
+import ontology.core.TransactionType;
 import ontology.io.BinaryReader;
 import ontology.io.BinaryWriter;
 

@@ -1,4 +1,4 @@
-package ontology.core;
+package ontology.core.payload;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -6,6 +6,11 @@ import java.util.HashSet;
 
 import ontology.common.Fixed8;
 import ontology.common.UInt160;
+import ontology.core.Blockchain;
+import ontology.core.Transaction;
+import ontology.core.TransactionResult;
+import ontology.core.TransactionType;
+import ontology.core.payload.RegisterTransaction;
 import ontology.io.BinaryReader;
 import ontology.io.BinaryWriter;
 
@@ -13,7 +18,7 @@ import ontology.io.BinaryWriter;
  *  分发资产交易
  *
  */
-public class IssueTransaction extends Transaction {	
+public class IssueTransaction extends Transaction {
 	public long nonce;
 	
 	public IssueTransaction() {

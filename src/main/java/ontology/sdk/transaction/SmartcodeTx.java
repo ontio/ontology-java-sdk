@@ -6,6 +6,8 @@ import ontology.core.*;
 import ontology.core.code.FunctionCode;
 import ontology.core.contract.Contract;
 import ontology.core.contract.ContractParameterType;
+import ontology.core.payload.DeployCodeTransaction;
+import ontology.core.payload.InvokeCodeTransaction;
 import ontology.core.scripts.Program;
 import ontology.core.scripts.ScriptBuilder;
 import ontology.OntSdk;
@@ -157,7 +159,7 @@ public class SmartcodeTx {
         return sb.toArray();
     }
     //smartcode
-    public DeployCodeTransaction makeDeployCodeTransaction(String codeStr,  boolean needStorage, String name, String codeVersion, String author, String email, String desp, ContractParameterType returnType) throws SDKException {
+    public DeployCodeTransaction makeDeployCodeTransaction(String codeStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp, ContractParameterType returnType) throws SDKException {
         DeployCodeTransaction tx = new DeployCodeTransaction();
         tx.attributes = new TransactionAttribute[1];
         tx.attributes[0] = new TransactionAttribute();
@@ -177,7 +179,7 @@ public class SmartcodeTx {
         return tx;
     }
 
-    public InvokeCodeTransaction makeInvokeCodeTransaction(String addr,String password,String codeHash,byte[] paramsHexStr) throws SDKException {
+    public InvokeCodeTransaction makeInvokeCodeTransaction(String addr, String password, String codeHash, byte[] paramsHexStr) throws SDKException {
         InvokeCodeTransaction tx = new InvokeCodeTransaction(sdk.getWalletMgr().getAccount(addr,password).publicKey);
         tx.attributes = new TransactionAttribute[2];
         tx.attributes[0] = new TransactionAttribute();

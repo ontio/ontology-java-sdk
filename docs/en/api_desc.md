@@ -2,15 +2,15 @@
 # 接口说明
 
 
-## SDK模块介绍
+## 模块介绍
 
-SDK主要功能是封装账号、交易、与节点通信，ontsdk类创建了功能管理实例，在Demo程序中举例如何使用ontsdk类。
+SDK主要功能是封装账号、交易、与节点通信，构造交易向链上ontsdk类创建了功能管理实例，在Demo程序中举例如何使用ontsdk类。
 
-### **demo文件夹**：
+### demo：
 
-不同类型的交易的使用demo
+* 不同类型的交易的使用demo
 
-### **ontology文件夹**：
+### ontology：
 
 * acount：账号相关操作，如生成公私钥
 * common：通用基础接口
@@ -65,8 +65,14 @@ SDK主要功能是封装账号、交易、与节点通信，ontsdk类创建了�
 希望了解更多钱包数据规范请参考[Wallet_File_Specification](https://github.com/ontio/opendoc/blob/master/resources/specifications/Wallet_File_Specification.md).
 
 ### 钱包使用
+* 打开钱包
+* 账号Account和身份Identity结构
+* 账号和身份管理
+* 链上身份
+* 声明Claim
+* 数字资产使用
 #### 1）打开钱包
-如果不存在钱包文件，会自动创建钱包。
+如果不存在钱包文件，会自动创建钱包文件。
 ```
 wm.openWalletFile("Demo3.json");
 ```

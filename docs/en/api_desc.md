@@ -2,6 +2,28 @@
 # 接口说明
 
 
+## SDK模块介绍
+
+SDK主要功能是封装账号、交易、与节点通信，ontsdk类创建了功能管理实例，在Demo程序中举例如何使用ontsdk类。
+
+### **demo文件夹**：
+
+不同类型的交易的使用demo
+
+### **ontology文件夹**：
+
+* acount：账号相关操作，如生成公私钥
+* common：通用基础接口
+* core：核心层，包括合约、交易、签名等
+* crypto：加密相关，如ECC SM
+* io：io操作
+* network：与链上restful或rpc接口通信接口
+* sdk：对底层做封装、Info信息、通信管理、UTXO管理、钱包文件管理、异常类。
+* ontsdk类：提供管理器和交易实例
+
+管理器：walletMgr、coinManager、connManager。walletMgr钱包管理器主要管理账户和身份，用户向链上发送交易需要钱包私钥做签名。coinManager主要是对UTXO做管理，比如用户未花费utxo。 connManager与链上通信管理。任何发送交易和查询都需要通过连接管理器。
+
+交易：OntIdTx（身份）、DataTx\(数据交易\)、AssetTx\(UTXO资产\)、RecordTx\(存证\)、SmartcodeTx（智能合约）。与链交互中可以构造不同类型的交易，这里将交易类型做分类，如果交易都是通过智能合约实现，那交易都会基于SmartcodeTx进行构造。
 
 ## 钱包管理
 
@@ -42,8 +64,370 @@
 
 希望了解更多钱包数据规范请参考[Wallet_File_Specification](https://github.com/ontio/opendoc/blob/master/resources/specifications/Wallet_File_Specification.md).
 
+### 钱包使用
+#### 1）打开钱包
+如果不存在钱包文件，会自动创建钱包。
+```
+wm.openWalletFile("Demo3.json");
+```
 
-### 创建新的数字身份和数字资产账户
+#### 2）账号Account和身份Identity结构
+
+
+##### **身份Identity**
+`ontid` 是代表身份的唯一的id
+`label` 是用户给身份所取的名称。
+`isDefault` 表明身份是用户默认的身份。默认值为false。
+`lock` 表明身份是否被用户锁定了。客户端不能更新被锁定的身份信息。默认值为false。
+`controls` 是身份的所有控制对象ControlData的数组。
+`extra` 是客户端开发者存储额外信息的字段。可以为null。
+```
+//Identity数据结构
+public class Identity {
+	public String label = "";
+	public String ontid = "";
+	public boolean isDefault = false;
+	public boolean lock = false;
+	public List<Control> controls = new ArrayList<Control>();
+}
+
+```
+`algorithm`是用来加密的算法名称。
+`parameters` 是加密算法所需参数。
+`curve` 是椭圆曲线的名称。
+`id` 是control的唯一标识。
+`key` 是NEP-2格式的私钥。该字段可以为null（对于只读地址或非标准地址时）。
+```
+public class Control {
+    public String algorithm = "ECDSA";
+    public Map parameters = new HashMap() ;
+    public String id = "";
+    public String key = "";
+}
+```
+##### **账号Account**
+`address` 是base58编码的账户地址。
+`label` 是账户的名称。
+`isDefault`表明账户是否是默认的账户。默认值为false。
+`lock` 表明账户是否是被用户锁住的。客户端不能消费掉被锁的账户中的资金。
+`algorithm` 是加密算法名称。
+`parameters` 是加密算法所需参数。
+`curve` 是椭圆曲线的名称。
+`key` 是NEP-2格式的私钥。该字段可以为null（对于只读地址或非标准地址）。
+`contract` 是智能合约对象。该字段可以为null（对于只读的账户地址）。
+`extra` 是客户端存储额外信息的字段。该字段可以为null。
+```
+public class Account {
+    public String label = "";
+    public String address = "";
+    public boolean isDefault = false;
+    public boolean lock = false;
+    public String algorithm = "";
+    public Map parameters = new HashMap() ;
+    public String key = "";
+    public Contract contract = new Contract();
+}
+```
+
+#### 3）账号和身份管理
+**创建账号或身份**
+```
+Account acct = ontSdk.getWalletMgr().createAccount("password");
+Identity identity = ontSdk.getWalletMgr().createIdentity("password");
+//创建的账号或身份只在内存中，如果要写入钱包文件，需调用写入接口
+ontSdk.getWalletMgr().writeWallet();
+```
+**导入账号或身份**
+当用户已经拥有了一个数字身份或者数字账户，SDK支持将其导入到Wallet中。
+
+**Note：** 建议导入一个数字身份之前，建议查询链上身份，如果链上身份DDO不存在，表示此数字身份未在链上注册，请使用ontSdk.getOntIdTx().register(identity)把身份注册到链上。
+
+```
+Identity identity = ontSdk.getWalletMgr().importIdentity("6PYMpk8DjWzaEvneyaqxMBap9DuUPH72W6BsWWTtpWE4JJZkGq5ENtfYbT","passwordtest");
+//写入钱包      
+ontSdk.getWalletMgr().writeWallet();
+```
+**移除账号或身份**
+```
+ontSdk.getWalletMgr().getWallet().removeAccount(address);
+ontSdk.getWalletMgr().getWallet().removeIdentity(ontid);
+//写入钱包 
+ontSdk.getWalletMgr().writeWallet();
+```
+**设置默认账号或身份**
+```
+ontSdk.getWalletMgr().getWallet().setDefaultIdentity(index);setDefaultAccount
+ontSdk.getWalletMgr().getWallet().setDefaultIdentity("ontid");
+
+ontSdk.getWalletMgr().getWallet().setDefaultAccount(index);
+ontSdk.getWalletMgr().getWallet().setDefaultAccount("address");
+```
+#### 4）链上身份
+**向链上注册身份**
+```
+ontSdk.getOntIdTx().register(identity,"passwordtest");
+或
+ontSdk.getOntIdTx().register("passwordtest");
+```
+**更新一个属性**
+```
+//更新一个属性
+String updateAttribute(String ontid,String password,byte[] key,byte[] type,byte[] value)
+```
+| 参数      | 字段   | 类型  | 描述 |             说明 |
+| ----- | ------- | ------ | ------------- | ----------- |
+| 输入参数 | password| String | 发行者地址 | 必选，私钥解密的密码 |
+|        | ontid    | String | 资产名称   | 必选，身份Id |
+|        | key    | byte[]  | key       | 必选，key |
+|        | type    | byte[] | 类型       |  必选，类型 |
+|        | value   | byte[] | value     | 必选，值 |
+| 输出参数 | txid   | String  | 交易编号  | 交易编号是64位字符串 |
+
+**查询链上身份**，链上身份将以DDO的形式存放，可以通过ONT ID进行查询。
+```
+//通过ONT ID获取DDO
+String ddo = ontSdk.getOntIdTx().getDDO(ontid,"passwordtest",ontid);
+
+//返回DDO格式
+{
+	"OntId": "did:ont:AMs5NFdXPgCgC7Dci1FdFttvD42HELoLxG",
+	"Attributes": {
+		"attri0": {
+			"Type": "String",
+			"Value": "\"value0\""
+		}
+	},
+	"Owners": [
+		{
+			"Type": "ECDSA",
+			"Value": "0392a4dbb2a44da81e0942cee1a62ff4298e04ed463b88911b97de19a1597fa83d"
+		}
+	]
+}
+
+```
+
+**验证用户签名**
+
+```
+ontSdk.getOntIdTx().verifySign(String reqOntid, String password, String ontid, byte[] data, byte[] signature);
+reqOntid和password 是发起查询的人的ontid和密码。
+```
+
+#### 5） 声明 Claim
+
+Claim 具有以下数据结构
+```
+{
+  unsignedData : string,
+  signedData : string,
+  context : string,
+  id : string,
+  claim : {},
+  metadata : Metadata,
+  signature : Signature
+}
+
+```
+`unsignedData` 是未被签名的声明对象的json格式字符串，声明对象包含Context, Id, Claim, Metadata这些字段。
+`signedData` 是声明对象被签名后的json格式字符串，该json包含声明对象和签名对象。
+`Context` 是声明模板的标识。
+`Id` 是声明对象的标识。
+`Claim` 是声明的内容。
+`Metadata` 是声明对象的元数据。
+
+##### Metadata 具有以下数据结构
+
+```
+{
+  createTime : datetime string
+  issuer : string,
+  subject : string,
+  expires : datetime string
+  revocation : string,
+  crl : string
+}
+
+```
+`createtime` 是声明的创建时间。
+`issuer` 是声明的发布者。
+`subject` 是声明的主语。
+`expires` 是声明的过期时间。
+`revocation` 是声明撤销方法。
+`crl` 是声明撤销列表的链接。
+
+
+##### Signature 具有以下数据结构
+
+```
+{
+	format : string,
+    algorithm : string,
+    value : string
+}
+format 是签名的格式。
+algorithm 是签名的算法。
+value 是计算后的签名值。
+```
+#####  构造声明对象的签名
+根据用户输入内容构造声明对象，该声明对象里包含了签名后的数据。
+```
+Map<String, Object> map = new HashMap<String, Object>();
+map.put("Issuer", dids.get(0).ontid);
+map.put("Subject", dids.get(1).ontid);
+String claim = ontSdk.getOntIdTx().createOntIdClaim("passwordtest","claim:context",map,map);
+System.out.println(claim);
+boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(dids.get(0).ontid,"passwordtest",claim);
+
+```
+
+#### 6）数字资产使用
+
+
+onttology资产智能合约abi文件，abi文件是对智能合约函数接口的描述，通过abi文件可以清楚如何传参：
+
+```
+{
+    "hash":"0xceab719b8baa2310f232ee0d277c061704541cfb",
+    "entrypoint":"Main",
+    "functions":
+    [
+        {
+            "name":"Main",
+            "parameters":
+            [
+                {
+                    "name":"operation",
+                    "type":"String"
+                },
+                {
+                    "name":"args",
+                    "type":"Array"
+                }
+            ],
+            "returntype":"Any"
+        },
+        {
+            "name":"Transfer",
+            "parameters":
+            [
+                {
+                    "name":"from",
+                    "type":"ByteArray"
+                },
+                {
+                    "name":"to",
+                    "type":"ByteArray"
+                },
+                {
+                    "name":"value",
+                    "type":"Integer"
+                }
+            ],
+            "returntype":"Boolean"
+        },
+        {
+            "name":"BalanceOf",
+            "parameters":
+            [
+                {
+                    "name":"address",
+                    "type":"ByteArray"
+                }
+            ],
+            "returntype":"Integer"
+        }
+    ],
+    "events":
+    [
+    ]
+}
+```
+
+如何通过调用ontology资产智能合约进行转账操作？
+
+```
+//step1:读取智能合约abi文件
+InputStream is = new FileInputStream("C:\\NeoContract1.abi.json");
+byte[] bys = new byte[is.available()];
+is.read(bys);
+is.close();
+String abi = new String(bys);
+
+//step2：解析abi文件
+AbiInfo abiinfo = JSON.parseObject(abi, AbiInfo.class);
+
+//step3：设置智能合约codehash
+ontSdk.setCodeHash(abiinfo.getHash());
+
+//step4：选择函数，设置函数参数
+AbiFunction func = abiinfo.getFunction("Transfer");
+System.out.println(func.getParameters());
+func.setParamsValue(param0.getBytes(),param1.getBytes(),param2.getBytes());
+
+//setp5：调用合约
+String hash = ontSdk.getSmartcodeTx().invokeTransaction("passwordtest",addr,func);
+```
+
+AbiInfo结构是怎样的？
+
+```
+public class AbiInfo {
+    public String hash;
+    public String entrypoint;
+    public List<AbiFunction> functions;
+    public List<AbiEvent> events;
+}
+public class AbiFunction {
+    public String name;
+    public String returntype;
+    public List<Parameter> parameters;
+}
+public class Parameter {
+    public String name;
+    public String type;
+    public String value;
+}
+```
+
+codehash是什么？
+
+```
+是对智能合约byte code做两次sha160，智能合约的唯一标识。
+```
+
+调用智能合约invokeTransaction的过程，sdk中具体做了什么？
+
+```
+//step1：构造交易
+//需先将智能合约参数转换成vm可识别的opcode
+Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(opcodes,codeHash,info.address,info.pubkey);
+
+//step2：对交易签名
+String txHex = sdk.getWalletMgr().signatureData(password,tx);
+
+//step3：发送交易
+sdk.getConnectMgr().sendRawTransaction(txHex);
+```
+
+invoke时为什么要传入账号和密码？
+
+```
+调用智能合约时需要用户签名，钱包中保存的是加密后的用户私钥，需要密码才能解密获取私钥。
+```
+
+查询资产操作时，智能合约预是怎么回事，如何使用？
+
+```
+如智能合约get相关操作，从智能合约存储空间里读取数据，无需走节点共识，只在该节点执行即可返回结果。
+发送交易时调用预执行接口
+String result = (String) sdk.getConnectMgr().sendRawTransactionPreExec(txHex);
+```
+
+
+## SDK使用DEMO
+列举sdk的几种功能demo
+#### 1）创建新的数字身份和数字资产账户
 
 ```
 //Step1 初始化
@@ -72,78 +456,11 @@ ontSdk.getOntIdTx().register(identity,"password");
 
 ```
 
-### 查询链上身份
-
-链上身份将以DDO的形式存放，可以通过ONT ID进行查询。
-```
-//通过ONT ID获取DDO
-String ddo = ontSdk.getOntIdTx().getDDO(ontid,"passwordtest",ontid);
-
-//返回DDO格式
-{
-	"OntId": "did:ont:AMs5NFdXPgCgC7Dci1FdFttvD42HELoLxG",
-	"Attributes": {
-		"attri0": {
-			"Type": "String",
-			"Value": "\"value0\""
-		}
-	},
-	"Owners": [
-		{
-			"Type": "ECDSA",
-			"Value": "0392a4dbb2a44da81e0942cee1a62ff4298e04ed463b88911b97de19a1597fa83d"
-		}
-	]
-}
-
-```
-
-### 导入数字身份和数字账户 
-
-当用户已经拥有了一个数字身份或者数字账户，SDK支持将其导入到Wallet中。
-
-**Note：** 建议导入一个数字身份之前，建议查询链上身份，如果链上身份DDO不存在，表示此数字身份未在链上注册，请使用ontSdk.getOntIdTx().register(identity)把身份注册到链上。
-
-```
-//导入数字身份和数字资产账户到Wallet
-Account account = ontSdk.getWalletMgr().importAccount("6PYMpk8DjWzaEvneyaqxMBap9DuUPH72W6BsWWTtpWE4JJZkGq5ENtfYbT","passwordtest");
-Identity identity = ontSdk.getWalletMgr().importIdentity("6PYMpk8DjWzaEvneyaqxMBap9DuUPH72W6BsWWTtpWE4JJZkGq5ENtfYbT","passwordtest");
-```
-
-### 验证用户签名
-
-```
-ontSdk.getOntIdTx().verifySign(String reqOntid, String password, String ontid, byte[] data, byte[] signature);
-reqOntid和password 是发起查询的人的ontid和密码。
-```
-
-### 设置为钱包默认数字身份
-
-```
-ontSdk.getWalletMgr().getWallet().setDefaultIdentity(3);
-//必须写入wallet，否则设置默认失败
-ontSdk.getWalletMgr().writeWallet(); 
-```
-
-
-## 链上身份管理
 
 
 
+#### 2）链上身份管理
 
-更新一个属性
-```
-//更新一个属性
-String updateAttribute(String ontid,String password,byte[] key,byte[] type,byte[] value)
-```
-| 参数      | 字段   | 类型  | 描述 |             说明 |
-| ----- | ------- | ------ | ------------- | ----------- |
-| 输入参数 | password| String | 发行者地址 | 必选，私钥解密的密码 |
-|        | ontid    | String | 资产名称   | 必选，身份Id |
-|        | key    | byte[]  | key       | 必选，key |
-|        | type    | byte[] | 类型       |  必选，类型 |
-|        | value   | byte[] | value     | 必选，值 |
-| 输出参数 | txid   | String  | 交易编号  | 交易编号是64位字符串 |
 
 Demo例子：
 ```
@@ -166,7 +483,7 @@ boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(ontid,"passwordtest",claim);
 ```
 
 
-## 存证管理
+#### 3)存证管理
 
 存证和查询存证。
 
@@ -180,10 +497,10 @@ Thread.sleep(6000);
 String result = ontSdk.getRecordTx().queryRecord(hash);
 ```
 
-## 智能合约
+#### 4)智能合约
+资产智能合约和ontid身份智能合约均可采用本例子调用。
 
-
-部署智能合约Demo例子：
+#### **部署智能合约Demo例子**：
 ```
 ontSdk.setCodeHash(Helper.getCodeHash(code));
 
@@ -206,7 +523,7 @@ DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getRawT
 |        | returnType   | ContractParameterType | 合约返回的数据类型     | 必选 |
 | 输出参数 | txid   | String  | 交易编号  | 交易编号是64位字符串 |
 
-调用智能合约Demo例子：
+#### **调用智能合约Demo例子**：
 读取智能合约的abi文件，构造调用智能合约函数，发送交易。
 ```
 //读取智能合约的abi文件
@@ -242,7 +559,7 @@ String hash = ontSdk.getSmartcodeTx().invokeTransaction(did.ontid,"passwordtest"
 //如果需要等待推送结果，需要启动websocket线程
 ```
 
-## 智能合约websocket推送event
+#### 5) 智能合约websocket推送event
 
 创建websocket线程，解析推送结果。
 
@@ -293,12 +610,9 @@ public static void waitResult(OntSdk ontSdk, Object lock){
 
 ```
 
-## 资产管理
+#### 6) UTXO资产管理
 
-通过传递资产的基本信息来产生一笔区块链上合法的资产，返回资产编号。
-
-
-查询账户信息
+**Note：** ontology资产属于智能合约资产，与UTXO资产接口不同。
 
 ```
 AccountInfo info = ontSdk.getOntAccount().createAccount("password");
@@ -338,7 +652,7 @@ String hashTransfer = ontSdk.getAssetTx().transferTransaction(acct1.address,"pas
 
 ```
 
-## 查询链上信息
+#### 7) 查询链上信息
 
 查询类操作。传递交易编号，返回交易具体信息。
 

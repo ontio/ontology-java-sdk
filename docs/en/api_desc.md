@@ -197,7 +197,9 @@ reqOntid和password 是发起查询的人的ontid和密码。
 ## 可信申明
 
 ### 数据结构和规范
+
 * Claim 具有以下数据结构
+
 ```
 {
   unsignedData : string,
@@ -210,6 +212,7 @@ reqOntid和password 是发起查询的人的ontid和密码。
 }
 
 ```
+
 `unsignedData` 是未被签名的声明对象的json格式字符串，声明对象包含Context, Id, Claim, Metadata这些字段。
 `signedData` 是声明对象被签名后的json格式字符串，该json包含声明对象和签名对象。
 `Context` 是声明模板的标识。
@@ -253,6 +256,7 @@ value 是计算后的签名值。
 
 ###  签发可信申明
 根据用户输入内容构造声明对象，该声明对象里包含了签名后的数据。
+
 ```
 Map<String, Object> map = new HashMap<String, Object>();
 map.put("Issuer", dids.get(0).ontid);
@@ -281,6 +285,7 @@ boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(dids.get(0).ontid,"passwordtest
 `key` 是NEP-2格式的私钥。该字段可以为null（对于只读地址或非标准地址）。
 `contract` 是智能合约对象。该字段可以为null（对于只读的账户地址）。
 `extra` 是客户端存储额外信息的字段。该字段可以为null。
+
 ```
 public class Account {
     public String label = "";
@@ -297,6 +302,7 @@ public class Account {
 ### **数字资产账户管理**
 
 **创建数字资产账号**
+
 ```
 Account acct = ontSdk.getWalletMgr().createAccount("password");
 //创建的账号或身份只在内存中，如果要写入钱包文件，需调用写入接口
@@ -312,13 +318,17 @@ Identity identity = ontSdk.getWalletMgr().importIdentity("6PYMpk8DjWzaEvneyaqxMB
 //写入钱包      
 ontSdk.getWalletMgr().writeWallet();
 ```
+
 **移除数字资产账号**
+
 ```
 ontSdk.getWalletMgr().getWallet().removeAccount(address);
 //写入钱包 
 ontSdk.getWalletMgr().writeWallet();
 ```
+
 **设置默认数字资产账号**
+
 ```
 ontSdk.getWalletMgr().getWallet().setDefaultAccount(index);
 ontSdk.getWalletMgr().getWallet().setDefaultAccount("address");

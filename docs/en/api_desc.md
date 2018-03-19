@@ -476,48 +476,6 @@ invoke时为什么要传入账号和密码？
 String result = (String) sdk.getConnectMgr().sendRawTransactionPreExec(txHex);
 ```
 
-## UTXO资产管理(是否废弃？)
-
-**Note：** ontology资产属于智能合约资产，与UTXO资产接口不同。
-
-```
-AccountInfo info = ontSdk.getOntAccount().createAccount("password");
-AccountInfo info2 = ontSdk.getOntAccount().getAccountInfo(info.address,"password");
-
-public class AccountInfo {
-	public String address;	// 合约地址
-	public String pubkey;	// 公钥
-	public String prikey;	// 私钥
-	public String priwif;	// 私钥 wif
-	public String encryptedprikey;//加密后的私钥
-	public String pkhash;	// 公钥hash
-}
-```
-
-
-Demo例子：
-```
-//获取账号
- AccountInfo acct0 = ontSdk.getWalletMgr().getAccountInfo(ontSdk.getWalletMgr().getAccounts().get(0).address,"passwordtest");
-AccountInfo acct1 = ontSdk.getWalletMgr().getAccountInfo(ontSdk.getWalletMgr().getAccounts().get(1).address,"passwordtest");
-System.out.println(acct0.address);
-//注册资产
-String hash = ontSdk.getAssetTx().registerTransaction(acct0.address,"passwordtest", "JF005", 1000000L, new Date().toString(), acct0.address);
-System.out.println(hash);
-
-Thread.sleep(6000);
-System.out.println(acct0.encryptedprikey);
-String assetid = hash;
-//签发
-String hashIssue = ontSdk.getAssetTx().issueTransaction(acct0.address,"passwordtest",assetid,100,acct0.address,"no");
-System.out.println(hashIssue);
-
-Thread.sleep(6000);
-//转账
-String hashTransfer = ontSdk.getAssetTx().transferTransaction(acct1.address,"passwordtest", assetid, 20L, acct0.address, "no");
-
-```
-
 
 ## 快速上手
 

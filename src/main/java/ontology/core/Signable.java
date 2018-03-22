@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 import ontology.account.KeyType;
+import ontology.common.Helper;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
@@ -39,7 +40,7 @@ public interface Signable extends Serializable {
      *  获得需要校验的脚本Hash值
      *  <returns>返回需要校验的脚本Hash值</returns>
      */
-    UInt160[] getScriptHashesForVerifying();
+    UInt160[] getAddressU160ForVerifying();
     
     default byte[] getHashData() {
     	try (ByteArrayOutputStream ms = new ByteArrayOutputStream()) {
@@ -60,10 +61,12 @@ public interface Signable extends Serializable {
 		}
 		ECDSASigner signer = new ECDSASigner();
     	signer.init(true, new ECPrivateKeyParameters(new BigInteger(1, account.privateKey), ECC.secp256r1));
-		BigInteger[] bi = signer.generateSignature(Digest.sha256(getHashData()));// dna
+		BigInteger[] bi = signer.generateSignature(Digest.sha256(Digest.sha256(Digest.sha256(getHashData()))));// dna
     	byte[] signature = new byte[64];
     	System.arraycopy(BigIntegers.asUnsignedByteArray(32, bi[0]), 0, signature, 0, 32);
     	System.arraycopy(BigIntegers.asUnsignedByteArray(32, bi[1]), 0, signature, 32, 32);
+		System.out.println("publicKey:"+ Helper.toHexString(account.publicKey.getEncoded(true)));
+		System.out.println("signature:"+ Helper.toHexString(signature));
     	return signature;
     }
     
@@ -86,3 +89,5 @@ public interface Signable extends Serializable {
     	return true;
     }
 }
+//00d1be6b3e520100000000000000006f210268f9f8ff314940dd6d068af67999c9fd87df729742714f93be0c4070681510550876616c7565733032056279746573036b65792a6469643a6f6e743a5451487a6a41344a69374b335a775841416f75624e71684e75724a4b58783177593555c10c41646441747472696275746501002435663137336437382d396165612d343334362d616463642d3436623936666164346639640101000000000000009d1f6b149ddd2324fdfc10992c8475648585a8c50000000000000000
+//00d1be6b3e520100000000000000006f210268f9f8ff314940dd6d068af67999c9fd87df729742714f93be0c4070681510550876616c7565733032056279746573036b65792a6469643a6f6e743a5451487a6a41344a69374b335a775841416f75624e71684e75724a4b58783177593555c10c41646441747472696275746501002435663137336437382d396165612d343334362d616463642d3436623936666164346639640101000000000000009d1f6b149ddd2324fdfc10992c8475648585a8c50000000000000000

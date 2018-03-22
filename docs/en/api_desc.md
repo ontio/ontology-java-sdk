@@ -314,7 +314,7 @@ ontSdk.getWalletMgr().writeWallet();
 > **Note：** 建议导入一个数字身份之前，建议查询链上身份，如果链上身份DDO不存在，表示此数字身份未在链上注册，请使用ontSdk.getOntIdTx().register(identity)把身份注册到链上。
 
 ```
-Identity identity = ontSdk.getWalletMgr().importIdentity("6PYMpk8DjWzaEvneyaqxMBap9DuUPH72W6BsWWTtpWE4JJZkGq5ENtfYbT","passwordtest");
+Account acct = ontSdk.getWalletMgr().importAccount("6PYMpk8DjWzaEvneyaqxMBap9DuUPH72W6BsWWTtpWE4JJZkGq5ENtfYbT","passwordtest");
 //写入钱包      
 ontSdk.getWalletMgr().writeWallet();
 ```
@@ -335,6 +335,11 @@ ontSdk.getWalletMgr().getWallet().setDefaultAccount("address");
 ```
 
 ### 数字资产使用
+通过sdk接口转账
+```
+//由转出方签名，钱包中必须要存在该转出方。
+String hash = ontSdk.getOntAssetTx().transfer(info1.address,"passwordtest",1,info2.address,"no");
+```
 
 ontology资产智能合约abi文件，abi文件是对智能合约函数接口的描述，通过abi文件可以清楚如何传参：
 

@@ -6,6 +6,7 @@ import ontology.account.KeyType;
 import ontology.core.contract.ContractParameterType;
 import ontology.sdk.info.account.AccountInfo;
 import ontology.sdk.wallet.Account;
+import ontology.sdk.wallet.Identity;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -28,7 +29,11 @@ public class Demo {
             ontSdk.getWalletMgr().getWallet().removeAccount(ontSdk.getWalletMgr().getWallet().getAccounts().get(0).address);
             ontSdk.getWalletMgr().writeWallet();
             System.out.println(ontSdk.getWalletMgr().getWallet());
+            ontSdk.getWalletMgr().getWallet().setName("name");
+
             System.exit(0);
+            Account acct = ontSdk.getWalletMgr().createAccount("password");
+            Identity identity = ontSdk.getWalletMgr().createIdentity("password");
             //Block block = ontSdk.getConnectManager().getBlock(757);
             System.out.println(ontSdk.getConnectMgr().getNodeCount());
           //  System.out.println(ontSdk.getConnectManager().getGenerateBlockTime());
@@ -46,8 +51,8 @@ public class Demo {
     }
 
     public static OntSdk getOntSdk() throws Exception {
-        String url = "http://54.222.182.88:20334";
-//        String url = "http://127.0.0.1:20334";
+//        String url = "http://54.222.182.88:20334";
+        String url = "http://127.0.0.1:20384";
 //        String url = "http://101.132.193.149:20334";
         OntSdk wm = OntSdk.getInstance();
         wm.setBlockChainConfig(url, "");

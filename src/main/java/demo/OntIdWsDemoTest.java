@@ -3,7 +3,6 @@ package demo;
 import ontology.common.Helper;
 import ontology.core.payload.InvokeCodeTransaction;
 import ontology.OntSdk;
-import ontology.sdk.info.RecordInfo;
 import ontology.sdk.wallet.Identity;
 import ontology.sdk.wallet.Wallet;
 import ontology.sdk.websocket.MsgQueue;
@@ -98,8 +97,7 @@ public class OntIdWsDemoTest {
             System.out.println();
             System.out.println("===============get Transaction, parse Attribute==================");
             InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getRawTransaction(hash);
-            RecordInfo info = ontSdk.getOntIdTx().parseAttribute(t.code);
-            System.out.println(info);
+
             System.exit(0);
 
         } catch (Exception e) {

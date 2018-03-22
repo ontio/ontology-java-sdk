@@ -9,8 +9,6 @@ import ontology.core.Transaction;
 import ontology.io.Serializable;
 import ontology.network.connect.AbstractConnector;
 import ontology.sdk.exception.Error;
-import ontology.sdk.info.asset.UTXOsInfo;
-import ontology.sdk.info.asset.UTXOInfo;
 
 import com.alibaba.fastjson.JSON;
 
@@ -157,33 +155,6 @@ public class RestClient extends AbstractConnector {
 	}
 
 	@Override
-	public String getAsset(String assetid) throws RestException {
-		String rs = rest.getAsset(authType, accessToken, assetid);
-		Result rr = JSON.parseObject(rs, Result.class);
-		if(rr.Error == 0) {
-			return rr.Result;
-		}
-		throw new RestException(to(rr));
-	}
-	@Override
-	public List<UTXOInfo> getUTXO(String address, String assetid) throws RestException {
-		String rs = rest.getUTXO(authType, accessToken, address, assetid);
-		Result rr = JSON.parseObject(rs, Result.class);
-		if(rr.Error == 0) {
-			return JSON.parseArray(rr.Result, UTXOInfo.class);
-		}
-		throw new RestException(to(rr));
-	}
-	@Override
-	public List<UTXOsInfo> getUTXOs(String address) throws RestException {
-		String rs = rest.getUTXOs(authType, accessToken, address);
-		Result rr = JSON.parseObject(rs, Result.class);
-		if(rr.Error == 0) {
-			return JSON.parseArray(rr.Result, UTXOsInfo.class);
-		}
-		throw new RestException(to(rr));
-	}
-	@Override
 	public long getBalance(String address,String assetid) throws RestException {
 		String rs = rest.getBalance(address, address, address,assetid);
 		Result rr = JSON.parseObject(rs, Result.class);
@@ -192,49 +163,13 @@ public class RestClient extends AbstractConnector {
 		}
 		throw new RestException(to(rr));
 	}
-	@Override
-	public String getStateUpdate(String namespace, String key) throws RestException {
-		String rs = rest.getStateUpdate(authType, accessToken, namespace, key);
-		Result rr = JSON.parseObject(rs, Result.class);
-		if(rr.Error == 0) {
-			return rr.Result;
-		}
-		throw new RestException(to(rr));
-	}
-	@Override
-	public String getIdentityUpdate(String method, String key) throws RestException {
-		String rs = rest.getIdentityUpdate(authType, accessToken, method, key);
-		Result rr = JSON.parseObject(rs, Result.class);
-		if(rr.Error == 0) {
-			return rr.Result;
-		}
-		throw new RestException(to(rr));
-	}
+
 	@Override
 	public String getDDO(String codehash, String ontid) throws RestException {
 		String rs = rest.getDDO(authType, accessToken, codehash, ontid);
 		Result rr = JSON.parseObject(rs, Result.class);
 		if(rr.Error == 0) {
 			return rr.Result;
-		}
-		throw new RestException(to(rr));
-	}
-
-	@Override
-	public boolean sendToIssService(String data) throws RestException {
-		String rs = rest.sendToIssService(data);
-		Result rr = JSON.parseObject(rs, Result.class);
-		if(rr.Error == 0) {
-			return true;
-		}
-		throw new RestException(to(rr));
-	}
-	@Override
-	public boolean sendToTrfService(String data) throws RestException {
-		String rs = rest.sendToTrfService(data);
-		Result rr = JSON.parseObject(rs, Result.class);
-		if(rr.Error == 0) {
-			return true;
 		}
 		throw new RestException(to(rr));
 	}

@@ -2,11 +2,12 @@ package ontology.sdk.transaction;
 
 import ontology.account.KeyType;
 import ontology.common.Helper;
+import ontology.core.VmType;
+import ontology.core.asset.Fee;
 import ontology.core.Transaction;
-import ontology.io.BinaryReader;
+import ontology.core.contract.Contract;
 import ontology.OntSdk;
 import ontology.sdk.exception.Error;
-import ontology.sdk.info.RecordInfo;
 import ontology.sdk.wallet.Identity;
 import ontology.sdk.claim.Claim;
 import ontology.core.DataSignature;
@@ -17,7 +18,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.bouncycastle.math.ec.ECPoint;
 
-import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -64,7 +64,10 @@ public class OntIdTx {
         tmp.add(ontid.getBytes());
         tmp.add(pk);
         list.add(tmp);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(sdk.getSmartcodeTx().createCodeParamsScript(list), codeHash, info.address, info.pubkey);
+        Fee[] fees = new Fee[1];
+        ECPoint publicKey = sdk.getWalletMgr().getPubkey(info.pubkey);
+        fees[0] = new Fee(1, Contract.addressFromPubKey(publicKey));
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(sdk.getSmartcodeTx().createCodeParamsScript(list), codeHash, info.address, info.pubkey, VmType.NEOVM.value(),fees);
         String txHex = sdk.getWalletMgr().signatureData(password, tx);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedprikey, info.address);
         sdk.getWalletMgr().writeWallet();
@@ -88,7 +91,10 @@ public class OntIdTx {
         tmp.add(ontid.getBytes());
         tmp.add(pk);
         list.add(tmp);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(sdk.getSmartcodeTx().createCodeParamsScript(list), codeHash, info.address, info.pubkey);
+        Fee[] fees = new Fee[1];
+        ECPoint publicKey = sdk.getWalletMgr().getPubkey(info.pubkey);
+        fees[0] = new Fee(1,Contract.addressFromPubKey(publicKey));
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(sdk.getSmartcodeTx().createCodeParamsScript(list), codeHash, info.address, info.pubkey,VmType.NEOVM.value(),fees);
         String txHex = sdk.getWalletMgr().signatureData(password, tx);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedprikey, info.address);
         sdk.getWalletMgr().writeWallet();
@@ -161,7 +167,10 @@ public class OntIdTx {
 
         tmp.add(Helper.addBytes(new byte[]{attriNum}, allAttrsBys));
         list.add(tmp);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(sdk.getSmartcodeTx().createCodeParamsScript(list), codeHash, info.address, info.pubkey);
+        Fee[] fees = new Fee[1];
+        ECPoint publicKey = sdk.getWalletMgr().getPubkey(info.pubkey);
+        fees[0] = new Fee(1,Contract.addressFromPubKey(publicKey));
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(sdk.getSmartcodeTx().createCodeParamsScript(list), codeHash, info.address, info.pubkey,VmType.NEOVM.value(),fees);
         String txHex = sdk.getWalletMgr().signatureData(password, tx);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedprikey, info.address);
         sdk.getWalletMgr().writeWallet();
@@ -170,22 +179,6 @@ public class OntIdTx {
             return null;
         }
         return identity;
-    }
-
-    public RecordInfo parseAttribute(byte[] code) throws Exception {
-        try (ByteArrayInputStream ms = new ByteArrayInputStream(code, 0, code.length - 0)) {
-            try (BinaryReader reader = new BinaryReader(ms)) {
-                reader.readVarBytes(); //pk
-                RecordInfo info = new RecordInfo();
-                info.value = new String(reader.readVarBytes2());
-                String type = new String(reader.readVarBytes());
-                info.key = new String(reader.readVarBytes());
-                info.ontid = new String(reader.readVarBytes());
-                reader.readBytes(2);//55c1
-                info.opreation = new String(reader.readVarBytes());
-                return info;
-            }
-        }
     }
 
     //通过guardian注册ontid
@@ -200,7 +193,10 @@ public class OntIdTx {
         li.add("CreateIdentityByGuardian".getBytes());
         li.add(did);
         li.add(guardianDid);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(sdk.getSmartcodeTx().createCodeParamsScript(li), codeHash, guardianAddr, info.pubkey);
+        Fee[] fees = new Fee[1];
+        ECPoint publicKey = sdk.getWalletMgr().getPubkey(info.pubkey);
+        fees[0] = new Fee(1,Contract.addressFromPubKey(publicKey));
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(sdk.getSmartcodeTx().createCodeParamsScript(li), codeHash, guardianAddr, info.pubkey,VmType.NEOVM.value(),fees);
         String txHex = sdk.getWalletMgr().signatureData(password, tx);
         boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, txHex);
         if (b) {
@@ -573,20 +569,6 @@ public class OntIdTx {
             return tx.hash().toString();
         }
         return null;
-    }
-
-    public RecordInfo parseRecord(byte[] code) throws Exception {
-        try (ByteArrayInputStream ms = new ByteArrayInputStream(code, 0, code.length - 0)) {
-            try (BinaryReader reader = new BinaryReader(ms)) {
-                RecordInfo info = new RecordInfo();
-                info.value = new String(reader.readVarBytes2());
-                info.key = new String(reader.readVarBytes());//path
-                info.ontid = new String(reader.readVarBytes());//did
-                reader.readBytes(2);//55c1
-                info.opreation = new String(reader.readVarBytes());//AddAttribute
-                return info;
-            }
-        }
     }
 
     //创建claim

@@ -9,12 +9,12 @@ import ontology.io.BinaryReader;
 import ontology.io.BinaryWriter;
 
 public class DeployCodeTransaction extends Transaction {
-	public FunctionCode code;
+	public byte[] code;
 	//public byte[] params;
 	public byte vmType;
 	public boolean needStorage;
 	public String name;
-	public String codeVersion;
+	public String version;
 	public String author;
 	public String email;
 	public String description;
@@ -29,15 +29,11 @@ public class DeployCodeTransaction extends Transaction {
 	@Override
 	protected void deserializeExclusiveData(BinaryReader reader) throws IOException {
 		try {
-			if(code == null){
-				code = new FunctionCode(null,null,null);
-			}
-			code.deserialize(reader);
-			//params = reader.readVarBytes();
 			vmType = reader.readByte();
+			code = reader.readVarBytes();
 			needStorage = reader.readBoolean();
 			name = reader.readVarString();
-			codeVersion = reader.readVarString();
+			version = reader.readVarString();
 			author = reader.readVarString();
 			email = reader.readVarString();
 			description = reader.readVarString();
@@ -49,12 +45,11 @@ public class DeployCodeTransaction extends Transaction {
 	}
 	@Override
 	protected void serializeExclusiveData(BinaryWriter writer) throws IOException {
-		code.serialize(writer);
-//		writer.writeVarBytes(params);
 		writer.writeByte(vmType);
+		writer.writeVarBytes(code);
 		writer.writeBoolean(needStorage);
 		writer.writeVarString(name);
-		writer.writeVarString(codeVersion);
+		writer.writeVarString(version);
 		writer.writeVarString(author);
 		writer.writeVarString(email);
 		writer.writeVarString(description);

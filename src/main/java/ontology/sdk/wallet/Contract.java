@@ -4,6 +4,7 @@ import ontology.core.contract.ContractParameterType;
 import com.alibaba.fastjson.JSON;
 
 public class Contract{
+    public String type;
     public String script;
     public ContractParameterType[] parameters;
     public boolean deployed;

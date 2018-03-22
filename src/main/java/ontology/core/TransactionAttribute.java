@@ -24,6 +24,7 @@ public class TransactionAttribute implements Serializable, JsonSerializable {
 	 * 描述
 	 */
 	public byte[] data;
+	public int size;
 	
 	/**
 	 * byte格式数据反序列化

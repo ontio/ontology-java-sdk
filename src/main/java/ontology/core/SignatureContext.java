@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import ontology.core.asset.Sig;
 import org.bouncycastle.math.ec.ECPoint;
 
 import ontology.common.Helper;
@@ -32,7 +33,7 @@ public class SignatureContext {
     /**
      *  要验证的脚本散列值
      */
-    public final UInt160[] scriptHashes;
+    public final UInt160[] addressU160;
     /**
      * 合约脚本代码
      */
@@ -63,10 +64,10 @@ public class SignatureContext {
     @SuppressWarnings("unchecked")
 	public SignatureContext(Signable signable) {
         this.signable = signable;
-        this.scriptHashes = signable.getScriptHashesForVerifying();
-        this.redeemScripts = new byte[scriptHashes.length][];
-        this.signatures = (Map<ECPoint, byte[]>[]) Array.newInstance(Map.class, scriptHashes.length);
-        this.completed = new boolean[scriptHashes.length];
+        this.addressU160 = signable.getAddressU160ForVerifying();
+        this.redeemScripts = new byte[addressU160.length][];
+        this.signatures = (Map<ECPoint, byte[]>[]) Array.newInstance(Map.class, addressU160.length);
+        this.completed = new boolean[addressU160.length];
     }
 
     /**
@@ -77,10 +78,10 @@ public class SignatureContext {
      *  <returns>返回签名是否已成功添加</returns>
      */
     public boolean add(Contract contract, ECPoint pubkey, byte[] signature) {
-        for (int i = 0; i < scriptHashes.length; i++) {
-            if (scriptHashes[i].equals(contract.scriptHash())) {
+        for (int i = 0; i < addressU160.length; i++) {
+            if (addressU160[i].equals(contract.scriptHash())) {
                 if (redeemScripts[i] == null) {
-                    redeemScripts[i] = contract.redeemScript;
+                    redeemScripts[i] = contract.addressU160;
                 }
                 if (signatures[i] == null) {
                 	signatures[i] = new HashMap<ECPoint, byte[]>();
@@ -116,6 +117,25 @@ public class SignatureContext {
 	            scripts[i].parameter = sb.toArray();		// sign
 	            scripts[i].code = redeemScripts[i];	// pk
             }
+        }
+        return scripts;
+    }
+
+    public Sig[] getSigs() {
+        if (!isCompleted()) {
+            throw new IllegalStateException();
+        }
+        Sig[] scripts = new Sig[signatures.length];
+        for (int i = 0; i < scripts.length; i++) {
+                scripts[i] = new Sig();
+                scripts[i].M++;
+                scripts[i].pubKeys = new ECPoint[signatures[i].size()];
+                scripts[i].sigData = new byte[signatures[i].size()][];
+                int j = 0;
+                for (Map.Entry e:signatures[i].entrySet()){
+                    scripts[i].pubKeys[j] = (ECPoint) e.getKey();
+                    scripts[i].sigData[j++] = (byte[])e.getValue();
+                }
         }
         return scripts;
     }

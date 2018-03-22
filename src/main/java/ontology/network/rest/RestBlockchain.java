@@ -9,10 +9,7 @@ import ontology.common.UInt256;
 import ontology.core.Block;
 import ontology.core.Blockchain;
 import ontology.core.BlockchainAbility;
-import ontology.core.Claimable;
-import ontology.core.payload.RegisterTransaction;
 import ontology.core.Transaction;
-import ontology.core.TransactionOutput;
 import ontology.core.payload.Vote;
 
 public class RestBlockchain extends Blockchain {
@@ -81,11 +78,6 @@ public class RestBlockchain extends Blockchain {
 		return false;
 	}
 
-	@Override
-	public Stream<RegisterTransaction> getAssets() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public UInt256[] getLeafHeaderHashes() {
@@ -115,19 +107,6 @@ public class RestBlockchain extends Blockchain {
 	public long getSysFeeAmount(UInt256 hash) {
 		// TODO Auto-generated method stub
 		return 0;
-	}
-
-	@Override
-	public Map<Short, Claimable> getUnclaimed(UInt256 hash) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public TransactionOutput getUnspent(UInt256 hash, int index)
-			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

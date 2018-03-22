@@ -140,7 +140,7 @@ public class WalletMgr {
         byte[] prikey = Helper.hexToBytes(prikeyStr);
         Acct acct = createAccount(password, prikey, false);
         AccountInfo info = new AccountInfo();
-        info.address = ontology.core.contract.Contract.createSignatureContract(acct.publicKey).address();
+        info.address = ontology.core.contract.Contract.addressFromPubKey(acct.publicKey).toBase58();
         info.pubkey = Helper.toHexString(acct.publicKey.getEncoded(true));
         info.setPrikey(Helper.toHexString(acct.privateKey));
         info.setPriwif(acct.export());
@@ -152,7 +152,7 @@ public class WalletMgr {
     private AccountInfo createIdentity(String password, byte[] prikey) {
         Acct acct = createAccount(password, prikey, false);
         AccountInfo info = new AccountInfo();
-        info.address = ontology.core.contract.Contract.createSignatureContract(acct.publicKey).address();
+        info.address = ontology.core.contract.Contract.addressFromPubKey(acct.publicKey).toBase58();
         info.pubkey = Helper.toHexString(acct.publicKey.getEncoded(true));
         info.setPrikey(Helper.toHexString(acct.privateKey));
         info.setPriwif(acct.export());
@@ -173,6 +173,10 @@ public class WalletMgr {
         AccountInfo info = createAccount(password, ECC.generateKey());
         return getAccount(info.address);
     }
+    public Account createAccountFromPrikey(String password,String prikey) {
+        AccountInfo info = createAccount(password, Helper.hexToBytes(prikey));
+        return getAccount(info.address);
+    }
 
     public AccountInfo createAccountInfo(String password) {
         AccountInfo info = createAccount(password, ECC.generateKey());
@@ -182,7 +186,7 @@ public class WalletMgr {
     private AccountInfo createAccount(String password, byte[] prikey) {
         Acct acct = createAccount(password, prikey, true);
         AccountInfo info = new AccountInfo();
-        info.address = ontology.core.contract.Contract.createSignatureContract(acct.publicKey).address();
+        info.address = ontology.core.contract.Contract.addressFromPubKey(acct.publicKey).toBase58();
         info.pubkey = Helper.toHexString(acct.publicKey.getEncoded(true));
         info.setPrikey(Helper.toHexString(acct.privateKey));
         info.setPriwif(acct.export());
@@ -236,7 +240,8 @@ public class WalletMgr {
         }
         boolean sign = sign(password, context);
         if (sign && context.isCompleted()) {
-            tx.scripts = context.getScripts();
+           // tx.scripts = context.getScripts();
+            tx.sigs = context.getSigs();
         } else {
             throw new SDKException(Error.getDescSigIncomplete("Signature incompleted"));
         }
@@ -274,10 +279,10 @@ public class WalletMgr {
         if (!ParamCheck.isValidAddress(address)) {
             throw new SDKException(Error.getDescAddrError(String.format("%s=%s", "address", address)));
         }
-        return getAccountByScriptHash( Common.toScriptHash(address),password);
+        return getAccountByScriptHash( UInt160.decodeBase58(address),password);
     }
 
-    public Acct createAccount(String password, String prikey) {
+    private Acct createAccount(String password, String prikey) {
         return createAccount(password, Helper.hexToBytes(prikey), true);
     }
 
@@ -315,7 +320,7 @@ public class WalletMgr {
         }
         AccountInfo info = new AccountInfo();
         ontology.core.contract.Contract con = getContract(address,password);
-        Acct acc = getAccountByScriptHash(Common.toScriptHash(address),password);
+        Acct acc = getAccountByScriptHash(UInt160.decodeBase58(address),password);
         info.address = con.address();
         info.pubkey = Helper.toHexString(acc.publicKey.getEncoded(true));
         info.setPrikey(Helper.toHexString(acc.privateKey));
@@ -378,10 +383,11 @@ public class WalletMgr {
         } else {
             at.key = Helper.toHexString(account.privateKey);
         }
-        at.address = ontology.core.contract.Contract.createSignatureContract(account.publicKey).address();
         ontology.core.contract.Contract c = ontology.core.contract.Contract.createSignatureContract(account.publicKey);
+        at.address = c.address();
         at.contract = new Contract();
-        at.contract.script = Helper.toHexString(c.redeemScript);
+        at.contract.type = "neovm";
+        at.contract.script = Helper.toHexString(c.addressU160);
         at.contract.parameters = c.parameterList;
         if (saveAccountFlag) {
             for (Account e : wallet.getAccounts()) {
@@ -441,18 +447,19 @@ public class WalletMgr {
                     }
                     Acct account = new Acct(Helper.hexToBytes(prikey), Algrithem);
                     ontology.core.contract.Contract c = ontology.core.contract.Contract.createSignatureContract(account.publicKey);
-                    return ontology.core.contract.Contract.create(new UInt160(), c.parameterList, Helper.hexToBytes(Helper.toHexString(c.redeemScript)));
+                    return ontology.core.contract.Contract.create(new UInt160(), c.parameterList, Helper.hexToBytes(Helper.toHexString(c.addressU160)));
                 }
             }
         } catch (Exception e) {
             throw new AccountException(Error.getDescArgError("getContract err"), e);
         }
+        System.out.println("==========="+addr);
         throw new AccountException(Error.getDescArgError("getContract err"));
     }
 
     private ontology.core.contract.Contract getContract(UInt160 scriptHash,String password) {
         try {
-            return getContract(Common.toAddress(scriptHash),password);
+            return getContract(scriptHash.toBase58(),password);
         } catch (Exception e) {
             throw new AccountException(Error.getDescDatabaseError("getContract err"), e);
         }
@@ -480,7 +487,7 @@ public class WalletMgr {
     private Acct getAccountByScriptHash(UInt160 scriptHash,String password) {
         try {
             for (Account e : wallet.getAccounts()) {
-                if (e.address.equals(Common.toAddress(scriptHash))) {
+                if (e.address.equals(scriptHash.toBase58())) {
                     String prikey = (String) acctPriKeyMap.get(e.address+","+password);
                     if (prikey == null ) {
                         prikey = Acct.getPrivateKey(e.key, password);
@@ -491,7 +498,7 @@ public class WalletMgr {
             }
 
             for (Identity e : wallet.getIdentities()) {
-                if (e.ontid.equals("did:ont:" + Common.toAddress(scriptHash))) {
+                if (e.ontid.equals("did:ont:" + scriptHash.toBase58())) {
                     String prikey = (String) identityPriKeyMap.get(e.ontid+","+password);
                     if (prikey == null ) {
                         prikey = Acct.getPrivateKey(e.controls.get(0).key, password);
@@ -509,8 +516,10 @@ public class WalletMgr {
     // 签名
     public boolean sign(String password, SignatureContext context) {
         boolean fSuccess = false;
-        for (UInt160 scriptHash : context.scriptHashes) {
+        int i = 0;
+        for (UInt160 scriptHash : context.addressU160) {
             ontology.core.contract.Contract contract = getContract(scriptHash,password);
+
             if (contract == null) {
                 continue;
             }

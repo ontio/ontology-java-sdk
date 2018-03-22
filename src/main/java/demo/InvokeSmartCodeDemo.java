@@ -32,12 +32,12 @@ public class InvokeSmartCodeDemo {
             print(String.format("ConnectParam wsUrl=[%s, %s]", wsUrl, ""));
 
             Object lock = new Object();
-            WsProcess.startWebsocketThread(lock,wsUrl,true);
+//            WsProcess.startWebsocketThread(lock,wsUrl,true);
 
             //等待ws 的session uuid，发送请求后，可以指定 推送给websocket客户端
-            String wsUUID = waitUserid(ontSdk,lock);
-            System.out.println("wsSessionID:"+wsUUID);
-            ontSdk.setWsSessionId(wsUUID);
+//            String wsUUID = waitUserid(ontSdk,lock);
+//            System.out.println("wsSessionID:"+wsUUID);
+//            ontSdk.setWsSessionId(wsUUID);
 
             InputStream is = new FileInputStream("C:\\ZX\\NeoContract1.abi.json");
             byte[] bys = new byte[is.available()];
@@ -61,6 +61,10 @@ public class InvokeSmartCodeDemo {
                 //waitResult(ontSdk, lock);
             }
             Identity did = ontSdk.getWalletMgr().getIdentitys().get(0);
+
+//            String ddo = ontSdk.getOntIdTx().getDDO(did.ontid,"passwordtest",did.ontid);
+//            System.out.println("Ddo内容:"+ddo);
+//            System.exit(0);
             AccountInfo info = ontSdk.getWalletMgr().getAccountInfo(did.ontid,"passwordtest");
 
             AbiFunction func = abiinfo.getFunction("AddAttribute");
@@ -69,16 +73,16 @@ public class InvokeSmartCodeDemo {
             System.out.println(func);
 
             ontSdk.setCodeHash(abiinfo.getHash());
-            String hash = ontSdk.getSmartcodeTx().invokeTransaction(did.ontid,"passwordtest",func);
+            String hash = ontSdk.getSmartcodeTx().invokeTransaction(did.ontid,"passwordtest",func,(byte)0x80);
 
             System.out.println("invokeTransaction hash:"+hash);
-            List listResult = waitResult(ontSdk, lock);
-            System.out.println(listResult);
+//            List listResult = waitResult(ontSdk, lock);
+//            System.out.println(listResult);
 
             //Transaction tx = ontSdk.getConnectManager().getRawTransaction(hash);
-//            Thread.sleep(6000);
-            String ddo = ontSdk.getOntIdTx().getDDO(did.ontid,"passwordtest",did.ontid);
-            System.out.println("Ddo内容:"+ddo);
+            Thread.sleep(6000);
+//            String ddo = ontSdk.getOntIdTx().getDDO(did.ontid,"passwordtest",did.ontid);
+//            System.out.println("Ddo内容:"+ddo);
             //System.out.println(tx);
 
 
@@ -144,7 +148,7 @@ public class InvokeSmartCodeDemo {
     }
     public static OntSdk getOntSdk() throws Exception {
 //        String url = "http://54.222.182.88:22334";
-        String url = "http://127.0.0.1:20334";
+        String url = "http://127.0.0.1:20384";
 //        String url = "http://101.132.193.149:21334";
         OntSdk wm = OntSdk.getInstance();
         wm.setBlockChainConfig(url);
@@ -152,7 +156,7 @@ public class InvokeSmartCodeDemo {
 
         print(String.format("ConnectParam=[%s, %s]", url, ""));
         //设置 ontid合约hash
-        wm.setCodeHash("89ff0f39193ddaeeeab9de4873b549f71bbe809c");
+        wm.setCodeHash("263dbc0ca10aec184ceced7a998106733852c28a");
         return wm;
     }
 }

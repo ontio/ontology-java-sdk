@@ -226,7 +226,7 @@ public class Block extends Inventory implements JsonSerializable {
      * 获取验证脚本
      */
     @Override 
-    public UInt160[] getScriptHashesForVerifying() {
+    public UInt160[] getAddressU160ForVerifying() {
         if (prevBlock.equals(UInt256.ZERO)) {
             return new UInt160[] { Program.toScriptHash(script.parameter) };
         }

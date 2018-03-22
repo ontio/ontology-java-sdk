@@ -52,9 +52,9 @@ public class DataSignature extends Inventory {
     }
 
     @Override
-    public UInt160[] getScriptHashesForVerifying() {
+    public UInt160[] getAddressU160ForVerifying() {
         HashSet<UInt160> hashes = new HashSet<UInt160>();
-        hashes.add(Program.toScriptHash(Contract.createSignatureRedeemScript(acct.publicKey)));
+        hashes.add(Contract.addressFromPubKey(acct.publicKey));
         return hashes.stream().sorted().toArray(UInt160[]::new);
     }
 

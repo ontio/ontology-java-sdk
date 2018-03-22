@@ -5,8 +5,6 @@ import java.util.List;
 
 import ontology.core.Block;
 import ontology.core.Transaction;
-import ontology.sdk.info.asset.UTXOsInfo;
-import ontology.sdk.info.asset.UTXOInfo;
 
 public interface IConnector {
 
@@ -23,16 +21,10 @@ public interface IConnector {
 	public Block getBlock(String hash) throws ConnectorException, IOException ;
 
 	public void updateToken(String token);
-	public String getAsset(String assetid) throws ConnectorException, IOException ;
-	public List<UTXOInfo> getUTXO(String address, String assetid) throws ConnectorException, IOException;
-	public List<UTXOsInfo> getUTXOs(String address) throws ConnectorException, IOException;
-	public long getBalance(String address,String assetid) throws ConnectorException, IOException;
-	public String getStateUpdate(String namespace, String key) throws ConnectorException, IOException;
-	public String getIdentityUpdate(String method, String key) throws ConnectorException, IOException;
-	public String getDDO(String codehash, String ontid) throws ConnectorException, IOException;
 
-	public boolean sendToIssService(String data) throws ConnectorException, IOException;
-	public boolean sendToTrfService(String data) throws ConnectorException, IOException;
+	public long getBalance(String address,String assetid) throws ConnectorException, IOException;
+
+	public String getDDO(String codehash, String ontid) throws ConnectorException, IOException;
 	
 	public String getRawTransactionJson(String txid) throws ConnectorException, IOException;
 	public String getBlockJson(int height) throws ConnectorException, IOException;

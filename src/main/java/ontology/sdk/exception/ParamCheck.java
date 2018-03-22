@@ -1,7 +1,5 @@
 package ontology.sdk.exception;
 
-import ontology.sdk.info.mutil.TxJoiner;
-
 import java.lang.*;
 import java.util.List;
 
@@ -94,22 +92,5 @@ public class ParamCheck {
 		}
 	}
 
-	public static void checkIssueAndTransferParameterList(String sendAddr, List<TxJoiner> list, String desc) throws SDKException {
-		if (!ParamCheck.isNotEmptyOrNull(sendAddr) || list == null || list.size() == 0) {
-			throw new SDKException(Error.getDescArgError(String.format("%s=%s,%s=%s", "sendAddr", sendAddr, "recvList", list)));
-		}
-		if (!ParamCheck.isValidAddress(sendAddr)) {
-			throw new SDKException(Error.getDescAddrError(String.format("%s=%s", "sendAddr", sendAddr)));
-		}
-		if (!ParamCheck.isValidAddress(list.stream().map(p -> p.address).toArray(String[]::new))) {
-			throw new SDKException(Error.getDescAddrError(String.format("%s=%s", "recvList", list)));
-		}
-		if (list.stream().filter(p -> ParamCheck.isValidAmount(p.value)).count() != list.size()) {
-			throw new SDKException(Error.getDescAmountError(String.format("%s=%s", "recvList", list)));
-		}
-		if (!ParamCheck.isValidAssetId(list.stream().map(p -> p.assetid).toArray(String[]::new))) {
-			throw new SDKException(Error.getDescAssetIdError(String.format("%s=%s", "recvList", list)));
-		}
-	}
 }
 

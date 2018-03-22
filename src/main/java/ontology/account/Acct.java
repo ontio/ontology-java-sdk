@@ -81,8 +81,8 @@ public class Acct {
         int N = 16384;
         int r = 8;
         int p = 8;
-        UInt160 script_hash = Program.toScriptHash(Contract.createSignatureRedeemScript(publicKey));
-        String address = Common.toAddress(script_hash);
+        UInt160 script_hash = Contract.addressFromPubKey(publicKey);
+        String address = script_hash.toBase58();
 
         byte[] addresshashTmp = Digest.sha256(Digest.sha256(address.getBytes())) ;
         byte[] addresshash =  Arrays.copyOfRange(addresshashTmp, 0, 4);
@@ -165,8 +165,8 @@ public class Acct {
 
         String priKey = Helper.toHexString(XOR(rawkey, derivedhalf1));
         Acct account = new Acct(Helper.hexToBytes(priKey),"" );
-        UInt160 script_hash = Program.toScriptHash(Contract.createSignatureRedeemScript(account.publicKey));
-        String address = Common.toAddress(script_hash);
+        UInt160 script_hash = Contract.addressFromPubKey(account.publicKey);
+        String address = script_hash.toBase58();
         byte[] addresshashTmp = Digest.sha256(Digest.sha256(address.getBytes())) ;
         byte[] addresshashNew =  Arrays.copyOfRange(addresshashTmp, 0, 4);
 

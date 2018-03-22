@@ -14,7 +14,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 public class InvokeCodeTransaction extends Transaction {
-	public UInt160 codeHash;
+//	public UInt160 codeHash;
+	public long gasLimit;
+	public byte vmType;
 	public byte[] code;
 	//public UInt160 programHash;
 	public ECPoint invoker;
@@ -29,25 +31,25 @@ public class InvokeCodeTransaction extends Transaction {
 	@Override
 	protected void deserializeExclusiveData(BinaryReader reader) throws IOException {
 		try {
-			codeHash = reader.readSerializable(UInt160.class);
+			gasLimit = reader.readLong();
+			vmType = reader.readByte();
 			code = reader.readVarBytes();
 			//programHash = reader.readSerializable(UInt160.class);
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	@Override
 	protected void serializeExclusiveData(BinaryWriter writer) throws IOException {
-		writer.writeSerializable(codeHash);
+		writer.writeLong(gasLimit);
+		writer.writeByte(vmType);
 		writer.writeVarBytes(code);
 		//writer.writeSerializable(programHash);
 	}
 	@Override
-	public UInt160[] getScriptHashesForVerifying() {
-		HashSet<UInt160> hashes = new HashSet<UInt160>(Arrays.asList(super.getScriptHashesForVerifying()));
-		hashes.add(Program.toScriptHash(Contract.createSignatureRedeemScript(invoker)));
+	public UInt160[] getAddressU160ForVerifying() {
+		HashSet<UInt160> hashes = new HashSet<UInt160>(Arrays.asList(super.getAddressU160ForVerifying()));
+		hashes.add(Contract.addressFromPubKey(invoker));
 		return hashes.stream().sorted().toArray(UInt160[]::new);
 	}
 }

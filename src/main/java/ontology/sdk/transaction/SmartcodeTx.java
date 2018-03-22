@@ -1,14 +1,12 @@
 package ontology.sdk.transaction;
 
 import ontology.common.Helper;
-import ontology.common.UInt160;
 import ontology.core.*;
-import ontology.core.code.FunctionCode;
+import ontology.core.asset.Fee;
 import ontology.core.contract.Contract;
 import ontology.core.contract.ContractParameterType;
 import ontology.core.payload.DeployCodeTransaction;
 import ontology.core.payload.InvokeCodeTransaction;
-import ontology.core.scripts.Program;
 import ontology.core.scripts.ScriptBuilder;
 import ontology.OntSdk;
 import ontology.sdk.exception.Error;
@@ -46,13 +44,13 @@ public class SmartcodeTx {
     public String getWsSessionId(){
         return wsSessionId;
     }
-    public String invokeTransaction(String ontid,String password,AbiFunction abiFunction) throws Exception {
-        return (String)invokeTransaction(false,ontid,password,abiFunction);
+    public String invokeTransaction(String ontid,String password,AbiFunction abiFunction,byte vmtype) throws Exception {
+        return (String)invokeTransaction(false,ontid,password,abiFunction,vmtype);
     }
-    public Object invokeTransactionPreExec(String ontid,String password,AbiFunction abiFunction) throws Exception {
-        return invokeTransaction(true,ontid,password,abiFunction);
+    public Object invokeTransactionPreExec(String ontid,String password,AbiFunction abiFunction,byte vmtype) throws Exception {
+        return invokeTransaction(true,ontid,password,abiFunction,vmtype);
     }
-    public Object invokeTransaction(boolean preExec,String ontid,String password,AbiFunction abiFunction) throws Exception {
+    public Object invokeTransaction(boolean preExec,String ontid,String password,AbiFunction abiFunction,byte vmtype) throws Exception {
         if(codeHash == null){
             throw new SDKException(Error.getDescArgError("null codeHash"));
         }
@@ -80,8 +78,13 @@ public class SmartcodeTx {
             }
         }
         list.add(tmp);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(sdk.getSmartcodeTx().createCodeParamsScript(list),codeHash,info.address,info.pubkey);
+        Fee[] fees = new Fee[1];
+        ECPoint publicKey = sdk.getWalletMgr().getPubkey(info.pubkey);
+        fees[0] = new Fee(1,Contract.addressFromPubKey(publicKey));
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(sdk.getSmartcodeTx().createCodeParamsScript(list),codeHash,info.address,info.pubkey,vmtype,fees);
         String txHex = sdk.getWalletMgr().signatureData(password,tx);
+        System.out.println("sigData[0]:"+Helper.toHexString(tx.sigs[0].pubKeys[0].getEncoded(true)));
+        System.out.println(txHex);
         boolean b = false;
         if(preExec){
             return sdk.getConnectMgr().sendRawTransactionPreExec(txHex);
@@ -93,12 +96,14 @@ public class SmartcodeTx {
         }
         return tx.hash().toString();
     }
-    public String DeployCodeTransaction(String codeHexStr,boolean needStorage, String name, String codeVersion, String author, String email, String desp, String returnType) throws Exception {
+
+    public String DeployCodeTransaction(String codeHexStr,boolean needStorage, String name, String codeVersion, String author, String email, String desp, byte vmtype) throws Exception {
         //AccountInfo info = sdk.getOepMgr().getAccountInfo(ontid,password);
         //ContractParameterType.valueOf("Boolean")
-        Transaction tx = makeDeployCodeTransaction(codeHexStr, needStorage, name ,codeVersion, author, email, desp, ContractParameterType.valueOf(returnType));
+        Transaction tx = makeDeployCodeTransaction(codeHexStr, needStorage, name ,codeVersion, author, email, desp, vmtype);
 
         String txHex = sdk.getWalletMgr().signatureData(tx);
+        System.out.println(txHex);
         boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId,txHex);
         if(!b){
             throw new SDKException(Error.getDescArgError("sendRawTransaction error"));
@@ -159,17 +164,15 @@ public class SmartcodeTx {
         return sb.toArray();
     }
     //smartcode
-    public DeployCodeTransaction makeDeployCodeTransaction(String codeStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp, ContractParameterType returnType) throws SDKException {
+    public DeployCodeTransaction makeDeployCodeTransaction(String codeStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp, byte vmtype) throws SDKException {
         DeployCodeTransaction tx = new DeployCodeTransaction();
         tx.attributes = new TransactionAttribute[1];
         tx.attributes[0] = new TransactionAttribute();
         tx.attributes[0].usage = TransactionAttributeUsage.Nonce;
         tx.attributes[0].data = UUID.randomUUID().toString().getBytes();//Common.generateKey64Bit();
-        tx.inputs = new TransactionInput[0];
-        tx.outputs = new TransactionOutput[0];
-        tx.code = new FunctionCode(Helper.hexToBytes(codeStr), new ContractParameterType[]{ContractParameterType.ByteArray, ContractParameterType.ByteArray}, returnType);
-        tx.codeVersion = codeVersion;
-        tx.vmType = (byte)0;
+        tx.code = Helper.hexToBytes(codeStr);//new FunctionCode(Helper.hexToBytes(codeStr), new ContractParameterType[]{ContractParameterType.ByteArray, ContractParameterType.ByteArray}, returnType);
+        tx.version = codeVersion;
+        tx.vmType = vmtype;
         tx.needStorage = needStorage;
         tx.name = name;
         tx.author = author;
@@ -187,27 +190,29 @@ public class SmartcodeTx {
         tx.attributes[0].data = UUID.randomUUID().toString().getBytes();//Common.generateKey64Bit();
         tx.attributes[1] = new TransactionAttribute();
         tx.attributes[1].usage = TransactionAttributeUsage.Script;
-        tx.attributes[1].data = Program.toScriptHash(Contract.createSignatureRedeemScript(sdk.getWalletMgr().getAccount(addr,password).publicKey)).toArray();
-        tx.inputs = new TransactionInput[0];
-        tx.outputs = new TransactionOutput[0];
+        tx.attributes[1].data = Contract.addressFromPubKey(sdk.getWalletMgr().getAccount(addr,password).publicKey).toArray();
         tx.code = paramsHexStr;
-        tx.codeHash = new UInt160(Helper.hexToBytes(codeHash));
+        tx.gasLimit = 1;
+        //tx.codeHash = new UInt160(Helper.hexToBytes(codeHash));
         return tx;
     }
-    public InvokeCodeTransaction makeInvokeCodeTransaction(byte[] paramsHexStr, String codeHash, String addr,String pubkey) throws SDKException {
+    public InvokeCodeTransaction makeInvokeCodeTransaction(byte[] paramsHexStr, String codeHash, String addr,String pubkey,byte vmtype,Fee[] fees) throws SDKException {
         ECPoint publicKey = sdk.getWalletMgr().getPubkey(pubkey);
         InvokeCodeTransaction tx = new InvokeCodeTransaction(publicKey);
-        tx.attributes = new TransactionAttribute[2];
+        tx.attributes = new TransactionAttribute[1];
         tx.attributes[0] = new TransactionAttribute();
         tx.attributes[0].usage = TransactionAttributeUsage.Nonce;
         tx.attributes[0].data = UUID.randomUUID().toString().getBytes();//Common.generateKey64Bit();
-        tx.attributes[1] = new TransactionAttribute();
-        tx.attributes[1].usage = TransactionAttributeUsage.Script;
-        tx.attributes[1].data = Program.toScriptHash(Contract.createSignatureRedeemScript(publicKey)).toArray();
-        tx.inputs = new TransactionInput[0];
-        tx.outputs = new TransactionOutput[0];
+//        tx.attributes[1] = new TransactionAttribute();
+//        tx.attributes[1].usage = TransactionAttributeUsage.Script;
+//        tx.attributes[1].data = Program.toScriptHash(Contract.createSignatureRedeemScript(publicKey)).toArray();
         tx.code = paramsHexStr;
-        tx.codeHash = new UInt160(Helper.hexToBytes(codeHash));
+        tx.gasLimit = 0;
+        tx.vmType = vmtype;
+        //tx.codeHash = new UInt160(Helper.hexToBytes(codeHash));
+
+        tx.fee = fees;
+       // tx.fee[0] = new Fee(1,Contract.AddressFromPubKey(publicKey));
         return tx;
     }
 }

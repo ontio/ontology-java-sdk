@@ -6,7 +6,6 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import ontology.core.payload.RegisterTransaction;
 import ontology.core.payload.Vote;
 import org.bouncycastle.math.ec.ECPoint;
 
@@ -123,13 +122,9 @@ public abstract class Blockchain implements AutoCloseable {
      */
     public boolean containsTransaction(UInt256 hash){ return false;}
 
-    public boolean containsUnspent(TransactionInput input) throws Exception {
-        return containsUnspent(input.prevHash, input.prevIndex);
-    }
 
     public abstract boolean containsUnspent(UInt256 hash, int index) throws Exception;
 
-    public abstract Stream<RegisterTransaction> getAssets();
 
     /**
      *  根据指定的高度，返回对应的区块信息
@@ -186,7 +181,7 @@ public abstract class Blockchain implements AutoCloseable {
      *  <returns>返回记账人的合约地址</returns>
      */
     public static UInt160 getMinerAddress(ECPoint[] miners) {
-        return Program.toScriptHash(Contract.createMultiSigRedeemScript(miners.length - (miners.length - 1) / 3, miners));
+        return Contract.addressFromMultiPubKeys(miners.length - (miners.length - 1) / 3, miners);
     }
 
     private ArrayList<ECPoint> _miners = new ArrayList<ECPoint>();
@@ -260,7 +255,6 @@ public abstract class Blockchain implements AutoCloseable {
      */
     public Transaction getTransaction(UInt256 hash, Out<Integer> height) { return null; }
 
-    public abstract Map<Short, Claimable> getUnclaimed(UInt256 hash);
 
     /**
      *  根据指定的散列值和索引，获取对应的未花费的资产
@@ -269,7 +263,6 @@ public abstract class Blockchain implements AutoCloseable {
      *  <returns>返回一个交易输出，表示一个未花费的资产</returns>
      * @throws Exception 
      */
-    public abstract TransactionOutput getUnspent(UInt256 hash, int index) throws Exception;
 
     /**
      *  获取选票信息

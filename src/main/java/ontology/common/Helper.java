@@ -64,9 +64,11 @@ public class Helper {
 		}
 		return bt;
 	}
-    public static String getCodeHash(String codeHexStr){
+    public static String getCodeHash(String codeHexStr,byte vmtype){
         UInt160 code = Program.toScriptHash(Helper.hexToBytes(codeHexStr));
-        String codeHash = Helper.toHexString(code.toArray());
+        byte[] hash = code.toArray();
+        hash[0] = vmtype;
+        String codeHash = Helper.toHexString(hash);
         return codeHash;
     }
 

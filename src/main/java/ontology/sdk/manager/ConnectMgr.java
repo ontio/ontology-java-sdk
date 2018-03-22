@@ -13,8 +13,6 @@ import ontology.network.connect.IConnector;
 import ontology.network.rest.RestBlockchain;
 import ontology.network.rest.RestClient;
 import ontology.network.rest.Result;
-import ontology.sdk.info.asset.UTXOsInfo;
-import ontology.sdk.info.asset.UTXOInfo;
 
 /**
  * 连接管理器
@@ -107,17 +105,6 @@ public class ConnectMgr {
 		return connector.getBlock(hash);
 		
 	}
-
-	public String getAsset(String assetid) throws ConnectorException, IOException {
-		return connector.getAsset(assetid);
-	}
-	
-	public List<UTXOInfo> getUTXO(String address, String assetid) throws ConnectorException, IOException {
-		return connector.getUTXO(address, assetid);
-	}
-	public List<UTXOsInfo> getUTXOs(String address) throws ConnectorException, IOException {
-		return connector.getUTXOs(address);
-	}
 	
 	public long getBalance(String address,String assetId) throws ConnectorException, IOException {
 		return connector.getBalance(address,assetId);
@@ -125,25 +112,10 @@ public class ConnectMgr {
 //	public long getBalances(String address) throws ConnectorException, IOException {
 //		return connector.getBalances(address);
 //	}
-	public String getStateUpdate(String namespace, String key) throws ConnectorException, IOException {
-		return connector.getStateUpdate(namespace, key);
-	}
 
-	public String getIdentityUpdate(String method, String key) throws ConnectorException, IOException {
-		return connector.getIdentityUpdate(method, key);
-	}
 	public String getDDO(String codehash, String ontid) throws ConnectorException, IOException {
 		return connector.getDDO(codehash, ontid);
 	}
-	
-	public boolean sendToIssService(String data) throws ConnectorException, IOException {
-		return connector.sendToIssService(data);
-	}
-	
-	public boolean sendToTrfService(String data) throws ConnectorException, IOException {
-		return connector.sendToTrfService(data);
-	}
-
 
 	public String getRawTransactionJson(String txid) throws ConnectorException, IOException {
 		return connector.getRawTransactionJson(txid);

@@ -26,9 +26,9 @@ public class WebsocketDemo {
             OntSdk ontSdk = getOntSdk();
 
 
-//            String wsUrl = "ws://127.0.0.1:20335";
+            String wsUrl = "ws://127.0.0.1:20335";
 //            String wsUrl = "ws://54.222.182.88:22335";
-            String wsUrl = "ws://101.132.193.149:21335";
+//            String wsUrl = "ws://101.132.193.149:21335";
 
             Object lock = new Object();
             WsProcess.startWebsocketThread(lock,wsUrl);

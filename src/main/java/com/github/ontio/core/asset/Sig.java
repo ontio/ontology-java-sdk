@@ -7,11 +7,16 @@ import com.github.ontio.crypto.Digest;
 import com.github.ontio.io.*;
 import com.github.ontio.crypto.ECC;
 import com.github.ontio.io.json.JArray;
+import com.github.ontio.io.json.JNumber;
 import com.github.ontio.io.json.JObject;
+import com.github.ontio.io.json.JString;
 import org.bouncycastle.math.ec.ECPoint;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *  脚本
@@ -56,7 +61,13 @@ public class Sig implements Serializable, JsonSerializable {
     public static Address toScriptHash(byte[] script) {
     	return new Address(Digest.hash160(script));
     }
-
+    public Object json() {
+        Map json = new HashMap<>();
+        json.put("M", M);
+        json.put("PubKeys", Arrays.stream(pubKeys).map(p->Helper.toHexString(p.getEncoded(true))).toArray(Object[]::new));
+        json.put("sigData", Arrays.stream(sigData).map(p->Helper.toHexString(p)).toArray(Object[]::new));
+        return json;
+    }
 //    @Override
 //    public void fromJson(JsonReader reader) {
 //        JObject json = reader.json();

@@ -11,6 +11,8 @@ import com.github.ontio.io.json.JObject;
 import com.github.ontio.io.json.JString;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *  脚本
@@ -48,10 +50,10 @@ public class Fee implements Serializable, JsonSerializable {
      *  变成json对象
      *  <returns>返回json对象</returns>
      */
-    public JObject json() {
-        JObject json = new JObject();
-        json.set("Amount", new JNumber(amount));
-        json.set("Payer", new JString(payer.toHexString()));
+    public Object json() {
+        Map json = new HashMap<>();
+        json.put("Amount", amount);
+        json.put("Payer", payer.toHexString());
         return json;
     }
 

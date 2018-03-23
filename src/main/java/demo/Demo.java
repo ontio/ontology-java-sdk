@@ -17,13 +17,14 @@ public class Demo {
             OntSdk ontSdk = getOntSdk();
 //            System.out.println(ontSdk.getConnectMgr().getBalance("TA5CF29d8T68nALGeQy7BnT37wgjMJNSLA"));
 //            System.out.println(Helper.toHexString(ontSdk.getConnectMgr().getBlock(2).transactions[0].sigs[0].sigData[0]));
-//            System.out.println(ontSdk.getConnectMgr().getBlock("9ef2746806ed7345ddaad664faf98d8d3fc1cabd21d1acdac57fdc79952e2b94").transactions[0].sigs[0].M);
+            System.out.println(ontSdk.getConnectMgr().getBlock(2).json());
 //            System.out.println(ontSdk.getConnectMgr().getBlockHeight());
 //            System.out.println(ontSdk.getConnectMgr().getBlockJson(1));
 //            System.out.println(ontSdk.getConnectMgr().getBlockJson("9ef2746806ed7345ddaad664faf98d8d3fc1cabd21d1acdac57fdc79952e2b94"));
 //            System.out.println(ontSdk.getConnectMgr().getGenerateBlockTime());
 //            System.out.println(ontSdk.getConnectMgr().getNodeCount());
-            System.out.println(((InvokeCodeTransaction)ontSdk.getConnectMgr().getRawTransaction("c2592940837c2347f6a7b391d4940abb7171dd5dd156b7c031d20a5940142b5a")).fee[0].payer.toBase58());
+//            System.out.println(((InvokeCodeTransaction)ontSdk.getConnectMgr().getRawTransaction("c2592940837c2347f6a7b391d4940abb7171dd5dd156b7c031d20a5940142b5a")).fee[0].payer.toBase58());
+//            System.out.println(((InvokeCodeTransaction)ontSdk.getConnectMgr().getRawTransaction("c2592940837c2347f6a7b391d4940abb7171dd5dd156b7c031d20a5940142b52")).json());
             System.exit(0);
 
 
@@ -58,7 +59,7 @@ public class Demo {
 
     public static OntSdk getOntSdk() throws Exception {
 //        String url = "http://54.222.182.88:20334";
-        String url = "http://127.0.0.1:20386";
+        String url = "http://52.80.167.8:20336";
 //        String url = "http://101.132.193.149:20334";
         OntSdk wm = OntSdk.getInstance();
         wm.setRpcConnection(url);

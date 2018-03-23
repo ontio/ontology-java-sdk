@@ -1,7 +1,11 @@
 package com.github.ontio.core.payload;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
+import com.alibaba.fastjson.JSON;
+import com.github.ontio.common.Helper;
 import com.github.ontio.core.TransactionType;
 import com.github.ontio.core.Transaction;
 import com.github.ontio.io.BinaryReader;
@@ -24,5 +28,13 @@ public class BookKeeping extends Transaction {
 		if(version == 3) {
 			writer.writeLong(nonce);
 		}
+	}
+	@Override
+	public Object json() {
+		Map obj = (Map)super.json();
+		Map payload = new HashMap();
+		payload.put("Nonce", nonce);
+		obj.put("Payload",payload);
+		return obj;
 	}
 }

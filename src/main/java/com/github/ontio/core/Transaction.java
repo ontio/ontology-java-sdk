@@ -13,6 +13,7 @@ import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.io.JsonReader;
 import com.github.ontio.io.JsonSerializable;
 import com.github.ontio.io.json.JArray;
+import com.github.ontio.io.json.JNumber;
 import com.github.ontio.io.json.JObject;
 import com.github.ontio.io.json.JString;
 
@@ -182,15 +183,15 @@ public abstract class Transaction extends Inventory implements JsonSerializable 
 		return InventoryType.TX;
 	}
 	
-	public JObject json() {
-        JObject json = new JObject();
-        json.set("txid", new JString(hash().toString()));
-		json.set("TxType", new JString(txType.toString()));
-		json.set("Version", new JString(String.valueOf(version)));
-		json.set("Attributes", new JArray(Arrays.stream(attributes).map(p -> p.json()).toArray(JObject[]::new)));
-//		json.set("UTXOInputs", new JArray(Arrays.stream(inputs).map(p -> p.json()).toArray(JObject[]::new)));
-//		json.set("Outputs", new JArray(IntStream.range(0, outputs.length).boxed().map(i -> outputs[i].json(i)).toArray(JObject[]::new)));
-//		json.set("Programs", new JArray(Arrays.stream(scripts).map(p -> p.json()).toArray(JObject[]::new)));
+	public Object json() {
+        Map json = new HashMap();
+        json.put("Hash", hash().toString());
+		json.put("Version", (int)version);
+		json.put("Nonce", nonce);
+		json.put("TxType", txType.value()& Byte.MAX_VALUE);
+		json.put("Attributes", Arrays.stream(attributes).map(p -> p.json()).toArray(Object[]::new));
+		json.put("Fee", Arrays.stream(fee).map(p -> p.json()).toArray(Object[]::new));
+		json.put("Sigs", Arrays.stream(sigs).map(p -> p.json()).toArray(Object[]::new));
 		return json;
 	}
 

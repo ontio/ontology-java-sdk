@@ -2,6 +2,8 @@ package com.github.ontio.core;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.github.ontio.common.Helper;
 import com.github.ontio.io.json.JObject;
@@ -59,10 +61,10 @@ public class TransactionAttribute implements Serializable, JsonSerializable {
         }
 	}
 	
-	public JObject json() {
-        JObject json = new JObject();
-        json.set("usage", new JString(usage.toString()));
-        json.set("data", new JString(Helper.toHexString(data)));
+	public Object json() {
+        Map json = new HashMap<>();
+        json.put("usage", usage.value());
+        json.put("data", Helper.toHexString(data));
         return json;
 	}
 	

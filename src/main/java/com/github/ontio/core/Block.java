@@ -6,10 +6,15 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 import com.alibaba.fastjson.JSON;
 import com.github.ontio.common.*;
+import com.github.ontio.core.payload.BookKeeping;
+import com.github.ontio.core.payload.DeployCodeTransaction;
+import com.github.ontio.core.payload.InvokeCodeTransaction;
 import com.github.ontio.io.JsonReader;
 import com.github.ontio.crypto.MerkleTree;
 import com.github.ontio.io.BinaryReader;
@@ -56,7 +61,7 @@ public class Block extends Inventory implements JsonSerializable {
     /**
      *  下一个区块的记账合约的散列值
      */
-    public Address nextBookKeeper;
+    public Address nextBookkeeper;
     /**
      *  用于验证该区块的脚本
      */
@@ -85,7 +90,7 @@ public class Block extends Inventory implements JsonSerializable {
             _header.timestamp = this.timestamp;
             _header.height = this.height;
             _header.consensusData = this.consensusData;
-            _header.nextBookKeeper = this.nextBookKeeper;
+            _header.nextBookkeeper = this.nextBookkeeper;
             _header.transactions = new Transaction[0];
         }
         return _header;
@@ -156,7 +161,7 @@ public class Block extends Inventory implements JsonSerializable {
             timestamp = reader.readInt();
             height = reader.readInt();
             consensusData = Long.valueOf(reader.readLong());
-            nextBookKeeper = reader.readSerializable(Address.class);
+            nextBookkeeper = reader.readSerializable(Address.class);
             int len = (int)reader.readVarInt();
             bookkeepers = new ECPoint[len];
             for(int i=0;i<len;i++){
@@ -188,7 +193,7 @@ public class Block extends Inventory implements JsonSerializable {
         writer.writeInt(timestamp);
         writer.writeInt(height);
         writer.writeLong(consensusData);
-        writer.writeSerializable(nextBookKeeper);
+        writer.writeSerializable(nextBookkeeper);
     }
 
     @Override 
@@ -257,7 +262,7 @@ public class Block extends Inventory implements JsonSerializable {
         if (prev_header == null) {
         	throw new IllegalStateException();
         }
-        return new Address[] { prev_header.nextBookKeeper };
+        return new Address[] { prev_header.nextBookkeeper };
     }
 
     /**
@@ -267,19 +272,36 @@ public class Block extends Inventory implements JsonSerializable {
         transactionsRoot = MerkleTree.computeRoot(Arrays.stream(transactions).map(p -> p.hash()).toArray(UInt256[]::new));
     }
 
-    public JObject json() {
-        JObject json = new JObject();
-        json.set("hash", new JString(hash().toString()));
-        json.set("version", new JNumber(Integer.toUnsignedLong(version)));
-        json.set("prevblockhash", new JString(prevBlockHash.toString()));
-        json.set("transactionsRoot", new JString(transactionsRoot.toString()));
-        json.set("blockRoot", new JString(blockRoot.toString()));
-        json.set("time", new JNumber(timestamp));
-        json.set("height", new JNumber(Integer.toUnsignedLong(height)));
-        json.set("consensusData", new JNumber(consensusData));
-//        json.set("nextminer", new JString(Wallet.toAddress(nextMiner)));
-        json.set("transactions", new JArray(Arrays.stream(transactions).map(p -> p.json()).toArray(JObject[]::new)));
-        return json;
+    public Object json() {
+        Map json = new HashMap();
+        Map head = new HashMap();
+        json.put("Hash", hash().toString());
+
+        head.put("Version", version);
+        head.put("PrevBlockHash", prevBlockHash.toString());
+        head.put("TransactionsRoot", transactionsRoot.toString());
+        head.put("BlockRoot", blockRoot.toString());
+        head.put("Timestamp", timestamp);
+        head.put("Height", height);
+        head.put("ConsensusData",consensusData & Long.MAX_VALUE);
+        head.put("NextBookkeeper",nextBookkeeper);
+        head.put("Hash",hash().toString());
+        head.put("SigData", Arrays.stream(sigData).toArray(Object[]::new));
+
+        json.put("Header", head);
+        System.out.println(transactions.length);
+        json.put("Transactions", Arrays.stream(transactions).map(p -> {
+            if (p instanceof InvokeCodeTransaction) {
+                return ((InvokeCodeTransaction)p).json();
+            } else if(p instanceof DeployCodeTransaction) {
+                return ((DeployCodeTransaction)p).json();
+            } else if(p instanceof BookKeeping) {
+                return ((BookKeeping)p).json();
+            }else {
+                return p.json();
+            }
+        }).toArray(Object[]::new));
+        return JSON.toJSONString(json);
     }
     
 	/**

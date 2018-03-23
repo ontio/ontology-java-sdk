@@ -1,4 +1,3 @@
-[中文版](README_cn.md)
 
 <h1 align="center">JAVA SDK For Ontology  </h1>
 <h4 align="center">Version V0.6.0 </h4>

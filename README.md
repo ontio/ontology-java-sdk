@@ -3,37 +3,36 @@
 <h1 align="center">JAVA SDK For Ontology  </h1>
 <h4 align="center">Version V0.6.0 </h4>
 
-## 总体介绍
+## Overview
 
 The project is an ontology official Java SDK, which is a comprehensive SDK. Currently, it supports local wallet management, digital identity management, digital asset management,  deployment and envoke for Smart Contract , and communication with Ontology Blockchain. The future will also support more rich functions and applications .
 
-## 开始使用
+## Getting started
 
-进入[新手指南](docs/en/api_desc.md)开始使用。
+Visit the [Getting Started](http://opendoc.ont.io/javasdk/en) to learn how to use this library.
 
-## 如何安装
+## Installation
 
-### 环境准备
+### Environment 
 
-请配置JRE 8及以上版本。
+Please configure JDK 8 and above.
 
-> **Note:** 由于SDK中使用的密钥长度大于128，由于安全策略文件受限的原因，需要去官网下载local_policy.jar和US_export_policy.jar，替换jre目录中${java_home}/jre/lib/security原有的与安全策略这两个jar即可。
-
+> **Note:** As the length of key used in SDK is greater than 128, due to the restriction of JAVA security policy files, it is necessary to download local_policy.jar and US_export_policy.jar from the official website , to replace the two jar of ${java_home}/jre/lib/security in JRE directory.
 下载地址：
 >http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html
 
 
-### 编译
+### Build
 
 ```
 mvn clean install
 ```
 
-### 运行前准备
+### Preparations
 
-* 请确定Ontology Blockchain已经部署OK，其RPC端口已经打开，SDK将此连接地址作为URL参数进行初始化参数。
+* Make sure Ontology Blockchain has deployed well,  RPC port has been opened, and SDK will connect the RPC server to initialize.
 
-* 请确定本地钱包的存储路径，钱包用于存储数字身份信息和数字资产相关的密钥控制信息，可以文件形式，也可以是数据库形式。
+
 
 
 

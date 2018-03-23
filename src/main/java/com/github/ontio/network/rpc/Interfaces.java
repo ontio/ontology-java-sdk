@@ -28,17 +28,10 @@ class Interfaces {
 
 	public JObject call(String method, JObject ...params) throws RpcException, IOException {
 		JObject response = send(makeRequest(method, params));
-		if (response.containsProperty("result")) {
+		if(new Double(response.get("error").asNumber()).intValue() == 0){
 			return response.get("result");
-		}
-		else if (response.containsProperty("Result")) {
-			return response.get("Result");
-		}
-		else if (response.containsProperty("error")) {
-			throw new RpcException((int) response.get("error").get("code").asNumber(), response.get("error").get("message").asString());
-		}
-		else {
-			throw new IOException();
+		} else {
+			throw new RpcException(new Double(response.get("error").asNumber()).intValue(),""+response);
 		}
 	}
 

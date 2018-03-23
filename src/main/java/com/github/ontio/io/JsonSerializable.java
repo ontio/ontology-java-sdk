@@ -6,7 +6,7 @@ import com.github.ontio.io.json.JObject;
 
 public interface JsonSerializable {
 //	public void toJson(JsonWriter writer);
-	public void fromJson(JsonReader reader);
+//	public void fromJson(JsonReader reader);
 
 	// 序列化
 //    default JObject to() {
@@ -16,13 +16,13 @@ public interface JsonSerializable {
 //    }
     
     // 反序列化
-    static <T extends JsonSerializable> T from(JObject json, Class<T> t) throws InstantiationException, IllegalAccessException {
-    	JsonReader reader = new JsonReader(json);
-    	try {
-			return reader.readSerializable(t);
-		} catch (IOException e) {
-			throw new IllegalArgumentException(e);
-		}
-    }
+//    static <T extends JsonSerializable> T from(JObject json, Class<T> t) throws InstantiationException, IllegalAccessException {
+//    	JsonReader reader = new JsonReader(json);
+//    	try {
+//			return reader.readSerializable(t);
+//		} catch (IOException e) {
+//			throw new IllegalArgumentException(e);
+//		}
+//    }
 
 }

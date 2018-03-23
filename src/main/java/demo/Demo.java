@@ -15,15 +15,15 @@ public class Demo {
     public static void main(String[] args) {
         try {
             OntSdk ontSdk = getOntSdk();
-            //System.out.println(ontSdk.getConnectMgr().getBalance("TA5CF29d8T68nALGeQy7BnT37wgjMJNSLA"));
-//            System.out.println(ontSdk.getConnectMgr().getBlock(2));
-//            System.out.println(ontSdk.getConnectMgr().getBlock("1771dcef251fdbab5851d20ee268ad527a6ff314ba15d827490c6c92002b68c9").transactions[1].sigs[0].M);
+//            System.out.println(ontSdk.getConnectMgr().getBalance("TA5CF29d8T68nALGeQy7BnT37wgjMJNSLA"));
+//            System.out.println(Helper.toHexString(ontSdk.getConnectMgr().getBlock(2).transactions[0].sigs[0].sigData[0]));
+//            System.out.println(ontSdk.getConnectMgr().getBlock("9ef2746806ed7345ddaad664faf98d8d3fc1cabd21d1acdac57fdc79952e2b94").transactions[0].sigs[0].M);
 //            System.out.println(ontSdk.getConnectMgr().getBlockHeight());
 //            System.out.println(ontSdk.getConnectMgr().getBlockJson(1));
-//            System.out.println(ontSdk.getConnectMgr().getBlockJson("1771dcef251fdbab5851d20ee268ad527a6ff314ba15d827490c6c92002b68c9"));
+//            System.out.println(ontSdk.getConnectMgr().getBlockJson("9ef2746806ed7345ddaad664faf98d8d3fc1cabd21d1acdac57fdc79952e2b94"));
 //            System.out.println(ontSdk.getConnectMgr().getGenerateBlockTime());
-            //System.out.println(ontSdk.getConnectMgr().getNodeCount());
-//            System.out.println(((InvokeCodeTransaction)ontSdk.getConnectMgr().getRawTransaction("dbb261e34730050e43d4122766c407c4768e376222862845ffcf8517cc50a223")).fee[0].payer.toBase58());
+//            System.out.println(ontSdk.getConnectMgr().getNodeCount());
+            System.out.println(((InvokeCodeTransaction)ontSdk.getConnectMgr().getRawTransaction("c2592940837c2347f6a7b391d4940abb7171dd5dd156b7c031d20a5940142b5a")).fee[0].payer.toBase58());
             System.exit(0);
 
 

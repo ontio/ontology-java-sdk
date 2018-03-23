@@ -72,10 +72,10 @@ public class TransactionAttribute implements Serializable, JsonSerializable {
 				+ Arrays.toString(data) + "]";
 	}
 	
-	@Override
-	public void fromJson(JsonReader reader) {
-		JObject json = reader.json();
-		usage = TransactionAttributeUsage.valueOf((byte)json.get("Usage").asNumber());
-		data = Helper.hexToBytes(json.get("Data").asString());
-	}
+//	@Override
+//	public void fromJson(JsonReader reader) {
+//		JObject json = reader.json();
+//		usage = TransactionAttributeUsage.valueOf((byte)json.get("Usage").asNumber());
+//		data = Helper.hexToBytes(json.get("Data").asString());
+//	}
 }

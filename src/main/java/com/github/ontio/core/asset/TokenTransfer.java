@@ -52,10 +52,10 @@ public class TokenTransfer implements Serializable, JsonSerializable {
     	return new Address(Digest.hash160(script));
     }
 
-    @Override
-	public void fromJson(JsonReader reader) {
-		JObject json = reader.json();
-//		code = Helper.hexToBytes(json.get("Code").asString());
-//		parameter = Helper.hexToBytes(json.get("Parameter").asString());
-	}
+//    @Override
+//	public void fromJson(JsonReader reader) {
+//		JObject json = reader.json();
+////		code = Helper.hexToBytes(json.get("Code").asString());
+////		parameter = Helper.hexToBytes(json.get("Parameter").asString());
+//	}
 }

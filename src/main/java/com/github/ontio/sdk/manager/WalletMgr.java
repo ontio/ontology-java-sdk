@@ -118,8 +118,8 @@ public class WalletMgr {
         map.put(key + "," + password, prikey);
     }
 
-    public Identity importIdentity(String encrypted, String password) throws Exception {
-        String prikey = Acct.getPrivateKey(encrypted, password);
+    public Identity importIdentity(String encryptedPrikey, String password) throws Exception {
+        String prikey = Acct.getPrivateKey(encryptedPrikey, password);
         AccountInfo info = createIdentity(password, Helper.hexToBytes(prikey));
         storePrivateKey(identityPriKeyMap, "did:ont:" + info.address, password, prikey);
         return getIdentity("did:ont:" + info.address);
@@ -164,8 +164,8 @@ public class WalletMgr {
         return info;
     }
 
-    public Account importAccount(String encrypted, String password) throws Exception {
-        String prikey = Acct.getPrivateKey(encrypted, password);
+    public Account importAccount(String encryptedPrikey, String password) throws Exception {
+        String prikey = Acct.getPrivateKey(encryptedPrikey, password);
         AccountInfo info = createAccount(password, Helper.hexToBytes(prikey));
         storePrivateKey(acctPriKeyMap, info.address, password, prikey);
         return getAccount(info.address);

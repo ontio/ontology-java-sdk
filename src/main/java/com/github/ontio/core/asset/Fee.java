@@ -59,20 +59,20 @@ public class Fee implements Serializable, JsonSerializable {
     	return new Address(Digest.hash160(script));
     }
 
-    @Override
-	public void fromJson(JsonReader reader) {
-		JObject json = reader.json();
-		amount = new Double(json.get("Amount").asNumber()).longValue();
-        payer = Address.parse(json.get("Payer").asString());
-	}
-    public static Fee fromJsonD(JsonReader reader) throws IOException {
-        try {
-            Fee f = (Fee)Class.forName("com.github.ontio.core.asset.Fee").newInstance();
-            f.fromJson(reader);;
-            return f;
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-            ex.printStackTrace();
-            throw new IOException(ex);
-        }
-    }
+//    @Override
+//	public void fromJson(JsonReader reader) {
+//		JObject json = reader.json();
+//		amount = new Double(json.get("Amount").asNumber()).longValue();
+//        payer = Address.parse(json.get("Payer").asString());
+//	}
+//    public static Fee fromJsonD(JsonReader reader) throws IOException {
+//        try {
+//            Fee f = (Fee)Class.forName("com.github.ontio.core.asset.Fee").newInstance();
+//            f.fromJson(reader);;
+//            return f;
+//        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+//            ex.printStackTrace();
+//            throw new IOException(ex);
+//        }
+//    }
 }

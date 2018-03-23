@@ -10,6 +10,7 @@ import com.github.ontio.core.Block;
 import com.github.ontio.io.JsonReader;
 import com.github.ontio.core.Transaction;
 import com.github.ontio.io.JsonSerializable;
+import com.github.ontio.io.Serializable;
 import com.github.ontio.io.json.JNumber;
 import com.github.ontio.io.json.JObject;
 import com.github.ontio.io.json.JString;
@@ -121,17 +122,16 @@ public class RpcClient extends AbstractConnector {
 		return result.toString();
 	}
 	
-	public Transaction getTxn(UInt256 txid) throws RpcException, IOException {
-		JObject result = rpc.call("getTxn", new JString(txid.toString()));
-		System.out.println("rs:"+result);
-		return Transaction.fromJsonD(new JsonReader(result));
-	}
+//	public Transaction getTxn(UInt256 txid) throws RpcException, IOException {
+//		JObject result = rpc.call("getTxn", new JString(txid.toString()));
+//		System.out.println("rs:"+result);
+//		return Transaction.fromJsonD(new JsonReader(result));
+//	}
 	
 	public Block getBlock(UInt256 hash) throws RpcException, IOException {
 		JObject result = rpc.call("getblock", new JString(hash.toString()));
-		System.out.println("rs:"+result);
 		try {
-			Block bb = JsonSerializable.from(result, Block.class);
+			Block bb = Serializable.from(Helper.hexToBytes(result.asString()), Block.class);//JsonSerializable.from(result, Block.class);
 			return bb;
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException(e);
@@ -140,9 +140,8 @@ public class RpcClient extends AbstractConnector {
 	@Override
 	public Block getBlock(int index) throws RpcException, IOException {
 		JObject result = rpc.call("getblock", new JNumber(index));
-		System.out.println("rs:"+result);
 		try {
-			Block bb = JsonSerializable.from(result, Block.class);
+			Block bb = Serializable.from(Helper.hexToBytes(result.asString()), Block.class);//JsonSerializable.from(result, Block.class);
 			return bb;
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException(e);
@@ -155,10 +154,10 @@ public class RpcClient extends AbstractConnector {
 	}
 	@Override
 	public Block getBlock(String hash) throws ConnectorException, IOException {
-		JObject result = rpc.call("getblock", new JString(hash.toString()),new JNumber(1));
+		JObject result = rpc.call("getblock", new JString(hash.toString()));
 		System.out.println("rs:"+result);
 		try {
-			Block bb = JsonSerializable.from(result, Block.class);
+			Block bb = Serializable.from(Helper.hexToBytes(result.asString()), Block.class);//JsonSerializable.from(result, Block.class);
 			return bb;
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException(e);

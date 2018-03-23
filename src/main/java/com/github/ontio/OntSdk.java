@@ -87,7 +87,7 @@ public class OntSdk {
         this.connManager = new ConnectMgr(url, true);
     }
     public void setRestfulConnection(String url) {
-        this.connManager = new ConnectMgr(url, false);
+        this.connManager = new ConnectMgr(url);
     }
     public void openWalletFile(String path) {
         this.walletMgr = new WalletMgr(path);

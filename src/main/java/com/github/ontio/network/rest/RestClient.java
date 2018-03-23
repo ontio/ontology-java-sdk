@@ -6,6 +6,7 @@ import com.github.ontio.common.Helper;
 import com.github.ontio.core.Block;
 import com.github.ontio.io.Serializable;
 import com.github.ontio.network.connect.AbstractConnector;
+import com.github.ontio.network.connect.ConnectorException;
 import com.github.ontio.sdk.exception.Error;
 import com.github.ontio.core.Transaction;
 
@@ -127,10 +128,11 @@ public class RestClient extends AbstractConnector {
 	}
 	@Override
 	public Block getBlock(int height) throws RestException {
-		String rs = rest.getBlock(authType, accessToken, height);
+		String rs = rest.getBlock(authType, accessToken, height,"1");
 		Result rr = JSON.parseObject(rs, Result.class);
 		if(rr.Error == 0) {
 			try {
+				System.out.println(rr.Result);
 				return Serializable.from(Helper.hexToBytes(rr.Result), Block.class);
 			} catch (InstantiationException | IllegalAccessException e) {
 				throw new RestException(Error.getDescDeserializeBlock("Block.deserializeFrom(height) failed"), e);
@@ -138,9 +140,11 @@ public class RestClient extends AbstractConnector {
 		}
 		throw new RestException(to(rr));
 	}
+
+
 	@Override
 	public Block getBlock(String hash) throws RestException {
-		String rs = rest.getBlock(authType, accessToken, hash);
+		String rs = rest.getBlock(authType, accessToken, hash,"1");
 		Result rr = JSON.parseObject(rs, Result.class);
 		if(rr.Error == 0) {
 			try {
@@ -184,7 +188,7 @@ public class RestClient extends AbstractConnector {
 	}
 	@Override
 	public String getBlockJson(int height) throws RestException {
-		String rs = rest.getBlock(authType, accessToken, height);
+		String rs = rest.getBlock(authType, accessToken, height,"0");
 		Result rr = JSON.parseObject(rs, Result.class);
 		if(rr.Error == 0) {
 			return rr.Result;
@@ -193,9 +197,9 @@ public class RestClient extends AbstractConnector {
 	}
 	@Override
 	public String getBlockJson(String hash) throws RestException {
-		String rs = rest.getBlock(authType, accessToken, hash);
+		String rs = rest.getBlock(authType, accessToken, hash,"0");
 		Result rr = JSON.parseObject(rs, Result.class);
-		if(rr.Error != 0) {
+		if(rr.Error == 0) {
 			return rr.Result;
 		}
 		throw new RestException(to(rr));

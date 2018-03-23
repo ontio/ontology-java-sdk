@@ -126,11 +126,11 @@ class Interfaces {
 		}
 	}
 
-	public String getBlock(String authType, String accessToken, int height) throws RestException {
+	public String getBlock(String authType, String accessToken, int height,String raw) throws RestException {
 		Map<String, String> params = new HashMap<String, String>();
 //		params.put("auth_type", authType);
 //		params.put("access_token", accessToken);
-		params.put("raw", "1");
+		params.put("raw", raw);
 		try {
 			return RestHttp.get(url + Consts.Url_get_block_By_Height + height, params);
 		} catch (KeyManagementException | NoSuchAlgorithmException
@@ -139,11 +139,11 @@ class Interfaces {
 		}
 	}
 
-	public String getBlock(String authType, String accessToken, String hash) throws RestException {
+	public String getBlock(String authType, String accessToken, String hash,String raw) throws RestException {
 		Map<String, String> params = new HashMap<String, String>();
 //		params.put("auth_type", authType);
 //		params.put("access_token", accessToken);
-		params.put("raw", "1");
+		params.put("raw", raw);
 		try {
 			return RestHttp.get(url + Consts.Url_get_block_By_Hash + hash, params);
 		} catch (KeyManagementException | NoSuchAlgorithmException

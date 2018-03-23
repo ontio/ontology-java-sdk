@@ -44,9 +44,9 @@ public class OntAssetDemo {
             System.out.println(info1.address+" "+Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info1.address,"passwordtest").publicKey));
             System.out.println(info2.address+" "+Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info2.address,"passwordtest").publicKey));
             System.out.println(info3.address+" "+Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info3.address,"passwordtest").publicKey));
-            //String hash = ontSdk.getOntAssetTx().transfer(info1.address,"passwordtest",100L,info2.address);
+            String hash = ontSdk.getOntAssetTx().transfer(info1.address,"passwordtest",100L,info2.address);
             //String hash = ontSdk.getOntAssetTx().transferToMany(info1.address,"passwordtest",new long[]{100L,200L},new String[]{info2.address,info3.address});
-            String hash = ontSdk.getOntAssetTx().transferFromMany(new String[]{info1.address,info2.address},new String[]{"passwordtest","passwordtest"},new long[]{1L,2L},info3.address);
+//            String hash = ontSdk.getOntAssetTx().transferFromMany(new String[]{info1.address,info2.address},new String[]{"passwordtest","passwordtest"},new long[]{1L,2L},info3.address);
             System.out.println(hash);
           //  System.out.println(Helper.toHexString(Address.decodeBase58(info1.address).toArray()));
           //  String addr = Address.addressFromPubKey(ontSdk.getWalletMgr().getPubkey("0399b851bc2cd05506d6821d4bc5a92139b00ac4bc7399cd9ca0aac86a468d1c05")).toBase58();
@@ -60,7 +60,7 @@ public class OntAssetDemo {
 
     public static OntSdk getOntSdk() throws Exception {
 
-        String url = "http://127.0.0.1:20384";
+        String url = "http://127.0.0.1:20386";
 //        String url = "http://101.132.193.149:21334";
         OntSdk wm = OntSdk.getInstance();
         wm.setRpcConnection(url);

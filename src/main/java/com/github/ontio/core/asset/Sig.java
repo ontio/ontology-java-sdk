@@ -23,15 +23,18 @@ public class Sig implements Serializable, JsonSerializable {
 
     @Override
     public void deserialize(BinaryReader reader) throws IOException {
-    	long len = reader.readVarInt();
+    	int len = (int)reader.readVarInt();
         pubKeys = new ECPoint[(int)len];
         for(int i=0;i<pubKeys.length;i++) {
             pubKeys[i] = ECC.secp256r1.getCurve().createPoint(
                     new BigInteger(1, reader.readVarBytes()), new BigInteger(1, reader.readVarBytes()));
         }
-        len = reader.readVarInt();
+        M = (int)reader.readVarInt();
+        len = (int)reader.readVarInt();
+        sigData = new byte[len][];
         for(int i=0;i<sigData.length;i++) {
             sigData[i] = reader.readVarBytes();
+            System.out.println(Helper.toHexString(sigData[i]));
         }
     }
 
@@ -54,22 +57,22 @@ public class Sig implements Serializable, JsonSerializable {
     	return new Address(Digest.hash160(script));
     }
 
-    @Override
-    public void fromJson(JsonReader reader) {
-        JObject json = reader.json();
-        M = new Double(json.get("M").asNumber()).intValue();
-       // pubKeys = Address.parse(json.get("Payer").asString());
-        //JArray array = (JArray) json.get("SigData");
-        //sigData =reader.readSerializableArray(Byte.class, array.size(), "SigData");
-    }
-    public static Sig fromJsonD(JsonReader reader) throws IOException {
-        try {
-            Sig f = (Sig)Class.forName("com.github.ontio.core.asset.Sig").newInstance();
-            f.fromJson(reader);;
-            return f;
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-            ex.printStackTrace();
-            throw new IOException(ex);
-        }
-    }
+//    @Override
+//    public void fromJson(JsonReader reader) {
+//        JObject json = reader.json();
+//        M = new Double(json.get("M").asNumber()).intValue();
+//       // pubKeys = Address.parse(json.get("Payer").asString());
+//        //JArray array = (JArray) json.get("SigData");
+//        //sigData =reader.readSerializableArray(Byte.class, array.size(), "SigData");
+//    }
+//    public static Sig fromJsonD(JsonReader reader) throws IOException {
+//        try {
+//            Sig f = (Sig)Class.forName("com.github.ontio.core.asset.Sig").newInstance();
+//            f.fromJson(reader);;
+//            return f;
+//        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+//            ex.printStackTrace();
+//            throw new IOException(ex);
+//        }
+//    }
 }

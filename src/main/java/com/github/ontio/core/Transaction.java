@@ -5,10 +5,7 @@ import java.util.*;
 import java.util.stream.*;
 
 import com.alibaba.fastjson.JSON;
-import com.github.ontio.common.Fixed8;
-import com.github.ontio.common.Inventory;
-import com.github.ontio.common.InventoryType;
-import com.github.ontio.common.Address;
+import com.github.ontio.common.*;
 import com.github.ontio.core.asset.Fee;
 import com.github.ontio.core.asset.Sig;
 import com.github.ontio.io.BinaryReader;
@@ -31,7 +28,7 @@ public abstract class Transaction extends Inventory implements JsonSerializable 
 	/**
 	 * 交易类型
 	 */
-	public final TransactionType type;
+	public final TransactionType txType;
 	public int nonce = new Random().nextInt();
 	/**
 	 * 交易属性
@@ -45,7 +42,7 @@ public abstract class Transaction extends Inventory implements JsonSerializable 
 	public Sig[] sigs = new Sig[0];
 	
 	protected Transaction(TransactionType type) {
-		this.type = type;
+		this.txType = type;
 	}
 	public void setSigs(Sig[] sigs){
 		this.sigs = sigs;
@@ -72,7 +69,7 @@ public abstract class Transaction extends Inventory implements JsonSerializable 
 	@Override
 	public void deserializeUnsigned(BinaryReader reader) throws IOException {
 		version = reader.readByte();
-        if (type.value() != reader.readByte()) { // type
+        if (txType.value() != reader.readByte()) {
             throw new IOException();
         }
         deserializeUnsignedWithoutType(reader);
@@ -105,7 +102,7 @@ public abstract class Transaction extends Inventory implements JsonSerializable 
 	@Override
 	public void serializeUnsigned(BinaryWriter writer) throws IOException {
         writer.writeByte(version);
-		writer.writeByte(type.value());
+		writer.writeByte(txType.value());
 		writer.writeInt(nonce);
         serializeExclusiveData(writer);
         writer.writeSerializableArray(attributes);
@@ -155,10 +152,16 @@ public abstract class Transaction extends Inventory implements JsonSerializable 
         try {
 			reader.readByte();//read version
             TransactionType type = TransactionType.valueOf(reader.readByte());
-            String typeName = "com.github.ontio.core.payload." + type.toString();
+			System.out.println(type.toString());
+			String typeName = "com.github.ontio.core.payload." + type.toString();
 			Transaction transaction = (Transaction)Class.forName(typeName).newInstance();
 			reader.readInt();//nonce
             transaction.deserializeUnsignedWithoutType(reader);
+
+			transaction.sigs = new Sig[(int)reader.readVarInt()];
+			for(int i=0;i<transaction.sigs.length;i++){
+				transaction.sigs[i] = reader.readSerializable(Sig.class);
+			}
 			return transaction;
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
 			throw new IOException(ex);
@@ -182,7 +185,7 @@ public abstract class Transaction extends Inventory implements JsonSerializable 
 	public JObject json() {
         JObject json = new JObject();
         json.set("txid", new JString(hash().toString()));
-		json.set("TxType", new JString(type.toString()));
+		json.set("TxType", new JString(txType.toString()));
 		json.set("Version", new JString(String.valueOf(version)));
 		json.set("Attributes", new JArray(Arrays.stream(attributes).map(p -> p.json()).toArray(JObject[]::new)));
 //		json.set("UTXOInputs", new JArray(Arrays.stream(inputs).map(p -> p.json()).toArray(JObject[]::new)));
@@ -212,88 +215,77 @@ public abstract class Transaction extends Inventory implements JsonSerializable 
 		return true;
 	}
 	
-	@Override
- 	public void fromJson(JsonReader reader) {
-		JObject json = reader.json();
-		if(type.value() != (byte)json.get("TxType").asNumber()) {
-			throw new RuntimeException();
-		}
-		version = (byte)json.get("Version").asNumber();
-		nonce = new Double(json.get("Nonce").asNumber()).intValue();
-		
-		JArray array = (JArray) json.get("Attributes");
-		int count = -1;
-		if(array == null || array.size() == 0) {
-			attributes = new TransactionAttribute[0];
-		} else {
-			count = array.size();
-			try {
-				attributes = reader.readSerializableArray(TransactionAttribute.class, count, "Attributes");
-			} catch (InstantiationException | IllegalAccessException | IOException e) {
-				throw new RuntimeException("Failed to fromJson at attributes");
-			}
-		}
-		array = (JArray) json.get("Fee");
-		if(array == null || array.size() == 0) {
-			fee = new Fee[0];
-		} else {
-			count = array.size();
-			try {
-				fee = new Fee[count];
-				for(int i=0; i<count; i++) {
-					fee[i] = Fee.fromJsonD(new JsonReader(array.get(i)));
-				}
-				//fee = reader.readSerializableArray(Fee.class, count, "Fee");
-			} catch (Exception e) {
-				throw new RuntimeException("Failed to fromJson at fee");
-			}
-		}
-
-		array = (JArray) json.get("Sigs");
-		if(array == null || array.size() == 0) {
-			sigs = new Sig[0];
-		} else {
-			count = array.size();
-			try {
-				sigs = new Sig[count];
-				for(int i=0; i<count; i++) {
-					sigs[i] = Sig.fromJsonD(new JsonReader(array.get(i)));
-				}
-				//sigs = reader.readSerializableArray(Sig.class, count, "Sigs");
-			} catch (Exception e) {
-				throw new RuntimeException("Failed to fromJson at fee");
-			}
-		}
-
-		array = (JArray) json.get("Programs");
+//	@Override
+// 	public void fromJson(JsonReader reader) {
+//		JObject json = reader.json();
+//		if(txType.value() != (byte)json.get("TxType").asNumber()) {
+//			throw new RuntimeException();
+//		}
+//		version = (byte)json.get("Version").asNumber();
+//		nonce = new Double(json.get("Nonce").asNumber()).intValue();
+//
+//		JArray array = (JArray) json.get("Attributes");
+//		int count = -1;
 //		if(array == null || array.size() == 0) {
-//			scripts = new Program[0];
+//			attributes = new TransactionAttribute[0];
 //		} else {
 //			count = array.size();
 //			try {
-//				scripts = reader.readSerializableArray(Program.class, count, "Programs");
+//				attributes = reader.readSerializableArray(TransactionAttribute.class, count, "Attributes");
 //			} catch (InstantiationException | IllegalAccessException | IOException e) {
-//				throw new RuntimeException("Failed to fromJson at scripts");
+//				throw new RuntimeException("Failed to fromJson at attributes");
 //			}
 //		}
-		fromJsonExclusiveData(new JsonReader(json.get("Payload")));
-		
-	}
+//		array = (JArray) json.get("Fee");
+//		if(array == null || array.size() == 0) {
+//			fee = new Fee[0];
+//		} else {
+//			count = array.size();
+//			try {
+//				fee = new Fee[count];
+//				for(int i=0; i<count; i++) {
+//					fee[i] = Fee.fromJsonD(new JsonReader(array.get(i)));
+//				}
+//				//fee = reader.readSerializableArray(Fee.class, count, "Fee");
+//			} catch (Exception e) {
+//				throw new RuntimeException("Failed to fromJson at fee");
+//			}
+//		}
+//
+//		array = (JArray) json.get("Sigs");
+//		if(array == null || array.size() == 0) {
+//			sigs = new Sig[0];
+//		} else {
+//			count = array.size();
+//			try {
+//				sigs = new Sig[count];
+//				for(int i=0; i<count; i++) {
+//					sigs[i] = Sig.fromJsonD(new JsonReader(array.get(i)));
+//				}
+//				//sigs = reader.readSerializableArray(Sig.class, count, "Sigs");
+//			} catch (Exception e) {
+//				throw new RuntimeException("Failed to fromJson at fee");
+//			}
+//		}
+//
+//		fromJsonExclusiveData(new JsonReader(json.get("Payload")));
+//
+//	}
 	protected void fromJsonExclusiveData(JsonReader reader) {
 	}
 	
-	public static Transaction fromJsonD(JsonReader reader) throws IOException {
-        try {
-			System.out.println(reader.json());
-			TransactionType type = TransactionType.valueOf(new Double(reader.json().get("TxType").asNumber()).byteValue());
-            String typeName = "com.github.ontio.core.payload." + type.toString();
-			Transaction transaction = (Transaction)Class.forName(typeName).newInstance();
-            transaction.fromJson(reader);;
-			return transaction;
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-			ex.printStackTrace();
-			throw new IOException(ex);
-		}
-	}
+//	public static Transaction fromJsonD(JsonReader reader) throws IOException {
+//        try {
+//			System.out.println(reader.json());
+//			TransactionType type = TransactionType.valueOf(new Double(reader.json().get("TxType").asNumber()).byteValue());
+//            String typeName = "com.github.ontio.core.payload." + type.toString();
+//			Transaction transaction = (Transaction)Class.forName(typeName).newInstance();
+//            transaction.fromJson(reader);;
+//			return transaction;
+//		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+//			ex.printStackTrace();
+//			throw new IOException(ex);
+//		}
+//	}
 
 }

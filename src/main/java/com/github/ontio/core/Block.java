@@ -4,12 +4,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.function.Function;
 
 import com.alibaba.fastjson.JSON;
-import com.github.ontio.common.Address;
-import com.github.ontio.common.UInt256;
+import com.github.ontio.common.*;
 import com.github.ontio.io.JsonReader;
 import com.github.ontio.crypto.MerkleTree;
 import com.github.ontio.io.BinaryReader;
@@ -20,8 +20,9 @@ import com.github.ontio.io.json.JArray;
 import com.github.ontio.io.json.JNumber;
 import com.github.ontio.io.json.JObject;
 import com.github.ontio.io.json.JString;
-import com.github.ontio.common.Inventory;
-import com.github.ontio.common.InventoryType;
+import com.github.ontio.crypto.ECC;
+import com.github.ontio.io.BinaryReader;
+import org.bouncycastle.math.ec.ECPoint;
 
 /**
  *  区块或区块头
@@ -60,7 +61,7 @@ public class Block extends Inventory implements JsonSerializable {
      *  用于验证该区块的脚本
      */
     public String[] sigData;
-    public PubKeyInfo[] bookkeepers;
+    public ECPoint[] bookkeepers;
     /**
      *  交易列表，当列表中交易的数量为0时，该Block对象表示一个区块头
      */
@@ -112,10 +113,17 @@ public class Block extends Inventory implements JsonSerializable {
     public void deserialize(BinaryReader reader) throws IOException {
     	// 未签名
         deserializeUnsigned(reader);
-        // 填充值
-        if (reader.readByte() != 1) {
-            throw new IOException();
+        int len = (int)reader.readVarInt();
+        sigData = new String[len];
+        for(int i=0;i<len;i++){
+            this.sigData[i] = Helper.toHexString(reader.readVarBytes());
+            System.out.println(this.sigData[i]);
         }
+
+        // 填充值
+//        if (reader.readByte() != 1) {
+//            throw new IOException();
+//        }
         // 脚本
 //        try {
 //			script = reader.readSerializable(Program.class);
@@ -124,13 +132,15 @@ public class Block extends Inventory implements JsonSerializable {
 //		}
         // 交易
 //      transactions = new Transaction[(int) reader.readVarInt(0x10000000)];//xy
-        transactions = new Transaction[(int) reader.readInt()];	//dna
+        len = (int) reader.readInt();
+        System.out.println(len);
+        transactions = new Transaction[len];	//dna
         for (int i = 0; i < transactions.length; i++) {
             transactions[i] = Transaction.deserializeFrom(reader);
         }
         if (transactions.length > 0) {
-            if (transactions[0].type != TransactionType.BookKeeping 
-            		|| Arrays.stream(transactions).skip(1).anyMatch(p -> p.type == TransactionType.BookKeeping)) {
+            if (transactions[0].txType != TransactionType.BookKeeping
+            		|| Arrays.stream(transactions).skip(1).anyMatch(p -> p.txType == TransactionType.BookKeeping)) {
                 throw new IOException();
             }
         }
@@ -139,7 +149,6 @@ public class Block extends Inventory implements JsonSerializable {
     @Override 
     public void deserializeUnsigned(BinaryReader reader) throws IOException {
         try {
-            System.out.println("######b###deserializeUnsigned#####");
             version = reader.readInt();
             prevBlockHash = reader.readSerializable(UInt256.class);
             transactionsRoot = reader.readSerializable(UInt256.class);
@@ -148,6 +157,14 @@ public class Block extends Inventory implements JsonSerializable {
             height = reader.readInt();
             consensusData = Long.valueOf(reader.readLong());
             nextBookKeeper = reader.readSerializable(Address.class);
+            int len = (int)reader.readVarInt();
+            bookkeepers = new ECPoint[len];
+            for(int i=0;i<len;i++){
+                this.bookkeepers[i] = ECC.secp256r1.getCurve().createPoint(
+                        new BigInteger(1, reader.readVarBytes()), new BigInteger(1, reader.readVarBytes()));
+//                this.bookkeepers[i].x = Helper.toHexString(reader.readVarBytes());
+//                this.bookkeepers[i].y = Helper.toHexString(reader.readVarBytes());
+            }
 	        transactions = new Transaction[0];
 		} catch (InstantiationException | IllegalAccessException ex) {
         	throw new IOException(ex);
@@ -301,57 +318,47 @@ public class Block extends Inventory implements JsonSerializable {
     	return true;
     }
     
-    @Override
-	public void fromJson(JsonReader reader) {
-		JObject json = reader.json().get("Header");
-		// unsigned
-		this.version = new Double(json.get("Version").asNumber()).intValue();
-        this.hash = UInt256.parse(json.get("Hash").asString());
-		this.prevBlockHash = UInt256.parse(json.get("PrevBlockHash").asString());
-		this.transactionsRoot = UInt256.parse(json.get("TransactionsRoot").asString());
-        this.blockRoot = UInt256.parse(json.get("BlockRoot").asString());
-		this.height = (int)json.get("Height").asNumber();
-		this.timestamp = new BigDecimal(json.get("Timestamp").asString()).intValue();
-		this.nextBookKeeper = Address.parse(json.get("NextBookKeeper").asString());
-		this.consensusData = new BigDecimal(json.get("ConsensusData").asString()).longValue();
-		JArray arr = (JArray) json.get("BookKeepers");
-        this.bookkeepers = new PubKeyInfo[arr.size()];
-        for(int i=0;i<arr.size();i++){
-            this.bookkeepers[i] = new PubKeyInfo();
-            this.bookkeepers[i].x = arr.get(i).get("X").asString();
-            this.bookkeepers[i].y = arr.get(i).get("Y").asString();
-        }
-        JArray sigArr = (JArray) json.get("SigData");
-        this.sigData  =  new String[sigArr.size()];
-        for(int i=0;i<sigArr.size();i++){
-            this.sigData[i] = new String();
-            this.sigData[i] = sigArr.get(i).asString();
-        }
-		// txs
-		JArray txsJson = (JArray) reader.json().get("Transactions");
-		if(txsJson == null) {
-			this.transactions = new Transaction[0];
-			return;
-		}
-		// 针对于数组的解析
-		int count = txsJson.size();
-		this.transactions = new Transaction[count];
-		for(int i=0; i<count; ++i) {
-			try {
-				this.transactions[i] = Transaction.fromJsonD(new JsonReader(txsJson.get(i)));
-			} catch (IOException e) {
-				e.printStackTrace();
-				throw new RuntimeException("Tx.deserialize failed");
-			}
-		}
-	}
-
-	class PubKeyInfo{
-        public String x;
-        public String y;
-        @Override
-        public String toString() {
-            return JSON.toJSONString(this);
-        }
-    }
+//    @Override
+//	public void fromJson(JsonReader reader) {
+//		JObject json = reader.json().get("Header");
+//		// unsigned
+//		this.version = new Double(json.get("Version").asNumber()).intValue();
+//        this.hash = UInt256.parse(json.get("Hash").asString());
+//		this.prevBlockHash = UInt256.parse(json.get("PrevBlockHash").asString());
+//		this.transactionsRoot = UInt256.parse(json.get("TransactionsRoot").asString());
+//        this.blockRoot = UInt256.parse(json.get("BlockRoot").asString());
+//		this.height = (int)json.get("Height").asNumber();
+//		this.timestamp = new BigDecimal(json.get("Timestamp").asString()).intValue();
+//		this.nextBookKeeper = Address.parse(json.get("NextBookKeeper").asString());
+//		this.consensusData = new BigDecimal(json.get("ConsensusData").asString()).longValue();
+//		JArray arr = (JArray) json.get("BookKeepers");
+//        this.bookkeepers = new ECPoint[arr.size()];
+//        for(int i=0;i<arr.size();i++){
+//            this.bookkeepers[i] = ECC.secp256r1.getCurve().createPoint(
+//                    new BigInteger(1, arr.get(i).get("X").asString().getBytes()), new BigInteger(1, arr.get(i).get("Y").asString().getBytes()));
+//        }
+//        JArray sigArr = (JArray) json.get("SigData");
+//        this.sigData  =  new String[sigArr.size()];
+//        for(int i=0;i<sigArr.size();i++){
+//            this.sigData[i] = new String();
+//            this.sigData[i] = sigArr.get(i).asString();
+//        }
+//		// txs
+//		JArray txsJson = (JArray) reader.json().get("Transactions");
+//		if(txsJson == null) {
+//			this.transactions = new Transaction[0];
+//			return;
+//		}
+//		// 针对于数组的解析
+//		int count = txsJson.size();
+//		this.transactions = new Transaction[count];
+//		for(int i=0; i<count; ++i) {
+//			try {
+//				this.transactions[i] = Transaction.fromJsonD(new JsonReader(txsJson.get(i)));
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//				throw new RuntimeException("Tx.deserialize failed");
+//			}
+//		}
+//	}
 }

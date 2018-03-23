@@ -16,9 +16,7 @@ public class BookKeeping extends Transaction {
 
 	@Override
 	protected void deserializeExclusiveData(BinaryReader reader) throws IOException {
-		if(version == 3) {
-			nonce = reader.readLong();
-		}
+		nonce = reader.readLong();
 	}
 	
 	@Override

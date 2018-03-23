@@ -56,7 +56,7 @@ System.out.println(info);
 //获取块
 Block block = ontSdk.getConnectMgr().getBlock(9757);
 //获取当前高度
-int height = ontSdk.getConnectMgr().blockHeight();
+int height = ontSdk.getConnectMgr().getBlockHeight();
 //获取节点数
 System.out.println(ontSdk.getConnectMgr().getNodeCount());
 //获取出块时间

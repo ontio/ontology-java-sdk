@@ -9,7 +9,6 @@
 `parameters` 是加密算法所需参数。
 `curve` 是椭圆曲线的名称。
 `key` 是NEP-2格式的私钥。该字段可以为null（对于只读地址或非标准地址）。
-`contract` 是智能合约对象。该字段可以为null（对于只读的账户地址）。
 `extra` 是客户端存储额外信息的字段。该字段可以为null。
 
 ```
@@ -21,7 +20,6 @@ public class Account {
     public String algorithm = "";
     public Map parameters = new HashMap() ;
     public String key = "";
-    public Contract contract = new Contract();
 }
 ```
 

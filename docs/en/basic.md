@@ -12,7 +12,7 @@ ontSdk.setBlockChainConfig(url, "");
 
 ### 获取当前区块高度
 ```
-int height = ontSdk.getConnectMgr().blockHeight();
+int height = ontSdk.getConnectMgr().getBlockHeight();
 ```
 
 ### 获取区块
@@ -50,7 +50,7 @@ System.out.println(info);
 | Field     |     Type |   Description   | 
 | :--------------: | :--------:| :------: |
 |    version|   int|  版本号  |
-|    prevBlock|   UInt256|  前一个区块的散列值|
+|    prevBlockHash|   UInt256|  前一个区块的散列值|
 |    transactionsRoot|   UInt256|  该区块中所有交易的Merkle树的根|
 |    blockRoot|   UInt256| 区块根|
 |    timestamp|   int| 区块时间戳，unix时间戳  |
@@ -68,13 +68,14 @@ System.out.println(info);
 | Field     |     Type |   Description   | 
 | :--------------: | :--------:| :------: |
 |    version|   int|  版本号  |
-|    type|   TransactionType|  交易类型|
+|    txType|   TransactionType|  交易类型|
 |    nonce|   int |  随机数|
 |    attributes|   TransactionAttribute[]|  交易属性列表 |
 |    fee|   Fee[] |  交易手续费列表 |
 |    networkFee|   long| 网络手续费  |
 |    sigs|   Sign[]|   签名数组  |
 |    payload| Payload |  payload  |
+|    hash| UInt256 |  交易hash|
 
 
 

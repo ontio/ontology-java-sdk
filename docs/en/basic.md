@@ -5,8 +5,10 @@
 用Java SDK之前，请使用以下方式初始化OntSDK实例。
 ```
 OntSdk ontSdk = OntSdk.getInstance();
-ontSdk.setBlockChainConfig(url, "");
+ontSdk.setRpcConnection(url);
+//ontSdk.setRestfulConnection（url）
 ```
+Note: setRestfulConnection表示采用restful接口建立连接，setRpcConnection表示采用rpc接口简历连接。
 **url** : 区块链节点配置文件地址
 
 

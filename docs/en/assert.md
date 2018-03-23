@@ -119,6 +119,18 @@ ontology资产智能合约abi文件，abi文件是对智能合约函数接口的
     ]
 }
 ```
+如何直接调用SDK封装好的转账操作？（建议采用这种方式）
+
+```
+//step1:获得ontSdk实例
+OntSdk wm = OntSdk.getInstance();
+wm.setRpcConnection(url);
+wm.openWalletFile("OntAssetDemo.json");
+//step2:获得ontAssetTx实例
+ontAssetTx = ontSdk.getOntAssetTx()
+//step3:调用转账方法
+ontAssetTx.transfer(from,to,value)
+```
 
 如何通过调用ontology资产智能合约进行转账操作？
 
@@ -139,12 +151,11 @@ ontSdk.setCodeHash(abiinfo.getHash());
 //step4：选择函数，设置函数参数
 AbiFunction func = abiinfo.getFunction("Transfer");
 System.out.println(func.getParameters());
-func.setParamsValue(param0.getBytes(),param1.getBytes(),param2.getBytes());
+func.setParamsValue(from.getBytes(),to.getBytes(),value.getBytes());
 
 //setp5：调用合约
 String hash = ontSdk.getSmartcodeTx().invokeTransaction("passwordtest",addr,func);
 ```
-
 AbiInfo结构是怎样的？
 
 ```
@@ -192,7 +203,7 @@ invoke时为什么要传入账号和密码？
 调用智能合约时需要用户签名，钱包中保存的是加密后的用户私钥，需要密码才能解密获取私钥。
 ```
 
-查询资产操作时，智能合约预是怎么回事，如何使用？
+查询资产操作时，智能合约预执行是怎么回事，如何使用？
 
 ```
 如智能合约get相关操作，从智能合约存储空间里读取数据，无需走节点共识，只在该节点执行即可返回结果。

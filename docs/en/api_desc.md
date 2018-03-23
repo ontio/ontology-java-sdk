@@ -6,14 +6,14 @@
 
 ## 索引
 
-- [总体介绍](#总体介绍)
-- [快速上手](#快速上手)
-- [区块链节点基本操作](#区块链节点基本操作)
-- [钱包文件及规范](#钱包文件及规范)
-- [数字身份](#数字身份)
-- [可信申明](#可信申明)
-- [数字资产](#数字资产)
-- [错误码](#错误码)
+- [总体介绍](##总体介绍)
+- [快速上手](##快速上手)
+- [区块链节点基本操作](##区块链节点基本操作)
+- [钱包文件及规范](##钱包文件及规范)
+- [数字身份](##数字身份)
+- [可信申明](##可信申明)
+- [数字资产](##数字资产)
+- [错误码](##错误码)
 
 ## 总体介绍
 
@@ -44,6 +44,11 @@ SDK主要功能是封装账号、交易、与节点通信，构造交易向链�
 
 Demo例子：
 ```
+//选择连接到链方式restful
+wm.setRestfulConnection(url);
+或rpc
+wm.setRpcConnection(url)
+
 //获取交易
 InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getRawTransaction(hash);
 String info = ontSdk.getConnectMgr().getTransaction(hash);
@@ -339,6 +344,10 @@ ontSdk.getWalletMgr().getWallet().setDefaultAccount("address");
 ```
 //由转出方签名，钱包中必须要存在该转出方。
 String hash = ontSdk.getOntAssetTx().transfer(info1.address,"passwordtest",1,info2.address,"no");
+//转给多个地址
+String hash = ontSdk.getOntAssetTx().transferToMany(info1.address,"passwordtest",new long[]{100L,200L},new String[]{info2.address,info3.address});
+//多个地址转给一个地址
+String hash = ontSdk.getOntAssetTx().transferFromMany(new String[]{info1.address,info2.address},new String[]{"passwordtest","passwordtest"},new long[]{1L,2L},info3.address);
 ```
 
 ontology资产智能合约abi文件，abi文件是对智能合约函数接口的描述，通过abi文件可以清楚如何传参：

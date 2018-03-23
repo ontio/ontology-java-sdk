@@ -1,21 +1,20 @@
 package demo;
 
-import ontology.common.Helper;
-import ontology.OntSdk;
-import ontology.sdk.info.abi.AbiInfo;
-import ontology.sdk.info.abi.AbiFunction;
-import ontology.sdk.info.account.AccountInfo;
-import ontology.sdk.wallet.Identity;
+import com.github.ontio.common.Helper;
+import com.github.ontio.OntSdk;
+import com.github.ontio.sdk.info.abi.AbiInfo;
+import com.github.ontio.sdk.info.abi.AbiFunction;
+import com.github.ontio.sdk.info.account.AccountInfo;
+import com.github.ontio.sdk.wallet.Identity;
 import com.alibaba.fastjson.JSON;
-import ontology.sdk.websocket.MsgQueue;
-import ontology.sdk.websocket.Result;
-import ontology.sdk.websocket.WsProcess;
+import com.github.ontio.sdk.websocket.MsgQueue;
+import com.github.ontio.sdk.websocket.Result;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
 
-import static ontology.common.Common.print;
+import static com.github.ontio.common.Common.print;
 
 /**
  * Created by zx on 2018/1/31.
@@ -151,7 +150,7 @@ public class InvokeSmartCodeDemo {
         String url = "http://127.0.0.1:20384";
 //        String url = "http://101.132.193.149:21334";
         OntSdk wm = OntSdk.getInstance();
-        wm.setBlockChainConfig(url);
+        wm.setRpcConnection(url);
         wm.openWalletFile("InvokeSmartCodeDemo.json");
 
         print(String.format("ConnectParam=[%s, %s]", url, ""));

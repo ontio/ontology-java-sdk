@@ -1,13 +1,13 @@
 package demo;
 
-import ontology.common.Helper;
-import ontology.core.payload.InvokeCodeTransaction;
-import ontology.OntSdk;
-import ontology.sdk.wallet.Identity;
-import ontology.sdk.wallet.Wallet;
-import ontology.sdk.websocket.MsgQueue;
-import ontology.sdk.websocket.Result;
-import ontology.sdk.websocket.WsProcess;
+import com.github.ontio.common.Helper;
+import com.github.ontio.core.payload.InvokeCodeTransaction;
+import com.github.ontio.OntSdk;
+import com.github.ontio.sdk.wallet.Identity;
+import com.github.ontio.sdk.wallet.Wallet;
+import com.github.ontio.sdk.websocket.MsgQueue;
+import com.github.ontio.sdk.websocket.Result;
+import com.github.ontio.sdk.websocket.WsProcess;
 import com.alibaba.fastjson.JSON;
 
 import java.util.Date;
@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ontology.common.Common.print;
+import static com.github.ontio.common.Common.print;
 
 
 /**
@@ -165,7 +165,7 @@ public class OntIdWsDemoTest {
 //        String url = "http://127.0.0.1:20334";
         String url = "http://101.132.193.149:21334";
         OntSdk wm = OntSdk.getInstance();
-        wm.setBlockChainConfig(url, "");
+        wm.setRestfulConnection(url);
         //配置 ontid 文件
         wm.openWalletFile("OntIdWsDemo.json");
 

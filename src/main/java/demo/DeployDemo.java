@@ -1,15 +1,14 @@
 package demo;
 
-import ontology.common.Helper;
-import ontology.core.Transaction;
-import ontology.core.VmType;
-import ontology.core.contract.ContractParameterType;
-import ontology.OntSdk;
+import com.github.ontio.common.Helper;
+import com.github.ontio.core.Transaction;
+import com.github.ontio.core.VmType;
+import com.github.ontio.OntSdk;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-import static ontology.common.Common.print;
+import static com.github.ontio.common.Common.print;
 
 
 /**
@@ -65,7 +64,7 @@ public class DeployDemo {
         String url = "http://127.0.0.1:20384";
 //        String url = "http://101.132.193.149:21334";
         OntSdk wm = OntSdk.getInstance();
-        wm.setBlockChainConfig(url, "");
+        wm.setRestfulConnection(url);
         wm.openWalletFile("DeployDemo.json");
 
         print(String.format("ConnectParam=[%s, %s]", url, ""));

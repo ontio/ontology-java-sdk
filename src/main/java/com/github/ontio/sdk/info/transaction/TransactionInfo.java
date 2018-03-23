@@ -1,4 +1,4 @@
-package ontology.sdk.info.transaction;
+package com.github.ontio.sdk.info.transaction;
 
 import com.alibaba.fastjson.JSON;
 

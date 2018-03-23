@@ -1,13 +1,13 @@
 package demo;
 
-import ontology.OntSdk;
-import ontology.sdk.wallet.Identity;
+import com.github.ontio.OntSdk;
+import com.github.ontio.sdk.wallet.Identity;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ontology.common.Common.print;
+import static com.github.ontio.common.Common.print;
 
 /**
  * Created by zx on 2018/1/25.
@@ -48,7 +48,7 @@ public class ClaimDemo {
         String url = "http://127.0.0.1:20334";
 //        String url = "http://101.132.193.149:20334";
         OntSdk wm = OntSdk.getInstance();
-        wm.setBlockChainConfig(url, "");
+        wm.setRestfulConnection(url);
         wm.openWalletFile("ClaimDemo.json");
 
         print(String.format("ConnectParam=[%s, %s]", url, ""));

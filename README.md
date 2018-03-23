@@ -1,32 +1,17 @@
 [中文版](README_cn.md)
 
-<p align="center">
-  <img
-    src="https://ont.io/static/img/firstpagelogo.b81628b.jpg"
-    width="125px"
-  >
-</p>
+<h1 align="center">JAVA SDK For Ontology  </h1>
+<h4 align="center">Version V0.6.0 </h4>
 
-<h1 align="center">JAVA SDK For Ontology </h1>
+## 总体介绍
 
+The project is an ontology official Java SDK, which is a comprehensive SDK. Currently, it supports local wallet management, digital identity management, digital asset management,  deployment and envoke for Smart Contract , and communication with Ontology Blockchain. The future will also support more rich functions and applications .
 
-## Overview
+## 开始使用
 
+进入[新手指南](docs/en/api_desc.md)开始使用。
 
-JAVA SDK For Ontology主要包括的功能如下，
-
-* 本地钱包管理
-* 数字身份管理
-* 存证管理
-* 智能合约调用
-* 数字资产管理
-* 与节点通信
-* 错误码
-
-更多请参考[接口详细说明](docs/en/api_desc.md)。
-
-## Getting started
-
+## 如何安装
 
 ### 环境准备
 
@@ -46,16 +31,9 @@ mvn clean install
 
 ### 运行前准备
 
-* 请确定Ontology Node已经部署OK，其RPC端口已经打开，SDK将此连接地址作为URL参数进行初始化参数。
+* 请确定Ontology Blockchain已经部署OK，其RPC端口已经打开，SDK将此连接地址作为URL参数进行初始化参数。
+
 * 请确定本地钱包的存储路径，钱包用于存储数字身份信息和数字资产相关的密钥控制信息，可以文件形式，也可以是数据库形式。
 
 
-## Contribution
 
-`ont-sdk-java` always encourages community code contribution. Before contributing please read the [contributor guidelines](.github/CONTRIBUTING.md) and search the issue tracker as your issue may have already been discussed or fixed. To contribute, fork `ont-sdk-java`, commit your changes and submit a pull request.
-
-By contributing to `ont-sdk-java`, you agree that your contributions will be licensed under its MIT license.
-
-## License
-
-* Open-source [MIT](LICENSE.md).

@@ -205,6 +205,27 @@ public class RestClient extends AbstractConnector {
 		throw new RestException(to(rr));
 		
 	}
+	@Override
+	public Object getSmartCodeEvent(int height) throws ConnectorException, IOException {
+		String rs = rest.getSmartCodeEvent(authType, accessToken, height);
+		Result rr = JSON.parseObject(rs, Result.class);
+		if(rr.Error == 0) {
+			return rr.Result;
+		}
+		throw new RestException(to(rr));
+
+	}
+	@Override
+	public Object getSmartCodeEvent(String hash) throws ConnectorException, IOException {
+		String rs = rest.getSmartCodeEvent(authType, accessToken, hash);
+		Result rr = JSON.parseObject(rs, Result.class);
+		if(rr.Error == 0) {
+			return rr.Result;
+		}
+		throw new RestException(to(rr));
+
+	}
+
 	private String to(Result rr) {
 		return JSON.toJSONString(rr);
 	}

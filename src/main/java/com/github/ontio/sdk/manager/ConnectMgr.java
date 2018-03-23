@@ -154,6 +154,14 @@ public class ConnectMgr {
     public String getBlockJson(String hash) throws ConnectorException, IOException {
         return connector.getBlockJson(hash);
     }
+
+    public Object getSmartCodeEvent(int height) throws ConnectorException, IOException {
+        return connector.getSmartCodeEvent(height);
+    }
+
+    public Object getSmartCodeEvent(String hash) throws ConnectorException, IOException {
+        return connector.getSmartCodeEvent(hash);
+    }
 }
 
 

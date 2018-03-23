@@ -28,4 +28,7 @@ public interface IConnector {
 	public String getRawTransactionJson(String txid) throws ConnectorException, IOException;
 	public String getBlockJson(int height) throws ConnectorException, IOException;
 	public String getBlockJson(String hash) throws ConnectorException, IOException;
+
+	public Object getSmartCodeEvent(int height) throws ConnectorException, IOException;
+	public Object getSmartCodeEvent(String hash) throws ConnectorException, IOException;
 }

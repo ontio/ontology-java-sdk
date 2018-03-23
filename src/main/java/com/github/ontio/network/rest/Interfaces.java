@@ -151,6 +151,24 @@ class Interfaces {
 			throw new RestException(Error.getDescNetworkError("Invalid url:"+url + ",errMsg:"+e.getMessage()), e);
 		}
 	}
+	public String getSmartCodeEvent(String authType, String accessToken, int height) throws RestException {
+		Map<String, String> params = new HashMap<String, String>();
+		try {
+			return RestHttp.get(url + Consts.Url_get_smartcodeevent_by_height + height, params);
+		} catch (KeyManagementException | NoSuchAlgorithmException
+				| NoSuchProviderException | IOException e) {
+			throw new RestException(Error.getDescNetworkError("Invalid url:"+url + ",errMsg:"+e.getMessage()), e);
+		}
+	}
+	public String getSmartCodeEvent(String authType, String accessToken, String hash) throws RestException {
+		Map<String, String> params = new HashMap<String, String>();
+		try {
+			return RestHttp.get(url + Consts.Url_get_smartcodeevent_by_txhash + hash, params);
+		} catch (KeyManagementException | NoSuchAlgorithmException
+				| NoSuchProviderException | IOException e) {
+			throw new RestException(Error.getDescNetworkError("Invalid url:"+url + ",errMsg:"+e.getMessage()), e);
+		}
+	}
 
 	public String getAsset(String authType, String accessToken, String assetid) throws RestException {
 		Map<String, String> params = new HashMap<String, String>();

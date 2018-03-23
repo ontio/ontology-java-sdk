@@ -22,6 +22,6 @@ public class Consts {
 	public static String Url_get_StateUpdate = "/api/v1/stateupdate/";
 	public static String Url_get_IdentityUpdate = "/api/v1/identity/";
 	public static String Url_get_DDO = "/api/v1/ontid/ddo/";
-	public static String Url_send_to_issService = "/api/transaction/assetIssue";
-	public static String Url_send_to_trfService = "/api/transaction/assetTrans";
+	public static String Url_get_smartcodeevent_by_height = "/api/v1/smartcode/event/height/";
+	public static String Url_get_smartcodeevent_by_txhash = "/api/v1/smartcode/event/txhash/";
 }

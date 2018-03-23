@@ -163,6 +163,25 @@ public class RpcClient extends AbstractConnector {
 			throw new RuntimeException(e);
 		}
 	}
-	
+	@Override
+	public Object getSmartCodeEvent(int height) throws ConnectorException, IOException {
+		JObject result = rpc.call("getsmartcodeevent", new JNumber(height));
+		System.out.println("rs:"+result);
+		try {
+			return result;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	@Override
+	public Object getSmartCodeEvent(String hash) throws ConnectorException, IOException {
+		JObject result = rpc.call("getsmartcodeevent", new JString(hash.toString()));
+		System.out.println("rs:"+result);
+		try {
+			return result;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 }
 

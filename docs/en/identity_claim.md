@@ -57,7 +57,7 @@ public class Control {
 创建数字身份指的是产生一个Identity数据结构的身份信息，并写入到到钱包文件中。
 
 ```
-Identity identity = ontSdk.getWalletMgr().createIdentity("password");
+Identity identity = ontSdk.getWalletMgr().createIdentity("passwordtest");
 //创建的账号或身份只在内存中，如果要写入钱包文件，需调用写入接口
 ontSdk.getWalletMgr().writeWallet();
 ```
@@ -122,7 +122,8 @@ ontSdk.getWalletMgr().writeWallet();
 
 ### 7 **设置默认账号或身份**
 ```
-ontSdk.getWalletMgr().getWallet().setDefaultIdentity(index);setDefaultAccount
+ontSdk.getWalletMgr().getWallet().setDefaultAccount(address);
+ontSdk.getWalletMgr().getWallet().setDefaultIdentity(index);
 ontSdk.getWalletMgr().getWallet().setDefaultIdentity("ontid");
 ```
 
@@ -139,7 +140,7 @@ String updateAttribute(String ontid,String password,byte[] key,byte[] type,byte[
 |        | key    | byte[]  | key       | 必选，key |
 |        | type    | byte[] | 类型       |  必选，类型 |
 |        | value   | byte[] | value     | 必选，值 |
-| 输出参数 | txid   | String  | 交易编号  | 交易编号是64位字符串 |
+| 输出参数 | txhash   | String  | 交易hash  | 交易hash是64位字符串 |
 
 
 

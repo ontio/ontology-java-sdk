@@ -8,7 +8,7 @@ OntSdk ontSdk = OntSdk.getInstance();
 ontSdk.setRpcConnection(url);
 //ontSdk.setRestfulConnection（url）
 ```
-Note: setRestfulConnection表示采用restful接口建立连接，setRpcConnection表示采用rpc接口简历连接。
+Note: setRestfulConnection表示采用restful接口建立连接，setRpcConnection表示采用rpc接口建立连接。
 **url** : 区块链节点配置文件地址
 
 
@@ -40,11 +40,14 @@ System.out.println(ontSdk.getConnectMgr().getGenerateBlockTime());
 ### 从区块链中获取交易
 
 ```
-InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getRawTransaction(hash);
-String info = ontSdk.getConnectMgr().getTransaction(hash);
+String info = ontSdk.getConnectMgr().getTransaction(txhash);
 System.out.println(info);
 ```
-
+###从区块链中获取InvokeCodeTransaction
+```
+InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getRawTransaction(txhash);
+System.out.println(t);
+```
 ## 数据结构说明
 
 ### Block区块

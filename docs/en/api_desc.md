@@ -42,15 +42,16 @@ SDK主要功能是封装账号、交易、与节点通信，构造交易向链�
 
 查询类操作。传递交易编号，返回交易具体信息。
 
-Demo例子：
+例子：
 ```
 //选择连接到链方式restful
 wm.setRestfulConnection(url);
 或rpc
 wm.setRpcConnection(url)
 
-//获取交易
+//获取InvokeCodeTransaction
 InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getRawTransaction(hash);
+//获取一般的交易
 String info = ontSdk.getConnectMgr().getTransaction(hash);
 System.out.println(info);
 //获取块
@@ -61,7 +62,9 @@ int height = ontSdk.getConnectMgr().getBlockHeight();
 System.out.println(ontSdk.getConnectMgr().getNodeCount());
 //获取出块时间
 System.out.println(ontSdk.getConnectMgr().getGenerateBlockTime());
-
+//获取smartcode event
+System.out.println(ontSdk.getConnectMgr().getSmartCodeEvent(9757));
+System.out.println(ontSdk.getConnectMgr().getSmartCodeEvent(txhash));
 ```
 
 ## 钱包文件及规范

@@ -28,18 +28,12 @@ public class Account {
 **创建数字资产账号**
 
 ```
+String url = "http://127.0.0.1:20386";
+OntSdk ontSdk = OntSdk.getInstance();
+ontSdk.setRpcConnection(url);
+ontSdk.openWalletFile("wallet.json");
 Account acct = ontSdk.getWalletMgr().createAccount("password");
 //创建的账号或身份只在内存中，如果要写入钱包文件，需调用写入接口
-ontSdk.getWalletMgr().writeWallet();
-```
-**导入数字资产账号**
-当用户已经拥有了一个数字身份或者数字账户，SDK支持将其导入到Wallet中。
-
-> **Note：** 建议导入一个数字身份之前，建议查询链上身份，如果链上身份DDO不存在，表示此数字身份未在链上注册，请使用ontSdk.getOntIdTx().register(identity)把身份注册到链上。
-
-```
-Identity identity = ontSdk.getWalletMgr().importIdentity("6PYMpk8DjWzaEvneyaqxMBap9DuUPH72W6BsWWTtpWE4JJZkGq5ENtfYbT","passwordtest");
-//写入钱包      
 ontSdk.getWalletMgr().writeWallet();
 ```
 
@@ -55,10 +49,25 @@ ontSdk.getWalletMgr().writeWallet();
 
 ```
 ontSdk.getWalletMgr().getWallet().setDefaultAccount(index);
-ontSdk.getWalletMgr().getWallet().setDefaultAccount("address");
+ontSdk.getWalletMgr().getWallet().setDefaultAccount(address);
 ```
-
+Note: index表示设置第index个account为默认账户
+      address表示设置该address对应的account为默认账户
 ### 数字资产使用
+
+如何直接调用SDK封装好的转账操作？（建议采用这种方式）
+
+```
+//step1:获得ontSdk实例
+OntSdk wm = OntSdk.getInstance();
+wm.setRpcConnection(url);
+wm.openWalletFile("OntAssetDemo.json");
+//step2:获得ontAssetTx实例
+ontAssetTx = ontSdk.getOntAssetTx()
+//step3:调用转账方法
+ontAssetTx.transfer(from,to,value)
+```
+如何根据合约abi文件，调用合约中的转账方法？
 
 ontology资产智能合约abi文件，abi文件是对智能合约函数接口的描述，通过abi文件可以清楚如何传参：
 
@@ -119,20 +128,8 @@ ontology资产智能合约abi文件，abi文件是对智能合约函数接口的
     ]
 }
 ```
-如何直接调用SDK封装好的转账操作？（建议采用这种方式）
 
-```
-//step1:获得ontSdk实例
-OntSdk wm = OntSdk.getInstance();
-wm.setRpcConnection(url);
-wm.openWalletFile("OntAssetDemo.json");
-//step2:获得ontAssetTx实例
-ontAssetTx = ontSdk.getOntAssetTx()
-//step3:调用转账方法
-ontAssetTx.transfer(from,to,value)
-```
-
-如何通过调用ontology资产智能合约进行转账操作？
+通过调用ontology资产智能合约进行转账操作
 
 ```
 //step1:读取智能合约abi文件

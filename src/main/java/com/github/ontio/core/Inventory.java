@@ -17,17 +17,23 @@
  *
  */
 
-package com.github.ontio.network.rest;
+package com.github.ontio.core;
 
+import com.github.ontio.common.UInt256;
+import com.github.ontio.crypto.Digest;
 
-public class RestRuntimeException extends RuntimeException{
-	private static final long serialVersionUID = 1L;
+public abstract class Inventory implements Signable {
+    //[NonSerialized]
+    private UInt256 _hash = null;
+    
+    public UInt256 hash() {
+        if (_hash == null) {
+			_hash = new UInt256(Digest.hash256(getHashData()));
+        }
+        return _hash;
+    }
 
-	public RestRuntimeException(String message) {
-		super(message);
-	}
-	
-	public RestRuntimeException(String message, Throwable thr) {
-		super(message, thr);
-	}
+    public abstract InventoryType inventoryType();
+
+    public abstract boolean verify();
 }

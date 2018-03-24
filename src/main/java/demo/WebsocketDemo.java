@@ -36,7 +36,7 @@ import static com.github.ontio.common.Common.print;
 
 
 /**
- * Created by zx on 2018/1/9.
+ *
  */
 
 public class WebsocketDemo {

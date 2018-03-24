@@ -23,10 +23,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSON;
-import com.github.ontio.common.Helper;
-import com.github.ontio.core.TransactionType;
-import com.github.ontio.core.Transaction;
+import com.github.ontio.core.transaction.TransactionType;
+import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 

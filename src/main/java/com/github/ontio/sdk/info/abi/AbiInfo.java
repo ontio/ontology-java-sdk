@@ -20,11 +20,10 @@
 package com.github.ontio.sdk.info.abi;
 
 import com.alibaba.fastjson.JSON;
-
 import java.util.List;
 
 /**
- * Created by zx on 2018/1/31.
+ *
  */
 public class AbiInfo {
     public String hash;

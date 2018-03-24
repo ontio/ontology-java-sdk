@@ -20,13 +20,11 @@
 package com.github.ontio.sdk.info.abi;
 
 import com.alibaba.fastjson.JSON;
-import com.github.ontio.sdk.exception.Error;
 import com.github.ontio.sdk.exception.SDKException;
-
 import java.util.List;
 
 /**
- * Created by zx on 2018/1/31.
+ *
  */
 public class AbiEvent {
     public String name;
@@ -42,7 +40,7 @@ public class AbiEvent {
     }
     public void setParamsValue(Object... objs) throws Exception{
         if(objs.length != parameters.size()){
-            throw new SDKException(Error.getDescArgError("setParamsValue value num error"));
+            throw new SDKException("setParamsValue value num error");
         }
         for (int i = 0; i < objs.length; i++) {
             parameters.get(i).setValue(objs[i]);

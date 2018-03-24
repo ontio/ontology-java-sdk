@@ -17,12 +17,11 @@
  *
  */
 
-package com.github.ontio.core;
+package com.github.ontio.core.block;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,71 +30,37 @@ import java.util.function.Function;
 
 import com.alibaba.fastjson.JSON;
 import com.github.ontio.common.*;
+import com.github.ontio.core.Inventory;
+import com.github.ontio.core.InventoryType;
 import com.github.ontio.core.payload.BookKeeping;
 import com.github.ontio.core.payload.DeployCodeTransaction;
 import com.github.ontio.core.payload.InvokeCodeTransaction;
-import com.github.ontio.io.JsonReader;
-import com.github.ontio.crypto.MerkleTree;
+import com.github.ontio.core.transaction.Transaction;
+import com.github.ontio.core.transaction.TransactionType;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.io.JsonSerializable;
 import com.github.ontio.io.Serializable;
-import com.github.ontio.io.json.JArray;
-import com.github.ontio.io.json.JNumber;
-import com.github.ontio.io.json.JObject;
-import com.github.ontio.io.json.JString;
 import com.github.ontio.crypto.ECC;
-import com.github.ontio.io.BinaryReader;
 import org.bouncycastle.math.ec.ECPoint;
 
 /**
- *  区块或区块头
+ *
  */
 public class Block extends Inventory implements JsonSerializable {
-    /**
-     *  区块版本
-     */
-    public int version; 
-    /**
-     *  前一个区块的散列值
-     */
+
+    public int version;
     public UInt256 prevBlockHash;
-    /**
-     *  该区块中所有交易的Merkle树的根
-     */
     public UInt256 transactionsRoot;
     public UInt256 blockRoot;
-    /**
-     *  时间戳
-     */
-    public int timestamp; 
-    /**
-     *  区块高度
-     */
-    public int height; 
-    /**
-     *  随机数
-     */
+    public int timestamp;
+    public int height;
     public long consensusData;
-    /**
-     *  下一个区块的记账合约的散列值
-     */
     public Address nextBookkeeper;
-    /**
-     *  用于验证该区块的脚本
-     */
     public String[] sigData;
     public ECPoint[] bookkeepers;
-    /**
-     *  交易列表，当列表中交易的数量为0时，该Block对象表示一个区块头
-     */
     public Transaction[] transactions;
     public UInt256 hash;
-
-    /**
-     *  该区块的区块头
-     */
-	//[NonSerialized]
     private Block _header = null;
     public Block header() {
         if (isHeader()){
@@ -110,32 +75,20 @@ public class Block extends Inventory implements JsonSerializable {
             _header.height = this.height;
             _header.consensusData = this.consensusData;
             _header.nextBookkeeper = this.nextBookkeeper;
+            _header.sigData = this.sigData;
+            _header.bookkeepers = this.bookkeepers;
             _header.transactions = new Transaction[0];
         }
         return _header;
     }
 
-    /**
-     *  资产清单的类型
-     */
     @Override
 	public InventoryType inventoryType() { return InventoryType.Block; }
 
-    /**
-     *  是否为区块头
-     */
     public boolean isHeader() { return transactions.length == 0; }
 
-    /**
-     *  反序列化
-     *  <param name="reader">数据来源</param>
-     * @throws IOException 
-     * @throws IllegalAccessException 
-     * @throws InstantiationException 
-     */
     @Override 
     public void deserialize(BinaryReader reader) throws IOException {
-    	// 未签名
         deserializeUnsigned(reader);
         int len = (int)reader.readVarInt();
         sigData = new String[len];
@@ -144,21 +97,9 @@ public class Block extends Inventory implements JsonSerializable {
             System.out.println(this.sigData[i]);
         }
 
-        // 填充值
-//        if (reader.readByte() != 1) {
-//            throw new IOException();
-//        }
-        // 脚本
-//        try {
-//			script = reader.readSerializable(Program.class);
-//		} catch (InstantiationException | IllegalAccessException ex) {
-//        	throw new IOException(ex);
-//		}
-        // 交易
-//      transactions = new Transaction[(int) reader.readVarInt(0x10000000)];//xy
         len = (int) reader.readInt();
         System.out.println(len);
-        transactions = new Transaction[len];	//dna
+        transactions = new Transaction[len];
         for (int i = 0; i < transactions.length; i++) {
             transactions[i] = Transaction.deserializeFrom(reader);
         }
@@ -186,8 +127,6 @@ public class Block extends Inventory implements JsonSerializable {
             for(int i=0;i<len;i++){
                 this.bookkeepers[i] = ECC.secp256r1.getCurve().createPoint(
                         new BigInteger(1, reader.readVarBytes()), new BigInteger(1, reader.readVarBytes()));
-//                this.bookkeepers[i].x = Helper.toHexString(reader.readVarBytes());
-//                this.bookkeepers[i].y = Helper.toHexString(reader.readVarBytes());
             }
 	        transactions = new Transaction[0];
 		} catch (InstantiationException | IllegalAccessException ex) {
@@ -197,10 +136,9 @@ public class Block extends Inventory implements JsonSerializable {
     
     @Override 
     public void serialize(BinaryWriter writer) throws IOException {
-        serializeUnsigned(writer);
-        writer.writeByte((byte)1);
-//        writer.writeSerializable(script);
-        writer.writeSerializableArray2(transactions);
+//        serializeUnsigned(writer);
+//        writer.writeByte((byte)1);
+//        writer.writeSerializableArray2(transactions);
     }
 
     @Override 
@@ -230,10 +168,7 @@ public class Block extends Inventory implements JsonSerializable {
     public int hashCode() {
         return hash().hashCode();
     }
-    
-    /**
-     * 反序列化Block(static)
-     */
+
     public static Block fromTrimmedData(byte[] data, int index) throws IOException {
     	return fromTrimmedData(data, index, null);
     }
@@ -242,13 +177,8 @@ public class Block extends Inventory implements JsonSerializable {
         Block block = new Block();
         try (ByteArrayInputStream ms = new ByteArrayInputStream(data, index, data.length - index)) {
 	        try (BinaryReader reader = new BinaryReader(ms)) {
-	        	// 未签名的
 	        	block.deserializeUnsigned(reader);
-	        	// 填充值
-	        	reader.readByte(); 
-	        	// 脚本
-//	        	block.script = reader.readSerializable(Program.class);
-	        	// 交易
+	        	reader.readByte();
 	        	if (txSelector == null) {
 	        		block.transactions = new Transaction[0];
 	        	} else {
@@ -264,32 +194,11 @@ public class Block extends Inventory implements JsonSerializable {
         return block;
     }
 
-    /**
-     * 获取验证脚本
-     */
-    @Override 
+    @Override
     public Address[] getAddressU160ForVerifying() {
-//        if (prevBlockHash.equals(UInt256.ZERO)) {
-//            return new Address[] { Program.toScriptHash(script.parameter) };
-//        }
-        Block prev_header;
-		try {
-			prev_header = Blockchain.current().getHeader(prevBlockHash);
-		} catch (Exception ex) {
-			throw new IllegalStateException(ex);
-		}
-        if (prev_header == null) {
-        	throw new IllegalStateException();
-        }
-        return new Address[] { prev_header.nextBookkeeper };
+        return null;
     }
 
-    /**
-     * 根据区块中所有交易的Hash生成MerkleRoot
-     */
-    public void rebuildMerkleRoot() {
-        transactionsRoot = MerkleTree.computeRoot(Arrays.stream(transactions).map(p -> p.hash()).toArray(UInt256[]::new));
-    }
 
     public Object json() {
         Map json = new HashMap();
@@ -322,11 +231,7 @@ public class Block extends Inventory implements JsonSerializable {
         }).toArray(Object[]::new));
         return JSON.toJSONString(json);
     }
-    
-	/**
-     *  把区块对象变为只包含区块头和交易Hash的字节数组，去除交易数据
-     *  <returns>返回只包含区块头和交易Hash的字节数组</returns>
-     */
+
     public byte[] trim() {
         try (ByteArrayOutputStream ms = new ByteArrayOutputStream()) {
 	        try (BinaryWriter writer = new BinaryWriter(ms)) {
@@ -341,20 +246,11 @@ public class Block extends Inventory implements JsonSerializable {
 		}
     }
 
-    /**
-     * 验证该区块头是否合法
-     * 
-     */
     @Override public boolean verify() {
         return verify(false);
     }
 
-    /**
-     * 验证该区块头是否合法
-     * 
-     * @param completely 是否同时验证区块中的每一笔交易
-     * @return
-     */
+
     public boolean verify(boolean completely) {
     	return true;
     }
@@ -390,7 +286,7 @@ public class Block extends Inventory implements JsonSerializable {
 //			this.transactions = new Transaction[0];
 //			return;
 //		}
-//		// 针对于数组的解析
+//
 //		int count = txsJson.size();
 //		this.transactions = new Transaction[count];
 //		for(int i=0; i<count; ++i) {

@@ -19,25 +19,27 @@
 
 package com.github.ontio.io;
 
+import com.github.ontio.common.Helper;
+
 import java.io.*;
 
 /**
- *  为序列化提供一个接口
+ *  Serialize interface
  */
-public interface Serializable {    
-    /**
-     *  反序列化
-     *  <param name="reader">数据来源</param>
-     * @throws IOException 
-     */
-    void deserialize(BinaryReader reader) throws IOException;
-    
-    /**
-     *  序列化
-     *  <param name="writer">存放序列化后的结果</param>
-     * @throws IOException 
-     */
-    void serialize(BinaryWriter writer) throws IOException;
+public interface Serializable {
+	/**
+	 *
+	 * @param reader
+	 * @throws IOException
+	 */
+	void deserialize(BinaryReader reader) throws IOException;
+
+	/**
+	 *
+	 * @param writer
+	 * @throws IOException
+	 */
+	void serialize(BinaryWriter writer) throws IOException;
 
     default byte[] toArray() {
         try (ByteArrayOutputStream ms = new ByteArrayOutputStream()) {
@@ -50,6 +52,9 @@ public interface Serializable {
 			throw new UnsupportedOperationException(ex);
 		}
     }
+	default String toHexString(){
+    	return Helper.toHexString(toArray());
+	}
     
     static <T extends Serializable> T from(byte[] value, Class<T> t) throws InstantiationException, IllegalAccessException {
     	try (ByteArrayInputStream ms = new ByteArrayInputStream(value)) {

@@ -39,14 +39,6 @@ public class SDKException extends Exception {
 	}
 	
 	private void initExMsg(String message) {
-		exMsg = JSON.parseObject(message, ExMsg.class);
-	}
-	private ExMsg exMsg;
-	public long getErrorCode() {
-		return exMsg.Error;
-	}
-	public String getErrorMessage() {
-		return exMsg.Desc;
 	}
 
 }

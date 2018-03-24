@@ -43,9 +43,10 @@ public class OntAssetDemo {
             Account info1 = null;
             Account info2 = null;
             Account info3 = null;
-            if(ontSdk.getWalletMgr().getAccounts().size() < 2){
-                info1 = ontSdk.getWalletMgr().createAccountFromPrikey("passwordtest","50468cf55de3808728a6e040adec12ad27750cf0d82aa390d551ff2b18c676f2");
+            if (ontSdk.getWalletMgr().getAccounts().size() < 2) {
+                info1 = ontSdk.getWalletMgr().createAccountFromPrikey("passwordtest", "2ff1de0e26990385c5b7aa580e8516de20c95ac77a794e296be9e6fe005d6ed8");
                 info2 = ontSdk.getWalletMgr().createAccount("passwordtest");
+                info3 = ontSdk.getWalletMgr().createAccount("passwordtest");
                 ontSdk.getWalletMgr().writeWallet();
             }
 
@@ -60,17 +61,17 @@ public class OntAssetDemo {
 //            System.out.println(hh);
 //            System.out.println(Helper.getCodeHash("aa", VmType.NEOVM.value()));
 //            System.exit(0);
-            System.out.println(info1.address+" "+Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info1.address,"passwordtest").publicKey));
-            System.out.println(info2.address+" "+Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info2.address,"passwordtest").publicKey));
-            System.out.println(info3.address+" "+Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info3.address,"passwordtest").publicKey));
-            String hash = ontSdk.getOntAssetTx().transfer(info1.address,"passwordtest",100L,info2.address);
-            //String hash = ontSdk.getOntAssetTx().transferToMany(info1.address,"passwordtest",new long[]{100L,200L},new String[]{info2.address,info3.address});
-//            String hash = ontSdk.getOntAssetTx().transferFromMany(new String[]{info1.address,info2.address},new String[]{"passwordtest","passwordtest"},new long[]{1L,2L},info3.address);
-            System.out.println(hash);
-          //  System.out.println(Helper.toHexString(Address.decodeBase58(info1.address).toArray()));
-          //  String addr = Address.addressFromPubKey(ontSdk.getWalletMgr().getPubkey("0399b851bc2cd05506d6821d4bc5a92139b00ac4bc7399cd9ca0aac86a468d1c05")).toBase58();
-          //  System.out.println(addr);
-          //  System.out.println(Helper.toHexString(Address.addressFromPubKey(ontSdk.getWalletMgr().getPubkey("0399b851bc2cd05506d6821d4bc5a92139b00ac4bc7399cd9ca0aac86a468d1c05")).toArray()));
+            System.out.println(info1.address + " " + Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info1.address, "passwordtest").publicKey));
+            System.out.println(info2.address + " " + Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info2.address, "passwordtest").publicKey));
+            System.out.println(info3.address + " " + Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info3.address, "passwordtest").publicKey));
+//            String hash = ontSdk.getOntAssetTx().transfer("ont",info1.address,"passwordtest",info2.address,100L);
+//            String hash1 = ontSdk.getOntAssetTx().transferToMany("ont",info1.address,"passwordtest",new String[]{info2.address,info3.address},new long[]{100L,200L});
+            String hash2 = ontSdk.getOntAssetTx().transferFromMany("ont", new String[]{info1.address, info2.address}, new String[]{"passwordtest", "passwordtest"}, info3.address, new long[]{1L, 2L});
+//            System.out.println(hash);
+            //  System.out.println(Helper.toHexString(Address.decodeBase58(info1.address).toArray()));
+            //  String addr = Address.addressFromPubKey(ontSdk.getWalletMgr().getPubkey("0399b851bc2cd05506d6821d4bc5a92139b00ac4bc7399cd9ca0aac86a468d1c05")).toBase58();
+            //  System.out.println(addr);
+            //  System.out.println(Helper.toHexString(Address.addressFromPubKey(ontSdk.getWalletMgr().getPubkey("0399b851bc2cd05506d6821d4bc5a92139b00ac4bc7399cd9ca0aac86a468d1c05")).toArray()));
         } catch (Exception e) {
             e.printStackTrace();
         }

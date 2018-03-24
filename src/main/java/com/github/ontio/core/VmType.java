@@ -20,7 +20,7 @@
 package com.github.ontio.core;
 
 /**
- * list transaction types supported by DNA 
+ * list vm types
  */
 public enum VmType {
 

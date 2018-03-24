@@ -22,7 +22,6 @@ package com.github.ontio.sdk.wallet;
 import com.alibaba.fastjson.JSON;
 
 /**
- * Created by zx on 2018/1/11.
  */
 public class Scrypt {
     private int n = 16384;

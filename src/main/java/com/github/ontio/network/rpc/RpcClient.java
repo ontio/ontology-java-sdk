@@ -22,13 +22,10 @@ package com.github.ontio.network.rpc;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import com.alibaba.fastjson.JSON;
 import com.github.ontio.common.Helper;
 import com.github.ontio.common.UInt256;
-import com.github.ontio.core.Block;
-import com.github.ontio.io.JsonReader;
-import com.github.ontio.core.Transaction;
-import com.github.ontio.io.JsonSerializable;
+import com.github.ontio.core.block.Block;
+import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.Serializable;
 import com.github.ontio.io.json.JNumber;
 import com.github.ontio.io.json.JObject;

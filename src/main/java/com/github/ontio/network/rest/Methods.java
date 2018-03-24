@@ -43,15 +43,13 @@ import javax.net.ssl.TrustManager;
 
 import com.alibaba.fastjson.JSON;
 
-public class RestHttp {
+public class Methods {
     private static final String DEFAULT_CHARSET = "UTF-8";
     
 
     public static String post(String url, String body, boolean https) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, KeyManagementException {
-    	// 创建链接
     	URL u = new URL(url);
         HttpURLConnection http = (HttpURLConnection) u.openConnection();
-        // 连接超时
         http.setConnectTimeout(10000);
         http.setReadTimeout(10000);
         http.setRequestMethod("POST");
@@ -65,12 +63,10 @@ public class RestHttp {
         http.setDoOutput(true);
         http.setDoInput(true);
         http.connect();
-        // 写入参数
         try (OutputStream out = http.getOutputStream()) {
 	        out.write(body.getBytes(DEFAULT_CHARSET));
 	        out.flush();
         }
-        // 获取返回
         StringBuilder sb = new StringBuilder();
         try (InputStream is = http.getInputStream()) {
         	try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, DEFAULT_CHARSET))) {
@@ -80,17 +76,14 @@ public class RestHttp {
         		}
         	}
         }
-        // 关闭链接
         if (http != null) {
             http.disconnect();
         }
         return sb.toString();
     }
     public static String delete(String url, String body, boolean https) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, KeyManagementException {
-        // 创建链接
         URL u = new URL(url);
         HttpURLConnection http = (HttpURLConnection) u.openConnection();
-        // 连接超时
         http.setConnectTimeout(10000);
         http.setReadTimeout(10000);
         http.setRequestMethod("DELETE");
@@ -104,12 +97,10 @@ public class RestHttp {
         http.setDoOutput(true);
         http.setDoInput(true);
         http.connect();
-        // 写入参数
         try (OutputStream out = http.getOutputStream()) {
             out.write(body.getBytes(DEFAULT_CHARSET));
             out.flush();
         }
-        // 获取返回
         StringBuilder sb = new StringBuilder();
         try (InputStream is = http.getInputStream()) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, DEFAULT_CHARSET))) {
@@ -119,7 +110,6 @@ public class RestHttp {
                 }
             }
         }
-        // 关闭链接
         if (http != null) {
             http.disconnect();
         }
@@ -149,8 +139,8 @@ public class RestHttp {
     public static String postObject(String url, Map<String, String> params, Map<String, Object> body) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, KeyManagementException {
         return post(url+initParams(params), JSON.toJSONString(body));
     }
+
     /**
-     * Get请求
      *
      * @param url
      * @param https
@@ -161,10 +151,8 @@ public class RestHttp {
      * @throws KeyManagementException
      */
     private static String get(String url  ,boolean https) throws NoSuchAlgorithmException, NoSuchProviderException, IOException, KeyManagementException {
-    	// 创建链接
     	URL u = new URL(url);
         HttpURLConnection http = (HttpURLConnection) u.openConnection();
-        // 连接超时
         http.setConnectTimeout(50000);
         http.setReadTimeout(50000);
         http.setRequestMethod("GET");
@@ -178,7 +166,6 @@ public class RestHttp {
         http.setDoOutput(true);
         http.setDoInput(true);
         http.connect();
-        // 获取返回
         StringBuilder sb = new StringBuilder();
         try (InputStream is = http.getInputStream()) {
         	try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, DEFAULT_CHARSET))) {
@@ -188,7 +175,6 @@ public class RestHttp {
         		}
         	}
         }
-        // 关闭链接
         if (http != null) {
             http.disconnect();
         }
@@ -225,10 +211,9 @@ public class RestHttp {
         }
         return "?"+sb.toString().substring(1);
     }
-    
+
     /**
-     * 关闭链接
-     * 
+     *
      * @param objs
      * @throws IOException
      */

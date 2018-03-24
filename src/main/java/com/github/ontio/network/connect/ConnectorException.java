@@ -19,9 +19,8 @@
 
 package com.github.ontio.network.connect;
 
-import com.github.ontio.sdk.exception.SDKException;
 
-public class ConnectorException extends SDKException {
+public class ConnectorException extends Exception {
 	private static final long serialVersionUID = 1110342144692879043L;
 	
 	public ConnectorException(String message) {

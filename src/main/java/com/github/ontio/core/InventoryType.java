@@ -17,18 +17,29 @@
  *
  */
 
-package com.github.ontio.network.rest;
+package com.github.ontio.core;
 
-import com.github.ontio.network.connect.ConnectorException;
 
-public class RestException extends ConnectorException {
-	private static final long serialVersionUID = -8558006777817318117L;
-	
-	public RestException(String message) {
-		super(message);
-	}
-	
-	public RestException(String message,Throwable ex) {
-		super(message, ex);
-	}
+public enum InventoryType {
+    TX(0x01),
+    Block(0x02),
+    Consensus(0xe0),
+    ;
+    private byte value;
+    private InventoryType(int v) {
+        value = (byte)v;
+    }
+    public int value() {
+        return value;
+    }
+    
+    public static InventoryType from(byte b) {
+    	for(InventoryType t: InventoryType.values()) {
+    		if(t.value() == b) {
+    			return t;
+    		}
+    	}
+    	throw new IllegalArgumentException();
+    }
 }
+

@@ -19,18 +19,17 @@
 
 package com.github.ontio.sdk.transaction;
 
+import com.github.ontio.account.Acct;
 import com.github.ontio.common.Address;
-import com.github.ontio.core.Transaction;
-import com.github.ontio.core.TransactionAttribute;
-import com.github.ontio.core.TransactionAttributeUsage;
+import com.github.ontio.core.transaction.Transaction;
+import com.github.ontio.core.transaction.TransactionAttribute;
+import com.github.ontio.core.transaction.TransactionAttributeUsage;
 import com.github.ontio.common.Helper;
-import com.github.ontio.core.*;
 import com.github.ontio.core.asset.Fee;
 import com.github.ontio.core.payload.DeployCodeTransaction;
 import com.github.ontio.core.payload.InvokeCodeTransaction;
 import com.github.ontio.core.scripts.ScriptBuilder;
 import com.github.ontio.OntSdk;
-import com.github.ontio.sdk.exception.Error;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.abi.AbiFunction;
 import com.github.ontio.sdk.info.abi.Parameter;
@@ -45,7 +44,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Created by zx on 2018/1/9.
+ *
  */
 public class SmartcodeTx {
     public OntSdk sdk;
@@ -66,21 +65,53 @@ public class SmartcodeTx {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public String getWsSessionId() {
         return wsSessionId;
     }
 
+    /**
+     *
+     * @param ontid
+     * @param password
+     * @param abiFunction
+     * @param vmtype
+     * @return
+     * @throws Exception
+     */
     public String invokeTransaction(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
         return (String) invokeTransaction(false, ontid, password, abiFunction, vmtype);
     }
 
+    /**
+     *
+     * @param ontid
+     * @param password
+     * @param abiFunction
+     * @param vmtype
+     * @return
+     * @throws Exception
+     */
     public Object invokeTransactionPreExec(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
         return invokeTransaction(true, ontid, password, abiFunction, vmtype);
     }
 
+    /**
+     *
+     * @param preExec
+     * @param ontid
+     * @param password
+     * @param abiFunction
+     * @param vmtype
+     * @return
+     * @throws Exception
+     */
     public Object invokeTransaction(boolean preExec, String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
         if (codeHash == null) {
-            throw new SDKException(Error.getDescArgError("null codeHash"));
+            throw new SDKException("null codeHash");
         }
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid, password);
         List list = new ArrayList<Object>();
@@ -102,7 +133,7 @@ public class SmartcodeTx {
             } else if ("Void".equals(obj.getType())) {
 
             } else {
-                throw new SDKException(Error.getDescArgError("type error"));
+                throw new SDKException("type error");
             }
         }
         list.add(tmp);
@@ -113,8 +144,8 @@ public class SmartcodeTx {
         params = Helper.addBytes(params, new byte[]{0x69});
         params = Helper.addBytes(params, Helper.hexToBytes(codeHash));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, vmtype, fees);
-        String txHex = sdk.getWalletMgr().signatureData(password, tx);
-        System.out.println("sigData[0]:" + Helper.toHexString(tx.sigs[0].pubKeys[0].getEncoded(true)));
+        //String txHex = sdk.getWalletMgr().signatureData(password, tx);
+        String txHex = sdk.signTx(tx,new Acct[][]{{sdk.getWalletMgr().getAccount(ontid, password)}});
         System.out.println(txHex);
         boolean b = false;
         if (preExec) {
@@ -123,22 +154,41 @@ public class SmartcodeTx {
             b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, txHex);
         }
         if (!b) {
-            throw new SDKException(Error.getDescArgError("sendRawTransaction error"));
+            throw new SDKException("sendRawTransaction error");
         }
         return tx.hash().toString();
     }
 
+    /**
+     *
+     * @param codeHexStr
+     * @param needStorage
+     * @param name
+     * @param codeVersion
+     * @param author
+     * @param email
+     * @param desp
+     * @param vmtype
+     * @return
+     * @throws Exception
+     */
     public String DeployCodeTransaction(String codeHexStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp, byte vmtype) throws Exception {
         Transaction tx = makeDeployCodeTransaction(codeHexStr, needStorage, name, codeVersion, author, email, desp, vmtype);
-        String txHex = sdk.getWalletMgr().signatureData(tx);
+        String txHex = tx.toHexString();//sdk.getWalletMgr().signatureData(tx);
         System.out.println(txHex);
         boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, txHex);
         if (!b) {
-            throw new SDKException(Error.getDescArgError("sendRawTransaction error"));
+            throw new SDKException("sendRawTransaction error");
         }
         return tx.hash().toString();
     }
 
+    /**
+     *
+     * @param sb
+     * @param list
+     * @return
+     */
     public byte[] createCodeParamsScript(ScriptBuilder sb, List<Object> list) {
         try {
             for (int i = list.size() - 1; i >= 0; i--) {
@@ -166,6 +216,11 @@ public class SmartcodeTx {
         return sb.toArray();
     }
 
+    /**
+     *
+     * @param list
+     * @return
+     */
     public byte[] createCodeParamsScript(List<Object> list) {
         ScriptBuilder sb = new ScriptBuilder();
         try {
@@ -193,6 +248,19 @@ public class SmartcodeTx {
         return sb.toArray();
     }
 
+    /**
+     *
+     * @param codeStr
+     * @param needStorage
+     * @param name
+     * @param codeVersion
+     * @param author
+     * @param email
+     * @param desp
+     * @param vmtype
+     * @return
+     * @throws SDKException
+     */
     public DeployCodeTransaction makeDeployCodeTransaction(String codeStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp, byte vmtype) throws SDKException {
         DeployCodeTransaction tx = new DeployCodeTransaction();
         tx.attributes = new TransactionAttribute[1];
@@ -210,6 +278,15 @@ public class SmartcodeTx {
         return tx;
     }
 
+    /**
+     *
+     * @param paramsHexStr
+     * @param pubkey
+     * @param vmtype
+     * @param fees
+     * @return
+     * @throws SDKException
+     */
     public InvokeCodeTransaction makeInvokeCodeTransaction(byte[] paramsHexStr, String pubkey, byte vmtype, Fee[] fees) throws SDKException {
         ECPoint publicKey = null;
         if (pubkey != null) {

@@ -23,9 +23,8 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 import com.github.ontio.common.Helper;
-import com.github.ontio.core.BookKeeperAction;
-import com.github.ontio.core.TransactionType;
-import com.github.ontio.core.Transaction;
+import com.github.ontio.core.transaction.TransactionType;
+import com.github.ontio.core.transaction.Transaction;
 import org.bouncycastle.math.ec.ECPoint;
 
 import com.github.ontio.crypto.ECC;

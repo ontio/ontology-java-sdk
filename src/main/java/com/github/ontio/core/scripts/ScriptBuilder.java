@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
+ *
+ *  The ontology is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The ontology is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package com.github.ontio.core.scripts;
 
 import java.io.*;
@@ -7,16 +26,10 @@ import java.nio.*;
 import com.github.ontio.common.UIntBase;
 
 /**
- *  脚本生成器
  */
 public class ScriptBuilder implements AutoCloseable {
     private ByteArrayOutputStream ms = new ByteArrayOutputStream();
 
-    /**
-     *  添加操作符
-     *  <param name="op">操作符</param>
-     *  <returns>返回添加操作符之后的脚本生成器</returns>
-     */
     public ScriptBuilder add(ScriptOp op) {
         return add(op.getByte());
     }
@@ -26,11 +39,6 @@ public class ScriptBuilder implements AutoCloseable {
         return this;
     }
 
-    /**
-     *  添加一段脚本
-     *  <param name="script">脚本</param>
-     *  <returns>返回添加脚本之后的脚本生成器</returns>
-     */
     public ScriptBuilder add(byte[] script) {
         ms.write(script, 0, script.length);
         return this;
@@ -50,11 +58,7 @@ public class ScriptBuilder implements AutoCloseable {
         }
         return add(ScriptOp.OP_0);
     }
-    /**
-     *  添加一段脚本，该脚本的作用是将一个整数压入栈中
-     *  <param name="number">要压入栈中的整数</param>
-     *  <returns>返回添加脚本之后的脚本生成器</returns>
-     */
+
     public ScriptBuilder push(BigInteger number) {
     	if (number.equals(BigInteger.ONE.negate())) {
             return add(ScriptOp.OP_1NEGATE);
@@ -68,11 +72,6 @@ public class ScriptBuilder implements AutoCloseable {
         return push(number.toByteArray());
     }
 
-    /**
-     *  添加一段脚本，该脚本的作用是将一个字节数组压入栈中
-     *  <param name="data">要压入栈中的字节数组</param>
-     *  <returns>返回添加脚本之后的脚本生成器</returns>
-     */
     public ScriptBuilder push(byte[] data) {
         if (data == null) {
         	throw new NullPointerException();
@@ -98,11 +97,6 @@ public class ScriptBuilder implements AutoCloseable {
         return this;
     }
 
-    /**
-     *  添加一段脚本，该脚本的作用是将一个散列值压入栈中
-     *  <param name="hash">要压入栈中的散列值</param>
-     *  <returns>返回添加脚本之后的脚本生成器</returns>
-     */
     public ScriptBuilder push(UIntBase hash) {
         return push(hash.toArray());
     }
@@ -110,9 +104,7 @@ public class ScriptBuilder implements AutoCloseable {
     public ScriptBuilder pushPack() {
         return add(ScriptOp.OP_PACK);
     }
-    /**
-     *  获取脚本生成器中包含的脚本代码
-     */
+
     public byte[] toArray() {
         return ms.toByteArray();
     }

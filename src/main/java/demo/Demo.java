@@ -28,7 +28,7 @@ import com.github.ontio.sdk.wallet.Identity;
 import static com.github.ontio.common.Common.print;
 
 /**
- * Created by zx on 2018/1/25.
+ *
  */
 public class Demo {
     public static void main(String[] args) {
@@ -37,14 +37,14 @@ public class Demo {
 //            System.out.println(ontSdk.getConnectMgr().getBalance("TA5CF29d8T68nALGeQy7BnT37wgjMJNSLA"));
 //            System.out.println(Helper.toHexString(ontSdk.getConnectMgr().getBlock(2).transactions[0].sigs[0].sigData[0]));
 //            System.out.println(ontSdk.getConnectMgr().getBlock(2).json());
-//            System.out.println(ontSdk.getConnectMgr().getBlockHeight());
+            System.out.println(ontSdk.getConnectMgr().getBlockHeight());
 //            System.out.println(ontSdk.getConnectMgr().getBlockJson(1));
 //            System.out.println(ontSdk.getConnectMgr().getBlockJson("9ef2746806ed7345ddaad664faf98d8d3fc1cabd21d1acdac57fdc79952e2b94"));
 //            System.out.println(ontSdk.getConnectMgr().getGenerateBlockTime());
 //            System.out.println(ontSdk.getConnectMgr().getNodeCount());
 //            System.out.println(((InvokeCodeTransaction)ontSdk.getConnectMgr().getRawTransaction("c2592940837c2347f6a7b391d4940abb7171dd5dd156b7c031d20a5940142b5a")).fee[0].payer.toBase58());
 //            System.out.println(((InvokeCodeTransaction)ontSdk.getConnectMgr().getRawTransaction("c2592940837c2347f6a7b391d4940abb7171dd5dd156b7c031d20a5940142b52")).json());
-            System.out.println(ontSdk.getConnectMgr().getSmartCodeEvent(2));
+//            System.out.println(ontSdk.getConnectMgr().getSmartCodeEvent(2));
             System.exit(0);
 
 

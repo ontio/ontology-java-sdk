@@ -17,35 +17,31 @@
  *
  */
 
-package com.github.ontio.core;
+package com.github.ontio.core.transaction;
 
 /**
- *  表示交易特性的用途
+ * list transaction types
  */
-public enum TransactionAttributeUsage {
-
-	Nonce(0x00),
-    /**
-     *  用于对交易进行额外的验证
-     */
-    Script(0x20),
-
-    DescriptionUrl(0x81),
-    Description(0x90),
-
+public enum TransactionType {
+    BookKeeping(0x00),
+    BookKeeper(0x02),
+    Claim(0x03),
+    Enrollment(0x04),
+    Vote(0x05),
+    DeployCodeTransaction(0xd0),
+    InvokeCodeTransaction(0xd1),
     ;
-    private byte value;
 
-    TransactionAttributeUsage(int v) {
+    private byte value;
+    TransactionType(int v) {
         value = (byte)v;
     }
-
     public byte value() {
         return value;
     }
-    
-    public static TransactionAttributeUsage valueOf(byte v) {
-    	for (TransactionAttributeUsage e : TransactionAttributeUsage.values()) {
+
+    public static TransactionType valueOf(byte v) {
+    	for (TransactionType e : TransactionType.values()) {
     		if (e.value == v) {
     			return e;
     		}

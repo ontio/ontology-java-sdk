@@ -20,15 +20,8 @@
 package com.github.ontio.core.asset;
 
 import com.github.ontio.common.Helper;
-import com.github.ontio.common.Address;
-import com.github.ontio.core.TransactionAttribute;
-import com.github.ontio.crypto.Digest;
 import com.github.ontio.io.*;
 import com.github.ontio.crypto.ECC;
-import com.github.ontio.io.json.JArray;
-import com.github.ontio.io.json.JNumber;
-import com.github.ontio.io.json.JObject;
-import com.github.ontio.io.json.JString;
 import org.bouncycastle.math.ec.ECPoint;
 
 import java.io.IOException;
@@ -76,10 +69,6 @@ public class Sig implements Serializable, JsonSerializable {
         }
     }
 
-
-    public static Address toScriptHash(byte[] script) {
-    	return new Address(Digest.hash160(script));
-    }
     public Object json() {
         Map json = new HashMap<>();
         json.put("M", M);

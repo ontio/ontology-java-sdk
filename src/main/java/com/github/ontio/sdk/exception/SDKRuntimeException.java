@@ -23,9 +23,6 @@ import com.alibaba.fastjson.JSON;
 
 public class SDKRuntimeException extends RuntimeException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2005335065357755315L;
 	public SDKRuntimeException(String message) {
 		super(message);
@@ -38,13 +35,5 @@ public class SDKRuntimeException extends RuntimeException {
 	}
 	
 	private void initExMsg(String message) {
-		exMsg = JSON.parseObject(message, ExMsg.class);
-	}
-	private ExMsg exMsg;
-	public long getErrorCode() {
-		return exMsg.Error;
-	}
-	public String getErrorMessage() {
-		return exMsg.Desc;
 	}
 }

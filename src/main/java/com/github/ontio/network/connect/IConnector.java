@@ -21,8 +21,8 @@ package com.github.ontio.network.connect;
 
 import java.io.IOException;
 
-import com.github.ontio.core.Block;
-import com.github.ontio.core.Transaction;
+import com.github.ontio.core.block.Block;
+import com.github.ontio.core.transaction.Transaction;
 
 public interface IConnector {
 
@@ -38,11 +38,7 @@ public interface IConnector {
 	public Block getBlock(int height) throws ConnectorException, IOException;
 	public Block getBlock(String hash) throws ConnectorException, IOException ;
 
-	public void updateToken(String token);
-
 	public Object getBalance(String address) throws ConnectorException, IOException;
-
-	public String getDDO(String codehash, String ontid) throws ConnectorException, IOException;
 	
 	public String getRawTransactionJson(String txhash) throws ConnectorException, IOException;
 	public String getBlockJson(int height) throws ConnectorException, IOException;

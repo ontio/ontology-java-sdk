@@ -37,7 +37,7 @@
  */package demo;
 
 import com.github.ontio.common.Helper;
-import com.github.ontio.core.Transaction;
+import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.core.VmType;
 import com.github.ontio.OntSdk;
 
@@ -48,7 +48,7 @@ import static com.github.ontio.common.Common.print;
 
 
 /**
- * Created by zx on 2018/1/9.
+ *
  */
 public class DeployDemo {
     public static void main(String[] args) {

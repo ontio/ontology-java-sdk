@@ -52,9 +52,9 @@ public class OntIdWsDemoTest {
             ontSdk.getWalletMgr().getWallet().setDefaultIdentity(0);
             ontSdk.getWalletMgr().writeWallet();
 
-//            String wsUrl = "ws://127.0.0.1:20335";
+            String wsUrl = "ws://127.0.0.1:20385";
 //            String wsUrl = "ws://54.222.182.88:22335";
-            String wsUrl = "ws://101.132.193.149:21335";
+//            String wsUrl = "ws://101.132.193.149:21335";
 
             Object lock = new Object();
             WsProcess.startWebsocketThread(lock,wsUrl);
@@ -181,8 +181,8 @@ public class OntIdWsDemoTest {
 
     public static OntSdk getOntSdk() throws Exception {
 //        String url = "http://54.222.182.88:22334";
-//        String url = "http://127.0.0.1:20334";
-        String url = "http://101.132.193.149:21334";
+        String url = "http://127.0.0.1:20384";
+//        String url = "http://101.132.193.149:21334";
         OntSdk wm = OntSdk.getInstance();
         wm.setRestfulConnection(url);
         //配置 ontid 文件

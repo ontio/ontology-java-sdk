@@ -21,9 +21,9 @@ package com.github.ontio.core.payload;
 
 import com.github.ontio.common.Helper;
 import com.github.ontio.common.Address;
-import com.github.ontio.core.TransactionType;
+import com.github.ontio.core.transaction.TransactionType;
 import com.github.ontio.io.BinaryWriter;
-import com.github.ontio.core.Transaction;
+import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.ECC;
 import com.github.ontio.io.BinaryReader;
 import org.bouncycastle.math.ec.ECPoint;

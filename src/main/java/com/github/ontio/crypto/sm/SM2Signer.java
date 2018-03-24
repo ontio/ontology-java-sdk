@@ -63,7 +63,7 @@ public class SM2Signer implements Signer, ECConstants {
     private ECPoint pubPoint;
     private ECKeyParameters ecKey;
     private byte[] z;
-
+    @Override
     public void init(boolean forSigning, CipherParameters param) {
         CipherParameters baseParam;
         byte[] userID;
@@ -93,15 +93,15 @@ public class SM2Signer implements Signer, ECConstants {
         z = getZ(userID);
         digest.update(z, 0, z.length);
     }
-
+    @Override
     public void update(byte b) {
         digest.update(b);
     }
-
+    @Override
     public void update(byte[] in, int off, int len) {
         digest.update(in, off, len);
     }
-
+    @Override
     public boolean verifySignature(byte[] signature) {
         try {
             BigInteger[] rs = derDecode(signature);
@@ -112,7 +112,7 @@ public class SM2Signer implements Signer, ECConstants {
         }
         return false;
     }
-
+    @Override
     public void reset() {
         digest.reset();
 
@@ -120,7 +120,7 @@ public class SM2Signer implements Signer, ECConstants {
             digest.update(z, 0, z.length);
         }
     }
-
+    @Override
     public byte[] generateSignature() throws CryptoException {
         byte[] eHash = digestDoFinal();
 

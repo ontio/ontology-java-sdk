@@ -20,14 +20,13 @@
 package com.github.ontio.sdk.wallet;
 
 import com.alibaba.fastjson.JSON;
-import com.github.ontio.sdk.exception.Error;
 import com.github.ontio.sdk.exception.SDKException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by zx on 2018/1/11.
+ *
  */
 public class Wallet {
     private String name = "com/github/ontio";
@@ -113,7 +112,7 @@ public class Wallet {
     }
     public void setDefaultAccount(int index) throws Exception{
         if(index >= accounts.size()){
-            throw new SDKException(Error.getDescArgError("index error"));
+            throw new SDKException("index error");
         }
         for(Account e:accounts){
             e.isDefault = false;
@@ -131,7 +130,7 @@ public class Wallet {
     }
     public void setDefaultIdentity(int index) throws Exception{
         if(index >= identities.size()){
-            throw new SDKException(Error.getDescArgError("index error"));
+            throw new SDKException("index error");
         }
         for(Identity e:identities){
             e.isDefault = false;

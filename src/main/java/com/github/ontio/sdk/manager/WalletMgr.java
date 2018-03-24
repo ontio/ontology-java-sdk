@@ -22,11 +22,8 @@ package com.github.ontio.sdk.manager;
 import com.github.ontio.common.Helper;
 import com.github.ontio.common.Address;
 import com.github.ontio.core.SignatureContext;
-import com.github.ontio.core.Transaction;
-import com.github.ontio.core.payload.DeployCodeTransaction;
 import com.github.ontio.crypto.sm.SM2Utils;
-import com.github.ontio.sdk.exception.AccountException;
-import com.github.ontio.sdk.exception.Error;
+import com.github.ontio.sdk.exception.*;
 import com.github.ontio.sdk.info.account.AccountInfo;
 import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Control;
@@ -37,8 +34,6 @@ import com.github.ontio.account.KeyType;
 import com.github.ontio.common.Common;
 import com.github.ontio.crypto.ECC;
 import com.github.ontio.core.DataSignature;
-import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.sdk.exception.ParamCheck;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.util.IOUtils;
 import org.bouncycastle.math.ec.ECPoint;
@@ -47,7 +42,7 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Created by zx on 2018/1/11.
+ *
  */
 public class WalletMgr {
     private Wallet wallet;
@@ -116,7 +111,6 @@ public class WalletMgr {
         return wallet;
     }
 
-    //TODO synchronized
     public Wallet writeWallet() throws Exception {
         Common.writeFile(filePath, JSON.toJSONString(wallet));
         walletFile = wallet;
@@ -165,8 +159,8 @@ public class WalletMgr {
         info.pubkey = Helper.toHexString(acct.publicKey.getEncoded(true));
         info.setPrikey(Helper.toHexString(acct.privateKey));
         info.setPriwif(acct.export());
-        info.encryptedprikey = acct.export(password);
-        info.pkhash = acct.scriptHash.toString();
+        info.encryptedPrikey = acct.export(password);
+        info.pkHash = acct.addressU160.toString();
         storePrivateKey(identityPriKeyMap, "did:ont:" + info.address, password, Helper.toHexString(prikey));
         return info;
     }
@@ -177,8 +171,8 @@ public class WalletMgr {
         info.pubkey = Helper.toHexString(acct.publicKey.getEncoded(true));
         info.setPrikey(Helper.toHexString(acct.privateKey));
         info.setPriwif(acct.export());
-        info.encryptedprikey = acct.export(password);
-        info.pkhash = acct.scriptHash.toString();
+        info.encryptedPrikey = acct.export(password);
+        info.pkHash = acct.addressU160.toString();
         storePrivateKey(identityPriKeyMap, "did:ont:" + info.address, password, Helper.toHexString(prikey));
         return info;
     }
@@ -211,13 +205,12 @@ public class WalletMgr {
         info.pubkey = Helper.toHexString(acct.publicKey.getEncoded(true));
         info.setPrikey(Helper.toHexString(acct.privateKey));
         info.setPriwif(acct.export());
-        info.encryptedprikey = acct.export(password);
-        info.pkhash = acct.scriptHash.toString();
+        info.encryptedPrikey = acct.export(password);
+        info.pkHash = acct.addressU160.toString();
         storePrivateKey(acctPriKeyMap, info.address, password, Helper.toHexString(prikey));
         return info;
     }
 
-    //根据私钥创建账户
     public AccountInfo createAccountFromPrivateKey(String password, String prikey) {
         return createAccount(password, Helper.hexToBytes(prikey));
     }
@@ -252,52 +245,51 @@ public class WalletMgr {
         }
     }
 
-    // 交易签名
-    public String signatureData(String password, Transaction tx) throws SDKException {
-        SignatureContext context = new SignatureContext(tx);
-        if (tx instanceof DeployCodeTransaction) {
-            tx.sigs = context.getSigs();
-            return Helper.toHexString(tx.toArray());
-        }
-        boolean sign = sign(password, context);
-        if (sign && context.isCompleted()) {
-            tx.sigs = context.getSigs();
-        } else {
-            throw new SDKException(Error.getDescSigIncomplete("Signature incompleted"));
-        }
-        return Helper.toHexString(tx.toArray());
-    }
-    // 交易签名
-    public String signatureData(String[] password, Transaction tx) throws SDKException {
-        SignatureContext context = new SignatureContext(tx);
-        if (tx instanceof DeployCodeTransaction) {
-            tx.sigs = context.getSigs();
-            return Helper.toHexString(tx.toArray());
-        }
-        boolean sign = sign(password, context);
-        if (sign && context.isCompleted()) {
-            tx.sigs = context.getSigs();
-        } else {
-            throw new SDKException(Error.getDescSigIncomplete("Signature incompleted"));
-        }
-        return Helper.toHexString(tx.toArray());
-    }
 
-    // 交易签名
-    public String signatureData(Transaction tx) throws SDKException {
-        SignatureContext context = new SignatureContext(tx);
-        if (tx instanceof DeployCodeTransaction) {
-            tx.sigs = context.getSigs();;
-            return Helper.toHexString(tx.toArray());
-        }
-        boolean sign = sign("", context);
-        if (sign && context.isCompleted()) {
-            tx.sigs = context.getSigs();
-        } else {
-            throw new SDKException(Error.getDescSigIncomplete("Signature incompleted"));
-        }
-        return Helper.toHexString(tx.toArray());
-    }
+//    public String signatureData(String password, Transaction tx) throws SDKException {
+//        SignatureContext context = new SignatureContext(tx);
+//        if (tx instanceof DeployCodeTransaction) {
+//            tx.sigs = context.getSigs();
+//            return Helper.toHexString(tx.toArray());
+//        }
+//        boolean sign = sign(password, context);
+//        if (sign && context.isCompleted()) {
+//            tx.sigs = context.getSigs();
+//        } else {
+//            throw new SDKException(Error.getDescSigIncomplete("Signature incompleted"));
+//        }
+//        return Helper.toHexString(tx.toArray());
+//    }
+
+//    public String signatureData(String[] password, Transaction tx) throws SDKException {
+//        SignatureContext context = new SignatureContext(tx);
+//        if (tx instanceof DeployCodeTransaction) {
+//            tx.sigs = context.getSigs();
+//            return Helper.toHexString(tx.toArray());
+//        }
+//        boolean sign = sign(password, context);
+//        if (sign && context.isCompleted()) {
+//            tx.sigs = context.getSigs();
+//        } else {
+//            throw new SDKException(Error.getDescSigIncomplete("Signature incompleted"));
+//        }
+//        return Helper.toHexString(tx.toArray());
+//    }
+
+//    public String signatureData(Transaction tx) throws SDKException {
+//        SignatureContext context = new SignatureContext(tx);
+//        if (tx instanceof DeployCodeTransaction) {
+//            tx.sigs = context.getSigs();;
+//            return Helper.toHexString(tx.toArray());
+//        }
+//        boolean sign = sign("", context);
+//        if (sign && context.isCompleted()) {
+//            tx.sigs = context.getSigs();
+//        } else {
+//            throw new SDKException(Error.getDescSigIncomplete("Signature incompleted"));
+//        }
+//        return Helper.toHexString(tx.toArray());
+//    }
 
     public boolean verifySignature(String pubkeyHexStr, byte[] data, byte[] signature) throws SDKException {
         DataSignature sign = null;
@@ -311,10 +303,11 @@ public class WalletMgr {
     }
 
     public Acct getAccount(String address,String password) throws SDKException {
+        address = address.replace("did:ont:","");
         if (!ParamCheck.isValidAddress(address)) {
-            throw new SDKException(Error.getDescAddrError(String.format("%s=%s", "address", address)));
+            throw new SDKException(String.format("%s=%s", "address:", address));
         }
-        return getAccountByScriptHash( Address.decodeBase58(address),password);
+        return getAccountByAddress( Address.decodeBase58(address),password);
     }
 
     private Acct createAccount(String password, String prikey) {
@@ -351,16 +344,16 @@ public class WalletMgr {
     public AccountInfo getAccountInfo(String address,String password) throws SDKException {
         address = address.replace("did:ont:", "");
         if (!ParamCheck.isValidAddress(address)) {
-            throw new SDKException(Error.getDescAddrError(String.format("%s=%s", "address", address)));
+            throw new SDKException(String.format("%s=%s", "address:", address));
         }
         AccountInfo info = new AccountInfo();
-        Acct acc = getAccountByScriptHash(Address.decodeBase58(address),password);
+        Acct acc = getAccountByAddress(Address.decodeBase58(address),password);
         info.address = address;
         info.pubkey = Helper.toHexString(acc.publicKey.getEncoded(true));
         info.setPrikey(Helper.toHexString(acc.privateKey));
-        info.encryptedprikey = acc.export(password);
+        info.encryptedPrikey = acc.export(password);
         info.setPriwif(acc.export());
-        info.pkhash = acc.scriptHash.toString();
+        info.pkHash = acc.addressU160.toString();
         return info;
     }
 
@@ -447,10 +440,10 @@ public class WalletMgr {
         return account;
     }
 
-    private Acct getAccountByScriptHash(Address scriptHash, String password) {
+    private Acct getAccountByAddress(Address address, String password) {
         try {
             for (Account e : wallet.getAccounts()) {
-                if (e.address.equals(scriptHash.toBase58())) {
+                if (e.address.equals(address.toBase58())) {
                     String prikey = (String) acctPriKeyMap.get(e.address+","+password);
                     if (prikey == null ) {
                         prikey = Acct.getPrivateKey(e.key, password);
@@ -461,7 +454,7 @@ public class WalletMgr {
             }
 
             for (Identity e : wallet.getIdentities()) {
-                if (e.ontid.equals("did:ont:" + scriptHash.toBase58())) {
+                if (e.ontid.equals("did:ont:" + address.toBase58())) {
                     String prikey = (String) identityPriKeyMap.get(e.ontid+","+password);
                     if (prikey == null ) {
                         prikey = Acct.getPrivateKey(e.controls.get(0).key, password);
@@ -471,7 +464,7 @@ public class WalletMgr {
                 }
             }
         } catch (Exception e) {
-            throw new AccountException(Error.getDescDatabaseError("getAccountByScriptHash err"), e);
+            throw new SDKRuntimeException("getAccountByScriptHash err", e);
         }
         return null;
     }
@@ -479,30 +472,30 @@ public class WalletMgr {
     public boolean sign(String password, SignatureContext context) {
         boolean fSuccess = false;
         int i = 0;
-        for (Address scriptHash : context.addressU160) {
+        for (Address address : context.addressU160) {
             Acct account = null;
             if (password != null) {
-                account = getAccountByScriptHash(scriptHash,password);
+                account = getAccountByAddress(address,password);
             }
             if (account == null) {
                 continue;
             }
             byte[] signature = context.signable.sign(account, Algrithem);
-            fSuccess |= context.add(scriptHash, account.publicKey, signature);
+            fSuccess |= context.add(address, account.publicKey, signature);
         }
         return fSuccess;
     }
 
     public boolean sign(String[] password, SignatureContext context) {
         boolean fSuccess = false;
-        for (Address scriptHash : context.addressU160) {
+        for (Address address : context.addressU160) {
             for (int i = 0; i < password.length; i++) {
-                Acct account = getAccountByScriptHash(scriptHash, password[i]);
+                Acct account = getAccountByAddress(address, password[i]);
                 if (account == null) {
                     continue;
                 }
                 byte[] signature = context.signable.sign(account, Algrithem);
-                fSuccess |= context.add(scriptHash, account.publicKey, signature);
+                fSuccess |= context.add(address, account.publicKey, signature);
             }
         }
         return fSuccess;

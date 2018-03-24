@@ -17,17 +17,26 @@
  *
  */
 
-package com.github.ontio.sdk.exception;
+package com.github.ontio.core.payload;
 
-public class AccountException extends SDKRuntimeException {
-	private static final long serialVersionUID = 6003938627169039108L;
+public enum BookKeeperAction {
+	BookKeeperAction_ADD(0x00),
+	BookKeeperAction_SUB(0x01),
+	;
+	private byte value;
+	BookKeeperAction(int v) {
+        value = (byte)v;
+    }
+    public byte value() {
+        return value;
+    }
 
-	public AccountException(String message) {
-		super(message);
-	}
-	
-	public AccountException(String message, Throwable ex) {
-		super(message, ex);
-	}
-
+    public static BookKeeperAction valueOf(byte v) {
+    	for (BookKeeperAction e : BookKeeperAction.values()) {
+    		if (e.value == v) {
+    			return e;
+    		}
+    	}
+    	throw new IllegalArgumentException();
+    }
 }

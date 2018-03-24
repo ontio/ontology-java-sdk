@@ -19,28 +19,25 @@
 
 package com.github.ontio;
 
+import com.github.ontio.account.Acct;
+import com.github.ontio.core.transaction.Transaction;
+import com.github.ontio.core.asset.Sig;
+import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.manager.ConnectMgr;
 import com.github.ontio.sdk.manager.WalletMgr;
 import com.github.ontio.sdk.transaction.OntAssetTx;
 import com.github.ontio.sdk.transaction.OntIdTx;
 import com.github.ontio.sdk.transaction.SmartcodeTx;
-import com.github.ontio.sdk.transaction.*;
+import org.bouncycastle.math.ec.ECPoint;
 
 /**
  *
  */
 public class OntSdk {
-    //wallet管理器
     private WalletMgr walletMgr;
-    //连接管理器
     private ConnectMgr connManager;
-
-    //OntId 交易
     private OntIdTx ontIdTx = null;
-
-    //智能合约交易
     private SmartcodeTx smartcodeTx = null;
-    //ont资产
     private OntAssetTx ontAssetTx = null;
 
     private static OntSdk instance = null;
@@ -119,5 +116,44 @@ public class OntSdk {
         walletMgr.setAlgrithem(alg);
     }
 
+    public String signTx(Transaction tx, Acct[][] accounts) {
+        Sig[] sigs = new Sig[accounts.length];
+        for (int i = 0; i < accounts.length; i++) {
+            sigs[i] = new Sig();
+            sigs[i].pubKeys = new ECPoint[accounts[i].length];
+            sigs[i].sigData = new byte[accounts[i].length][];
+            for (int j = 0; j < accounts[i].length; j++) {
+                sigs[i].M++;
+                System.out.println(accounts[i].length);
+                byte[] signature = tx.sign(accounts[i][j], getWalletMgr().getAlgrithem());
+                sigs[i].pubKeys[j] = accounts[i][j].publicKey;
+                sigs[i].sigData[j] = signature;
+            }
+        }
+        tx.sigs = sigs;
+        return tx.toHexString();
+    }
 
+    public String signTx(Transaction tx, Acct[][] accounts, int[] M) throws SDKException {
+        if (M.length != accounts.length) {
+            throw new SDKException("M Error");
+        }
+        Sig[] sigs = new Sig[accounts.length];
+        for (int i = 0; i < accounts.length; i++) {
+            sigs[i] = new Sig();
+            sigs[i].pubKeys = new ECPoint[accounts[i].length];
+            sigs[i].sigData = new byte[accounts[i].length][];
+            if (M[i] > accounts[i].length || M[i] < 0) {
+                throw new SDKException("M Error");
+            }
+            sigs[i].M = M[i];
+            for (int j = 0; j < accounts[i].length; j++) {
+                byte[] signature = tx.sign(accounts[i][j], getWalletMgr().getAlgrithem());
+                sigs[i].pubKeys[j] = accounts[i][j].publicKey;
+                sigs[i].sigData[j] = signature;
+            }
+        }
+        tx.sigs = sigs;
+        return tx.toHexString();
+    }
 }

@@ -20,6 +20,8 @@
 package demo;
 
 import com.github.ontio.OntSdk;
+import com.github.ontio.network.rpc.*;
+import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.wallet.Identity;
 
 import java.util.HashMap;
@@ -29,7 +31,7 @@ import java.util.Map;
 import static com.github.ontio.common.Common.print;
 
 /**
- * Created by zx on 2018/1/25.
+ *
  */
 public class ClaimDemo {
 
@@ -64,14 +66,13 @@ public class ClaimDemo {
     }
     public static OntSdk getOntSdk() throws Exception {
 
-        String url = "http://127.0.0.1:20334";
+        String url = "http://127.0.0.1:20384";
 //        String url = "http://101.132.193.149:20334";
         OntSdk wm = OntSdk.getInstance();
         wm.setRestfulConnection(url);
         wm.openWalletFile("ClaimDemo.json");
 
         print(String.format("ConnectParam=[%s, %s]", url, ""));
-
         return wm;
     }
 }

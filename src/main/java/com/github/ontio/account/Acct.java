@@ -28,7 +28,6 @@ import com.github.ontio.common.Address;
 import com.github.ontio.crypto.Base58;
 import com.github.ontio.crypto.Digest;
 import com.github.ontio.crypto.sm.SM2Utils;
-import com.github.ontio.sdk.exception.Error;
 import com.github.ontio.sdk.exception.SDKException;
 import org.bouncycastle.math.ec.ECPoint;
 
@@ -56,7 +55,7 @@ public class Acct {
     /**
      * publiekeyHash, used for identifing which account the contract belongs to
      */
-    public final Address scriptHash ;
+    public final Address addressU160 ;
 
     public Acct(byte[] privateKey, String Algrithem) {
         if (privateKey.length != 32 && privateKey.length != 96 && privateKey.length != 104) {
@@ -66,7 +65,7 @@ public class Acct {
         System.arraycopy(privateKey, privateKey.length - 32, this.privateKey, 0, 32);
         if(Algrithem.equals(KeyType.SM2.name())) {
             this.publicKey = SM2Utils.generatePubkey(this.privateKey);
-            this.scriptHash = Address.toScriptHash(publicKey.getEncoded(true));
+            this.addressU160 = Address.toScriptHash(publicKey.getEncoded(true));
         }else {
             if (privateKey.length == 32) {
                 this.publicKey = ECC.secp256r1.getG().multiply(new BigInteger(1, privateKey)).normalize();
@@ -76,7 +75,7 @@ public class Acct {
                 System.arraycopy(privateKey, 0, encoded, 1, 64);
                 this.publicKey = ECC.secp256r1.getCurve().decodePoint(encoded);
             }
-            this.scriptHash = Address.toScriptHash(publicKey.getEncoded(true));
+            this.addressU160 = Address.toScriptHash(publicKey.getEncoded(true));
         }
 
     }
@@ -154,7 +153,7 @@ public class Acct {
         }
         byte[] decoded = Base58.decodeChecked(encrypted);
         if (decoded.length != 43 || decoded[0] != (byte)0x01 || decoded[1] != (byte)0x42 || decoded[2] != (byte)0xe0){
-            throw new SDKException(Error.getDescArgError("decoded 3 bytes error"));
+            throw new SDKException("decoded 3 bytes error");
         }
         byte[] data = Arrays.copyOfRange(decoded, 0, decoded.length - 4);
         return decode(passphrase,data);
@@ -187,7 +186,7 @@ public class Acct {
         byte[] addresshashNew =  Arrays.copyOfRange(addresshashTmp, 0, 4);
 
         if(!new String(addresshash).equals(new String(addresshashNew))){
-            throw new SDKException(Error.getDescArgError("decode prikey passphrase error. " + Helper.toHexString(addresshash) + "," + Helper.toHexString(addresshashNew)));
+            throw new SDKException("decode prikey passphrase error. " + Helper.toHexString(addresshash) + "," + Helper.toHexString(addresshashNew));
         }
         return priKey;
     }
@@ -210,11 +209,11 @@ public class Acct {
         if (!(obj instanceof Acct)) {
         	return false;
         }
-        return scriptHash.equals(((Acct) obj).scriptHash);
+        return addressU160.equals(((Acct) obj).addressU160);
     }
 
     @Override
     public int hashCode(){
-        return scriptHash.hashCode();
+        return addressU160.hashCode();
     }
 }

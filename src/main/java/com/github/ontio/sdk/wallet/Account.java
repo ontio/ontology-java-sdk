@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by zx on 2018/1/11.
+ *
  */
 public class Account {
     public String label = "";

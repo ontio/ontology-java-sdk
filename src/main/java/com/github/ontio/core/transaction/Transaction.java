@@ -17,48 +17,34 @@
  *
  */
 
-package com.github.ontio.core;
+package com.github.ontio.core.transaction;
 
 import java.io.*;
 import java.util.*;
 import java.util.stream.*;
 
-import com.alibaba.fastjson.JSON;
 import com.github.ontio.common.*;
+import com.github.ontio.core.Inventory;
+import com.github.ontio.core.InventoryType;
 import com.github.ontio.core.asset.Fee;
 import com.github.ontio.core.asset.Sig;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.io.JsonReader;
 import com.github.ontio.io.JsonSerializable;
-import com.github.ontio.io.json.JArray;
-import com.github.ontio.io.json.JNumber;
-import com.github.ontio.io.json.JObject;
-import com.github.ontio.io.json.JString;
 
 /**
  *  交易
  */
 public abstract class Transaction extends Inventory implements JsonSerializable {
 
-	/**
-	 * 版本
-	 */
+
 	public byte version = 0;
-	/**
-	 * 交易类型
-	 */
 	public final TransactionType txType;
 	public int nonce = new Random().nextInt();
-	/**
-	 * 交易属性
-	 */
 	public TransactionAttribute[] attributes;
 	public Fee[] fee = new Fee[0];
 	public long networkFee;
-	/**
-	 * 验证脚本
-	 */
 	public Sig[] sigs = new Sig[0];
 	
 	protected Transaction(TransactionType type) {
@@ -153,9 +139,7 @@ public abstract class Transaction extends Inventory implements JsonSerializable 
 		return hash().hashCode();
 	}
 	
-	/**
-     * 反序列化Transaction(static)
-     */
+
 	public static Transaction deserializeFrom(byte[] value) throws IOException {
 		return deserializeFrom(value, 0);
 	}
@@ -189,7 +173,6 @@ public abstract class Transaction extends Inventory implements JsonSerializable 
 	}
 
 	/**
-	 * 获取验证脚本
 	 */
 	@Override
 	public Address[] getAddressU160ForVerifying() {
@@ -217,19 +200,7 @@ public abstract class Transaction extends Inventory implements JsonSerializable 
 	
 	protected void onDeserialized() throws IOException {
 	}
-	
 
-	
-	/**
-	 * 系统费用
-	 */
-	public Fixed8 systemFee() {
-		return Fixed8.ZERO;
-	}
-	
-	/**
-	 * 校验
-	 */
 	@Override
 	public boolean verify() {
 		return true;

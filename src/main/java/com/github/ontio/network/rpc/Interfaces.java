@@ -32,7 +32,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * Created by zx on 2018/2/1.
+ *
  */
 class Interfaces {
 	private final URL url;
@@ -47,7 +47,9 @@ class Interfaces {
 
 	public JObject call(String method, JObject ...params) throws RpcException, IOException {
 		JObject response = send(makeRequest(method, params));
-		if(new Double(response.get("error").asNumber()).intValue() == 0){
+		if(response == null){
+			throw new RpcException(0,"response is null.");
+		} else if(new Double(response.get("error").asNumber()).intValue() == 0){
 			return response.get("result");
 		} else {
 			throw new RpcException(new Double(response.get("error").asNumber()).intValue(),""+response);
@@ -79,14 +81,18 @@ class Interfaces {
 	}
 
 	private JObject send(JObject request) throws IOException {
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.setRequestMethod("POST");
-		connection.setDoOutput(true);
-		try (OutputStreamWriter w = new OutputStreamWriter(connection.getOutputStream())) {
-			w.write(request.toString());
+		try {
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("POST");
+			connection.setDoOutput(true);
+			try (OutputStreamWriter w = new OutputStreamWriter(connection.getOutputStream())) {
+                w.write(request.toString());
+            }
+			try (InputStreamReader r = new InputStreamReader(connection.getInputStream())) {
+                return JObject.parse(r);
+            }
+		} catch (IOException e) {
 		}
-		try (InputStreamReader r = new InputStreamReader(connection.getInputStream())) {
-			return JObject.parse(r);
-		}
+		return null;
 	}
 }

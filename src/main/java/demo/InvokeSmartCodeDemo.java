@@ -36,7 +36,7 @@ import java.util.*;
 import static com.github.ontio.common.Common.print;
 
 /**
- * Created by zx on 2018/1/31.
+ *
  */
 public class InvokeSmartCodeDemo {
     public static void main(String[] args) {

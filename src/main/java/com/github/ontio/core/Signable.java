@@ -39,28 +39,13 @@ import org.bouncycastle.util.BigIntegers;
 import com.github.ontio.common.Address;
 import com.github.ontio.account.Acct;
 
-/**
- *  为需要签名的数据提供一个接口
- */
+
 public interface Signable extends Serializable {
-    /**
-     *  反序列化未签名的数据
-     *  <param name="reader">数据来源</param>
-     * @throws IOException 
-     */
+
     void deserializeUnsigned(BinaryReader reader) throws IOException;
-    
-    /**
-     *  序列化未签名的数据
-     *  <param name="writer">存放序列化后的结果</param>
-     * @throws IOException 
-     */
+
     void serializeUnsigned(BinaryWriter writer) throws IOException;
 
-    /**
-     *  获得需要校验的脚本Hash值
-     *  <returns>返回需要校验的脚本Hash值</returns>
-     */
     Address[] getAddressU160ForVerifying();
     
     default byte[] getHashData() {
@@ -82,7 +67,7 @@ public interface Signable extends Serializable {
 		}
 		ECDSASigner signer = new ECDSASigner();
     	signer.init(true, new ECPrivateKeyParameters(new BigInteger(1, account.privateKey), ECC.secp256r1));
-		BigInteger[] bi = signer.generateSignature(Digest.sha256(Digest.sha256(Digest.sha256(getHashData()))));// dna
+		BigInteger[] bi = signer.generateSignature(Digest.sha256(Digest.sha256(Digest.sha256(getHashData()))));
     	byte[] signature = new byte[64];
     	System.arraycopy(BigIntegers.asUnsignedByteArray(32, bi[0]), 0, signature, 0, 32);
     	System.arraycopy(BigIntegers.asUnsignedByteArray(32, bi[1]), 0, signature, 32, 32);
@@ -103,8 +88,5 @@ public interface Signable extends Serializable {
 			result = signer.verifySignature(Digest.sha256(data), new BigInteger(1, r), new BigInteger(1, s));
 		}
 		return result;
-    }
-	default boolean verifySignature() {
-    	return true;
     }
 }

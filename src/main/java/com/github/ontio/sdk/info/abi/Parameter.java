@@ -19,14 +19,12 @@
 
 package com.github.ontio.sdk.info.abi;
 
-import com.github.ontio.sdk.exception.Error;
 import com.github.ontio.sdk.exception.SDKException;
 import com.alibaba.fastjson.JSON;
-
 import java.lang.reflect.Array;
 
 /**
- * Created by zx on 2018/1/31.
+ *
  */
 public class Parameter {
     public String name;
@@ -68,7 +66,7 @@ public class Parameter {
                 this.value = JSON.toJSONString(tmp);
             } else if ("Void".equals(type)) {
             } else {
-                throw new SDKException(Error.getDescArgError("type error"));
+                throw new SDKException("type error");
             }
             return true;
         } catch (Exception e) {

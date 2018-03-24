@@ -24,15 +24,15 @@ import java.util.Arrays;
 
 public class Base58 {
     /**
-     *  base58编码的字母表
+     *  base58
      */
     public static final String ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
     private static final BigInteger BASE = BigInteger.valueOf(ALPHABET.length());
-    
+
     /**
-     *  解码
-     *  <param name="input">要解码的字符串</param>
-     *  <returns>返回解码后的字节数组</returns>
+     * decode base58
+     * @param input
+     * @return
      */
     public static byte[] decode(String input) {
         BigInteger bi = BigInteger.ZERO;
@@ -46,16 +46,16 @@ public class Base58 {
         byte[] bytes = bi.toByteArray();
         boolean stripSignByte = bytes.length > 1 && bytes[0] == 0 && bytes[1] < 0;
         int leadingZeros = 0;
-        for (; leadingZeros < input.length() && input.charAt(leadingZeros) == ALPHABET.charAt(0); leadingZeros++);
+        for (; leadingZeros < input.length() && input.charAt(leadingZeros) == ALPHABET.charAt(0); leadingZeros++){};
         byte[] tmp = new byte[bytes.length - (stripSignByte ? 1 : 0) + leadingZeros];
         System.arraycopy(bytes, stripSignByte ? 1 : 0, tmp, leadingZeros, tmp.length - leadingZeros);
         return tmp;
     }
 
     /**
-     *  编码
-     *  <param name="input">要编码的字节数组</param>
-     *  <returns>返回编码后的字符串</returns>
+     * encode
+     * @param input
+     * @return
      */
     public static String encode(byte[] input) {
         BigInteger value = new BigInteger(1, input);

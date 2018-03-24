@@ -22,226 +22,197 @@ import java.io.IOException;
 import java.util.Map;
 
 import com.github.ontio.common.Helper;
-import com.github.ontio.core.Block;
+import com.github.ontio.core.block.Block;
 import com.github.ontio.io.Serializable;
 import com.github.ontio.network.connect.AbstractConnector;
 import com.github.ontio.network.connect.ConnectorException;
-import com.github.ontio.sdk.exception.Error;
-import com.github.ontio.core.Transaction;
+import com.github.ontio.core.transaction.Transaction;
 
 import com.alibaba.fastjson.JSON;
 
 public class RestClient extends AbstractConnector {
-	private Interfaces rest;
-	private String version = "v1.0", type = "t1.0", action = "sendrawtransaction";
-	private String accessToken="token", authType="OAuth2.0";
+	private Interfaces api;
+	private String version = "v1.0.0",  action = "sendrawtransaction";
 	
 	public RestClient(String restUrl) {
-		rest = new Interfaces(restUrl);
-		setAccessToken(accessToken);
+		api = new Interfaces(restUrl);
 	}
-	
-	public RestClient(String restUrl, String accessToken) {
-		rest = new Interfaces(restUrl);
-		setAccessToken(accessToken);
-	}
-	
-	public void setAccessToken(String accessToken) {
-		this.accessToken = accessToken;
-	}
-	
-	public void setAuthType(String authType) {
-		this.authType = authType;
-	}
+
 	@Override
 	public String getUrl() {
-		return rest.getUrl();
+		return api.getUrl();
 	}
-	public String delete(String url, Map<String, String> params, Map<String, Object> body) throws RestException{
-		return rest.delete(url,params,body);
+	public String delete(String url, Map<String, String> params, Map<String, Object> body) throws RestfulException {
+		return api.delete(url,params,body);
 	}
-	public String post(String url, Map<String, String> params, Map<String, String> body) throws RestException{
-		return rest.post(url,params,body);
+	public String post(String url, Map<String, String> params, Map<String, String> body) throws RestfulException {
+		return api.post(url,params,body);
 	}
 
-	public String postObject(String url, Map<String, String> params, Map<String, Object> body) throws RestException {
-		return rest.postObject(url, params, body);
+	public String postObject(String url, Map<String, String> params, Map<String, Object> body) throws RestfulException {
+		return api.postObject(url, params, body);
 	}
-	public String get(String url, Map<String, String> params) throws RestException{
-		return rest.get(url,params);
-	}
-	@Override
-	public void updateToken(String token) {
-		setAccessToken(token);
+	public String get(String url, Map<String, String> params) throws RestfulException {
+		return api.get(url,params);
 	}
 
 	@Override
-	public String sendRawTransaction(Transaction tx) throws RestException {
+	public String sendRawTransaction(Transaction tx) throws RestfulException {
 		return sendRawTransaction(false,null, Helper.toHexString(tx.toArray()));
 	}
 	@Override
-	public String sendRawTransaction(boolean preExec,String userid,Transaction tx) throws RestException {
+	public String sendRawTransaction(boolean preExec,String userid,Transaction tx) throws RestfulException {
 		return sendRawTransaction(preExec,userid,Helper.toHexString(tx.toArray()));
 	}
 	@Override
-	public String sendRawTransaction(String hexData) throws RestException {
-		String rs = rest.sendTransaction(false,null,authType, accessToken, action, version, type, hexData);
+	public String sendRawTransaction(String hexData) throws RestfulException {
+		String rs = api.sendTransaction(false,null,action, version, hexData);
 		Result rr = JSON.parseObject(rs, Result.class);
 		if(rr.Error == 0) {
 			return rs;
 		}
-		throw new RestException(to(rr));
+		throw new RestfulException(to(rr));
 	}
 	@Override
-	public String sendRawTransaction(boolean preExec,String userid,String hexData) throws RestException {
-		String rs = rest.sendTransaction(preExec,userid,authType, accessToken, action, version, type, hexData);
+	public String sendRawTransaction(boolean preExec,String userid,String hexData) throws RestfulException {
+		String rs = api.sendTransaction(preExec,userid,action, version, hexData);
 		Result rr = JSON.parseObject(rs, Result.class);
 		if(rr.Error == 0) {
 			return rs;
 		}
-		throw new RestException(to(rr));
+		throw new RestfulException(to(rr));
 	}
 	@Override
-	public Transaction getRawTransaction(String txhash) throws RestException {
-		String rs = rest.getTransaction(authType, accessToken, txhash,true);
+	public Transaction getRawTransaction(String txhash) throws RestfulException {
+		String rs = api.getTransaction(txhash,true);
 		Result rr = JSON.parseObject(rs, Result.class);
 		if(rr.Error == 0) {
 			try {
 				return Transaction.deserializeFrom(Helper.hexToBytes(rr.Result));
 			} catch (IOException e) {
-				throw new RestException(Error.getDescDeserializeTx("Transaction.deserializeFrom(txhash) failed"), e);
+				throw new RestfulException("Transaction.deserializeFrom(txhash) failed", e);
 			}
 		}
-		throw new RestException(to(rr));
+		throw new RestfulException(to(rr));
 	}
 	@Override
-	public int getGenerateBlockTime() throws RestException {
-		String rs = rest.getGenerateBlockTime(authType, accessToken);
+	public int getGenerateBlockTime() throws RestfulException {
+		String rs = api.getGenerateBlockTime();
 		Result rr = JSON.parseObject(rs, Result.class);
 		if(rr.Error == 0) {
 			return Integer.valueOf(rr.Result).intValue();
 		}
-		throw new RestException(to(rr));
+		throw new RestfulException(to(rr));
 
 	}
 	@Override
-	public int getNodeCount() throws RestException {
-		String rs = rest.getNodeCount(authType, accessToken);
+	public int getNodeCount() throws RestfulException {
+		String rs = api.getNodeCount();
 		Result rr = JSON.parseObject(rs, Result.class);
 		if(rr.Error == 0) {
 			return Integer.valueOf(rr.Result).intValue();
 		}
-		throw new RestException(to(rr));
+		throw new RestfulException(to(rr));
 
 	}
 
 	@Override
-	public int getBlockHeight() throws RestException {
-		String rs = rest.getBlockHeight(authType, accessToken);
+	public int getBlockHeight() throws RestfulException {
+		String rs = api.getBlockHeight();
 		Result rr = JSON.parseObject(rs, Result.class);
 		if(rr.Error == 0) {
 			return Integer.valueOf(rr.Result).intValue();
 		}
-		throw new RestException(to(rr));
+		throw new RestfulException(to(rr));
 		
 	}
 	@Override
-	public Block getBlock(int height) throws RestException {
-		String rs = rest.getBlock(authType, accessToken, height,"1");
+	public Block getBlock(int height) throws RestfulException {
+		String rs = api.getBlock( height,"1");
 		Result rr = JSON.parseObject(rs, Result.class);
 		if(rr.Error == 0) {
 			try {
 				System.out.println(rr.Result);
 				return Serializable.from(Helper.hexToBytes(rr.Result), Block.class);
 			} catch (InstantiationException | IllegalAccessException e) {
-				throw new RestException(Error.getDescDeserializeBlock("Block.deserializeFrom(height) failed"), e);
+				throw new RestfulException("Block.deserializeFrom(height) failed", e);
 			}
 		}
-		throw new RestException(to(rr));
+		throw new RestfulException(to(rr));
 	}
 
 
 	@Override
-	public Block getBlock(String hash) throws RestException {
-		String rs = rest.getBlock(authType, accessToken, hash,"1");
+	public Block getBlock(String hash) throws RestfulException {
+		String rs = api.getBlock( hash,"1");
 		Result rr = JSON.parseObject(rs, Result.class);
 		if(rr.Error == 0) {
 			try {
 				return Serializable.from(Helper.hexToBytes(rr.Result), Block.class);
 			} catch (InstantiationException | IllegalAccessException e) {
-				throw new RestException(Error.getDescDeserializeBlock("Block.deserializeFrom(hash) failed"), e);
+				throw new RestfulException("Block.deserializeFrom(hash) failed", e);
 			}
 		}
-		throw new RestException(to(rr));
+		throw new RestfulException(to(rr));
 		
 	}
 
 	@Override
-	public Object getBalance(String address) throws RestException {
-		String rs = rest.getBalance(address, address, address);
+	public Object getBalance(String address) throws RestfulException {
+		String rs = api.getBalance( address);
 		Result rr = JSON.parseObject(rs, Result.class);
 		if(rr.Error == 0) {
 			return rr.Result;
 		}
-		throw new RestException(to(rr));
+		throw new RestfulException(to(rr));
 	}
 
 	@Override
-	public String getDDO(String codehash, String ontid) throws RestException {
-		String rs = rest.getDDO(authType, accessToken, codehash, ontid);
+	public String getRawTransactionJson(String txhash) throws RestfulException {
+		String rs = api.getTransaction( txhash,false);
 		Result rr = JSON.parseObject(rs, Result.class);
 		if(rr.Error == 0) {
 			return rr.Result;
 		}
-		throw new RestException(to(rr));
-	}
-
-	@Override
-	public String getRawTransactionJson(String txhash) throws RestException {
-		String rs = rest.getTransaction(authType, accessToken, txhash,false);
-		Result rr = JSON.parseObject(rs, Result.class);
-		if(rr.Error == 0) {
-			return rr.Result;
-		}
-		throw new RestException(to(rr));
+		throw new RestfulException(to(rr));
 	}
 	@Override
-	public String getBlockJson(int height) throws RestException {
-		String rs = rest.getBlock(authType, accessToken, height,"0");
+	public String getBlockJson(int height) throws RestfulException {
+		String rs = api.getBlock(height,"0");
 		Result rr = JSON.parseObject(rs, Result.class);
 		if(rr.Error == 0) {
 			return rr.Result;
 		}
-		throw new RestException(to(rr));
+		throw new RestfulException(to(rr));
 	}
 	@Override
-	public String getBlockJson(String hash) throws RestException {
-		String rs = rest.getBlock(authType, accessToken, hash,"0");
+	public String getBlockJson(String hash) throws RestfulException {
+		String rs = api.getBlock(hash,"0");
 		Result rr = JSON.parseObject(rs, Result.class);
 		if(rr.Error == 0) {
 			return rr.Result;
 		}
-		throw new RestException(to(rr));
+		throw new RestfulException(to(rr));
 		
 	}
 	@Override
 	public Object getSmartCodeEvent(int height) throws ConnectorException, IOException {
-		String rs = rest.getSmartCodeEvent(authType, accessToken, height);
+		String rs = api.getSmartCodeEvent(height);
 		Result rr = JSON.parseObject(rs, Result.class);
 		if(rr.Error == 0) {
 			return rr.Result;
 		}
-		throw new RestException(to(rr));
+		throw new RestfulException(to(rr));
 
 	}
 	@Override
 	public Object getSmartCodeEvent(String hash) throws ConnectorException, IOException {
-		String rs = rest.getSmartCodeEvent(authType, accessToken, hash);
+		String rs = api.getSmartCodeEvent(hash);
 		Result rr = JSON.parseObject(rs, Result.class);
 		if(rr.Error == 0) {
 			return rr.Result;
 		}
-		throw new RestException(to(rr));
+		throw new RestfulException(to(rr));
 
 	}
 

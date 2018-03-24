@@ -17,17 +17,18 @@
  *
  */
 
-package com.github.ontio.sdk.exception;
+package com.github.ontio.network.rest;
 
-public class CoinException extends SDKException {
+import com.github.ontio.network.connect.ConnectorException;
 
-	private static final long serialVersionUID = 8048654854552608312L;
-
-	public CoinException(String msg) {
-		super(msg);
+public class RestfulException extends ConnectorException {
+	private static final long serialVersionUID = -8558006777817318117L;
+	
+	public RestfulException(String message) {
+		super(message);
 	}
 	
-	public CoinException(String msg, Exception ex) {
-		super(msg, ex);
+	public RestfulException(String message, Throwable ex) {
+		super("RestException:"+message, ex);
 	}
 }

@@ -30,7 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * Created by zx on 2017/11/27.
+ * Claim
  */
 public class Claim {
     private String context = "";

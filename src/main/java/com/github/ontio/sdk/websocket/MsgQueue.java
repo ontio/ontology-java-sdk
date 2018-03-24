@@ -23,6 +23,9 @@ import com.alibaba.fastjson.JSON;
 
 import java.util.*;
 
+/**
+ *
+ */
 public class MsgQueue {
 
     private static Set<String> set = new HashSet<String>();

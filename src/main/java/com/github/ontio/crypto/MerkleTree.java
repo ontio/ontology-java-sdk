@@ -24,13 +24,13 @@ import java.util.Arrays;
 import com.github.ontio.common.UInt256;
 
 /**
- *  哈希树
+ *  MerkleTree
  */
 public class MerkleTree {
     /**
-     *  计算根节点的值
-     *  <param name="hashes">子节点列表</param>
-     *  <returns>返回计算的结果</returns>
+     *
+     * @param hashes
+     * @return
      */
     public static UInt256 computeRoot(UInt256[] hashes) {
         if (hashes.length == 0) {

@@ -28,16 +28,11 @@ import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.io.Serializable;
 
 /**
- * Number type in block. this type Can be accurate to 64-bit fixed-point, the rounding 
- * error to a minimum. By controlling the multiplier's accuracy, 
- * the rounding error can be completely eliminated
- * 
- * @author 12146
- * @since  JDK1.8
+ *
  */
 public class Fixed8 implements Comparable<Fixed8>, Serializable {
-    public static  int DefaultPrecision = 8;//8
-    private static final long D = (long)Math.pow(10,DefaultPrecision);//100000000L;
+    public static  int DefaultPrecision = 8;
+    private static final long D = (long)Math.pow(10,DefaultPrecision);
 
     private long value;
 

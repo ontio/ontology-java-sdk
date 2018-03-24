@@ -32,15 +32,12 @@ import org.bouncycastle.util.BigIntegers;
 public class SM2Utils {
 
     public static void generateKeyPair() {
-        SM2 sm2 = SM2.Instance();  //
+        SM2 sm2 = SM2.Instance();
         AsymmetricCipherKeyPair key = sm2.ecc_key_pair_generator.generateKeyPair();
-        ECPrivateKeyParameters ecpriv = (ECPrivateKeyParameters) key.getPrivate();   //
-        ECPublicKeyParameters ecpub = (ECPublicKeyParameters) key.getPublic();   //
+        ECPrivateKeyParameters ecpriv = (ECPrivateKeyParameters) key.getPrivate();
+        ECPublicKeyParameters ecpub = (ECPublicKeyParameters) key.getPublic();
         BigInteger privateKey = ecpriv.getD();
         ECPoint publicKey = ecpub.getQ();
-
-        //System.out.println("" + Util.byteToHex(publicKey.getEncoded()));
-        //System.out.println("" + Util.byteToHex(privateKey.toByteArray()));
     }
 
     public static ECPoint generatePubkey(byte[] prikey) {

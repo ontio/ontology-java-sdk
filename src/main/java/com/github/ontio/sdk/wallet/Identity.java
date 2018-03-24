@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by zx on 2018/1/11.
+ *
  */
 public class Identity {
     public String label = "";

@@ -24,7 +24,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 /**
- * 证书管理
+ *
  */
 public class X509Imp implements X509TrustManager {
 	@Override

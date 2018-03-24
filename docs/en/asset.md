@@ -51,7 +51,7 @@ ontSdk.getWalletMgr().writeWallet();
 ontSdk.getWalletMgr().getWallet().setDefaultAccount(index);
 ontSdk.getWalletMgr().getWallet().setDefaultAccount(address);
 ```
-Note: index表示设置第index个account为默认账户，address表示设置该address对应的account为默认账户
+> Note: index表示设置第index个account为默认账户，address表示设置该address对应的account为默认账户
 ### 数字资产使用
 
 如何直接调用SDK封装好的转账操作？（建议采用这种方式）

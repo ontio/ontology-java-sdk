@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
+ *
+ *  The ontology is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The ontology is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package com.github.ontio.network.rpc;
 
 import java.io.IOException;
@@ -52,15 +71,15 @@ public class RpcClient extends AbstractConnector {
 		return result.asString();
 	}
 	@Override
-	public Transaction getRawTransaction(String txid) throws RpcException, IOException {
-		JObject result = rpc.call("getrawtransaction", new JString(txid.toString()));
+	public Transaction getRawTransaction(String txhash) throws RpcException, IOException {
+		JObject result = rpc.call("getrawtransaction", new JString(txhash.toString()));
 		return Transaction.deserializeFrom(Helper.hexToBytes(result.asString()));
 	}
 	@Override
-	public String getRawTransactionJson(String txid) throws RpcException {
+	public String getRawTransactionJson(String txhash) throws RpcException {
 		JObject result = null;
 		try {
-			result = rpc.call("getrawtransaction", new JString(txid.toString()),new JNumber(1));
+			result = rpc.call("getrawtransaction", new JString(txhash.toString()),new JNumber(1));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -102,7 +121,6 @@ public class RpcClient extends AbstractConnector {
 		return result.toString();
 	}
 
-	/// ************************************************************ ///
 	@Override
 	public String sendRawTransaction(Transaction tx) throws RpcException, IOException {
 		JObject result = rpc.call("sendrawtransaction", new JString(Helper.toHexString(tx.toArray())));
@@ -116,22 +134,18 @@ public class RpcClient extends AbstractConnector {
 		System.out.println("rs:"+result);
 		return result.asString();
 	}
-	public String getRawTransaction(UInt256 txid) throws RpcException, IOException {
-		JObject result = rpc.call("getrawtransaction", new JString(txid.toString()));
+	public String getRawTransaction(UInt256 txhash) throws RpcException, IOException {
+		JObject result = rpc.call("getrawtransaction", new JString(txhash.toString()));
 		System.out.println("rs:"+result);
 		return result.toString();
 	}
-	
-//	public Transaction getTxn(UInt256 txid) throws RpcException, IOException {
-//		JObject result = rpc.call("getTxn", new JString(txid.toString()));
-//		System.out.println("rs:"+result);
-//		return Transaction.fromJsonD(new JsonReader(result));
-//	}
+
 	
 	public Block getBlock(UInt256 hash) throws RpcException, IOException {
 		JObject result = rpc.call("getblock", new JString(hash.toString()));
 		try {
-			Block bb = Serializable.from(Helper.hexToBytes(result.asString()), Block.class);//JsonSerializable.from(result, Block.class);
+			Block bb = Serializable.from(Helper.hexToBytes(result.asString()), Block.class);
+			//JsonSerializable.from(result, Block.class);
 			return bb;
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException(e);
@@ -141,7 +155,8 @@ public class RpcClient extends AbstractConnector {
 	public Block getBlock(int index) throws RpcException, IOException {
 		JObject result = rpc.call("getblock", new JNumber(index));
 		try {
-			Block bb = Serializable.from(Helper.hexToBytes(result.asString()), Block.class);//JsonSerializable.from(result, Block.class);
+			Block bb = Serializable.from(Helper.hexToBytes(result.asString()), Block.class);
+			//JsonSerializable.from(result, Block.class);
 			return bb;
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException(e);
@@ -157,7 +172,8 @@ public class RpcClient extends AbstractConnector {
 		JObject result = rpc.call("getblock", new JString(hash.toString()));
 		System.out.println("rs:"+result);
 		try {
-			Block bb = Serializable.from(Helper.hexToBytes(result.asString()), Block.class);//JsonSerializable.from(result, Block.class);
+			Block bb = Serializable.from(Helper.hexToBytes(result.asString()), Block.class);
+			// JsonSerializable.from(result, Block.class);
 			return bb;
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException(e);

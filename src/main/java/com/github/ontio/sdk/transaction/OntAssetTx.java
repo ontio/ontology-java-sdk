@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
+ *
+ *  The ontology is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The ontology is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package com.github.ontio.sdk.transaction;
 
 import com.github.ontio.OntSdk;
@@ -103,13 +122,13 @@ public class OntAssetTx {
     }
 
     //获取交易信息
-    private TransactionInfo getTransactionInfo(String txid) throws IOException, SDKException {
-        if (!ParamCheck.isValidTxid(txid)) {
-            throw new SDKException(Error.getDescTxidError(String.format("%s=%s", "txid", txid)));
+    private TransactionInfo getTransactionInfo(String txhash) throws IOException, SDKException {
+        if (!ParamCheck.isValidTxHash(txhash)) {
+            throw new SDKException(Error.getDescTxHashError(String.format("%s=%s", "txhash", txhash)));
         }
         TransactionInfo info = new TransactionInfo();
-        info.txid = txid;
-        Transaction tx = sdk.getConnectMgr().getRawTransaction(txid);
+        info.txhash = txhash;
+        Transaction tx = sdk.getConnectMgr().getRawTransaction(txhash);
         StringBuilder sb = new StringBuilder();
         for (TransactionAttribute attr : tx.attributes) {
             sb.append(Helper.toHexString(attr.data));

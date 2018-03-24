@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
+ *
+ *  The ontology is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The ontology is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package com.github.ontio.sdk.exception;
 
 public class Error {
@@ -5,8 +24,8 @@ public class Error {
 		return ExceptionConst.Json_CodeMessage.replace(ExceptionConst.Flag_Code, code).replace(ExceptionConst.Flag_Message, message);
 	}
 	
-	public static String getDescTxidError(String message) {
-		return getErrorDesc("Txid Error",ExceptionConst.Code_TxidError, message);
+	public static String getDescTxHashError(String message) {
+		return getErrorDesc("TxHash Error",ExceptionConst.Code_TxHashError, message);
 	}
 	public static String getDescAmountError(String message) {
 		return getErrorDesc("Amount Error",ExceptionConst.Code_AmountError, message);

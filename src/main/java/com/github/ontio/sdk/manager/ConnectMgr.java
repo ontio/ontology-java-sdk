@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
+ *
+ *  The ontology is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The ontology is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package com.github.ontio.sdk.manager;
 
 import java.io.IOException;
@@ -103,12 +122,12 @@ public class ConnectMgr {
         return null;
     }
 
-    public Transaction getRawTransaction(String txid) throws ConnectorException, IOException {
-        return connector.getRawTransaction(txid);
+    public Transaction getRawTransaction(String txhash) throws ConnectorException, IOException {
+        return connector.getRawTransaction(txhash);
     }
 
-    public String getTransaction(String txid) throws ConnectorException, IOException {
-        return connector.getRawTransactionJson(txid);
+    public String getTransaction(String txhash) throws ConnectorException, IOException {
+        return connector.getRawTransactionJson(txhash);
     }
 
     public int getGenerateBlockTime() throws ConnectorException, IOException {
@@ -143,8 +162,8 @@ public class ConnectMgr {
 //		return connector.getDDO(codehash, ontid);
 //	}
 
-//	public String getRawTransactionJson(String txid) throws ConnectorException, IOException {
-//		return connector.getRawTransactionJson(txid);
+//	public String getRawTransactionJson(String txhash) throws ConnectorException, IOException {
+//		return connector.getRawTransactionJson(txhash);
 //	}
 
     public String getBlockJson(int height) throws ConnectorException, IOException {

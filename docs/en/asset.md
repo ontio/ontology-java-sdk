@@ -52,9 +52,11 @@ ontSdk.getWalletMgr().getWallet().setDefaultAccount(index);
 ontSdk.getWalletMgr().getWallet().setDefaultAccount(address);
 ```
 > Note: index表示设置第index个account为默认账户，address表示设置该address对应的account为默认账户
+
 ### 数字资产使用
 
-如何直接调用SDK封装好的转账操作？（建议采用这种方式）
+
+1.如何直接调用SDK封装好的转账操作？（对于ont资产的转账请采用这种方式）
 
 ```
 //step1:获得ontSdk实例
@@ -66,7 +68,7 @@ ontAssetTx = ontSdk.getOntAssetTx()
 //step3:调用转账方法
 ontAssetTx.transfer(from,to,value)
 ```
-如何根据合约abi文件，调用合约中的转账方法？
+2.如何根据合约abi文件，调用合约中的转账方法？(用户自己部署的资产合约可以参考这种方法)
 
 ontology资产智能合约abi文件，abi文件是对智能合约函数接口的描述，通过abi文件可以清楚如何传参：
 
@@ -177,20 +179,6 @@ codehash是什么？
 
 ```
 是对智能合约byte code做两次sha160，智能合约的唯一标识。
-```
-
-调用智能合约invokeTransaction的过程，sdk中具体做了什么？
-
-```
-//step1：构造交易
-//需先将智能合约参数转换成vm可识别的opcode
-Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(opcodes,codeHash,info.address,info.pubkey);
-
-//step2：对交易签名
-String txHex = sdk.getWalletMgr().signatureData(password,tx);
-
-//step3：发送交易
-sdk.getConnectMgr().sendRawTransaction(txHex);
 ```
 
 invoke时为什么要传入账号和密码？

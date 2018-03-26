@@ -58,7 +58,12 @@ String result = (String) sdk.getConnectMgr().sendRawTransactionPreExec(txHex);
 
 #### **部署智能合约Demo例子**：
 ```
-ontSdk.setCodeHash(Helper.getCodeHash(code));
+InputStream is = new FileInputStream("/Users/sss/dev/ontologytest/IdContract/IdContract.avm");
+byte[] bys = new byte[is.available()];
+is.read(bys);
+is.close();
+code = Helper.toHexString(bys);
+ontSdk.setCodeHash(Helper.getCodeHash(code,VmType.NEOVM.value()));
 
 //部署合约
 String txhash = ontSdk.getSmartcodeTx().DeployCodeTransaction(code, true, "name", "1.0", "author", "email", "desp", ContractParameterType.Boolean.name());
@@ -70,7 +75,7 @@ DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getRawT
 | 参数      | 字段   | 类型  | 描述 |             说明 |
 | ----- | ------- | ------ | ------------- | ----------- |
 | 输入参数 | codeHexStr| String | 合约code | 必选 |
-|        | needStorage    | String | 是否需要存储   | 必选 |
+|        | needStorage    | Boolean | 是否需要存储   | 必选 |
 |        | name    | String  | 名字       | 必选|
 |        | codeVersion   | String | 版本       |  必选 |
 |        | author   | String | 作者     | 必选 |
@@ -166,7 +171,4 @@ public static void waitResult(OntSdk ontSdk, Object lock){
  }
 
 ```
-
-
-
 

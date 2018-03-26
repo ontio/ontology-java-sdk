@@ -8,8 +8,7 @@ OntSdk ontSdk = OntSdk.getInstance();
 ontSdk.setRpcConnection(url);
 //ontSdk.setRestfulConnection（url）
 ```
-Note: setRestfulConnection表示采用restful接口建立连接，setRpcConnection表示采用rpc接口建立连接。
-**url** : 区块链节点配置文件地址
+> Note: setRestfulConnection表示采用restful接口建立连接，setRpcConnection表示采用rpc接口建立连接。
 
 
 ### 获取当前区块高度

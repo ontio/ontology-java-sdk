@@ -5,7 +5,7 @@
 
 ## Overview
 
-This Java SDK released by Ontology official currently supports multiple functions, including native wallet management, digital identity management, digital asset management, smart contract deployment and invocation, node communication,with more to come in the future. 
+This Java SDK released by Ontology currently supports multiple functions, including native wallet management, digital identity management, digital asset management, smart contract deployment and invocation, node communication,with more to come in the future. 
 
 Version 0.6.0
 
@@ -23,8 +23,8 @@ Version 0.6.0
 ## Code structure：
 
 * acount: account operations, e.g. public/private key generation
-* common: common base interface
-* core: core layer, including contract, transaction and signature, etc.
+* common: common interface
+* core: core layer, including Smart contract, transaction and signature, etc.
 * crypto: relevant to crytography, e.g. ECC/SM
 * io: io operation
 * network: Interfacing with the restful or rpc interface of the chain.

@@ -49,7 +49,7 @@ ontSdk.getWalletMgr().writeWallet();
 
 ```
 ontSdk.getWalletMgr().getWallet().setDefaultAccount(index);
-ontSdk.getWalletMgr().getWallet().setDefaultAccount(address);
+ontSdk.getWalletMgr().getWallet().setDefaultAccount("address");
 ```
 > Note: index表示设置第index个account为默认账户，address表示设置该address对应的account为默认账户
 

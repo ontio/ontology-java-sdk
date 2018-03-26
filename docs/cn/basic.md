@@ -79,7 +79,6 @@ System.out.println(t);
 |    networkFee|   long| 网络手续费  |
 |    sigs|   Sign[]|   签名数组  |
 |    payload| Payload |  payload  |
-|    hash| UInt256 |  交易hash|
 
 
 

@@ -3,7 +3,7 @@
 ## Error code
 
 | Return Code | Description                   | Explaination                                     |
-| :----       | ----------------------------- | -----------------                                |
+| :----------:|:-----------------------------:|:------------------------------------------------:|
 | 0           | SUCCESS                       | Success                                          |
 | 41001       | SESSION_EXPIRED               | Invalid session or timeout (need to login again) |
 | 41002       | SERVICE_CEILING               | Reach the service limit                          |

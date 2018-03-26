@@ -22,7 +22,7 @@
 * core：核心层，包括合约、交易、签名等
 * crypto：加密相关，如ECC/SM
 * io：io操作
-* network：与链上restful或rpc接口通信接口
+* network：用restful或rpc接口与链通信
 * sdk：对底层做封装、Info信息、通信管理、UTXO管理、钱包文件管理、异常类。
 * ontsdk类：提供管理器和交易实例，管理器包括：walletMgr、connManager。walletMgr钱包管理器主要管理数字身份及数字资产账户，用户向链上发送交易需要私钥做签名。 connManager与链上通信管理。任何发送交易和查询都需要通过连接管理器。
 

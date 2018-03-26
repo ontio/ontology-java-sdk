@@ -4,14 +4,16 @@ The following describes basic blockchain interop function of SDK and defines rel
 
 Please use the following methods to initialize OntSDK use case before luanching JAVA SDK.
 
+```
 OntSdk ontSdk = OntSdk.getInstance();
 ontSdk.setRpcConnection(url);
 //ontSdk.setRestfulConnection（url）
 ```
+
 > Note: setRestfulConnection indicates that the connection is established using the restful interface, and setRpcConnection indicates that the connection is established using the rpc interface.
 
-
 ### get the current block height
+
 ```
 int height = ontSdk.getConnectMgr().getBlockHeight();
 ```

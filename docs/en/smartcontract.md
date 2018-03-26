@@ -1,5 +1,5 @@
 
-##Smart Contract 
+## Smart Contract 
 
 * What would be the AbiInfo structure?
 
@@ -123,6 +123,7 @@ String hash = ontSdk.getSmartcodeTx().invokeTransaction(did.ontid,"passwordtest"
 Create websocket thread and analyse the push notification
 
 Demo example：
+
 ```
 String wsUrl = "ws://101.132.193.149:21335";
 

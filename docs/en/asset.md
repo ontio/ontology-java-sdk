@@ -57,7 +57,7 @@ ontSdk.getWalletMgr().getWallet().setDefaultAccount("address");
 
 ### Use digital asset
 
-1. How to directly call the SDK packaged transfer operation？(Please se this method for transfer of ont assets.)
+1. How to directly call the SDK packaged transfer operation？(Please use this method for transfer of ont assets.)
 
 ```
 //step1:获得ontSdk实例
@@ -69,9 +69,10 @@ ontAssetTx = ontSdk.getOntAssetTx()
 //step3:调用转账方法
 ontAssetTx.transfer(from,to,value)
 ```
-2. How to call the transfer method in the contract according to the contract abi file？(You can refer to this method for asset contracts deployed by users themselves.)
 
+2. How to call the transfer method in the contract according to the contract abi file？(You can refer to this method for asset contracts deployed by users themselves.)
 Ontology asset smart contract ABI describes the functional interface of smart contract and supports parameter transfer:
+
 
 ```
 {
@@ -196,5 +197,5 @@ What is the pre-execution of smart contract when querying the assert and how to 
 Operations of smart contract, such as get, do not need to go through any consensus node. They read data directly from the storage of smart contract, execute at current node, and return the result. 
 We can call the pre-execution interface while sending transactions.。
 String result = (String) sdk.getConnectMgr().sendRawTransactionPreExec(txHex);
-
+```
 

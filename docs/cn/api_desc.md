@@ -162,7 +162,7 @@ ontSdk.getOntIdTx().register("passwordtest");
 String updateAttribute(String ontid,String password,byte[] key,byte[] type,byte[] value)
 ```
 | 参数      | 字段   | 类型  | 描述 |             说明 |
-| ----- | ------- | ------ | ------------- | ----------- |
+| :----- | :------- | :------ | :------------- | :----------- |
 | 输入参数 | password| String | 发行者地址 | 必选，私钥解密的密码 |
 |        | ontid    | String | 资产名称   | 必选，身份Id |
 |        | key    | byte[]  | key       | 必选，key |
@@ -688,7 +688,7 @@ public static void waitResult(OntSdk ontSdk, Object lock){
 ## 错误码
 
 | 返回代码 | 描述信息 | 说明 |
-| :---- | ----------------------------- | ----------------- |
+| :---- | :----------------------------- | :----------------- |
 | 0 | SUCCESS | 成功 |
 | 41001 | SESSION_EXPIRED | 会话无效或已过期（ 需要重新登录） |
 | 41002 | SERVICE_CEILING | 达到服务上限 |

@@ -13,6 +13,7 @@ You need to create/open a wallet file to create a digital identity.
 //If the wallet file does not exist, a wallet file will be auto-generated.
 wm.openWalletFile("Demo3.json");
 ```
+
 > Note: only wallet file in the operating file format is currently supported, with extended support of database or other storage methods.
 
 
@@ -26,6 +27,7 @@ wm.openWalletFile("Demo3.json");
 `lock` indicates whether the user’s id is locked, whose default value is false. Locked id info cannot get updated in the client.
 `controls` the array of identity ControlData
 `extra` the field that client developer stores extra information, whose value may be null
+
 ```
 //Identity data structure
 public class Identity {
@@ -43,6 +45,7 @@ public class Identity {
 `curve` elliptic curve
 `id` the single identifier of control
 `key` NEP-2 private key
+
 ```
 public class Control {
     public String algorithm = "ECDSA";
@@ -114,6 +117,7 @@ String ddo = ontSdk.getOntIdTx().getDDO(ontid,"passwordtest",ontid);
 ```
 
 ### 6 **remove identity**
+
 ```
 ontSdk.getWalletMgr().getWallet().removeIdentity(ontid);
 //wrote to wallet
@@ -121,6 +125,7 @@ ontSdk.getWalletMgr().writeWallet();
 ```
 
 ### 7 **set default account or identity**
+
 ```
 ontSdk.getWalletMgr().getWallet().setDefaultIdentity(index);setDefaultAccount
 ontSdk.getWalletMgr().getWallet().setDefaultIdentity("ontid");

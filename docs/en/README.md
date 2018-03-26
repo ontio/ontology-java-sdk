@@ -1,11 +1,11 @@
 ﻿[中文版](../cn/README.md)
 
-<h1 align="center">Ontology Java SDK 开发者手册</h1>
+    <h1 align="center">Ontology Java SDK Developer's Guide</h1>
 <h4 align="center">Version V0.6.0 </h4>
 
 ## Overview
 
-This Java SDK released by Ontology currently supports multiple functions, including native wallet management, digital identity management, digital asset management, smart contract deployment and invocation, node communication,with more to come in the future. 
+This Java SDK released by Ontology currently supports multiple functions, including native wallet management, digital identity management, digital asset management, smart contract deployment and invocation, node communication, with more to come in the future. 
 
 Version 0.6.0
 
@@ -14,19 +14,19 @@ Version 0.6.0
 
 - [Basic operation of blockchain nodes](basic.md)
 - [Wallet file specification](Wallet_File_Specification.md)
-- [Digital identity and vefieable claim management](identity_claim.md)
+- [Digital identity and verifable claim management](identity_claim.md)
 - [Digital assets](asset.md)
 - [Smart contract deployment and invocation](smartcontract.md)
 - [Error code](errorcode.md)
 
 
-## Code structure：
+## Code structure:
 
-* acount: account operations, e.g. public/private key generation
-* common: common interface
-* core: core layer, including Smart contract, transaction and signature, etc.
-* crypto: relevant to crytography, e.g. ECC/SM
-* io: io operation
+* account: Account operations, e.g. public/private key generation
+* common: Common interface
+* core: Core layer, including smart contract, transaction and signature, etc.
+* crypto: Relevant to crytography, e.g. ECC/SM
+* io: IO operation
 * network: Interfacing with the restful or rpc interface of the chain.
-* sdk: underlying encapsulation, info management, communications management, UTXO management, wallet file management, exception class.
-* ontsdk class: provide manager and transaction use cases.There are two types of managers：walletMgr and connManager. walletMgr manages digital identities and digital asset accounts. Transactions sent to the blockchain need to be digitally signed with the user's private key.connManager manages blockchain communications system. Any send transaction and query need to be processed by connManager.
+* sdk: Underlying encapsulation, info management, communications management, UTXO management, wallet file management, exception class.
+* ontsdk class: Provide manager and transaction use cases. There are two types of managers: walletMgr and connManager. walletMgr manages digital identities and digital asset accounts. Transactions sent to the blockchain need to be digitally signed with the user's private key. connManager manages blockchain communications system. Any send transaction and query needs to be processed by connManager.

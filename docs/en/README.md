@@ -1,4 +1,8 @@
-﻿
+﻿[中文版](../cn/README.md)
+
+<h1 align="center">Ontology Java SDK 开发者手册</h1>
+<h4 align="center">Version V0.6.0 </h4>
+
 ## Overview
 
 This Java SDK released by Ontology official currently supports multiple functions, including native wallet management, digital identity management, digital asset management, smart contract deployment and invocation, node communication,with more to come in the future. 

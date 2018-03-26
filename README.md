@@ -8,8 +8,8 @@ The project is an ontology official Java SDK, which is a comprehensive SDK. Curr
 
 ## Getting started
 
-Visit the [Getting Started](http://opendoc.ont.io/javasdk/en) to learn how to use this library.
-
+* 进入 [中文版](http://opendoc.ont.io/javasdk/cn) .
+* Enter [English Version](http://opendoc.ont.io/javasdk/en) .
 
 ## Installation Environment 
 

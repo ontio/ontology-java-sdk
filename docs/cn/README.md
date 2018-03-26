@@ -1,3 +1,8 @@
+[English Version](../en/README.md)
+
+<h1 align="center">Ontology Java SDK User Guide</h1>
+<h4 align="center">Version V0.6.0 </h4>
+
 ## 总体介绍
 
 该项目是本体官方Java SDK，它是一个综合性SDK，目前支持：本地钱包管理、数字身份管理、数字资产管理、智能合约部署和调用、与节点通信等。未来还将支持更丰富的功能和应用。

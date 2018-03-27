@@ -27,7 +27,7 @@ A wallet file in JSON format has the following basic structure:
 
 ```defaultAccountAddress``` indicates the default digital assert account's address in this wallet.
 
-```createTime``` is the createTime of this wallet,in UTC format.
+```createTime``` is the createTime of this wallet, in UTC format.
 
 ```identities``` is an array of Identity objects which describe the details of each Identity in the wallet.
 
@@ -35,7 +35,7 @@ A wallet file in JSON format has the following basic structure:
 
 ```extra``` is an object that is defined by the implementor of the client for storing extra data. This field can be null.
 
-Here is an example as below.
+Here is an example as below:
 
 ```
 {
@@ -134,7 +134,7 @@ Control object has the following structure:
   "key": "6PYWB8m1bCnu5bQkRUKAwbZp2BHNvQ3BQRLbpLdTuizpyLkQPSZbtZfoxx",
 }
 ```
-```algorithm``` is the algorithms used in encryption system.
+```algorithm``` is the algorithm used in encryption system.
 
 ```parameters``` is the array of parameter objects used in encryption system.
 
@@ -171,15 +171,15 @@ Account object has the following structure:
 
 ```label``` is a label that the user has made to the account.
 
-```lock``` indicates whether the account is locked by user. The client shouldn't spend the funds in a locked account.
+```lock``` indicates whether the account is locked by the user. The client shouldn't spend the funds in a locked account.
 
-```algorithm``` is the algorithms used in encryption system.
+```algorithm``` is the algorithm used in encryption system.
 
 ```parameters``` is the array of parameter objects used in encryption system.
 
 ```key``` is the private key of the account in the NEP-2 format. This field can be null (for watch-only address or non-standard address).
 
-```contract``` is a Contract object which describes the details of the contract. This field can be null (for watch-only address).
+```contract``` is a Contract object which describes the details of the contract. This field can be null (for watch-only addresses).
 
 ```extra``` is an object that is defined by the implementor of the client for storing extra data. This field can be null.
 
@@ -202,7 +202,7 @@ Contract object has the following structure:
 
 ## QR Code Specification 
 
-This is QR Code Specification for both indentity and account. 
+This is a QR Code Specification for both indentity and account. 
 
 ```
 {
@@ -216,4 +216,4 @@ This is QR Code Specification for both indentity and account.
 }
 ```
 
-```type``` used to distinguish between indentity or account, **I** indicates this is an indentity , **A** indicates this is an account.
+```type``` is used to distinguish between indentity or account, **I** indicates this is an indentity , **A** indicates this is an account.

@@ -2,16 +2,16 @@
 ## Digital assets
 
 ### **Data structure**
-`address` base58 encoded account address
-`label` name of account
-`isDefault`indicates whether the account is a default one, whose default value is set as "false"
-`lock` indicates whether the account is locked by client users, who cannot spend in locked account
-`algorithm` name of encryption algorithm
-`parameters` encryption parameters
-`curve` elliptic curve 
-`key` NEP-2 private key, whose value can be null (in case of read-only or non-standard address)
-`contract` smart contract, whose value can be null (in case of read-only address)
-`extra` extra information stored by client developer, whose value can be null
+`address` base58 encoded account address  
+`label` name of account  
+`isDefault`indicates whether the account is a default one, whose default value is set as "false"  
+`lock` indicates whether the account is locked by client users, who cannot spend in locked account  
+`algorithm` name of encryption algorithm  
+`parameters` encryption parameters  
+`curve` elliptic curve  
+`key` NEP-2 private key, whose value can be null (in case of read-only or non-standard address)  
+`contract` smart contract, whose value can be null (in case of read-only address)  
+`extra` extra information stored by client developer, whose value can be null  
 
 ```
 public class Account {

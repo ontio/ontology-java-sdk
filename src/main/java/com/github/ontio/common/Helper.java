@@ -27,7 +27,6 @@ import java.util.Map;
 /**
  * Byte Handle Helper
  *
- *
  */
 public class Helper {
 	public static String getbyteStr(byte[] bs)  {

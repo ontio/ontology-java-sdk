@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *  脚本
+ *
  */
 public class Sig implements Serializable {
     public ECPoint[] pubKeys = null;

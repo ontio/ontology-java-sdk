@@ -35,8 +35,7 @@ import java.util.Arrays;
 /**
  * Custom type which inherits base class defines 20-bit data, 
  * it mostly used to defined contract address
- * 
- * @author 12146
+ *
  * @since  JDK1.8
  *
  */

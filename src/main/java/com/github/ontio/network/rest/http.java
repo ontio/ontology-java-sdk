@@ -115,21 +115,7 @@ public class http {
         }
         return sb.toString();
     }
-//    public static String delete(String url, String body) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, KeyManagementException {
-//        if(url.startsWith("https")){
-//            return delete(url, body, true);
-//        }else{
-//            return delete(url, body, false);
-//        }
-//    }
-//    public static String post(String url, String body) throws Exception{
-//    	System.out.println(String.format("POST url=%s", url));
-//    	if(url.startsWith("https")){
-//    		return post(url, body, true);
-//    	}else{
-//    		return post(url, body, false);
-//    	}
-//    }
+
     public static String delete(String url, Map<String, String> params, Map<String, Object> body) throws Exception {
         if(url.startsWith("https")){
             return delete(url+cvtParams(params), JSON.toJSONString(body),true);

@@ -271,9 +271,6 @@ public class WalletMgr {
 
     public Acct getAccount(String address, String password) throws SDKException {
         address = address.replace(Common.didont, "");
-        if (!ParamCheck.isValidAddress(address)) {
-            throw new SDKException(String.format("%s=%s", "address:", address));
-        }
         return getAccountByAddress(Address.decodeBase58(address), password);
     }
 
@@ -309,9 +306,6 @@ public class WalletMgr {
 
     public AccountInfo getAccountInfo(String address, String password) throws SDKException {
         address = address.replace(Common.didont, "");
-        if (!ParamCheck.isValidAddress(address)) {
-            throw new SDKException(String.format("%s=%s", "address:", address));
-        }
         AccountInfo info = new AccountInfo();
         Acct acc = getAccountByAddress(Address.decodeBase58(address), password);
         info.address = address;

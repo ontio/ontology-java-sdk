@@ -24,9 +24,7 @@ import com.alibaba.fastjson.JSON;
 /**
  * Custom type which inherits base class defines 32-bit data, 
  * it mostly used to defined transaction identity
- * 
- * @author 12146
- * @since  JDK1.8
+ *
  *
  */
 public class UInt256 extends UIntBase implements Comparable<UInt256> {

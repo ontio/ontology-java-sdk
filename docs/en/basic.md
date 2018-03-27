@@ -2,7 +2,7 @@
 
 The following describes basic blockchain interop function of SDK and defines relevant data structure.
 
-Please use the following methods to initialize OntSDK use case before luanching JAVA SDK.
+Please use the following methods to initialize OntSDK use case before launching JAVA SDK.
 
 ```
 OntSdk ontSdk = OntSdk.getInstance();
@@ -12,13 +12,13 @@ ontSdk.setRpcConnection(url);
 
 > Note: setRestfulConnection indicates that the connection is established using the restful interface, and setRpcConnection indicates that the connection is established using the rpc interface.
 
-### get the current block height
+### Get the current block height
 
 ```
 int height = ontSdk.getConnectMgr().getBlockHeight();
 ```
 
-### get block
+### Get block
 
 ```
 Block block = ontSdk.getConnectMgr().getBlock(9757);
@@ -26,25 +26,25 @@ Block block = ontSdk.getConnectMgr().getBlock(9757);
 
 
 
-### get blockchain node count
+### Get blockchain node count
 
 ```
 System.out.println(ontSdk.getConnectMgr().getNodeCount());
 ```
 
-### get block time
+### Get block time
 
 ```
 System.out.println(ontSdk.getConnectMgr().getGenerateBlockTime());
 ```
 
-### get blockchain-based transaction
+### Get blockchain-based transaction
 
 ```
 String info = ontSdk.getConnectMgr().getTransaction(hash);
 System.out.println(info);
 ```
-### get InvokeTransaction 
+### Get InvokeTransaction 
 
 ```
 InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getRawTransaction(hash);

@@ -53,7 +53,9 @@ ontSdk.getWalletMgr().writeWallet();
 ontSdk.getWalletMgr().getWallet().setDefaultAccount(index);
 ontSdk.getWalletMgr().getWallet().setDefaultAccount("address");
 ```
-> Note: index: the account with such index number is set as the default account，address: the account with such address is set as the default account。
+> Note:  
+> index: the account with such index number is set as the default account  
+> address: the account with such address is set as the default account
 
 ### Use digital asset
 

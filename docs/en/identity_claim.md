@@ -1,6 +1,6 @@
-﻿## **Overivew**
+## Overivew
 
-Relevant descriptions of digital id can be referred to [ONT ID Protocol and Trust Framework](https://git.ont.network/Ontology_Open_Platform/ontid).
+Relevant descriptions of digital ID can be found in [ONT ID Protocol and Trust Framework](https://git.ont.network/Ontology_Open_Platform/ontid).
 
 ## **Wallet file specification**
 
@@ -14,18 +14,18 @@ You need to create/open a wallet file to create a digital identity.
 wm.openWalletFile("Demo3.json");
 ```
 
-> Note: only wallet file in the operating file format is currently supported, with extended support of database or other storage methods.
+> Note: Only wallet file in the operating file format is currently supported, with extended support of database or other storage methods.
 
 
 
-## **Digital id account management**
+## **Digital ID account management**
 
 ### 1 **Data structure**
 
-`ontid` a user’s only identity
-`label` the name of a user id。
-`lock` indicates whether the user’s id is locked, whose default value is false. Locked id info cannot get updated in the client.
-`controls` the array of identity ControlData
+`ontid` a user’s only identity  
+`label` the name of a user id  
+`lock` indicates whether the user’s id is locked, whose default value is false. Locked id info cannot get updated in the client  
+`controls` the array of identity ControlData  
 `extra` the field that client developer stores extra information, whose value may be null
 
 ```

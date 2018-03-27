@@ -139,13 +139,13 @@ String updateAttribute(String ontid,String password,byte[] key,byte[] type,byte[
 ```
 | Param   | Field   | Type  | Descriptions |      Remarks |
 | ----- | ------- | ------ | ------------- | ----------- |
-| input  | password| String | publisher's address | required, password to decrypt private key|
-| param.  | ontid    | String | name of asset | required, ID |
+| input param | password| String | publisher's address | required, password to decrypt private key|
+|   | ontid    | String | name of asset | required, ID |
 |        | key    | byte[]  | key       | required, key |
 |        | type    | byte[] | type     |  required, type |
 |        | value   | byte[] | value     | required, value |
-| output | txid   | String  | transaction  | 64-bit string |
-  param.                      code
+| output param | txhash   | String  | transaction hash | 64-bit string |
+                        
 
 
 ## **Verifiable claim**

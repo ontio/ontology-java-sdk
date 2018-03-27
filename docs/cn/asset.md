@@ -53,10 +53,11 @@ ontSdk.getWalletMgr().getWallet().setDefaultAccount("address");
 ```
 > Note: index表示设置第index个account为默认账户，address表示设置该address对应的account为默认账户
 
-### 数字资产使用
+### 原生数字资产
 
+#### 使用SDK方法
 
-1.如何直接调用SDK封装好的转账操作？（对于ont资产的转账请采用这种方式）
+我们建议您使用SDK封装的方法操作原生数字资产，比如 ONT Token等。
 
 ```
 //step1:获得ontSdk实例
@@ -68,7 +69,10 @@ ontAssetTx = ontSdk.getOntAssetTx()
 //step3:调用转账方法
 ontAssetTx.transfer(from,to,value)
 ```
-2.如何根据合约abi文件，调用合约中的转账方法？(用户自己部署的资产合约可以参考这种方法)
+
+#### 使用智能合约
+
+您也可以使用智能合约操作原生数字资产。
 
 ontology资产智能合约abi文件，abi文件是对智能合约函数接口的描述，通过abi文件可以清楚如何传参：
 

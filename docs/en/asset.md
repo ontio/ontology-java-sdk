@@ -56,10 +56,13 @@ ontSdk.getWalletMgr().getWallet().setDefaultAccount("address");
 > Note:  
 > index: the account with such index number is set as the default account  
 > address: the account with such address is set as the default account
+----
 
-### Use digital asset
+### Native digital asset(Token) 
 
-1. How to directly call the SDK packaged transfer operation? (Please use this method for transfer of ONT assets)
+#### Use SDK Method
+
+We suggest that you use SDK method directly to deal with native digital asset.
 
 ```
 //step1:获得ontSdk实例
@@ -72,9 +75,11 @@ ontAssetTx = ontSdk.getOntAssetTx()
 ontAssetTx.transfer(from,to,value)
 ```
 
-2. How to call the transfer method in the contract according to the contract abi file? (You can refer to this method for asset contracts deployed by users themselves).  
-Ontology asset smart contract ABI describes the functional interface of smart contract and supports parameter transfer:
+#### Use Smart Contract
 
+You also use smart contract to deal with  native digital asset.
+
+Ontology smart contract ABI describes the functional interface of smart contract and supports parameter transfer:
 
 ```
 {

@@ -167,12 +167,12 @@ String updateAttribute(String ontid,String password,byte[] key,byte[] type,byte[
 
 ```
 
-`unsignedData`  a JSON string of unsigned claim objects, including Context, Id, Claim and Metadata  
-`signedData` a JSON string of signed claim objects, including claim object and digitally signed object  
-`Context` identification of claim template  
-`Id` identification of claim object  
-`Claim` claim content  
-`Metadata` metadata of claim object  
+`unsignedData`  A JSON string of unsigned claim objects, including Context, Id, Claim, and Metadata  
+`signedData` A JSON string of signed claim objects, including claim object and digitally signed object  
+`Context` Identification of claim template  
+`Id` Identification of claim object  
+`Claim` Claim content  
+`Metadata` Metadata of claim object  
 
 * Metadata has the following data structure
 
@@ -187,12 +187,12 @@ String updateAttribute(String ontid,String password,byte[] key,byte[] type,byte[
 }
 
 ```
-`createtime` the time the claim is created
-`issuer` claim issuer
-`subject` claim subject
-`expires` expiry date of the claim
-`revocation` revocation method of the claim
-`crl` the link of claim revocation list
+`createtime` The time the claim is created  
+`issuer` Claim issuer  
+`subject` Claim subject  
+`expires` Expiry date of the claim  
+`revocation` Revocation method of the claim  
+`crl` The link of claim revocation list
 
 
 * Signature has the following data structure

@@ -22,11 +22,11 @@ wm.openWalletFile("Demo3.json");
 
 ### 1 **Data structure**
 
-`ontid` a user’s only identity  
-`label` the name of a user id  
-`lock` indicates whether the user’s id is locked, whose default value is false. Locked id info cannot get updated in the client  
-`controls` the array of identity ControlData  
-`extra` the field that client developer stores extra information, whose value may be null
+`ontid` A user’s only identity  
+`label` The name of a user ID  
+`lock` Indicates whether the user’s ID is locked, whose default value is false. Locked id info cannot get updated in the client  
+`controls` The array of identity ControlData  
+`extra` The field that client developer stores extra information, whose value may be null
 
 ```
 //Identity data structure
@@ -40,10 +40,10 @@ public class Identity {
 
 ```
 
-`algorithm` encryption algorithm
-`parameters` the parameters used in the encryption algorithm
-`curve` elliptic curve
-`id` the single identifier of control
+`algorithm` Encryption algorithm  
+`parameters` The parameters used in the encryption algorithm  
+`curve` Elliptic curve  
+`id` The single identifier of control  
 `key` NEP-2 private key
 
 ```

@@ -80,9 +80,9 @@ Upon successful registration, the corresponding DDO of the ONT ID will be stored
 
 ### 4 **Import account or identity**
 
-Users who have already created a digital identity or account may import it into wallet file from SDK.
+Users who have already created a digital identity or account may import it into a wallet file from SDK.
 
-> **Note：** It is advised to check if an identity already exists on the blockchain before you import one. If DDO does not exist, it means that no such identity has been registered on the blockchain. Then you may need to use ontSdk.getOntIdTx().register(identity) for registration.
+> **Note:** It is advised to check if an identity already exists on the blockchain before you import one. If DDO does not exist, it means that no such identity has been registered on the blockchain. Then you may need to use ontSdk.getOntIdTx().register(identity) for registration.
 
 ```
 Identity identity = ontSdk.getWalletMgr().importIdentity("6PYMpk8DjWzaEvneyaqxMBap9DuUPH72W6BsWWTtpWE4JJZkGq5ENtfYbT","passwordtest");
@@ -116,7 +116,7 @@ String ddo = ontSdk.getOntIdTx().getDDO(ontid,"passwordtest",ontid);
 
 ```
 
-### 6 **remove identity**
+### 6 **Remove identity**
 
 ```
 ontSdk.getWalletMgr().getWallet().removeIdentity(ontid);
@@ -124,25 +124,25 @@ ontSdk.getWalletMgr().getWallet().removeIdentity(ontid);
 ontSdk.getWalletMgr().writeWallet();
 ```
 
-### 7 **set default account or identity**
+### 7 **Set default account or identity**
 
 ```
 ontSdk.getWalletMgr().getWallet().setDefaultIdentity(index);setDefaultAccount
 ontSdk.getWalletMgr().getWallet().setDefaultIdentity("ontid");
 ```
 
-### 8 **update blockchain-based DDO attribute**
+### 8 **Update blockchain-based DDO attribute**
 
 ```
 //update an attribute
 String updateAttribute(String ontid,String password,byte[] key,byte[] type,byte[] value)
 ```
-| param   | field   | type  | descriptions |      remarks |
+| Param   | Field   | Type  | Descriptions |      Remarks |
 | ----- | ------- | ------ | ------------- | ----------- |
 | input  | password| String | publisher's address | required, password to decrypt private key|
-| param.  | ontid    | String | name of asset | required,ID |
-|        | key    | byte[]  | key       | required,key |
-|        | type    | byte[] | type     |  required,type |
+| param.  | ontid    | String | name of asset | required, ID |
+|        | key    | byte[]  | key       | required, key |
+|        | type    | byte[] | type     |  required, type |
 |        | value   | byte[] | value     | required, value |
 | output | txid   | String  | transaction  | 64-bit string |
   param.                      code
@@ -156,12 +156,12 @@ String updateAttribute(String ontid,String password,byte[] key,byte[] type,byte[
 
 ```
 {
-  unsignedData : string,
-  signedData : string,
-  context : string,
-  id : string,
-  claim : {},
-  metadata : Metadata,
+  unsignedData : string,  
+  signedData : string,  
+  context : string,  
+  id : string,  
+  claim : {},  
+  metadata : Metadata,  
   signature : Signature
 }
 

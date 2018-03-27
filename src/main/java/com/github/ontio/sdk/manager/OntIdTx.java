@@ -721,7 +721,9 @@ public class OntIdTx {
         params = Helper.addBytes(params, new byte[]{0x69});
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, null, VmType.NEOVM.value(), fees);
-        List listResult = (List) sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        //System.out.println(obj);
+        List listResult = (List) obj;
         System.out.println(listResult);
         Map map = new HashMap();
         for (int i = 0; i < listResult.size(); i++) {

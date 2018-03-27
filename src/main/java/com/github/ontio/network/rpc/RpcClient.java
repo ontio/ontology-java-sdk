@@ -66,7 +66,12 @@ public class RpcClient extends AbstractConnector {
 
     @Override
     public Object sendRawTransaction(boolean preExec, String userid, String sData) throws RpcException, IOException {
-        Object result = rpc.call("sendrawtransaction", sData);
+        Object result = null;
+        if(preExec){
+            result = rpc.call("sendrawtransaction", sData,1);
+        }else {
+            result = rpc.call("sendrawtransaction", sData);
+        }
         return result;
     }
 

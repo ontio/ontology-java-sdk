@@ -65,7 +65,6 @@ public class WebsocketDemo {
             //System.exit(0);
 
             //System.out.println("================register=================");
-            //注册ontid
             Identity ident = null;
             if (ontSdk.getWalletMgr().getIdentitys().size() == 0) {
                 ident = ontSdk.getOntIdTx().register("passwordtest");
@@ -76,12 +75,11 @@ public class WebsocketDemo {
             String ontid = ident.ontid;
 
             //System.exit(0);
-            //等待推送结果
             //waitResult(ontSdk,lock);
             //Thread.sleep(6000);
 //            System.out.println("===============updateAttribute=================="+ontid);
 //            String ddo = ontSdk.getOntIdTx().getDDO(ontid);
-//            System.out.println("Ddo内容:"+ddo);
+//            System.out.println("Ddo:"+ddo);
 //            System.exit(0);
 
             String attri = "attri";
@@ -93,13 +91,10 @@ public class WebsocketDemo {
                 recordMap.put("keyNum", 1234589);
                 recordMap.put("key2", false);
 
-
-                //System.out.println(JSON.toJSONString(recordMap));
                 //System.out.println(ontid);
                 String hash = ontSdk.getOntIdTx().updateAttribute(ontid, "passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
                 System.out.println("hash:" + hash);
 
-                //等待推送结果
                 //waitResult(ontSdk, lock);
                 Thread.sleep(5000);
             }
@@ -152,13 +147,10 @@ public class WebsocketDemo {
 //        String url = "http://101.132.193.149:21334";
         OntSdk wm = OntSdk.getInstance();
         wm.setRestfulConnection(url);
-        //配置 ontid 文件
         wm.openWalletFile("WebsocketDemo.json");
 
-        //设置 ontid合约hash
         wm.setCodeAddress("89ff0f39193ddaeeeab9de4873b549f71bbe809c");
 
-        //System.exit(0);
         return wm;
     }
 }

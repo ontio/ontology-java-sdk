@@ -57,7 +57,7 @@ public class OntIdWsDemoTest {
             Object lock = new Object();
             WsProcess.startWebsocketThread(lock, wsUrl);
 
-            //等待ws 的session uuid，发送请求后，可以指定 推送给websocket客户端
+            //wait ws session uuid，asign websocket client
             String wsUUID = waitUserid(ontSdk, lock);
             System.out.println("wsSessionID:" + wsUUID);
             ontSdk.setWsSessionId(wsUUID);
@@ -67,20 +67,18 @@ public class OntIdWsDemoTest {
             //System.exit(0);
 
             System.out.println("================register=================");
-            //注册ontid
+            //registry ontid
             Identity ident = ontSdk.getOntIdTx().register("passwordtest");
 
             String ontid = ident.ontid;
 
             //System.exit(0);
-            //等待推送结果
+            //
             waitResult(ontSdk, lock);
             //Thread.sleep(6000);
             System.out.println("===============updateAttribute==================");
 
             String attri = "attri";
-            //String ontid = "did:ont:APoFQzsESEZZ2LzCtZZ4GyAdp8zLwBZQcA";
-            //for (int i = 0; i < 1; i++) {
             Map recordMap = new HashMap();
             recordMap.put("key0", "world0");
             //recordMap.put("key1", i);
@@ -93,23 +91,22 @@ public class OntIdWsDemoTest {
             String hash = ontSdk.getOntIdTx().updateAttribute(ontid, "passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
             System.out.println("hash:" + hash);
 
-            //等待推送结果
+            //
             waitResult(ontSdk, lock);
             Thread.sleep(1000);
-            // }
-            // System.exit(0);
+
 
             System.out.println("===============getDDO==================");
-            //查询ontid 的 ddo内容
-            String ddo = ontSdk.getOntIdTx().getDDO(ontid);
-            System.out.println("Ddo内容:" + ddo);
 
-            //解析ontid 中Attributes 内容
+            String ddo = ontSdk.getOntIdTx().getDDO(ontid);
+            System.out.println("Ddo:" + ddo);
+
+            //parse Attributes
             String rcd = JSON.parseObject(ddo).getJSONObject("Attributes").getString(attri);
 
-            System.out.println("属性:" + attri);
-            System.out.println("属性类型:" + JSON.parseObject(rcd).get("Type"));
-            System.out.println("属性值:" + JSON.parseObject(rcd).get("Value"));
+            System.out.println("attri:" + attri);
+            System.out.println("type:" + JSON.parseObject(rcd).get("Type"));
+            System.out.println("value:" + JSON.parseObject(rcd).get("Value"));
 
             System.out.println();
             System.out.println("===============get Transaction, parse Attribute==================");
@@ -185,13 +182,9 @@ public class OntIdWsDemoTest {
 //        String url = "http://101.132.193.149:21334";
         OntSdk wm = OntSdk.getInstance();
         wm.setRestfulConnection(url);
-        //配置 ontid 文件
         wm.openWalletFile("OntIdWsDemo.json");
 
-        //设置 ontid合约hash
         wm.setCodeAddress("263dbc0ca10aec184ceced7a998106733852c28a");
-
-        //System.exit(0);
         return wm;
     }
 }

@@ -70,7 +70,7 @@ public class InvokeSmartCodeDemo {
 
 
             String ddo = ontSdk.getOntIdTx().getDDO(did.ontid);
-            System.out.println("Ddo内容:" + ddo);
+            System.out.println("Ddo:" + ddo);
             System.exit(0);
 
             AccountInfo info = ontSdk.getWalletMgr().getAccountInfo(did.ontid, "passwordtest");
@@ -85,7 +85,7 @@ public class InvokeSmartCodeDemo {
 //            Transaction tx = ontSdk.getConnectMgr().getTransaction(hash);
 //            Thread.sleep(6000);
 //            String ddo = ontSdk.getOntIdTx().getDDO(did.ontid,"passwordtest",did.ontid);
-//            System.out.println("Ddo内容:"+ddo);
+//            System.out.println("Ddo:"+ddo);
             //System.out.println(tx);
 
 

@@ -26,9 +26,8 @@ import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 
-public class DeployCodeTransaction extends Transaction {
+public class DeployCode extends Transaction {
 	public byte[] code;
-	//public byte[] params;
 	public byte vmType;
 	public boolean needStorage;
 	public String name;
@@ -36,13 +35,10 @@ public class DeployCodeTransaction extends Transaction {
 	public String author;
 	public String email;
 	public String description;
-	//public byte language;
-	//public UInt160 programHash;
-//	public ECPoint pubkey;
 
 
-	public DeployCodeTransaction() {
-		super(TransactionType.DeployCodeTransaction);
+	public DeployCode() {
+		super(TransactionType.DeployCode);
 	}
 	@Override
 	protected void deserializeExclusiveData(BinaryReader reader) throws IOException {
@@ -55,8 +51,6 @@ public class DeployCodeTransaction extends Transaction {
 			author = reader.readVarString();
 			email = reader.readVarString();
 			description = reader.readVarString();
-//			language = reader.readByte();
-//			programHash = reader.readSerializable(UInt160.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -71,7 +65,5 @@ public class DeployCodeTransaction extends Transaction {
 		writer.writeVarString(author);
 		writer.writeVarString(email);
 		writer.writeVarString(description);
-//		writer.writeByte(language);
-//		writer.writeSerializable(programHash);
 	}
 }

@@ -17,7 +17,7 @@
  *
  */
 
-package com.github.ontio.sdk.info.abi;
+package com.github.ontio.sdk.abi;
 
 import com.github.ontio.sdk.exception.SDKException;
 import com.alibaba.fastjson.JSON;

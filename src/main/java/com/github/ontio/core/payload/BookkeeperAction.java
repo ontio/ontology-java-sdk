@@ -17,31 +17,26 @@
  *
  */
 
-package com.github.ontio.io;
+package com.github.ontio.core.payload;
 
-import java.io.IOException;
+public enum BookkeeperAction {
+	BookKeeperAction_ADD(0x00),
+	BookKeeperAction_SUB(0x01),
+	;
+	private byte value;
+	BookkeeperAction(int v) {
+        value = (byte)v;
+    }
+    public byte value() {
+        return value;
+    }
 
-import com.github.ontio.io.json.JObject;
-
-public interface JsonSerializable {
-//	public void toJson(JsonWriter writer);
-//	public void fromJson(JsonReader reader);
-
-
-//    default JObject to() {
-//    	JsonWriter writer = new JsonWriter(new JObject());
-//    	toJson(writer);
-//    	return writer.json();
-//    }
-    
-
-//    static <T extends JsonSerializable> T from(JObject json, Class<T> t) throws InstantiationException, IllegalAccessException {
-//    	JsonReader reader = new JsonReader(json);
-//    	try {
-//			return reader.readSerializable(t);
-//		} catch (IOException e) {
-//			throw new IllegalArgumentException(e);
-//		}
-//    }
-
+    public static BookkeeperAction valueOf(byte v) {
+    	for (BookkeeperAction e : BookkeeperAction.values()) {
+    		if (e.value == v) {
+    			return e;
+    		}
+    	}
+    	throw new IllegalArgumentException();
+    }
 }

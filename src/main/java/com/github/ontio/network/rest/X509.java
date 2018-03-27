@@ -19,16 +19,24 @@
 
 package com.github.ontio.network.rest;
 
-import com.github.ontio.network.connect.ConnectorException;
+import javax.net.ssl.X509TrustManager;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
-public class RestfulException extends ConnectorException {
-	private static final long serialVersionUID = -8558006777817318117L;
-	
-	public RestfulException(String message) {
-		super(message);
-	}
-	
-	public RestfulException(String message, Throwable ex) {
-		super("RestException:"+message, ex);
-	}
+/**
+ *
+ */
+public class X509 implements X509TrustManager {
+	@Override
+    public X509Certificate[] getAcceptedIssuers() {
+        return null;
+    }
+	@Override
+    public void checkClientTrusted(X509Certificate[] chain, String authType)
+            throws CertificateException {
+    }
+	@Override
+    public void checkServerTrusted(X509Certificate[] chain, String authType)
+            throws CertificateException {
+    }
 }

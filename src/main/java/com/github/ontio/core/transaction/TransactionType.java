@@ -23,13 +23,13 @@ package com.github.ontio.core.transaction;
  * list transaction types
  */
 public enum TransactionType {
-    BookKeeping(0x00),
-    BookKeeper(0x02),
+    Bookkeeping(0x00),
+    Bookkeeper(0x02),
     Claim(0x03),
     Enrollment(0x04),
     Vote(0x05),
-    DeployCodeTransaction(0xd0),
-    InvokeCodeTransaction(0xd1),
+    DeployCode(0xd0),
+    InvokeCode(0xd1),
     ;
 
     private byte value;

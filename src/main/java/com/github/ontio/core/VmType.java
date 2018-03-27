@@ -24,7 +24,7 @@ package com.github.ontio.core;
  */
 public enum VmType {
 
-    NativeVM(0xff),
+    Native(0xff),
     NEOVM(0x80),
     WASMVM(0x90);
 

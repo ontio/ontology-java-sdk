@@ -85,7 +85,7 @@ public interface Signable extends Serializable {
 			byte[] s = new byte[32];
 			System.arraycopy(signature, 0, r, 0, 32);
 			System.arraycopy(signature, 32, s, 0, 32);
-			result = signer.verifySignature(Digest.sha256(data), new BigInteger(1, r), new BigInteger(1, s));
+			result = signer.verifySignature(Digest.sha256(Digest.sha256(Digest.sha256(data))), new BigInteger(1, r), new BigInteger(1, s));
 		}
 		return result;
     }

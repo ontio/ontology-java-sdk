@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 /**
- * Created by zx on 2018/2/1.
+ *
  */
 public class Enrollment extends Transaction {
         public ECPoint pubKey;

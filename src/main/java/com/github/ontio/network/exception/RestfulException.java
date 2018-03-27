@@ -17,17 +17,16 @@
  *
  */
 
-package com.github.ontio.network.connect;
+package com.github.ontio.network.exception;
 
-
-public class ConnectorException extends Exception {
-	private static final long serialVersionUID = 1110342144692879043L;
+public class RestfulException extends ConnectorException {
+	private static final long serialVersionUID = -8558006777817318117L;
 	
-	public ConnectorException(String message) {
+	public RestfulException(String message) {
 		super(message);
 	}
 	
-	public ConnectorException(String message, Throwable ex) {
+	public RestfulException(String message, Throwable ex) {
 		super(message, ex);
 	}
 }

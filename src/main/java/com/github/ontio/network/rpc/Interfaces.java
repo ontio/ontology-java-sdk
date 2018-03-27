@@ -19,10 +19,8 @@
 
 package com.github.ontio.network.rpc;
 
-import com.github.ontio.io.json.JNumber;
-import com.github.ontio.io.json.JObject;
-import com.github.ontio.io.json.JString;
-import com.github.ontio.io.json.JArray;
+import com.alibaba.fastjson.JSON;
+import com.github.ontio.network.exception.RpcException;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -30,69 +28,73 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 /**
  *
  */
 class Interfaces {
-	private final URL url;
+    private final URL url;
 
-	public String getHost() {
-		return url.getHost() + " " + url.getPort();
-	}
+    public String getHost() {
+        return url.getHost() + " " + url.getPort();
+    }
 
-	public Interfaces(String url) throws MalformedURLException {
-		this.url = new URL(url);
-	}
+    public Interfaces(String url) throws MalformedURLException {
+        this.url = new URL(url);
+    }
 
-	public JObject call(String method, JObject ...params) throws RpcException, IOException {
-		JObject response = send(makeRequest(method, params));
-		if(response == null){
-			throw new RpcException(0,"response is null.");
-		} else if(new Double(response.get("error").asNumber()).intValue() == 0){
-			return response.get("result");
-		} else {
-			throw new RpcException(new Double(response.get("error").asNumber()).intValue(),""+response);
-		}
-	}
+    public Object call(String method, Object... params) throws RpcException, IOException {
+        Map req = makeRequest(method, params);
+        Map response = (Map) send(req);
+        if (response == null) {
+            throw new RpcException(0, "response is null. maybe is connect error");
+        } else if ((int) response.get("error") == 0) {
+            return response.get("result");
+        } else {
+            throw new RpcException(0, JSON.toJSONString(response));
+        }
+    }
 
-	private static JObject makeRequest(String method, JObject[] params) {
-		JObject request = new JObject();
-		request.set("jsonrpc", new JString("2.0"));
-		request.set("method", new JString(method));
-		request.set("params", new JArray(params));
-		request.set("id", new JNumber(getNextId()));
-		System.out.println(request);
-		return request;
-	}
-	public static String toSs(byte[] bb) {
-		StringBuilder sb = new StringBuilder();
-		for(byte b: bb) {
-			sb.append(",").append(Byte.toUnsignedInt(b));
-		}
-		return sb.substring(1);
-	}
-	private static double getNextId() {
-		double d = 0.0;
-		do{
-			d = Math.random();
-		} while((""+d).indexOf("E") != -1);
-		return d;
-	}
+    private Map makeRequest(String method, Object[] params) {
+        Map request = new HashMap();
+        request.put("jsonrpc", "2.0");
+        request.put("method", method);
+        request.put("params", params);
+        request.put("id", 1);
+        System.out.println(String.format("POST url=%s,%s", this.url, JSON.toJSONString(request)));
+        return request;
+    }
 
-	private JObject send(JObject request) throws IOException {
-		try {
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("POST");
-			connection.setDoOutput(true);
-			try (OutputStreamWriter w = new OutputStreamWriter(connection.getOutputStream())) {
-                w.write(request.toString());
+    private static double getNextId() {
+        double d = 0.0;
+        do {
+            d = Math.random();
+        } while (("" + d).indexOf("E") != -1);
+        return d;
+    }
+
+    private Object send(Object request) throws IOException {
+        try {
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            try (OutputStreamWriter w = new OutputStreamWriter(connection.getOutputStream())) {
+                w.write(JSON.toJSONString(request));
             }
-			try (InputStreamReader r = new InputStreamReader(connection.getInputStream())) {
-                return JObject.parse(r);
+            try (InputStreamReader r = new InputStreamReader(connection.getInputStream())) {
+                StringBuffer temp = new StringBuffer();
+                int c = 0;
+                while ((c = r.read()) != -1) {
+                    temp.append((char) c);
+                }
+                //System.out.println("result:"+temp.toString());
+                return JSON.parseObject(temp.toString(), Map.class);
             }
-		} catch (IOException e) {
-		}
-		return null;
-	}
+        } catch (IOException e) {
+        }
+        return null;
+    }
 }

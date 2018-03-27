@@ -27,9 +27,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *  脚本
+ *
  */
-public class Fee implements Serializable, JsonSerializable {
+public class Fee implements Serializable {
     public long amount;
     public Address payer;
     public Fee(){

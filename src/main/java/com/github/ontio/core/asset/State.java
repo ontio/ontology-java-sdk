@@ -22,7 +22,6 @@ package com.github.ontio.core.asset;
 import com.github.ontio.common.Address;
 import com.github.ontio.crypto.Digest;
 import com.github.ontio.io.*;
-import com.github.ontio.io.json.JObject;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -30,9 +29,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *  脚本
+ *
  */
-public class State implements Serializable, JsonSerializable {
+public class State implements Serializable {
+    public byte version;
     public Address from;
     public Address to;
     public BigInteger value;
@@ -45,6 +45,7 @@ public class State implements Serializable, JsonSerializable {
     @Override
     public void deserialize(BinaryReader reader) throws IOException {
         try {
+            version = reader.readByte();
             from = reader.readSerializable(Address.class);
             to = reader.readSerializable(Address.class);
             value = new BigInteger(reader.readVarBytes());
@@ -57,6 +58,7 @@ public class State implements Serializable, JsonSerializable {
 
     @Override
     public void serialize(BinaryWriter writer) throws IOException {
+        writer.writeByte((byte)0);
         writer.writeSerializable(from);
         writer.writeSerializable(to);
         writer.writeVarBytes(value.toByteArray());

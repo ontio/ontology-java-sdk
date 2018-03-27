@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.github.ontio.common.Common.print;
 
 /**
  *
@@ -40,10 +39,10 @@ public class ClaimDemo {
         try {
             OntSdk ontSdk = getOntSdk();
 
-            ontSdk.setCodeHash("89ff0f39193ddaeeeab9de4873b549f71bbe809c");
+            ontSdk.setCodeAddress("80e7d2fc22c24c466f44c7688569cc6e6d6c6f92");
 
             List<Identity> dids = ontSdk.getWalletMgr().getIdentitys();
-            if(dids.size() < 2){
+            if (dids.size() < 2) {
                 ontSdk.getOntIdTx().register("passwordtest");
                 ontSdk.getOntIdTx().register("passwordtest");
                 dids = ontSdk.getWalletMgr().getIdentitys();
@@ -55,15 +54,16 @@ public class ClaimDemo {
             map.put("Subject", dids.get(1).ontid);
 
             //密码是签发人的秘密，钱包文件ontid中必须要有该签发人。
-            String claim = ontSdk.getOntIdTx().createOntIdClaim("passwordtest","claim:context",map,map);
+            String claim = ontSdk.getOntIdTx().createOntIdClaim("passwordtest", "claim:context", map, map);
             System.out.println(claim);
-            boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(dids.get(0).ontid,"passwordtest",claim);
+            boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(dids.get(0).ontid, "passwordtest", claim);
             System.out.println(b);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     public static OntSdk getOntSdk() throws Exception {
 
         String url = "http://127.0.0.1:20384";
@@ -72,7 +72,6 @@ public class ClaimDemo {
         wm.setRestfulConnection(url);
         wm.openWalletFile("ClaimDemo.json");
 
-        print(String.format("ConnectParam=[%s, %s]", url, ""));
         return wm;
     }
 }

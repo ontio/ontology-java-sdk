@@ -17,26 +17,33 @@
  *
  */
 
-package com.github.ontio.network.rest;
+package com.github.ontio.sdk.info;
 
-import javax.net.ssl.X509TrustManager;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
+import com.alibaba.fastjson.JSON;
 
 /**
  *
  */
-public class X509Imp implements X509TrustManager {
+public class AccountInfo {
+	public String address;
+	public String pubkey;
+	private String prikey;
+	private String prikeyWif;
+	public String encryptedPrikey;
+	public String pkHash;
+	public void setPrikey(String prikey){
+		this.prikey = prikey;
+	}
+	public void setPriwif(String priwif){
+		this.prikeyWif = priwif;
+	}
+	public String getPrikeyWif(){
+		return prikeyWif;
+	}
 	@Override
-    public X509Certificate[] getAcceptedIssuers() {
-        return null;
-    }
-	@Override
-    public void checkClientTrusted(X509Certificate[] chain, String authType)
-            throws CertificateException {
-    }
-	@Override
-    public void checkServerTrusted(X509Certificate[] chain, String authType)
-            throws CertificateException {
-    }
+	public String toString() {
+		return JSON.toJSONString(this);
+	}
+	
+	
 }

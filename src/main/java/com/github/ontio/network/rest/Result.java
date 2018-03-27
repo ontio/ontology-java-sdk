@@ -25,7 +25,7 @@ public class Result {
     public String Action;
     public long Error;
     public String Desc;
-    public String Result;
+    public Object Result;
     public String Version;
     @Override
     public String toString() {

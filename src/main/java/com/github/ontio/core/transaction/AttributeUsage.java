@@ -20,18 +20,17 @@
 package com.github.ontio.core.transaction;
 
 
-public enum TransactionAttributeUsage {
+public enum AttributeUsage {
 
 	Nonce(0x00),
     Script(0x20),
-
     DescriptionUrl(0x81),
     Description(0x90),
 
     ;
     private byte value;
 
-    TransactionAttributeUsage(int v) {
+    AttributeUsage(int v) {
         value = (byte)v;
     }
 
@@ -39,8 +38,8 @@ public enum TransactionAttributeUsage {
         return value;
     }
     
-    public static TransactionAttributeUsage valueOf(byte v) {
-    	for (TransactionAttributeUsage e : TransactionAttributeUsage.values()) {
+    public static AttributeUsage valueOf(byte v) {
+    	for (AttributeUsage e : AttributeUsage.values()) {
     		if (e.value == v) {
     			return e;
     		}

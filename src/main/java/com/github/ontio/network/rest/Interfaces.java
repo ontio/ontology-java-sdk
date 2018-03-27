@@ -20,10 +20,8 @@
 package com.github.ontio.network.rest;
 
 
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import com.github.ontio.network.exception.RestfulException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,183 +29,154 @@ import java.util.Map;
  *
  */
 class Interfaces {
-	private String url;
-	public Interfaces(String url) {
-		this.url = url;
-	}
-	public String getUrl() {
-		return url;
-	}
-	public String delete(String url, Map<String, String> params, Map<String, Object> body) throws RestfulException {
-		try {
-			return Methods.delete(url, params, body);
-		} catch (KeyManagementException | NoSuchAlgorithmException
-				| NoSuchProviderException | IOException e) {
-			throw new RestfulException("Invalid url:"+url + ",errMsg:"+e.getMessage(), e);
-		}
-	}
-	public String post(String url, Map<String, String> params, Map<String, String> body) throws RestfulException {
-		try {
-			return Methods.post(url, params, body);
-		} catch (KeyManagementException | NoSuchAlgorithmException
-				| NoSuchProviderException | IOException e) {
-			throw new RestfulException("Invalid url:"+url + ",errMsg:"+e.getMessage(), e);
-		}
-	}
-	public String postObject(String url, Map<String, String> params, Map<String, Object> body) throws RestfulException {
-		try {
-			return Methods.postObject(url, params, body);
-		} catch (KeyManagementException | NoSuchAlgorithmException
-				| NoSuchProviderException | IOException e) {
-			throw new RestfulException("Invalid url:"+url + ",errMsg:"+e.getMessage(), e);
-		}
-	}
-	public String get(String url, Map<String, String> params) throws RestfulException {
-		try {
-			return Methods.get(url, params);
-		} catch (KeyManagementException | NoSuchAlgorithmException
-				| NoSuchProviderException | IOException e) {
-			throw new RestfulException("Invalid url:"+url + ",errMsg:"+e.getMessage(), e);
-		}
-	}
-	public String sendTransaction(boolean preExec,String userid,String action, String version, String data) throws RestfulException {
-		Map<String, String> params = new HashMap<String, String>();
-		if(userid != null) {
-			params.put("userid", userid);
-		}
-		if(preExec) {
-			params.put("preExec", "1");
-		}
-		Map<String, String> body = new HashMap<String, String>();
-		body.put("Action", action);
-		body.put("Version", version);
-		body.put("Data", data);
-		try {
-			return Methods.post(url + Consts.Url_send_transaction, params, body);
-		} catch (KeyManagementException | NoSuchAlgorithmException
-				| NoSuchProviderException | IOException e) {
-			throw new RestfulException("Invalid url:"+url + ",errMsg:"+e.getMessage(), e);
-		}
-	}
+    private String url;
 
-	public String getTransaction(String txhash,boolean raw) throws RestfulException {
-		Map<String, String> params = new HashMap<String, String>();
-		if(raw) {
-			params.put("raw", "1");
-		}
-		try {
-			return Methods.get(url + Consts.Url_get_transaction + txhash, params);
-		} catch (KeyManagementException | NoSuchAlgorithmException
-				| NoSuchProviderException | IOException e) {
-			throw new RestfulException("Invalid url:"+url + ",errMsg:"+e.getMessage(), e);
-		}
-	}
+    public Interfaces(String url) {
+        this.url = url;
+    }
 
-	public String getGenerateBlockTime() throws RestfulException {
-		Map<String, String> params = new HashMap<String, String>();
-		try {
-			return Methods.get(url + Consts.Url_get_GenerateBlockTime, params);
-		} catch (KeyManagementException | NoSuchAlgorithmException
-				| NoSuchProviderException | IOException e) {
-			throw new RestfulException("Invalid url:"+url + ",errMsg:"+e.getMessage(), e);
-		}
-	}
+    public String getUrl() {
+        return url;
+    }
 
-	public String getNodeCount() throws RestfulException {
-		Map<String, String> params = new HashMap<String, String>();
-		try {
-			return Methods.get(url + Consts.Url_get_node_count, params);
-		} catch (KeyManagementException | NoSuchAlgorithmException
-				| NoSuchProviderException | IOException e) {
-			throw new RestfulException("Invalid url:"+url + ",errMsg:"+e.getMessage(), e);
-		}
-	}
-	public String getBlockHeight() throws RestfulException {
-		Map<String, String> params = new HashMap<String, String>();
-		try {
-			return Methods.get(url + Consts.Url_get_block_height, params);
-		} catch (KeyManagementException | NoSuchAlgorithmException
-				| NoSuchProviderException | IOException e) {
-			throw new RestfulException("Invalid url:"+url + ",errMsg:"+e.getMessage(), e);
-		}
-	}
+    public String sendTransaction(boolean preExec, String userid, String action, String version, String data) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        if (userid != null) {
+            params.put("userid", userid);
+        }
+        if (preExec) {
+            params.put("preExec", "1");
+        }
+        Map<String, Object> body = new HashMap<String, Object>();
+        body.put("Action", action);
+        body.put("Version", version);
+        body.put("Data", data);
+        try {
+            return http.post(url + UrlConsts.Url_send_transaction, params, body);
+        } catch (Exception e) {
+            throw new RestfulException("Invalid url:" + url + "," + e.getMessage(), e);
+        }
+    }
 
-	public String getBlock(int height,String raw) throws RestfulException {
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("raw", raw);
-		try {
-			return Methods.get(url + Consts.Url_get_block_By_Height + height, params);
-		} catch (KeyManagementException | NoSuchAlgorithmException
-				| NoSuchProviderException | IOException e) {
-			throw new RestfulException("Invalid url:"+url + ",errMsg:"+e.getMessage(), e);
-		}
-	}
+    public String getTransaction(String txhash, boolean raw) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        if (raw) {
+            params.put("raw", "1");
+        }
+        try {
+            return http.get(url + UrlConsts.Url_get_transaction + txhash, params);
+        } catch (Exception e) {
+            throw new RestfulException("Invalid url:" + url + "," + e.getMessage(), e);
+        }
+    }
 
-	public String getBlock( String hash,String raw) throws RestfulException {
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("raw", raw);
-		try {
-			return Methods.get(url + Consts.Url_get_block_By_Hash + hash, params);
-		} catch (KeyManagementException | NoSuchAlgorithmException
-				| NoSuchProviderException | IOException e) {
-			throw new RestfulException("Invalid url:"+url + ",errMsg:"+e.getMessage(), e);
-		}
-	}
-	public String getSmartCodeEvent(int height) throws RestfulException {
-		Map<String, String> params = new HashMap<String, String>();
-		try {
-			return Methods.get(url + Consts.Url_get_smartcodeevent_by_height + height, params);
-		} catch (KeyManagementException | NoSuchAlgorithmException
-				| NoSuchProviderException | IOException e) {
-			throw new RestfulException("Invalid url:"+url + ",errMsg:"+e.getMessage(), e);
-		}
-	}
-	public String getSmartCodeEvent(String hash) throws RestfulException {
-		Map<String, String> params = new HashMap<String, String>();
-		try {
-			return Methods.get(url + Consts.Url_get_smartcodeevent_by_txhash + hash, params);
-		} catch (KeyManagementException | NoSuchAlgorithmException
-				| NoSuchProviderException | IOException e) {
-			throw new RestfulException("Invalid url:"+url + ",errMsg:"+e.getMessage(), e);
-		}
-	}
+    public String getGenerateBlockTime() throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            return http.get(url + UrlConsts.Url_get_generate_block_time, params);
+        } catch (Exception e) {
+            throw new RestfulException("Invalid url:" + url + "," + e.getMessage(), e);
+        }
+    }
 
-	public String getBalance( String address) throws RestfulException {
-		Map<String, String> params = new HashMap<String, String>();
-		try {
-			return Methods.get(url + Consts.Url_get_account_balance + address, params);
-		} catch (KeyManagementException | NoSuchAlgorithmException
-				| NoSuchProviderException | IOException e) {
-			throw new RestfulException("Invalid url:"+url + ",errMsg:"+e.getMessage(), e);
-		}
-	}
+    public String getNodeCount() throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            return http.get(url + UrlConsts.Url_get_node_count, params);
+        } catch (Exception e) {
+            throw new RestfulException("Invalid url:" + url + "," + e.getMessage(), e);
+        }
+    }
 
-	public String getTransactionJson(String txhash) throws RestfulException {
-		Map<String, String> params = new HashMap<String, String>();
-		try {
-			return Methods.get(url + Consts.Url_get_transaction + txhash, params);
-		} catch (KeyManagementException | NoSuchAlgorithmException
-				| NoSuchProviderException | IOException e) {
-			throw new RestfulException("Invalid url:"+url + ",errMsg:"+e.getMessage(), e);
-		}
-	}
-	public String getBlockJson(int height) throws RestfulException {
-		Map<String, String> params = new HashMap<String, String>();
-		try {
-			return Methods.get(url + Consts.Url_get_block_By_Height + height, params);
-		} catch (KeyManagementException | NoSuchAlgorithmException
-				| NoSuchProviderException | IOException e) {
-			throw new RestfulException("Invalid url:"+url + ",errMsg:"+e.getMessage(), e);
-		}
-	}
+    public String getBlockHeight() throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            return http.get(url + UrlConsts.Url_get_block_height, params);
+        } catch (Exception e) {
+            throw new RestfulException("Invalid url:" + url + "," + e.getMessage(), e);
+        }
+    }
 
-	public String getBlockJson(String hash) throws RestfulException {
-		Map<String, String> params = new HashMap<String, String>();
-		try {
-			return Methods.get(url + Consts.Url_get_block_By_Hash + hash, params);
-		} catch (KeyManagementException | NoSuchAlgorithmException
-				| NoSuchProviderException | IOException e) {
-			throw new RestfulException("Invalid url:"+url + ",errMsg:"+e.getMessage(), e);
-		}
-	}
+    public String getBlock(int height, String raw) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("raw", raw);
+        try {
+            return http.get(url + UrlConsts.Url_get_block_by_height + height, params);
+        } catch (Exception e) {
+            throw new RestfulException("Invalid url:" + url + "," + e.getMessage(), e);
+        }
+    }
+
+    public String getBlock(String hash, String raw) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("raw", raw);
+        try {
+            return http.get(url + UrlConsts.Url_get_block_by_hash + hash, params);
+        } catch (Exception e) {
+            throw new RestfulException("Invalid url:" + url + "," + e.getMessage(), e);
+        }
+    }
+
+    public String getContract(String hash) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            return http.get(url + UrlConsts.Url_get_contract_state + hash, params);
+        } catch (Exception e) {
+            throw new RestfulException("Invalid url:" + url + "," + e.getMessage(), e);
+        }
+    }
+
+    public String getSmartCodeEvent(int height) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            return http.get(url + UrlConsts.Url_get_smartcodeevent_txs_by_height + height, params);
+        } catch (Exception e) {
+            throw new RestfulException("Invalid url:" + url + "," + e.getMessage(), e);
+        }
+    }
+
+    public String getSmartCodeEvent(String hash) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            return http.get(url + UrlConsts.Url_get_smartcodeevent_by_txhash + hash, params);
+        } catch (Exception e) {
+            throw new RestfulException("Invalid url:" + url + "," + e.getMessage(), e);
+        }
+    }
+
+    public String getBalance(String address) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            return http.get(url + UrlConsts.Url_get_account_balance + address, params);
+        } catch (Exception e) {
+            throw new RestfulException("Invalid url:" + url + "," + e.getMessage(), e);
+        }
+    }
+
+    public String getTransactionJson(String txhash) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            return http.get(url + UrlConsts.Url_get_transaction + txhash, params);
+        } catch (Exception e) {
+            throw new RestfulException("Invalid url:" + url + "," + e.getMessage(), e);
+        }
+    }
+
+    public String getBlockJson(int height) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            return http.get(url + UrlConsts.Url_get_block_by_height + height, params);
+        } catch (Exception e) {
+            throw new RestfulException("Invalid url:" + url + "," + e.getMessage(), e);
+        }
+    }
+
+    public String getBlockJson(String hash) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            return http.get(url + UrlConsts.Url_get_block_by_hash + hash, params);
+        } catch (Exception e) {
+            throw new RestfulException("Invalid url:" + url + "," + e.getMessage(), e);
+        }
+    }
 }

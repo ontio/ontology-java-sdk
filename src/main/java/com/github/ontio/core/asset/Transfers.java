@@ -22,7 +22,6 @@ package com.github.ontio.core.asset;
 import com.github.ontio.common.Address;
 import com.github.ontio.crypto.Digest;
 import com.github.ontio.io.*;
-import com.github.ontio.io.json.JObject;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,19 +30,20 @@ import java.util.Map;
 /**
  *
  */
-public class Transfers implements Serializable, JsonSerializable {
-    public TokenTransfer[] params;
+public class Transfers implements Serializable {
+    public byte version = 0;
+    public State[] states;
 
-    public Transfers(TokenTransfer[] params){
-        this.params = params;
+    public Transfers(State[] states){
+        this.states = states;
     }
     @Override
     public void deserialize(BinaryReader reader) throws IOException {
-        reader.readVarBytes();
+        version = reader.readByte();
         int len = (int)reader.readVarInt();
         for(int i = 0;i <len;i++){
             try {
-                params[i] = reader.readSerializable(TokenTransfer.class);
+                states[i] = reader.readSerializable(State.class);
             } catch (InstantiationException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
@@ -54,8 +54,8 @@ public class Transfers implements Serializable, JsonSerializable {
 
     @Override
     public void serialize(BinaryWriter writer) throws IOException {
-        writer.writeVarBytes("Token.Common.Transfer".getBytes());
-        writer.writeSerializableArray(params);
+        writer.writeByte(version);
+        writer.writeSerializableArray(states);
     }
 
 

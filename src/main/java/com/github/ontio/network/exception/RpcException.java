@@ -17,26 +17,18 @@
  *
  */
 
-package com.github.ontio.core.payload;
+package com.github.ontio.network.exception;
 
-public enum BookKeeperAction {
-	BookKeeperAction_ADD(0x00),
-	BookKeeperAction_SUB(0x01),
-	;
-	private byte value;
-	BookKeeperAction(int v) {
-        value = (byte)v;
-    }
-    public byte value() {
-        return value;
-    }
+/**
+ *
+ */
+public class RpcException extends ConnectorException {
+	private static final long serialVersionUID = -8558006777817318117L;
 
-    public static BookKeeperAction valueOf(byte v) {
-    	for (BookKeeperAction e : BookKeeperAction.values()) {
-    		if (e.value == v) {
-    			return e;
-    		}
-    	}
-    	throw new IllegalArgumentException();
-    }
+	public final int code;
+
+	public RpcException(int code,String message) {
+		super(message);
+		this.code = code;
+	}
 }

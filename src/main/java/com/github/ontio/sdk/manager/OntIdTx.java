@@ -17,15 +17,15 @@
  *
  */
 
-package com.github.ontio.sdk.transaction;
+package com.github.ontio.sdk.manager;
 
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Acct;
 import com.github.ontio.common.Address;
+import com.github.ontio.common.Common;
 import com.github.ontio.common.Helper;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.sdk.info.account.AccountInfo;
-import com.github.ontio.sdk.manager.ConnectMgr;
+import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.wallet.Identity;
 import com.github.ontio.account.KeyType;
 import com.github.ontio.core.VmType;
@@ -44,22 +44,20 @@ import java.util.*;
  *
  */
 public class OntIdTx {
-    public ConnectMgr connManager;
     public OntSdk sdk;
-    private OntIdTx instance = null;
-    private String codeHash = null;
+    private String codeAddress = null;
     private String wsSessionId = "";
 
     public OntIdTx(OntSdk sdk) {
         this.sdk = sdk;
     }
 
-    public void setCodeHash(String codeHash) {
-        this.codeHash = codeHash.replace("0x", "");
+    public void setCodeAddress(String codeHash) {
+        this.codeAddress = codeHash.replace("0x", "");
     }
 
-    public String getCodeHash() {
-        return codeHash;
+    public String getCodeAddress() {
+        return codeAddress;
     }
 
     public void setWsSessionId(String sessionId) {
@@ -73,6 +71,7 @@ public class OntIdTx {
     }
 
     /**
+     * register
      *
      * @param ident
      * @param password
@@ -81,10 +80,10 @@ public class OntIdTx {
      */
     public Identity register(Identity ident, String password) throws Exception {
         AccountInfo info = sdk.getWalletMgr().getIdentityInfo(ident.ontid, password);
-        String ontid = "did:ont:" + info.address;
+        String ontid = Common.didont + info.address;
         byte[] pk = Helper.hexToBytes(info.pubkey);
         List list = new ArrayList<Object>();
-        list.add("RegIdByPublicKey".getBytes());
+        list.add("RegIdWithPublicKey".getBytes());
         List tmp = new ArrayList<Object>();
         tmp.add(ontid.getBytes());
         tmp.add(pk);
@@ -94,12 +93,12 @@ public class OntIdTx {
         fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeHash));
+        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
-        String txHex =  sdk.signTx(tx,new Acct[][]{{sdk.getWalletMgr().getAccount(ontid, password)}});//sdk.getWalletMgr().signatureData(password, tx);
+        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(ontid, password)}});
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.address);
         sdk.getWalletMgr().writeWallet();
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, txHex);
+        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (!b) {
             throw new SDKException("sendRawTransaction error");
         }
@@ -108,20 +107,21 @@ public class OntIdTx {
     }
 
     /**
+     * register
      *
      * @param password
      * @return
      * @throws Exception
      */
     public Identity register(String password) throws Exception {
-        if (codeHash == null) {
+        if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
         AccountInfo info = sdk.getWalletMgr().createIdentityInfo(password);
-        String ontid = "did:ont:" + info.address;
+        String ontid = Common.didont + info.address;
         byte[] pk = Helper.hexToBytes(info.pubkey);
         List list = new ArrayList<Object>();
-        list.add("RegIdByPublicKey".getBytes());
+        list.add("RegIdWithPublicKey".getBytes());
         List tmp = new ArrayList<Object>();
         tmp.add(ontid.getBytes());
         tmp.add(pk);
@@ -131,13 +131,12 @@ public class OntIdTx {
         fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeHash));
+        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
-        //String txHex = sdk.getWalletMgr().signatureData(password, tx);
-        String txHex = sdk.signTx(tx,new Acct[][]{{sdk.getWalletMgr().getAccount(ontid, password)}});
+        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(ontid, password)}});
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.address);
         sdk.getWalletMgr().writeWallet();
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, txHex);
+        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (!b) {
             throw new SDKException("sendRawTransaction error");
         }
@@ -146,6 +145,7 @@ public class OntIdTx {
     }
 
     /**
+     * register ontid
      *
      * @param password
      * @param attrsMap
@@ -153,14 +153,14 @@ public class OntIdTx {
      * @throws Exception
      */
     public Identity register(String password, Map<String, Object> attrsMap) throws Exception {
-        if (codeHash == null) {
+        if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
         AccountInfo info = sdk.getWalletMgr().createIdentityInfo(password);
-        String ontid = "did:ont:" + info.address;
+        String ontid = Common.didont + info.address;
         byte[] pk = Helper.hexToBytes(info.pubkey);
         List list = new ArrayList<Object>();
-        list.add("RegId".getBytes());
+        list.add("RegIdWithPublicKey".getBytes());
         List tmp = new ArrayList<Object>();
         tmp.add(ontid.getBytes());
         tmp.add(pk);
@@ -217,13 +217,12 @@ public class OntIdTx {
         fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeHash));
+        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
-        //String txHex = sdk.getWalletMgr().signatureData(password, tx);
-        String txHex = sdk.signTx(tx,new Acct[][]{{sdk.getWalletMgr().getAccount(ontid, password)}});
+        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(ontid, password)}});
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.address);
         sdk.getWalletMgr().writeWallet();
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, txHex);
+        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (!b) {
             return null;
         }
@@ -231,19 +230,18 @@ public class OntIdTx {
     }
 
     /**
-     *
      * @param guardianAddr
      * @param password
      * @return
      * @throws Exception
      */
     public String registerByGuardian(String guardianAddr, String password) throws Exception {
-        if (codeHash == null) {
+        if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
         AccountInfo info = sdk.getWalletMgr().createIdentityInfo(password);
-        byte[] did = ("did:ont:" + info.address).getBytes();
-        byte[] guardianDid = ("did:ont:" + guardianAddr).getBytes();
+        byte[] did = (Common.didont + info.address).getBytes();
+        byte[] guardianDid = (Common.didont + guardianAddr).getBytes();
         List li = new ArrayList<Object>();
         li.add("CreateIdentityByGuardian".getBytes());
         li.add(did);
@@ -253,11 +251,10 @@ public class OntIdTx {
         fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(li);
         params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeHash));
+        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
-        //String txHex = sdk.getWalletMgr().signatureData(password, tx);
-        String txHex = sdk.signTx(tx,new Acct[][]{{sdk.getWalletMgr().getAccount(guardianAddr, password)}});
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, txHex);
+        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(guardianAddr, password)}});
+        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -265,6 +262,7 @@ public class OntIdTx {
     }
 
     /**
+     * add PubKey
      *
      * @param addr
      * @param password
@@ -273,10 +271,10 @@ public class OntIdTx {
      * @throws Exception
      */
     public String addPubKey(String addr, String password, String newpubkey) throws Exception {
-        if (codeHash == null) {
+        if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
-        byte[] did = ("did:ont:" + addr).getBytes();
+        byte[] did = (Common.didont + addr).getBytes();
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
         byte[] pk = Helper.hexToBytes(info.pubkey);
         List list = new ArrayList<Object>();
@@ -292,11 +290,10 @@ public class OntIdTx {
         fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeHash));
+        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
-        //String txHex = sdk.getWalletMgr().signatureData(password, tx);
-        String txHex = sdk.signTx(tx,new Acct[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, txHex);
+        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
+        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -304,6 +301,7 @@ public class OntIdTx {
     }
 
     /**
+     * add PubKey
      *
      * @param password
      * @param addr
@@ -313,11 +311,11 @@ public class OntIdTx {
      * @throws Exception
      */
     public String addPubKey(String password, String addr, String newpubkey, String recoveryScriptHash) throws Exception {
-        if (codeHash == null) {
+        if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
-        byte[] did = ("did:ont:" + addr).getBytes();
+        byte[] did = (Common.didont + addr).getBytes();
         List list = new ArrayList<Object>();
         list.add("AddKey".getBytes());
         List tmp = new ArrayList<Object>();
@@ -331,11 +329,10 @@ public class OntIdTx {
         fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeHash));
+        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
-        //String txHex = sdk.getWalletMgr().signatureData(password, tx);
-        String txHex = sdk.signTx(tx,new Acct[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, txHex);
+        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
+        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -343,6 +340,7 @@ public class OntIdTx {
     }
 
     /**
+     * Add Key By Guardian
      *
      * @param addr
      * @param password
@@ -352,11 +350,11 @@ public class OntIdTx {
      * @throws Exception
      */
     public String addPubKeyByGuardian(String addr, String password, String newpubkey, String guardianAddr) throws Exception {
-        if (codeHash == null) {
+        if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
-        byte[] did = ("did:ont:" + addr).getBytes();
-        byte[] guardianDid = ("did:ont:" + guardianAddr).getBytes();
+        byte[] did = (Common.didont + addr).getBytes();
+        byte[] guardianDid = (Common.didont + guardianAddr).getBytes();
         List list = new ArrayList<Object>();
         list.add("AddKeyByGuardian".getBytes());
         List tmp = new ArrayList<Object>();
@@ -370,11 +368,11 @@ public class OntIdTx {
         fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeHash));
+        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
         //String txHex = sdk.getWalletMgr().signatureData(password, tx);
-        String txHex = sdk.signTx(tx,new Acct[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, txHex);
+        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
+        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -382,6 +380,7 @@ public class OntIdTx {
     }
 
     /**
+     * remove PubKey
      *
      * @param addr
      * @param password
@@ -390,10 +389,10 @@ public class OntIdTx {
      * @throws Exception
      */
     public String removePubKey(String addr, String password, String removepk) throws Exception {
-        if (codeHash == null) {
+        if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
-        byte[] did = ("did:ont:" + addr).getBytes();
+        byte[] did = (Common.didont + addr).getBytes();
         byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password).pubkey);
         List list = new ArrayList<Object>();
         list.add("RemoveKey".getBytes());
@@ -408,11 +407,10 @@ public class OntIdTx {
         fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeHash));
+        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
-       // String txHex = sdk.getWalletMgr().signatureData(password, tx);
-        String txHex = sdk.signTx(tx,new Acct[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, txHex);
+        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
+        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -420,7 +418,6 @@ public class OntIdTx {
     }
 
     /**
-     *
      * @param addr
      * @param password
      * @param key
@@ -429,10 +426,10 @@ public class OntIdTx {
      * @throws Exception
      */
     public String rmovePubKey(String addr, String password, byte[] key, String recoveryScriptHash) throws Exception {
-        if (codeHash == null) {
+        if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
-        byte[] did = ("did:ont:" + addr).getBytes();
+        byte[] did = (Common.didont + addr).getBytes();
         List list = new ArrayList<Object>();
         list.add("RemoveKey".getBytes());
         List tmp = new ArrayList<Object>();
@@ -447,11 +444,10 @@ public class OntIdTx {
         fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeHash));
+        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
-        //String txHex = sdk.getWalletMgr().signatureData(password, tx);
-        String txHex = sdk.signTx(tx,new Acct[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, txHex);
+        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
+        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -459,7 +455,6 @@ public class OntIdTx {
     }
 
     /**
-     *
      * @param addr
      * @param password
      * @param recoveryScriptHash
@@ -467,10 +462,10 @@ public class OntIdTx {
      * @throws Exception
      */
     public String addRecovery(String addr, String password, String recoveryScriptHash) throws Exception {
-        if (codeHash == null) {
+        if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
-        byte[] did = ("did:ont:" + addr).getBytes();
+        byte[] did = (Common.didont + addr).getBytes();
         byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password).pubkey);
         List list = new ArrayList<Object>();
         list.add("AddRecovery".getBytes());
@@ -485,11 +480,10 @@ public class OntIdTx {
         fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeHash));
+        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
-        //String txHex = sdk.getWalletMgr().signatureData(password, tx);
-        String txHex = sdk.signTx(tx,new Acct[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, txHex);
+        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
+        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -497,6 +491,7 @@ public class OntIdTx {
     }
 
     /**
+     * change Recovery
      *
      * @param addr
      * @param password
@@ -506,10 +501,10 @@ public class OntIdTx {
      * @throws Exception
      */
     public String changeRecovery(String addr, String password, String newRecoveryScriptHash, String oldRecoveryScriptHash) throws Exception {
-        if (codeHash == null) {
+        if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
-        byte[] did = ("did:ont:" + addr).getBytes();
+        byte[] did = (Common.didont + addr).getBytes();
         byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password).pubkey);
         List list = new ArrayList<Object>();
         list.add("ChangeRecovery".getBytes());
@@ -524,11 +519,10 @@ public class OntIdTx {
         fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeHash));
+        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
-        //String txHex = sdk.getWalletMgr().signatureData(password, tx);
-        String txHex = sdk.signTx(tx,new Acct[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, txHex);
+        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
+        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -536,7 +530,6 @@ public class OntIdTx {
     }
 
     /**
-     *
      * @param ontid
      * @param password
      * @param path
@@ -546,14 +539,14 @@ public class OntIdTx {
      * @throws Exception
      */
     public String updateAttribute(String ontid, String password, byte[] path, byte[] type, byte[] value) throws Exception {
-        if (codeHash == null) {
+        if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
         if (type.length >= 255 || path.length >= 255) {
             throw new SDKException("param error");
         }
         byte[] did = (ontid).getBytes();
-        String addr = ontid.replace("did:ont:", "");
+        String addr = ontid.replace(Common.didont, "");
         byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password).pubkey);
         List list = new ArrayList<Object>();
         list.add("AddAttribute".getBytes());
@@ -570,11 +563,10 @@ public class OntIdTx {
         fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeHash));
+        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
-        //String txHex = sdk.getWalletMgr().signatureData(password, tx);
-        String txHex = sdk.signTx(tx,new Acct[][]{{sdk.getWalletMgr().getAccount(ontid, password)}});
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, txHex);
+        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(ontid, password)}});
+        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -582,7 +574,6 @@ public class OntIdTx {
     }
 
     /**
-     *
      * @param addr
      * @param password
      * @param attriList
@@ -590,10 +581,10 @@ public class OntIdTx {
      * @throws Exception
      */
     public String updateAttributeArray(String addr, String password, List<Object> attriList) throws Exception {
-        if (codeHash == null) {
+        if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
-        byte[] did = ("did:ont:" + addr).getBytes();
+        byte[] did = (Common.didont + addr).getBytes();
         byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password).pubkey);
         List list = new ArrayList<Object>();
         list.add("AddAttributeArray".getBytes());
@@ -608,22 +599,28 @@ public class OntIdTx {
         fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeHash));
+        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
-        //String txHex = sdk.getWalletMgr().signatureData(password, tx);
-        String txHex = sdk.signTx(tx,new Acct[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, txHex);
+        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
+        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
         return null;
     }
 
-    private Map parseData(String ontid, String obj) {
+    /**
+     * @param ontid
+     * @param obj
+     * @return
+     */
+    private Map parseDdoData(String ontid, String obj) {
         byte[] bys = Helper.hexToBytes(obj);
         int elen = (bys[0] & 0xFF) * 256 * 256 * 256 + (bys[1] & 0xFF) * 256 * 256 + (bys[2] & 0xFF) * 256 + bys[3] & 0xFF;
         int offset = 4;
-
+        if (elen == 0) {
+            return new HashMap();
+        }
         byte[] pubkeysData = new byte[elen];
         System.arraycopy(bys, offset, pubkeysData, 0, elen);
         //System.out.println(Helper.toHexString(pubkeysData));
@@ -642,11 +639,15 @@ public class OntIdTx {
         }
         map.put("Owners", ownersList);
         map.put("OntId", ontid);
-
+        System.out.println(ownersList);
+        System.out.println(ontid);
         offset = 4 + elen;
         elen = (bys[offset] & 0xFF) * 256 * 256 * 256 + (bys[offset + 1] & 0xFF) * 256 * 256 + (bys[offset + 2] & 0xFF) * 256 + bys[offset + 3] & 0xFF;
         offset = offset + 4;
-
+        if (elen == 0) {
+            return map;
+        }
+        System.out.println(elen + "  " + Helper.toHexString(bys));
         byte[] attrisData = new byte[elen];
         System.arraycopy(bys, offset, attrisData, 0, elen);
 
@@ -697,32 +698,34 @@ public class OntIdTx {
         return map;
     }
 
-    public String getDDO(String ontid, String password, String queryOntid) throws Exception {
-        if (codeHash == null) {
+    /**
+     * get DDO
+     *
+     * @param queryOntid
+     * @return
+     * @throws Exception
+     */
+    public String getDDO(String queryOntid) throws Exception {
+        if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
-        String addr = ontid.replace("did:ont:", "");
         List list = new ArrayList<Object>();
         list.add("GetDDO".getBytes());
         List tmp = new ArrayList<Object>();
+        System.out.println("GetDDO:" + Helper.toHexString(queryOntid.getBytes()));
         tmp.add(queryOntid.getBytes());
+        tmp.add(UUID.randomUUID().toString().getBytes());
         list.add(tmp);
-        Fee[] fees = new Fee[1];
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
-        ECPoint publicKey = sdk.getWalletMgr().getPubkey(info.pubkey);
-        fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
+        Fee[] fees = new Fee[0];
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeHash));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
-        //String txHex = sdk.getWalletMgr().signatureData(password, tx);
-        String txHex = sdk.signTx(tx,new Acct[][]{{sdk.getWalletMgr().getAccount(ontid, password)}});
-        String result = (String) sdk.getConnectMgr().sendRawTransactionPreExec(txHex);
-        System.out.println(result);
-        List listResult = JSON.parseObject(result, List.class);
+        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, null, VmType.NEOVM.value(), fees);
+        List listResult = (List) sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        System.out.println(listResult);
         Map map = new HashMap();
         for (int i = 0; i < listResult.size(); i++) {
-            map = parseData(ontid, (String) ((List) listResult.get(0)).get(i));
+            map = parseDdoData(queryOntid, (String) listResult.get(0));
         }
         return JSON.toJSONString(map);
     }
@@ -731,7 +734,7 @@ public class OntIdTx {
         return new String[]{};
     }
 
-    public LinkedHashMap<String, Object> constructRecord(String text) {
+    private LinkedHashMap<String, Object> constructRecord(String text) {
         LinkedHashMap<String, Object> recordData = new LinkedHashMap<String, Object>();
         LinkedHashMap<String, Object> data = new LinkedHashMap<String, Object>();
         data.put("Algrithem", KeyType.SM2.name());
@@ -747,7 +750,6 @@ public class OntIdTx {
     }
 
     /**
-     *
      * @param ontid
      * @param password
      * @param key
@@ -755,8 +757,8 @@ public class OntIdTx {
      * @return
      * @throws Exception
      */
-    public String addRecord(String ontid, String password, byte[] key, byte[] value) throws Exception {
-        if (codeHash == null) {
+    private String addRecord(String ontid, String password, byte[] key, byte[] value) throws Exception {
+        if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
         if (key.length >= 255) {
@@ -778,11 +780,10 @@ public class OntIdTx {
         fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeHash));
+        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
-        //String txHex = sdk.getWalletMgr().signatureData(password, tx);
-        String txHex = sdk.signTx(tx,new Acct[][]{{sdk.getWalletMgr().getAccount(ontid, password)}});
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, txHex);
+        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(ontid, password)}});
+        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -790,6 +791,7 @@ public class OntIdTx {
     }
 
     /**
+     * create OntId Claim
      *
      * @param password
      * @param context
@@ -823,6 +825,7 @@ public class OntIdTx {
     }
 
     /**
+     * verify OntId Claim
      *
      * @param reqOntid
      * @param password
@@ -839,12 +842,8 @@ public class OntIdTx {
             if (str.length != 3) {
                 throw new SDKException("Did error");
             }
-
-            String issuerDdo = getDDO(reqOntid, password, issuerDid);
-            String pubkeyStr = JSON.parseObject(issuerDdo).getJSONArray("Owners").getJSONObject(0).getString("Value");
-//            String publicKeyBase64 = JSON.parseObject(issuerDdo).getJSONArray("Owners").getJSONObject(0).getString("publicKeyBase64");
-//            pubkeyBys = Base64.getDecoder().decode(publicKeyBase64);
-
+            String issuerDdo = getDDO(issuerDid);
+            String pubkeyStr = JSON.parseObject(issuerDdo).getJSONArray("Owners").getString(0);
             String signature = obj.getJSONObject("Signature").getString("Value");
             obj.remove("Signature");
             ECPoint pubkey = sdk.getWalletMgr().getPubkey(pubkeyStr);
@@ -857,19 +856,18 @@ public class OntIdTx {
     }
 
     /**
+     * verify Signature
      *
-     * @param reqOntid
-     * @param password
      * @param ontid
      * @param data
      * @param signature
      * @return
      * @throws Exception
      */
-    public boolean verifySign(String reqOntid, String password, String ontid, byte[] data, byte[] signature) throws Exception {
+    public boolean verifySign(String ontid, byte[] data, byte[] signature) throws Exception {
         DataSignature sign = null;
         try {
-            String issuerDdo = getDDO(reqOntid, password, ontid);
+            String issuerDdo = getDDO(ontid);
             String pubkeyStr = JSON.parseObject(issuerDdo).getJSONArray("Owners").getJSONObject(0).getString("Value");
             ECPoint pubkey = sdk.getWalletMgr().getPubkey(pubkeyStr);
             sign = new DataSignature();

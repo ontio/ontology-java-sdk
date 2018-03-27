@@ -17,22 +17,21 @@
  *
  */
 
-package com.github.ontio.sdk.transaction;
+package com.github.ontio.sdk.manager;
 
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Acct;
 import com.github.ontio.common.Address;
 import com.github.ontio.core.transaction.Transaction;
-import com.github.ontio.core.transaction.TransactionAttribute;
-import com.github.ontio.core.transaction.TransactionAttributeUsage;
+import com.github.ontio.core.transaction.Attribute;
+import com.github.ontio.core.transaction.AttributeUsage;
 import com.github.ontio.core.VmType;
 import com.github.ontio.core.asset.*;
 import com.github.ontio.core.payload.Vote;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.sdk.info.account.AccountInfo;
+import com.github.ontio.sdk.info.AccountInfo;
 import org.bouncycastle.math.ec.ECPoint;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.UUID;
@@ -60,26 +59,28 @@ public class OntAssetTx {
      * @throws Exception
      */
     public String transfer(String assetName, String sendAddr, String password, String recvAddr, long amount) throws Exception {
-        amount = amount * 100000000;
-        AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
-        State state = new State(Address.addressFromPubKey(sdk.getWalletMgr().getPubkey(sender.pubkey)), Address.decodeBase58(recvAddr), new BigInteger(String.valueOf(amount)));
-        String contract = null;
+        String contractAddr = null;
         if (assetName.equals("ong")) {
-            contract = ongContract;
+            contractAddr = ongContract;
         } else if (assetName.equals("ont")) {
-            contract = ontContract;
+            contractAddr = ontContract;
         } else {
             throw new SDKException("asset name error");
         }
-        TokenTransfer tokenTransfer = new TokenTransfer(Address.parse(contract), new State[]{state});
-        Transfers transfers = new Transfers(new TokenTransfer[]{tokenTransfer});
+
+        amount = amount * 100000000;
+        AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
+        State state = new State(Address.addressFromPubKey(sdk.getWalletMgr().getPubkey(sender.pubkey)), Address.decodeBase58(recvAddr), new BigInteger(String.valueOf(amount)));
+        Transfers transfers = new Transfers(new State[]{state});
+        Contract contract = new Contract((byte) 0, Address.parse(contractAddr), "transfer", transfers.toArray());
         Fee[] fees = new Fee[1];
         ECPoint publicKey = sdk.getWalletMgr().getPubkey(sender.pubkey);
         fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(transfers.toArray(), sender.pubkey, VmType.NativeVM.value(), fees);
-//        sdk.getWalletMgr().signatureData(password, tx);
-        sdk.signTx(tx,new Acct[][]{{sdk.getWalletMgr().getAccount(sendAddr, password)}});
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contract.toArray(), sender.pubkey, VmType.Native.value(), fees);
+        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(sendAddr, password)}});
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        System.out.println(tx.toHexString());
+        System.out.println(tx.hash().toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -96,31 +97,31 @@ public class OntAssetTx {
      * @throws Exception
      */
     public String transferToMany(String assetName, String sendAddr, String password, String[] recvAddr, long[] amount) throws Exception {
-        String contract = null;
+        String contractAddr = null;
         if (assetName.equals("ong")) {
-            contract = ongContract;
+            contractAddr = ongContract;
         } else if (assetName.equals("ont")) {
-            contract = ontContract;
+            contractAddr = ontContract;
         } else {
             throw new SDKException("asset name error");
         }
+
         AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
-        TokenTransfer[] tokenTransfers = new TokenTransfer[recvAddr.length];
+        State[] states = new State[recvAddr.length];
         if (amount.length != recvAddr.length) {
             throw new Exception("");
         }
         for (int i = 0; i < recvAddr.length; i++) {
             amount[i] = amount[i] * 100000000;
-            State state = new State(Address.addressFromPubKey(sdk.getWalletMgr().getPubkey(sender.pubkey)), Address.decodeBase58(recvAddr[i]), new BigInteger(String.valueOf(amount[i])));
-            tokenTransfers[i] = new TokenTransfer(Address.parse(contract), new State[]{state});
+            states[i] = new State(Address.addressFromPubKey(sdk.getWalletMgr().getPubkey(sender.pubkey)), Address.decodeBase58(recvAddr[i]), new BigInteger(String.valueOf(amount[i])));
         }
-        Transfers transfers = new Transfers(tokenTransfers);
+        Transfers transfers = new Transfers(states);
+        Contract contract = new Contract((byte) 0, Address.parse(contractAddr), "transfer", transfers.toArray());
         Fee[] fees = new Fee[1];
         ECPoint publicKey = sdk.getWalletMgr().getPubkey(sender.pubkey);
         fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(transfers.toArray(), sender.pubkey, VmType.NativeVM.value(), fees);
-        //String hex = sdk.getWalletMgr().signatureData(password, tx);
-        sdk.signTx(tx,new Acct[][]{{sdk.getWalletMgr().getAccount(sendAddr, password)}});
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contract.toArray(), sender.pubkey, VmType.Native.value(), fees);
+        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(sendAddr, password)}});
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -138,34 +139,33 @@ public class OntAssetTx {
      * @throws Exception
      */
     public String transferFromMany(String assetName, String[] sendAddr, String[] password, String recvAddr, long[] amount) throws Exception {
-        String contract = null;
+        String contractAddr = null;
         if (assetName.equals("ong")) {
-            contract = ongContract;
+            contractAddr = ongContract;
         } else if (assetName.equals("ont")) {
-            contract = ontContract;
+            contractAddr = ontContract;
         } else {
             throw new SDKException("asset name error");
         }
         if (sendAddr == null || sendAddr.length != password.length) {
             throw new Exception("");
         }
-        TokenTransfer[] tokenTransfers = new TokenTransfer[sendAddr.length];
+        State[] states = new State[sendAddr.length];
         Fee[] fees = new Fee[sendAddr.length];
         for (int i = 0; i < sendAddr.length; i++) {
             AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr[i], password[i]);
             amount[i] = amount[i] * 100000000;
-            State state = new State(Address.addressFromPubKey(sdk.getWalletMgr().getPubkey(sender.pubkey)), Address.decodeBase58(recvAddr), new BigInteger(String.valueOf(amount[i])));
-            tokenTransfers[i] = new TokenTransfer(Address.parse(contract), new State[]{state});
+            states[i] = new State(Address.addressFromPubKey(sdk.getWalletMgr().getPubkey(sender.pubkey)), Address.decodeBase58(recvAddr), new BigInteger(String.valueOf(amount[i])));
             ECPoint publicKey = sdk.getWalletMgr().getPubkey(sender.pubkey);
             fees[i] = new Fee(0, Address.addressFromPubKey(publicKey));
         }
 
-        Transfers transfers = new Transfers(tokenTransfers);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(transfers.toArray(), null, VmType.NativeVM.value(), fees);
-//        String hex = sdk.getWalletMgr().signatureData(password, tx);
-        Acct[][] acct =  Arrays.stream(sendAddr).map(p -> {
-            for(int i=0;i<sendAddr.length;i++){
-                if(sendAddr[i].equals(p)){
+        Transfers transfers = new Transfers(states);
+        Contract contract = new Contract((byte) 0, Address.parse(contractAddr), "transfer", transfers.toArray());
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contract.toArray(), null, VmType.Native.value(), fees);
+        Acct[][] acct = Arrays.stream(sendAddr).map(p -> {
+            for (int i = 0; i < sendAddr.length; i++) {
+                if (sendAddr[i].equals(p)) {
                     try {
                         return new Acct[]{sdk.getWalletMgr().getAccount(p, password[i])};
                     } catch (SDKException e) {
@@ -176,7 +176,7 @@ public class OntAssetTx {
             return null;
         }).toArray(Acct[][]::new);
 
-        sdk.signTx(tx,acct);
+        sdk.signTx(tx, acct);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -185,10 +185,9 @@ public class OntAssetTx {
     }
 
 
-
     public String voteTx(String addr, String password, ECPoint... pubKeys) throws Exception {
         Vote tx = makeVoteTx(sdk.getWalletMgr().getAccount(addr, password).addressU160, pubKeys);
-        sdk.signTx(tx,new Acct[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
+        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -201,9 +200,9 @@ public class OntAssetTx {
         tx.pubKeys = pubKeys;
         tx.account = account;
 
-        tx.attributes = new TransactionAttribute[1];
-        tx.attributes[0] = new TransactionAttribute();
-        tx.attributes[0].usage = TransactionAttributeUsage.Description;
+        tx.attributes = new Attribute[1];
+        tx.attributes[0] = new Attribute();
+        tx.attributes[0].usage = AttributeUsage.Description;
         tx.attributes[0].data = UUID.randomUUID().toString().getBytes();
         return tx;
     }

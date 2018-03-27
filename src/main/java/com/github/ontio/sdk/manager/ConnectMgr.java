@@ -26,7 +26,7 @@ import com.github.ontio.common.Helper;
 import com.github.ontio.core.block.Block;
 import com.github.ontio.network.rpc.RpcClient;
 import com.github.ontio.core.transaction.Transaction;
-import com.github.ontio.network.connect.ConnectorException;
+import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.network.connect.IConnector;
 import com.github.ontio.network.rest.RestClient;
 import com.github.ontio.network.rest.Result;
@@ -63,7 +63,7 @@ public class ConnectMgr {
 
 
     public boolean sendRawTransaction(Transaction tx) throws ConnectorException, IOException {
-        String rs = connector.sendRawTransaction(Helper.toHexString(tx.toArray()));
+        String rs = (String) connector.sendRawTransaction(Helper.toHexString(tx.toArray()));
         if (connector instanceof RpcClient) {
             return true;
         }
@@ -75,7 +75,7 @@ public class ConnectMgr {
     }
 
     public boolean sendRawTransaction(String hexData) throws ConnectorException, IOException {
-        String rs = connector.sendRawTransaction(hexData);
+        String rs = (String) connector.sendRawTransaction(hexData);
         if (connector instanceof RpcClient) {
             return true;
         }
@@ -87,7 +87,7 @@ public class ConnectMgr {
     }
 
     public boolean sendRawTransaction(String uuid, String hexData) throws ConnectorException, IOException {
-        String rs = connector.sendRawTransaction(false, uuid, hexData);
+        String rs = (String) connector.sendRawTransaction(false, uuid, hexData);
         if (connector instanceof RpcClient) {
             return true;
         }
@@ -99,22 +99,22 @@ public class ConnectMgr {
     }
 
     public Object sendRawTransactionPreExec(String hexData) throws ConnectorException, IOException {
-        String rs = connector.sendRawTransaction(true, null, hexData);
+        Object rs = connector.sendRawTransaction(true, null, hexData);
         if (connector instanceof RpcClient) {
-            return true;
+            return rs;
         }
-        Result rr = JSON.parseObject(rs, Result.class);
+        Result rr = JSON.parseObject((String) rs, Result.class);
         if (rr.Error == 0) {
             return rr.Result;
         }
         return null;
     }
 
-    public Transaction getRawTransaction(String txhash) throws ConnectorException, IOException {
+    public Transaction getTransaction(String txhash) throws ConnectorException, IOException {
         return connector.getRawTransaction(txhash);
     }
 
-    public String getTransaction(String txhash) throws ConnectorException, IOException {
+    public Object getTransactionJson(String txhash) throws ConnectorException, IOException {
         return connector.getRawTransactionJson(txhash);
     }
 
@@ -143,12 +143,16 @@ public class ConnectMgr {
         return connector.getBalance(address);
     }
 
-    public String getBlockJson(int height) throws ConnectorException, IOException {
+    public Object getBlockJson(int height) throws ConnectorException, IOException {
         return connector.getBlockJson(height);
     }
 
-    public String getBlockJson(String hash) throws ConnectorException, IOException {
+    public Object getBlockJson(String hash) throws ConnectorException, IOException {
         return connector.getBlockJson(hash);
+    }
+
+    public Object getContractJson(String hash) throws ConnectorException, IOException {
+        return connector.getContractJson(hash);
     }
 
     public Object getSmartCodeEvent(int height) throws ConnectorException, IOException {

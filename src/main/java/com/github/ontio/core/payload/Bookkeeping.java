@@ -28,11 +28,11 @@ import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 
-public class BookKeeping extends Transaction {
-	private long nonce; // nonce is not exist when version=2
+public class Bookkeeping extends Transaction {
+	private long nonce;
 
-	public BookKeeping() {
-		super(TransactionType.BookKeeping);
+	public Bookkeeping() {
+		super(TransactionType.Bookkeeping);
 	}
 
 	@Override
@@ -42,9 +42,7 @@ public class BookKeeping extends Transaction {
 	
 	@Override
 	protected void serializeExclusiveData(BinaryWriter writer) throws IOException {
-		if(version == 3) {
-			writer.writeLong(nonce);
-		}
+		writer.writeLong(nonce);
 	}
 	@Override
 	public Object json() {

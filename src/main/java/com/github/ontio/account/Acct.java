@@ -41,32 +41,32 @@ import javax.crypto.spec.SecretKeySpec;
  * account info, including privatekey/publicKey and publicHash
  */
 public class Acct {
-	
-	/**
-	 * privateKey, used for signing transaction
-	 */
-    public final byte[] privateKey ;
-    
+
+    /**
+     * privateKey, used for signing transaction
+     */
+    public final byte[] privateKey;
+
     /**
      * publickey, used for verifying signature info
      */
-    public final ECPoint publicKey ;
-    
+    public final ECPoint publicKey;
+
     /**
      * publiekeyHash, used for identifing which account the contract belongs to
      */
-    public final Address addressU160 ;
+    public final Address addressU160;
 
     public Acct(byte[] privateKey, String Algrithem) {
         if (privateKey.length != 32 && privateKey.length != 96 && privateKey.length != 104) {
-        	throw new IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
         this.privateKey = new byte[32];
         System.arraycopy(privateKey, privateKey.length - 32, this.privateKey, 0, 32);
-        if(Algrithem.equals(KeyType.SM2.name())) {
+        if (Algrithem.equals(KeyType.SM2.name())) {
             this.publicKey = SM2Utils.generatePubkey(this.privateKey);
-            this.addressU160 = Address.toScriptHash(publicKey.getEncoded(true));
-        }else {
+            this.addressU160 = Address.addressFromPubKey(publicKey);
+        } else {
             if (privateKey.length == 32) {
                 this.publicKey = ECC.secp256r1.getG().multiply(new BigInteger(1, privateKey)).normalize();
             } else {
@@ -75,12 +75,12 @@ public class Acct {
                 System.arraycopy(privateKey, 0, encoded, 1, 64);
                 this.publicKey = ECC.secp256r1.getCurve().decodePoint(encoded);
             }
-            this.addressU160 = Address.toScriptHash(publicKey.getEncoded(true));
+            this.addressU160 = Address.addressFromPubKey(publicKey);
         }
 
     }
-    
-    public String export() {
+
+    public String exportWif() {
         byte[] data = new byte[38];
         data[0] = (byte) 0x80;
         System.arraycopy(privateKey, 0, data, 1, 32);
@@ -92,15 +92,21 @@ public class Acct {
         return wif;
     }
 
-    public String export(String passphrase) {
+    /**
+     * export encrypted prikey
+     *
+     * @param passphrase
+     * @return
+     */
+    public String exportEncryptedPrikey(String passphrase) {
         int N = 16384;
         int r = 8;
         int p = 8;
         Address script_hash = Address.addressFromPubKey(publicKey);
         String address = script_hash.toBase58();
 
-        byte[] addresshashTmp = Digest.sha256(Digest.sha256(address.getBytes())) ;
-        byte[] addresshash =  Arrays.copyOfRange(addresshashTmp, 0, 4);
+        byte[] addresshashTmp = Digest.sha256(Digest.sha256(address.getBytes()));
+        byte[] addresshash = Arrays.copyOfRange(addresshashTmp, 0, 4);
 
         byte[] derivedkey = SCrypt.generate(passphrase.getBytes(StandardCharsets.UTF_8), addresshash, N, r, p, 64);
         byte[] derivedhalf1 = new byte[32];
@@ -112,7 +118,7 @@ public class Acct {
             Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
             byte[] derived = XOR(privateKey, derivedhalf1);
-            byte[] encryptedkey = cipher.doFinal( derived);
+            byte[] encryptedkey = cipher.doFinal(derived);
 
             byte[] buffer = new byte[39];
             buffer[0] = (byte) 0x01;
@@ -126,13 +132,19 @@ public class Acct {
         }
         return null;
     }
-    // 私钥转换
+
+    /**
+     * Private Key From WIF
+     *
+     * @param wif
+     * @return
+     */
     public static byte[] getPrivateKeyFromWIF(String wif) {
         if (wif == null) {
             throw new NullPointerException();
         }
         byte[] data = Base58.decode(wif);
-        if (data.length != 38 || data[0] != (byte)0x80 || data[33] != 0x01) {
+        if (data.length != 38 || data[0] != (byte) 0x80 || data[33] != 0x01) {
             throw new IllegalArgumentException();
         }
         byte[] checksum = Digest.sha256(Digest.sha256(data, 0, data.length - 4));
@@ -146,19 +158,26 @@ public class Acct {
         Arrays.fill(data, (byte) 0);
         return privateKey;
     }
-    // 私钥转换
-    public static String getPrivateKey(String encrypted,String passphrase) throws Exception{
-        if (encrypted == null) {
+
+    /**
+     * @param encryptedPriKey
+     * @param passphrase
+     * @return
+     * @throws Exception
+     */
+    public static String getPrivateKey(String encryptedPriKey, String passphrase) throws Exception {
+        if (encryptedPriKey == null) {
             throw new NullPointerException();
         }
-        byte[] decoded = Base58.decodeChecked(encrypted);
-        if (decoded.length != 43 || decoded[0] != (byte)0x01 || decoded[1] != (byte)0x42 || decoded[2] != (byte)0xe0){
+        byte[] decoded = Base58.decodeChecked(encryptedPriKey);
+        if (decoded.length != 43 || decoded[0] != (byte) 0x01 || decoded[1] != (byte) 0x42 || decoded[2] != (byte) 0xe0) {
             throw new SDKException("decoded 3 bytes error");
         }
         byte[] data = Arrays.copyOfRange(decoded, 0, decoded.length - 4);
-        return decode(passphrase,data);
+        return decode(passphrase, data);
     }
-    private static String decode(String passphrase,byte[] input) throws  Exception{
+
+    private static String decode(String passphrase, byte[] input) throws Exception {
         int N = 16384;
         int r = 8;
         int p = 8;
@@ -176,44 +195,45 @@ public class Acct {
         SecretKeySpec skeySpec = new SecretKeySpec(derivedhalf2, "AES");
         Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
         cipher.init(Cipher.DECRYPT_MODE, skeySpec);
-        byte[] rawkey = cipher.doFinal( encryptedkey);
+        byte[] rawkey = cipher.doFinal(encryptedkey);
 
         String priKey = Helper.toHexString(XOR(rawkey, derivedhalf1));
-        Acct account = new Acct(Helper.hexToBytes(priKey),"" );
+        Acct account = new Acct(Helper.hexToBytes(priKey), "");
         Address script_hash = Address.addressFromPubKey(account.publicKey);
         String address = script_hash.toBase58();
-        byte[] addresshashTmp = Digest.sha256(Digest.sha256(address.getBytes())) ;
-        byte[] addresshashNew =  Arrays.copyOfRange(addresshashTmp, 0, 4);
+        byte[] addresshashTmp = Digest.sha256(Digest.sha256(address.getBytes()));
+        byte[] addresshashNew = Arrays.copyOfRange(addresshashTmp, 0, 4);
 
-        if(!new String(addresshash).equals(new String(addresshashNew))){
+        if (!new String(addresshash).equals(new String(addresshashNew))) {
             throw new SDKException("decode prikey passphrase error. " + Helper.toHexString(addresshash) + "," + Helper.toHexString(addresshashNew));
         }
         return priKey;
     }
-    private static byte[] XOR(byte[] x, byte[] y) throws Exception
-    {
+
+    private static byte[] XOR(byte[] x, byte[] y) throws Exception {
         if (x.length != y.length) {
             throw new Exception();
         }
         byte[] ret = new byte[x.length];
-        for (int i=0; i < x.length; i++) {
-            ret[i] = (byte)(x[i] ^ y[i]);
+        for (int i = 0; i < x.length; i++) {
+            ret[i] = (byte) (x[i] ^ y[i]);
         }
         return ret;
     }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
-        	return true;
+            return true;
         }
         if (!(obj instanceof Acct)) {
-        	return false;
+            return false;
         }
         return addressU160.equals(((Acct) obj).addressU160);
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return addressU160.hashCode();
     }
 }

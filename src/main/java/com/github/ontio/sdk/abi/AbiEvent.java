@@ -17,14 +17,14 @@
  *
  */
 
-package com.github.ontio.sdk.info.abi;
+package com.github.ontio.sdk.abi;
 
 import com.alibaba.fastjson.JSON;
 import com.github.ontio.sdk.exception.SDKException;
 import java.util.List;
 
 /**
- *
+ * smartcode abi event
  */
 public class AbiEvent {
     public String name;

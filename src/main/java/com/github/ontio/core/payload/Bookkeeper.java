@@ -31,20 +31,23 @@ import com.github.ontio.crypto.ECC;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 
-public class BookKeeper extends Transaction {
+/**
+ * 
+ */
+public class Bookkeeper extends Transaction {
 	public ECPoint issuer;
-	public BookKeeperAction action;
+	public BookkeeperAction action;
 	public byte[] cert;
 	
-	public BookKeeper() {
-		super(TransactionType.BookKeeper);
+	public Bookkeeper() {
+		super(TransactionType.Bookkeeper);
 	}
 	
 	@Override
 	protected void deserializeExclusiveData(BinaryReader reader) throws IOException {
 		issuer = ECC.secp256r1.getCurve().createPoint(
         		new BigInteger(1,reader.readVarBytes()), new BigInteger(1,reader.readVarBytes()));
-		action = BookKeeperAction.valueOf(reader.readByte());
+		action = BookkeeperAction.valueOf(reader.readByte());
 		cert = reader.readVarBytes();
 	}
 	

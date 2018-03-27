@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 /**
- *  投票信息
+ *
  */
 public class Vote extends Transaction {
     public ECPoint[] pubKeys;

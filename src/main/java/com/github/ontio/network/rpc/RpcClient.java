@@ -27,174 +27,178 @@ import com.github.ontio.common.UInt256;
 import com.github.ontio.core.block.Block;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.Serializable;
-import com.github.ontio.io.json.JNumber;
-import com.github.ontio.io.json.JObject;
-import com.github.ontio.io.json.JString;
 import com.github.ontio.network.connect.AbstractConnector;
-import com.github.ontio.network.connect.ConnectorException;
+import com.github.ontio.network.exception.ConnectorException;
+import com.github.ontio.network.exception.RpcException;
 
 public class RpcClient extends AbstractConnector {
-	private Interfaces rpc;
-	
-	public RpcClient(String url) {
-		try {
-			this.rpc = new Interfaces(url);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-	}
-	@Override
-	public String getUrl() {
-		return rpc.getHost();
-	}
-	@Override
-	public Object getBalance(String address) throws ConnectorException {
-		JObject result = null;
-		try {
-			result = rpc.call("getbalance", new JString(address));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-	@Override
-	public String sendRawTransaction(String sData) throws RpcException, IOException {
-		JObject result = rpc.call("sendrawtransaction", new JString(sData));
-		return result.asString();
-	}
-	@Override
-	public String sendRawTransaction(boolean preExec,String userid,String sData) throws RpcException, IOException {
-		JObject result = rpc.call("sendrawtransaction", new JString(sData));
-		return result.asString();
-	}
-	@Override
-	public Transaction getRawTransaction(String txhash) throws RpcException, IOException {
-		JObject result = rpc.call("getrawtransaction", new JString(txhash.toString()));
-		return Transaction.deserializeFrom(Helper.hexToBytes(result.asString()));
-	}
-	@Override
-	public String getRawTransactionJson(String txhash) throws RpcException {
-		JObject result = null;
-		try {
-			result = rpc.call("getrawtransaction", new JString(txhash.toString()),new JNumber(1));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return result.toString();
-	}
-	@Override
-	public int getGenerateBlockTime() throws RpcException, IOException {
-		JObject result = rpc.call("getgenerateblocktime");
-		return new Double(result.asNumber()).intValue();
-	}
-	@Override
-	public int getNodeCount() throws RpcException, IOException {
-		JObject result = rpc.call("getconnectioncount");
-		return (int)result.asNumber();
-	}
-	@Override
-	public int getBlockHeight() throws RpcException, IOException {
-		JObject result = rpc.call("getblockcount");
-		return (int)result.asNumber();
-	}
-	@Override
-	public String getBlockJson(int index) throws RpcException {
-		JObject result = null;
-		try {
-			result = rpc.call("getblock", new JNumber(index),new JNumber(1));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return result.toString();
-	}
-	@Override
-	public String getBlockJson(String hash) throws RpcException {
-		JObject result = null;
-		try {
-			result = rpc.call("getblock", new JString(hash),new JNumber(1));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return result.toString();
-	}
+    private Interfaces rpc;
 
-	@Override
-	public String sendRawTransaction(Transaction tx) throws RpcException, IOException {
-		JObject result = rpc.call("sendrawtransaction", new JString(Helper.toHexString(tx.toArray())));
-		System.out.println("rs:"+result);
-		return result.asString();
-	}
+    public RpcClient(String url) {
+        try {
+            this.rpc = new Interfaces(url);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public String sendRawTransaction(boolean preExec,String userid,Transaction tx) throws RpcException, IOException {
-		JObject result = rpc.call("sendrawtransaction", new JString(Helper.toHexString(tx.toArray())));
-		System.out.println("rs:"+result);
-		return result.asString();
-	}
-	public String getRawTransaction(UInt256 txhash) throws RpcException, IOException {
-		JObject result = rpc.call("getrawtransaction", new JString(txhash.toString()));
-		System.out.println("rs:"+result);
-		return result.toString();
-	}
+    @Override
+    public String getUrl() {
+        return rpc.getHost();
+    }
 
-	
-	public Block getBlock(UInt256 hash) throws RpcException, IOException {
-		JObject result = rpc.call("getblock", new JString(hash.toString()));
-		try {
-			Block bb = Serializable.from(Helper.hexToBytes(result.asString()), Block.class);
-			//JsonSerializable.from(result, Block.class);
-			return bb;
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	@Override
-	public Block getBlock(int index) throws RpcException, IOException {
-		JObject result = rpc.call("getblock", new JNumber(index));
-		try {
-			Block bb = Serializable.from(Helper.hexToBytes(result.asString()), Block.class);
-			//JsonSerializable.from(result, Block.class);
-			return bb;
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	public int getBlockCount() throws RpcException, IOException {
-		JObject result = rpc.call("getblockcount");
-		return (int)result.asNumber();
-	}
-	@Override
-	public Block getBlock(String hash) throws ConnectorException, IOException {
-		JObject result = rpc.call("getblock", new JString(hash.toString()));
-		System.out.println("rs:"+result);
-		try {
-			Block bb = Serializable.from(Helper.hexToBytes(result.asString()), Block.class);
-			// JsonSerializable.from(result, Block.class);
-			return bb;
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	@Override
-	public Object getSmartCodeEvent(int height) throws ConnectorException, IOException {
-		JObject result = rpc.call("getsmartcodeevent", new JNumber(height));
-		System.out.println("rs:"+result);
-		try {
-			return result;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-	@Override
-	public Object getSmartCodeEvent(String hash) throws ConnectorException, IOException {
-		JObject result = rpc.call("getsmartcodeevent", new JString(hash.toString()));
-		System.out.println("rs:"+result);
-		try {
-			return result;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+    @Override
+    public Object getBalance(String address) throws ConnectorException {
+        Object result = null;
+        try {
+            result = rpc.call("getbalance", address);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    public String sendRawTransaction(String sData) throws RpcException, IOException {
+        Object result = rpc.call("sendrawtransaction", sData);
+        return (String) result;
+    }
+
+    @Override
+    public Object sendRawTransaction(boolean preExec, String userid, String sData) throws RpcException, IOException {
+        Object result = rpc.call("sendrawtransaction", sData);
+        return result;
+    }
+
+    @Override
+    public Transaction getRawTransaction(String txhash) throws RpcException, IOException {
+        Object result = rpc.call("getrawtransaction", txhash.toString());
+        return Transaction.deserializeFrom(Helper.hexToBytes((String) result));
+    }
+
+    @Override
+    public String getRawTransactionJson(String txhash) throws RpcException {
+        Object result = null;
+        try {
+            result = rpc.call("getrawtransaction", txhash.toString(), 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result.toString();
+    }
+
+    @Override
+    public int getGenerateBlockTime() throws RpcException, IOException {
+        Object result = rpc.call("getgenerateblocktime");
+        return (int) result;
+    }
+
+    @Override
+    public int getNodeCount() throws RpcException, IOException {
+        Object result = rpc.call("getconnectioncount");
+        return (int) result;
+    }
+
+    @Override
+    public int getBlockHeight() throws RpcException, IOException {
+        Object result = rpc.call("getblockcount");
+        return (int) result;
+    }
+
+    @Override
+    public Object getBlockJson(int index) throws RpcException {
+        Object result = null;
+        try {
+            result = rpc.call("getblock", index, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    public Object getBlockJson(String hash) throws RpcException {
+        Object result = null;
+        try {
+            result = rpc.call("getblock", hash, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    public Object getContractJson(String hash) throws RpcException {
+        Object result = null;
+        try {
+            result = rpc.call("getcontractstate", hash);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public String getRawTransaction(UInt256 txhash) throws RpcException, IOException {
+        Object result = rpc.call("getrawtransaction", txhash.toString());
+        return (String) result;
+    }
+
+
+    public Block getBlock(UInt256 hash) throws RpcException, IOException {
+        Object result = rpc.call("getblock", hash.toString());
+        try {
+            Block bb = Serializable.from(Helper.hexToBytes((String) result), Block.class);
+            return bb;
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Block getBlock(int index) throws RpcException, IOException {
+        Object result = rpc.call("getblock", index);
+        try {
+            Block bb = Serializable.from(Helper.hexToBytes((String) result), Block.class);
+            return bb;
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int getBlockCount() throws RpcException, IOException {
+        Object result = rpc.call("getblockcount");
+        return (int) result;
+    }
+
+    @Override
+    public Block getBlock(String hash) throws ConnectorException, IOException {
+        Object result = rpc.call("getblock", hash.toString());
+        try {
+            Block bb = Serializable.from(Helper.hexToBytes((String) result), Block.class);
+            return bb;
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Object getSmartCodeEvent(int height) throws ConnectorException, IOException {
+        Object result = rpc.call("getsmartcodeevent", height);
+        try {
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Object getSmartCodeEvent(String hash) throws ConnectorException, IOException {
+        Object result = rpc.call("getsmartcodeevent", hash.toString());
+        try {
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 

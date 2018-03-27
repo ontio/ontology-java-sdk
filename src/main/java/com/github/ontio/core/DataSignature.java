@@ -47,8 +47,7 @@ public class DataSignature implements Signable {
     }
     public byte[] signature() {
         try {
-            SignatureContext context = new SignatureContext(this);
-            byte[] signData = context.signable.sign(acct,algrithem);
+            byte[] signData = this.sign(acct,algrithem);
             return signData;
         } catch (Exception e) {
             throw new RuntimeException("Data signature error.");

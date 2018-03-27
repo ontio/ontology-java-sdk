@@ -23,27 +23,26 @@ import java.io.IOException;
 
 import com.github.ontio.core.block.Block;
 import com.github.ontio.core.transaction.Transaction;
+import com.github.ontio.network.exception.ConnectorException;
 
 public interface IConnector {
 
-	public String getUrl();
-	public String sendRawTransaction(Transaction tx) throws ConnectorException, IOException;
-	public String sendRawTransaction(boolean preExec,String userid,Transaction tx) throws ConnectorException, IOException;
-	public String sendRawTransaction(boolean preExec,String userid,String hexData) throws ConnectorException, IOException;
-	public String sendRawTransaction(String hexData) throws ConnectorException, IOException;
-	public Transaction getRawTransaction(String txhash) throws ConnectorException, IOException;
-	public int getGenerateBlockTime() throws ConnectorException, IOException;
-	public int getNodeCount() throws ConnectorException, IOException;
-	public int getBlockHeight() throws ConnectorException, IOException;
-	public Block getBlock(int height) throws ConnectorException, IOException;
-	public Block getBlock(String hash) throws ConnectorException, IOException ;
+	String getUrl();
+	Object sendRawTransaction(boolean preExec,String userid,String hexData) throws ConnectorException, IOException;
+	Object sendRawTransaction(String hexData) throws ConnectorException, IOException;
+	Transaction getRawTransaction(String txhash) throws ConnectorException, IOException;
+	int getGenerateBlockTime() throws ConnectorException, IOException;
+	int getNodeCount() throws ConnectorException, IOException;
+	int getBlockHeight() throws ConnectorException, IOException;
+	Block getBlock(int height) throws ConnectorException, IOException;
+	Block getBlock(String hash) throws ConnectorException, IOException ;
 
-	public Object getBalance(String address) throws ConnectorException, IOException;
+	Object getBalance(String address) throws ConnectorException, IOException;
 	
-	public String getRawTransactionJson(String txhash) throws ConnectorException, IOException;
-	public String getBlockJson(int height) throws ConnectorException, IOException;
-	public String getBlockJson(String hash) throws ConnectorException, IOException;
-
-	public Object getSmartCodeEvent(int height) throws ConnectorException, IOException;
-	public Object getSmartCodeEvent(String hash) throws ConnectorException, IOException;
+	Object getRawTransactionJson(String txhash) throws ConnectorException, IOException;
+	Object getBlockJson(int height) throws ConnectorException, IOException;
+	Object getBlockJson(String hash) throws ConnectorException, IOException;
+	Object getContractJson(String hash) throws ConnectorException, IOException;
+	Object getSmartCodeEvent(int height) throws ConnectorException, IOException;
+	Object getSmartCodeEvent(String hash) throws ConnectorException, IOException;
 }

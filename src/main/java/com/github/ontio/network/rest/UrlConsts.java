@@ -20,18 +20,19 @@
 package com.github.ontio.network.rest;
 
 /**
- * Created by zx on 2018/2/1.
+ *
  */
-public class Consts {
+public class UrlConsts {
 
 	public static String Url_send_transaction = "/api/v1/transaction";
 	public static String Url_get_transaction = "/api/v1/transaction/";
-	public static String Url_get_GenerateBlockTime = "/api/v1/node/generateblocktime";
+	public static String Url_get_generate_block_time = "/api/v1/node/generateblocktime";
 	public static String Url_get_node_count = "/api/v1/node/connectioncount";
 	public static String Url_get_block_height = "/api/v1/block/height";
-	public static String Url_get_block_By_Height = "/api/v1/block/details/height/";
-	public static String Url_get_block_By_Hash = "/api/v1/block/details/hash/";
+	public static String Url_get_block_by_height = "/api/v1/block/details/height/";
+	public static String Url_get_block_by_hash = "/api/v1/block/details/hash/";
 	public static String Url_get_account_balance = "/api/v1/balance/";
-	public static String Url_get_smartcodeevent_by_height = "/api/v1/smartcode/event/height/";
+	public static String Url_get_contract_state = "/api/v1/contract/";
+	public static String Url_get_smartcodeevent_txs_by_height = "/api/v1/smartcode/event/transactions/";
 	public static String Url_get_smartcodeevent_by_txhash = "/api/v1/smartcode/event/txhash/";
 }

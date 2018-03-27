@@ -43,7 +43,7 @@ import javax.net.ssl.TrustManager;
 
 import com.alibaba.fastjson.JSON;
 
-public class Methods {
+public class http {
     private static final String DEFAULT_CHARSET = "UTF-8";
     
 
@@ -56,7 +56,7 @@ public class Methods {
         http.setRequestProperty("Content-Type","application/json");
         if(https) {
             SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
-            sslContext.init(null, new TrustManager[]{new X509Imp()}, new SecureRandom());
+            sslContext.init(null, new TrustManager[]{new X509()}, new SecureRandom());
             SSLSocketFactory ssf = sslContext.getSocketFactory();
             ((HttpsURLConnection)http).setSSLSocketFactory(ssf);
         }
@@ -90,7 +90,7 @@ public class Methods {
         http.setRequestProperty("Content-Type","application/json");
         if(https) {
             SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
-            sslContext.init(null, new TrustManager[]{new X509Imp()}, new SecureRandom());
+            sslContext.init(null, new TrustManager[]{new X509()}, new SecureRandom());
             SSLSocketFactory ssf = sslContext.getSocketFactory();
             ((HttpsURLConnection)http).setSSLSocketFactory(ssf);
         }
@@ -115,42 +115,39 @@ public class Methods {
         }
         return sb.toString();
     }
-    public static String delete(String url, String body) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, KeyManagementException {
+//    public static String delete(String url, String body) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, KeyManagementException {
+//        if(url.startsWith("https")){
+//            return delete(url, body, true);
+//        }else{
+//            return delete(url, body, false);
+//        }
+//    }
+//    public static String post(String url, String body) throws Exception{
+//    	System.out.println(String.format("POST url=%s", url));
+//    	if(url.startsWith("https")){
+//    		return post(url, body, true);
+//    	}else{
+//    		return post(url, body, false);
+//    	}
+//    }
+    public static String delete(String url, Map<String, String> params, Map<String, Object> body) throws Exception {
         if(url.startsWith("https")){
-            return delete(url, body, true);
+            return delete(url+cvtParams(params), JSON.toJSONString(body),true);
         }else{
-            return delete(url, body, false);
+            return delete(url+cvtParams(params), JSON.toJSONString(body), false);
         }
     }
-    public static String post(String url, String body) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, KeyManagementException {
-//    	System.out.println(String.format("POST url=%s, body=%s", url, body));
-    	if(url.startsWith("https")){
-    		return post(url, body, true);
-    	}else{
-    		return post(url, body, false);
-    	}
-    }
-    public static String delete(String url, Map<String, String> params, Map<String, Object> body) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, KeyManagementException {
-        return delete(url+initParams(params), JSON.toJSONString(body));
-    }
-    public static String post(String url, Map<String, String> params, Map<String, String> body) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, KeyManagementException {
-    	return post(url+initParams(params), JSON.toJSONString(body));
-    }
-    public static String postObject(String url, Map<String, String> params, Map<String, Object> body) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, KeyManagementException {
-        return post(url+initParams(params), JSON.toJSONString(body));
+
+    public static String post(String url, Map<String, String> params, Map<String, Object> body) throws Exception {
+        System.out.println(String.format("POST url=%s", url));
+        if(url.startsWith("https")){
+            return post(url+cvtParams(params), JSON.toJSONString(body), true);
+        }else{
+            return post(url+cvtParams(params), JSON.toJSONString(body), false);
+        }
     }
 
-    /**
-     *
-     * @param url
-     * @param https
-     * @return
-     * @throws NoSuchAlgorithmException
-     * @throws NoSuchProviderException
-     * @throws IOException
-     * @throws KeyManagementException
-     */
-    private static String get(String url  ,boolean https) throws NoSuchAlgorithmException, NoSuchProviderException, IOException, KeyManagementException {
+    private static String get(String url  ,boolean https) throws Exception {
     	URL u = new URL(url);
         HttpURLConnection http = (HttpURLConnection) u.openConnection();
         http.setConnectTimeout(50000);
@@ -159,7 +156,7 @@ public class Methods {
         http.setRequestProperty("Content-Type","application/json");
         if(https) {
             SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
-            sslContext.init(null, new TrustManager[]{new X509Imp()}, new SecureRandom());
+            sslContext.init(null, new TrustManager[]{new X509()}, new SecureRandom());
             SSLSocketFactory ssf = sslContext.getSocketFactory();
             ((HttpsURLConnection)http).setSSLSocketFactory(ssf);
         }
@@ -180,7 +177,7 @@ public class Methods {
         }
         return sb.toString();
     }
-    public static String get(String url) throws KeyManagementException, NoSuchAlgorithmException, NoSuchProviderException, IOException {
+    private static String get(String url) throws Exception {
     	System.out.println(String.format(" GET url=%s, params=%s", url, null));
     	if(url.startsWith("https")){
     		return get(url, true);
@@ -188,13 +185,17 @@ public class Methods {
         	return get(url, false);
         }
     }
-    
-    public static String get(String url, Map<String, String> params) throws KeyManagementException, NoSuchAlgorithmException, NoSuchProviderException, IOException {
-    	return get(url+initParams(params));
+
+    public static String get(String url, Map<String, String> params) throws Exception {
+        if(url.startsWith("https")){
+            return get(url+cvtParams(params), true);
+        }else{
+            return get(url+cvtParams(params), false);
+        }
     }
     
 
-    private static String initParams( Map<String, String> params){
+    private static String cvtParams( Map<String, String> params){
         if (params == null || params.isEmpty()) {
             return "";
         }
@@ -217,7 +218,7 @@ public class Methods {
      * @param objs
      * @throws IOException
      */
-    public static void close(Closeable... objs) throws IOException {
+    private static void close(Closeable... objs) throws IOException {
     	if(objs != null	&& objs.length > 0) {
     		Arrays.stream(objs).forEach(p -> {try {p.close(); } catch(Exception e){}});
     	}

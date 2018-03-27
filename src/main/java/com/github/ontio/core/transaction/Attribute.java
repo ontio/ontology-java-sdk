@@ -27,23 +27,22 @@ import java.util.Map;
 import com.github.ontio.common.Helper;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
-import com.github.ontio.io.JsonSerializable;
 import com.github.ontio.io.Serializable;
 
 
-public class TransactionAttribute implements Serializable, JsonSerializable {
+public class Attribute implements Serializable {
 
-	public TransactionAttributeUsage usage;
+	public AttributeUsage usage;
 	public byte[] data;
 	public int size;
 
 	@Override
 	public void serialize(BinaryWriter writer) throws IOException {
         writer.writeByte(usage.value());
-        if (usage == TransactionAttributeUsage.Script 
-        		|| usage == TransactionAttributeUsage.DescriptionUrl
-        		|| usage == TransactionAttributeUsage.Description
-        		|| usage == TransactionAttributeUsage.Nonce) {
+        if (usage == AttributeUsage.Script
+        		|| usage == AttributeUsage.DescriptionUrl
+        		|| usage == AttributeUsage.Description
+        		|| usage == AttributeUsage.Nonce) {
             writer.writeVarBytes(data);
         } else {
             throw new IOException();
@@ -52,11 +51,11 @@ public class TransactionAttribute implements Serializable, JsonSerializable {
 
 	@Override
 	public void deserialize(BinaryReader reader) throws IOException {
-		usage = TransactionAttributeUsage.valueOf(reader.readByte());
-        if (usage == TransactionAttributeUsage.Script
-        		|| usage == TransactionAttributeUsage.DescriptionUrl
-        		|| usage == TransactionAttributeUsage.Description
-        		|| usage == TransactionAttributeUsage.Nonce) {
+		usage = AttributeUsage.valueOf(reader.readByte());
+        if (usage == AttributeUsage.Script
+        		|| usage == AttributeUsage.DescriptionUrl
+        		|| usage == AttributeUsage.Description
+        		|| usage == AttributeUsage.Nonce) {
         			data = reader.readVarBytes(255);
         } else {
             throw new IOException();

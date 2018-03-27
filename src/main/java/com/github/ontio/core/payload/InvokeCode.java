@@ -33,17 +33,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-public class InvokeCodeTransaction extends Transaction {
+public class InvokeCode extends Transaction {
 	public long gasLimit;
 	public byte vmType;
 	public byte[] code;
 	public ECPoint invoker;
 
-	public InvokeCodeTransaction() {
-		super(TransactionType.InvokeCodeTransaction);
+	public InvokeCode() {
+		super(TransactionType.InvokeCode);
 	}
-	public InvokeCodeTransaction(ECPoint invoker) {
-		super(TransactionType.InvokeCodeTransaction);
+	public InvokeCode(ECPoint invoker) {
+		super(TransactionType.InvokeCode);
 		this.invoker = invoker;
 	}
 	@Override

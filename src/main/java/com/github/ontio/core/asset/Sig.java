@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  *  脚本
  */
-public class Sig implements Serializable, JsonSerializable {
+public class Sig implements Serializable {
     public ECPoint[] pubKeys = null;
     public int M;
     public byte[][] sigData;

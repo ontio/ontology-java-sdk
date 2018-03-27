@@ -25,13 +25,13 @@ import com.github.ontio.core.asset.Sig;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.manager.ConnectMgr;
 import com.github.ontio.sdk.manager.WalletMgr;
-import com.github.ontio.sdk.transaction.OntAssetTx;
-import com.github.ontio.sdk.transaction.OntIdTx;
-import com.github.ontio.sdk.transaction.SmartcodeTx;
+import com.github.ontio.sdk.manager.OntAssetTx;
+import com.github.ontio.sdk.manager.OntIdTx;
+import com.github.ontio.sdk.manager.SmartcodeTx;
 import org.bouncycastle.math.ec.ECPoint;
 
 /**
- *
+ * Ont Sdk
  */
 public class OntSdk {
     private WalletMgr walletMgr;
@@ -39,18 +39,21 @@ public class OntSdk {
     private OntIdTx ontIdTx = null;
     private SmartcodeTx smartcodeTx = null;
     private OntAssetTx ontAssetTx = null;
-
     private static OntSdk instance = null;
-    public static OntSdk getInstance(){
+
+    public static synchronized OntSdk getInstance(){
         if(instance == null){
             instance = new OntSdk();
         }
         return instance;
     }
     private OntSdk(){
-
     }
 
+    /**
+     * OntId
+     * @return instance
+     */
     public OntIdTx getOntIdTx() {
         if(ontIdTx == null){
             getSmartcodeTx();
@@ -59,18 +62,42 @@ public class OntSdk {
         return ontIdTx;
     }
 
-
+    /**
+     *  Smartcode Tx
+     * @return instance
+     */
     public SmartcodeTx getSmartcodeTx() {
         if(smartcodeTx == null){
             smartcodeTx = new SmartcodeTx(getInstance());
         }
         return smartcodeTx;
     }
+
+    /**
+     *  get OntAsset Tx
+     * @return instance
+     */
     public OntAssetTx getOntAssetTx() {
         if(ontAssetTx == null){
             ontAssetTx = new OntAssetTx(getInstance());
         }
         return ontAssetTx;
+    }
+
+    /**
+     * get Wallet Mgr
+     * @return
+     */
+    public WalletMgr getWalletMgr() {
+        return walletMgr;
+    }
+
+    /**
+     * get Connect Mgr
+     * @return
+     */
+    public ConnectMgr getConnectMgr() {
+        return connManager;
     }
 
     /**
@@ -84,39 +111,62 @@ public class OntSdk {
 
     /**
      *
-     * @param codeHash
+     * @param codeAddress
      */
-    public void setCodeHash(String codeHash){
-        getOntIdTx().setCodeHash(codeHash);
-        getSmartcodeTx().setCodeHash(codeHash);
+    public void setCodeAddress(String codeAddress){
+        getOntIdTx().setCodeAddress(codeAddress);
+        getSmartcodeTx().setCodeAddress(codeAddress);
     }
 
-    public WalletMgr getWalletMgr() {
-        return walletMgr;
-    }
-
-    public ConnectMgr getConnectMgr() {
-        return connManager;
-    }
-
-    public void setRpcConnection(String url) {
-        this.connManager = new ConnectMgr(url, true);
-    }
-    public void setRestfulConnection(String url) {
-        this.connManager = new ConnectMgr(url);
-    }
-    public void openWalletFile(String path) {
-        this.walletMgr = new WalletMgr(path);
-    }
-
-    public void openWalletFile(String path,String password) {
-        this.walletMgr = new WalletMgr(path,password);
-    }
+    /**
+     *
+     * @param alg
+     */
     public void setAlgrithem(String alg) {
         walletMgr.setAlgrithem(alg);
     }
 
-    public String signTx(Transaction tx, Acct[][] accounts) {
+    /**
+     *
+     * @param url
+     */
+    public void setRpcConnection(String url) {
+        this.connManager = new ConnectMgr(url, true);
+    }
+
+    /**
+     *
+     * @param url
+     */
+    public void setRestfulConnection(String url) {
+        this.connManager = new ConnectMgr(url);
+    }
+
+    /**
+     *
+     * @param path
+     */
+    public void openWalletFile(String path) {
+        this.walletMgr = new WalletMgr(path);
+    }
+
+    /**
+     * open wallet file with password
+     * @param path
+     * @param password
+     */
+    public void openWalletFile(String path,String password) {
+        this.walletMgr = new WalletMgr(path,password);
+    }
+
+
+    /**
+     * sign tx
+     * @param tx
+     * @param accounts
+     * @return
+     */
+    public Transaction signTx(Transaction tx, Acct[][] accounts) {
         Sig[] sigs = new Sig[accounts.length];
         for (int i = 0; i < accounts.length; i++) {
             sigs[i] = new Sig();
@@ -131,29 +181,27 @@ public class OntSdk {
             }
         }
         tx.sigs = sigs;
-        return tx.toHexString();
+        return tx;
     }
 
-    public String signTx(Transaction tx, Acct[][] accounts, int[] M) throws SDKException {
+    /**
+     *  signTx
+     * @param tx
+     * @param accounts
+     * @param M
+     * @return
+     * @throws SDKException
+     */
+    public Transaction signTx(Transaction tx, Acct[][] accounts, int[] M) throws SDKException {
         if (M.length != accounts.length) {
             throw new SDKException("M Error");
         }
-        Sig[] sigs = new Sig[accounts.length];
-        for (int i = 0; i < accounts.length; i++) {
-            sigs[i] = new Sig();
-            sigs[i].pubKeys = new ECPoint[accounts[i].length];
-            sigs[i].sigData = new byte[accounts[i].length][];
-            if (M[i] > accounts[i].length || M[i] < 0) {
+        for (int i = 0; i < tx.sigs.length; i++) {
+            if (M[i] > tx.sigs[i].pubKeys.length || M[i] < 0) {
                 throw new SDKException("M Error");
             }
-            sigs[i].M = M[i];
-            for (int j = 0; j < accounts[i].length; j++) {
-                byte[] signature = tx.sign(accounts[i][j], getWalletMgr().getAlgrithem());
-                sigs[i].pubKeys[j] = accounts[i][j].publicKey;
-                sigs[i].sigData[j] = signature;
-            }
+            tx.sigs[i].M = M[i];
         }
-        tx.sigs = sigs;
-        return tx.toHexString();
+        return tx;
     }
 }

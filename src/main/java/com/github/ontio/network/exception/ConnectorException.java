@@ -17,20 +17,17 @@
  *
  */
 
-package com.github.ontio.network.rpc;
+package com.github.ontio.network.exception;
 
-import com.github.ontio.network.connect.ConnectorException;
 
-/**
- *
- */
-class RpcException extends ConnectorException {
-	private static final long serialVersionUID = -8558006777817318117L;
-
-	public final int code;
-
-	public RpcException(int code,String message) {
-		super("RpcException:"+message);
-		this.code = code;
+public class ConnectorException extends Exception {
+	private static final long serialVersionUID = 1110342144692879043L;
+	
+	public ConnectorException(String message) {
+		super(message);
+	}
+	
+	public ConnectorException(String message, Throwable ex) {
+		super(message, ex);
 	}
 }

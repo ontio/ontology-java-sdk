@@ -22,31 +22,33 @@ package com.github.ontio.core.asset;
 import com.github.ontio.common.Address;
 import com.github.ontio.crypto.Digest;
 import com.github.ontio.io.*;
-import com.github.ontio.io.json.JObject;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- *  脚本
+ *
  */
-public class TokenTransfer implements Serializable, JsonSerializable {
+public class Contract implements Serializable {
+    public byte version;
     public Address constracHash;
-    public State[] states;
+    public String method;
+    public byte[] args;
 
-    public TokenTransfer(Address constracHash, State[] states){
+    public Contract(byte version,Address constracHash, String method,byte[] args){
+        this.version = version;
         this.constracHash = constracHash;
-        this.states = states;
+        this.method = method;
+        this.args = args;
     }
     @Override
     public void deserialize(BinaryReader reader) throws IOException {
         try {
+            version = reader.readByte();
             constracHash = reader.readSerializable(Address.class);
-            int len = (int)reader.readVarInt();
-            for(int i = 0;i <len;i++){
-                states[i] = reader.readSerializable(State.class);
-            }
+            method = new String(reader.readVarBytes());
+            args = reader.readVarBytes();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -57,21 +59,9 @@ public class TokenTransfer implements Serializable, JsonSerializable {
 
     @Override
     public void serialize(BinaryWriter writer) throws IOException {
+        writer.writeByte(version);
         writer.writeSerializable(constracHash);
-        writer.writeSerializableArray(states);
+        writer.writeVarBytes(method.getBytes());
+        writer.writeVarBytes(args);
     }
-
-
-    public Object json() {
-        Map json = new HashMap<>();
-        return json;
-    }
-
-
-//    @Override
-//	public void fromJson(JsonReader reader) {
-//		JObject json = reader.json();
-////		code = Helper.hexToBytes(json.get("Code").asString());
-////		parameter = Helper.hexToBytes(json.get("Parameter").asString());
-//	}
 }

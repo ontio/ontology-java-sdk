@@ -20,8 +20,11 @@
 package com.github.ontio.common;
 
 import com.alibaba.fastjson.JSON;
+import com.github.ontio.account.KeyType;
 import com.github.ontio.crypto.Base58;
 import com.github.ontio.crypto.Digest;
+import com.github.ontio.crypto.ECC;
+import com.github.ontio.crypto.sm.SM2Utils;
 import com.github.ontio.io.BinaryWriter;
 import org.bouncycastle.math.ec.ECPoint;
 
@@ -159,6 +162,7 @@ public class Address extends UIntBase implements Comparable<Address> {
     public static Address toScriptHash(byte[] script) {
         return new Address(Digest.hash160(script));
     }
+    @Override
     public String toHexString(){
         return Helper.toHexString(this.toArray());
     }

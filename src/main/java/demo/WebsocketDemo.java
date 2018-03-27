@@ -32,8 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.github.ontio.common.Common.print;
-
 
 /**
  *
@@ -50,28 +48,28 @@ public class WebsocketDemo {
 //            String wsUrl = "ws://101.132.193.149:21335";
 
             Object lock = new Object();
-            WsProcess.startWebsocketThread(lock,wsUrl);
+            WsProcess.startWebsocketThread(lock, wsUrl);
             WsProcess.setBroadcast(true);
 
             Thread thread = new Thread(
                     new Runnable() {
                         @Override
                         public void run() {
-                            waitResult(ontSdk,lock);
+                            waitResult(ontSdk, lock);
                         }
                     });
             thread.start();
 
             Wallet oep6 = ontSdk.getWalletMgr().getWallet();
-            System.out.println("oep6:"+ JSON.toJSONString(oep6));
+            System.out.println("oep6:" + JSON.toJSONString(oep6));
             //System.exit(0);
 
             //System.out.println("================register=================");
             //注册ontid
             Identity ident = null;
-            if(ontSdk.getWalletMgr().getIdentitys().size() == 0) {
+            if (ontSdk.getWalletMgr().getIdentitys().size() == 0) {
                 ident = ontSdk.getOntIdTx().register("passwordtest");
-            }else {
+            } else {
                 ident = ontSdk.getWalletMgr().getIdentitys().get(0);
             }
 
@@ -98,7 +96,7 @@ public class WebsocketDemo {
 
                 //System.out.println(JSON.toJSONString(recordMap));
                 //System.out.println(ontid);
-                String hash = ontSdk.getOntIdTx().updateAttribute(ontid, "passwordtest",attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
+                String hash = ontSdk.getOntIdTx().updateAttribute(ontid, "passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
                 System.out.println("hash:" + hash);
 
                 //等待推送结果
@@ -113,29 +111,29 @@ public class WebsocketDemo {
         }
     }
 
-    public static void waitResult(OntSdk ontSdk, Object lock){
+    public static void waitResult(OntSdk ontSdk, Object lock) {
         try {
             synchronized (lock) {
                 //System.out.println("\nwait begin " + new Date().toString());
                 boolean flag = false;
-                while(true) {
+                while (true) {
                     lock.wait();
-                    if(MsgQueue.getChangeFlag()){
+                    if (MsgQueue.getChangeFlag()) {
                         System.out.println(MsgQueue.getHeartBeat());
                     }
 
                     for (String e : MsgQueue.getResultSet()) {
-                        System.out.println("####"+e);
+                        System.out.println("####" + e);
                         Result rt = JSON.parseObject(e, Result.class);
                         //TODO
                         MsgQueue.removeResult(e);
-                        if(rt.Action.equals("Notify")) {
+                        if (rt.Action.equals("Notify")) {
                             flag = true;
-                            List<Map<String,Object>> list = (List<Map<String,Object>>)((Map)rt.Result).get("State");
-                            for(Map m:(List<Map<String,Object>>)(list.get(0).get("Value"))){
-                                String value = (String)m.get("Value");
+                            List<Map<String, Object>> list = (List<Map<String, Object>>) ((Map) rt.Result).get("State");
+                            for (Map m : (List<Map<String, Object>>) (list.get(0).get("Value"))) {
+                                String value = (String) m.get("Value");
                                 String val = new String(Helper.hexToBytes(value));
-                                System.out.print(val+" ");
+                                System.out.print(val + " ");
                             }
                             System.out.println();
                         }
@@ -157,10 +155,8 @@ public class WebsocketDemo {
         //配置 ontid 文件
         wm.openWalletFile("WebsocketDemo.json");
 
-        print(String.format("ConnectParam=[%s, %s]", url, ""));
-
         //设置 ontid合约hash
-        wm.setCodeHash("89ff0f39193ddaeeeab9de4873b549f71bbe809c");
+        wm.setCodeAddress("89ff0f39193ddaeeeab9de4873b549f71bbe809c");
 
         //System.exit(0);
         return wm;

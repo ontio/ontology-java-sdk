@@ -4,7 +4,7 @@
 
 ## Overview
 
-The project is an ontology Java SDK, which is a comprehensive SDK. Currently, it supports local wallet management, digital identity management, digital asset management,  deployment and invoke for Smart Contract , and communication with Ontology Blockchain. The future will also support more rich functions and applications .
+This is a comprehensive Java library for the Ontology blockchain. Currently, it supports local wallet management, digital identity management, digital asset management,  deployment and invoke for Smart Contract , and communication with Ontology Blockchain. The future will also support more rich functions and applications .
 
 ## Getting started
 

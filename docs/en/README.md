@@ -4,9 +4,7 @@
 
 ## Overview
 
-This Java SDK released by Ontology currently supports multiple functions, including native wallet management, digital identity management, digital asset management, smart contract deployment and invocation, node communication, with more to come in the future. 
-
-Version 0.6.0
+This is a comprehensive Java library for the Ontology blockchain,which is released by Ontology currently supports multiple functions, including native wallet management, digital identity management, digital asset management, smart contract deployment and invocation, node communication, with more to come in the future. 
 
 ## Main functions
 

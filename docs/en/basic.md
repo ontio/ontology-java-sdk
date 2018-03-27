@@ -1,4 +1,4 @@
-﻿## Basic blockchain interop
+## Basic blockchain interop
 
 The following describes basic blockchain interop function of SDK and defines relevant data structure.
 

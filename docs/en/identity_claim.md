@@ -167,12 +167,12 @@ String updateAttribute(String ontid,String password,byte[] key,byte[] type,byte[
 
 ```
 
-`unsignedData`  a JSON string of unsigned claim objects, including Context, Id, Claim and Metadata
-`signedData` a JSON string of signed claim objects, including claim object and digitally signed object
-`Context` identification of claim template
-`Id` identification of claim object
-`Claim` claim content
-`Metadata` metadata of claim object
+`unsignedData`  a JSON string of unsigned claim objects, including Context, Id, Claim and Metadata  
+`signedData` a JSON string of signed claim objects, including claim object and digitally signed object  
+`Context` identification of claim template  
+`Id` identification of claim object  
+`Claim` claim content  
+`Metadata` metadata of claim object  
 
 * Metadata has the following data structure
 

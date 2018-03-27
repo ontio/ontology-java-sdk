@@ -57,6 +57,11 @@ String result = (String) sdk.getConnectMgr().sendRawTransactionPreExec(txHex);
 #### **An deployment example of smart contract**
 
 ```
+InputStream is = new FileInputStream("/Users/sss/dev/ontologytest/IdContract/IdContract.avm");
+byte[] bys = new byte[is.available()];
+is.read(bys);
+is.close();
+code = Helper.toHexString(bys);
 ontSdk.setCodeHash(Helper.getCodeHash(code));
 
 //Deploy the contract
@@ -69,7 +74,7 @@ DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getRawT
 | Parameters    | Field       | Type                  | Description                       | Explaination                           |
 | -----         | -------     | ------                | -------------                     | -----------                            |
 | Input params  | codeHexStr  | String                | Contract code                     | Required                               |
-|               | needStorage | String                | Need storage or not               | Required                               |
+|               | needStorage | Boolean               | Need storage or not               | Required                               |
 |               | name        | String                | Contract name                     | Required                               |
 |               | codeVersion | String                | Contract version                  | Required                               |
 |               | author      | String                | Contract author                   | Required                               |

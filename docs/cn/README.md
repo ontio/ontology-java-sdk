@@ -1,4 +1,3 @@
-[English Version](../en/README.md)
 
 <h1 align="center">Ontology Java SDK User Guide</h1>
 <h4 align="center">Version V0.6.0 </h4>

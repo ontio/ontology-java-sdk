@@ -54,6 +54,17 @@ public class Control {
 
 ### 2 **创建数字身份**
 
+ontsdk实例初始化
+
+```
+String url = "http://127.0.0.1:20384";
+OntSdk ontSdk = OntSdk.getInstance();
+ontSdk.setRestfulConnection(url);
+ontSdk.openWalletFile("ClaimDemo.json");
+ontSdk.setCodeHash("89ff0f39193ddaeeeab9de4873b549f71bbe809c");
+```
+> Note: ontid是由智能合约实现，所以需要设置ontid的智能合约codeHash。
+
 创建数字身份指的是产生一个Identity数据结构的身份信息，并写入到到钱包文件中。
 
 ```

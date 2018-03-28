@@ -116,7 +116,6 @@ String ddo = ontSdk.getOntIdTx().getDDO(ontid,"passwordtest",ontid);
 	},
 	"Owners": [
 		{
-			"Type": "ECDSA",
 			"Value": "0392a4dbb2a44da81e0942cee1a62ff4298e04ed463b88911b97de19a1597fa83d"
 		}
 	]

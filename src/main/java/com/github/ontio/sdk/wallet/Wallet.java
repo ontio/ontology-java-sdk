@@ -29,7 +29,7 @@ import java.util.List;
  *
  */
 public class Wallet {
-    private String name = "com/github/ontio";
+    private String name = "com.github.ontio";
     private String version = "1.0";
     private Scrypt scrypt = new Scrypt();
     private Object extra = null;

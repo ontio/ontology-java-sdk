@@ -34,17 +34,16 @@ import java.util.Map;
  *
  */
 public class Sig implements Serializable {
-    public ECPoint[] pubKeys = null;
+    public byte[][] pubKeys = null;
     public int M;
     public byte[][] sigData;
 
     @Override
     public void deserialize(BinaryReader reader) throws IOException {
     	int len = (int)reader.readVarInt();
-        pubKeys = new ECPoint[(int)len];
+        pubKeys = new byte[len][];
         for(int i=0;i<pubKeys.length;i++) {
-            pubKeys[i] = ECC.secp256r1.getCurve().createPoint(
-                    new BigInteger(1, reader.readVarBytes()), new BigInteger(1, reader.readVarBytes()));
+            pubKeys[i] = reader.readVarBytes();
         }
         M = (int)reader.readVarInt();
         len = (int)reader.readVarInt();
@@ -58,8 +57,7 @@ public class Sig implements Serializable {
     public void serialize(BinaryWriter writer) throws IOException {
     	writer.writeVarInt(pubKeys.length);
     	for(int i=0;i<pubKeys.length;i++) {
-            writer.writeVarBytes(Helper.removePrevZero(pubKeys[i].getXCoord().toBigInteger().toByteArray()));
-            writer.writeVarBytes(Helper.removePrevZero(pubKeys[i].getYCoord().toBigInteger().toByteArray()));
+            writer.writeVarBytes(pubKeys[i]);
         }
         writer.writeVarInt(M);
         writer.writeVarInt(sigData.length);
@@ -71,26 +69,9 @@ public class Sig implements Serializable {
     public Object json() {
         Map json = new HashMap<>();
         json.put("M", M);
-        json.put("PubKeys", Arrays.stream(pubKeys).map(p->Helper.toHexString(p.getEncoded(true))).toArray(Object[]::new));
+        json.put("PubKeys", Arrays.stream(pubKeys).map(p->Helper.toHexString(p)).toArray(Object[]::new));
         json.put("sigData", Arrays.stream(sigData).map(p->Helper.toHexString(p)).toArray(Object[]::new));
         return json;
     }
-//    @Override
-//    public void fromJson(JsonReader reader) {
-//        JObject json = reader.json();
-//        M = new Double(json.get("M").asNumber()).intValue();
-//       // pubKeys = Address.parse(json.get("Payer").asString());
-//        //JArray array = (JArray) json.get("SigData");
-//        //sigData =reader.readSerializableArray(Byte.class, array.size(), "SigData");
-//    }
-//    public static Sig fromJsonD(JsonReader reader) throws IOException {
-//        try {
-//            Sig f = (Sig)Class.forName("com.github.ontio.core.asset.Sig").newInstance();
-//            f.fromJson(reader);;
-//            return f;
-//        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-//            ex.printStackTrace();
-//            throw new IOException(ex);
-//        }
-//    }
+
 }

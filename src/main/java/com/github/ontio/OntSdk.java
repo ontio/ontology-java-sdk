@@ -19,9 +19,11 @@
 
 package com.github.ontio;
 
-import com.github.ontio.account.Acct;
+import com.github.ontio.account.Account;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.core.asset.Sig;
+import com.github.ontio.crypto.KeyType;
+import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.manager.ConnectMgr;
 import com.github.ontio.sdk.manager.WalletMgr;
@@ -40,6 +42,9 @@ public class OntSdk {
     private SmartcodeTx smartcodeTx = null;
     private OntAssetTx ontAssetTx = null;
     private static OntSdk instance = null;
+    public KeyType keyType = KeyType.ECDSA;
+    public Object[] curveParameterSpec = new Object[]{"P-256"};
+    public SignatureScheme signatureScheme = SignatureScheme.SHA256WITHECDSA;
 
     public static synchronized OntSdk getInstance(){
         if(instance == null){
@@ -120,10 +125,10 @@ public class OntSdk {
 
     /**
      *
-     * @param alg
+     * @param scheme
      */
-    public void setAlgrithem(String alg) {
-        walletMgr.setAlgrithem(alg);
+    public void setSignatureScheme(SignatureScheme scheme) {
+        walletMgr.setSignatureScheme(scheme);
     }
 
     /**
@@ -147,17 +152,11 @@ public class OntSdk {
      * @param path
      */
     public void openWalletFile(String path) {
-        this.walletMgr = new WalletMgr(path);
+
+        this.walletMgr = new WalletMgr(path,keyType,curveParameterSpec);
+        setSignatureScheme(signatureScheme);
     }
 
-    /**
-     * open wallet file with password
-     * @param path
-     * @param password
-     */
-    public void openWalletFile(String path,String password) {
-        this.walletMgr = new WalletMgr(path,password);
-    }
 
 
     /**
@@ -166,17 +165,16 @@ public class OntSdk {
      * @param accounts
      * @return
      */
-    public Transaction signTx(Transaction tx, Acct[][] accounts) {
+    public Transaction signTx(Transaction tx, Account[][] accounts) throws Exception{
         Sig[] sigs = new Sig[accounts.length];
         for (int i = 0; i < accounts.length; i++) {
             sigs[i] = new Sig();
-            sigs[i].pubKeys = new ECPoint[accounts[i].length];
+            sigs[i].pubKeys = new byte[accounts[i].length][];
             sigs[i].sigData = new byte[accounts[i].length][];
             for (int j = 0; j < accounts[i].length; j++) {
                 sigs[i].M++;
-                System.out.println(accounts[i].length);
-                byte[] signature = tx.sign(accounts[i][j], getWalletMgr().getAlgrithem());
-                sigs[i].pubKeys[j] = accounts[i][j].publicKey;
+                byte[] signature = tx.sign(accounts[i][j], getWalletMgr().getSignatureScheme());
+                sigs[i].pubKeys[j] = accounts[i][j].serializePublicKey();
                 sigs[i].sigData[j] = signature;
             }
         }
@@ -192,7 +190,7 @@ public class OntSdk {
      * @return
      * @throws SDKException
      */
-    public Transaction signTx(Transaction tx, Acct[][] accounts, int[] M) throws SDKException {
+    public Transaction signTx(Transaction tx, Account[][] accounts, int[] M) throws SDKException {
         if (M.length != accounts.length) {
             throw new SDKException("M Error");
         }

@@ -97,8 +97,8 @@ public class InvokeSmartCodeDemo {
 
     public static OntSdk getOntSdk() throws Exception {
 //        String url = "http://54.222.182.88:20336";
-        String url = "http://127.0.0.1:20384";
-//        String url = "http://101.132.193.149:21334";
+//        String url = "http://127.0.0.1:20384";
+        String url = "http://40.125.165.118:20334";
         OntSdk wm = OntSdk.getInstance();
         wm.setRestfulConnection(url);
         wm.openWalletFile("InvokeSmartCodeDemo.json");

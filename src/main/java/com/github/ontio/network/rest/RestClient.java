@@ -83,7 +83,7 @@ public class RestClient extends AbstractConnector {
         String rs = api.getGenerateBlockTime();
         Result rr = JSON.parseObject(rs, Result.class);
         if (rr.Error == 0) {
-            return Integer.valueOf((String) rr.Result).intValue();
+            return (int) rr.Result;
         }
         throw new RestfulException(to(rr));
 
@@ -94,7 +94,7 @@ public class RestClient extends AbstractConnector {
         String rs = api.getNodeCount();
         Result rr = JSON.parseObject(rs, Result.class);
         if (rr.Error == 0) {
-            return Integer.valueOf((String) rr.Result).intValue();
+            return (int) rr.Result;
         }
         throw new RestfulException(to(rr));
 
@@ -117,7 +117,6 @@ public class RestClient extends AbstractConnector {
         Result rr = JSON.parseObject(rs, Result.class);
         if (rr.Error == 0) {
             try {
-                System.out.println(rr.Result);
                 return Serializable.from(Helper.hexToBytes((String) rr.Result), Block.class);
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RestfulException("Block.deserializeFrom(height) failed", e);

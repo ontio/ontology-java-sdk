@@ -39,13 +39,14 @@ public class Demo {
 //            System.out.println(ontSdk.getConnectMgr().getBalance("TA5NzM9iE3VT9X8SGk5h3dii6GPFQh2vme"));
 //            System.out.println(Helper.toHexString(ontSdk.getConnectMgr().getBlock(1).transactions[0].sigs[0].sigData[0]));
 //            System.out.println(ontSdk.getConnectMgr().getBlock(1584).json());
+            System.out.println(ontSdk.getConnectMgr().getGenerateBlockTime());
 //            System.out.println(ontSdk.getConnectMgr().getBlockHeight());
 //            System.out.println(ontSdk.getConnectMgr().getBlockJson(1));
 //            System.out.println(ontSdk.getConnectMgr().getBlockJson("ee2d842fe7cdf48bc39b34d616a9e8f7f046970ed0a988dde3fe05c9126cce74"));
 //            System.out.println(ontSdk.getConnectMgr().getGenerateBlockTime());
 //            System.out.println(ontSdk.getConnectMgr().getNodeCount());
 //            System.out.println(((InvokeCodeTransaction)ontSdk.getConnectMgr().getRawTransaction("c2592940837c2347f6a7b391d4940abb7171dd5dd156b7c031d20a5940142b5a")).fee[0].payer.toBase58());
-            System.out.println((ontSdk.getConnectMgr().getTransaction("d441a967315989116bf0afad498e4016f542c1e7f8605da943f07633996c24cc")));
+//            System.out.println((ontSdk.getConnectMgr().getTransaction("d441a967315989116bf0afad498e4016f542c1e7f8605da943f07633996c24cc")));
 //            System.out.println(ontSdk.getConnectMgr().getSmartCodeEvent(59));
 //            System.out.println(ontSdk.getConnectMgr().getContractJson("80e7d2fc22c24c466f44c7688569cc6e6d6c6f92"));
             System.exit(0);

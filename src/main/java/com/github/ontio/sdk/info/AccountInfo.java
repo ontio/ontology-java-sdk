@@ -25,12 +25,12 @@ import com.alibaba.fastjson.JSON;
  *
  */
 public class AccountInfo {
-	public String address;
+	public String addressBase58;
 	public String pubkey;
 	private String prikey;
 	private String prikeyWif;
 	public String encryptedPrikey;
-	public String pkHash;
+	public String addressU160;
 	public void setPrikey(String prikey){
 		this.prikey = prikey;
 	}

@@ -19,8 +19,9 @@
 
 package com.github.ontio.core;
 
-import com.github.ontio.account.Acct;
+import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
+import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 
@@ -29,17 +30,17 @@ import java.util.HashSet;
 
 
 public class DataSignature implements Signable {
-    private Acct acct;
+    private Account account;
     private String data;
-    private String algrithem;
+    private SignatureScheme scheme;
     public DataSignature(){
     }
     public DataSignature(String data){
         this.data = data;
     }
-    public DataSignature(String alg, Acct acct, String data){
-        this.algrithem = alg;
-        this.acct = acct;
+    public DataSignature(SignatureScheme scheme, Account acct,String  data){
+        this.scheme = scheme;
+        this.account = acct;
         this.data = data;
     }
     public String getData(){
@@ -47,7 +48,7 @@ public class DataSignature implements Signable {
     }
     public byte[] signature() {
         try {
-            byte[] signData = this.sign(acct,algrithem);
+            byte[] signData = this.sign(account,scheme);
             return signData;
         } catch (Exception e) {
             throw new RuntimeException("Data signature error.");
@@ -57,7 +58,7 @@ public class DataSignature implements Signable {
     @Override
     public Address[] getAddressU160ForVerifying() {
         HashSet<Address> hashes = new HashSet<Address>();
-        hashes.add(Address.addressFromPubKey(acct.publicKey));
+        hashes.add(Address.addressFromPubKey(account.serializePublicKey()));
         return hashes.stream().sorted().toArray(Address[]::new);
     }
 

@@ -37,15 +37,11 @@ public class InvokeCode extends Transaction {
 	public long gasLimit;
 	public byte vmType;
 	public byte[] code;
-	public ECPoint invoker;
 
 	public InvokeCode() {
 		super(TransactionType.InvokeCode);
 	}
-	public InvokeCode(ECPoint invoker) {
-		super(TransactionType.InvokeCode);
-		this.invoker = invoker;
-	}
+
 	@Override
 	protected void deserializeExclusiveData(BinaryReader reader) throws IOException {
 		try {
@@ -65,9 +61,6 @@ public class InvokeCode extends Transaction {
 	@Override
 	public Address[] getAddressU160ForVerifying() {
 		HashSet<Address> hashes = new HashSet<Address>(Arrays.asList(super.getAddressU160ForVerifying()));
-		if(invoker != null) {
-			hashes.add(Address.addressFromPubKey(invoker));
-		}
 		return hashes.stream().sorted().toArray(Address[]::new);
 	}
 	@Override

@@ -20,16 +20,16 @@
 package com.github.ontio.common;
 
 import com.alibaba.fastjson.JSON;
-import com.github.ontio.account.KeyType;
+import com.github.ontio.crypto.KeyType;
 import com.github.ontio.crypto.Base58;
 import com.github.ontio.crypto.Digest;
 import com.github.ontio.crypto.ECC;
-import com.github.ontio.crypto.sm.SM2Utils;
 import com.github.ontio.io.BinaryWriter;
 import org.bouncycastle.math.ec.ECPoint;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.PublicKey;
 import java.util.Arrays;
 
 /**
@@ -88,6 +88,35 @@ public class Address extends UIntBase implements Comparable<Address> {
             return false;
         }
     }
+    public static Address addressFromPubKey(String publicKey) {
+        return  addressFromPubKey(Helper.hexToBytes(publicKey));
+    }
+    public static Address addressFromPubKey(byte[] publicKey) {
+        try {
+            byte[] bys = Digest.hash160(publicKey);
+            bys[0] = 0x01;
+            Address u160 = new Address(bys);
+            return u160;
+        } catch (Exception e) {
+            throw new UnsupportedOperationException(e);
+        }
+    }
+//    public static Address addressFromPubKey(PublicKey publicKey) {
+//        publicKey
+//        try (ByteArrayOutputStream ms = new ByteArrayOutputStream()) {
+//            try (BinaryWriter writer = new BinaryWriter(ms)) {
+//                writer.writeVarBytes(Helper.removePrevZero(publicKey.getXCoord().toBigInteger().toByteArray()));
+//                writer.writeVarBytes(Helper.removePrevZero(publicKey.getYCoord().toBigInteger().toByteArray()));
+//                writer.flush();
+//                byte[] bys = Digest.hash160(ms.toByteArray());
+//                bys[0] = 0x01;
+//                Address u160 = new Address(bys);
+//                return u160;
+//            }
+//        } catch (IOException ex) {
+//            throw new UnsupportedOperationException(ex);
+//        }
+//    }
     public static Address addressFromPubKey(ECPoint publicKey) {
         try (ByteArrayOutputStream ms = new ByteArrayOutputStream()) {
             try (BinaryWriter writer = new BinaryWriter(ms)) {

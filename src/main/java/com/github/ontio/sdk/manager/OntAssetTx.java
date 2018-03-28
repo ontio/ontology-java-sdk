@@ -20,7 +20,7 @@
 package com.github.ontio.sdk.manager;
 
 import com.github.ontio.OntSdk;
-import com.github.ontio.account.Acct;
+import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.core.transaction.Attribute;
@@ -69,15 +69,14 @@ public class OntAssetTx {
         }
 
         amount = amount * precision;
-        AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
-        State state = new State(Address.addressFromPubKey(sdk.getWalletMgr().getPubkey(sender.pubkey)), Address.decodeBase58(recvAddr), new BigInteger(String.valueOf(amount)));
+        AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password,sdk.keyType,sdk.curveParameterSpec);
+        State state = new State(Address.addressFromPubKey(sender.pubkey), Address.decodeBase58(recvAddr), new BigInteger(String.valueOf(amount)));
         Transfers transfers = new Transfers(new State[]{state});
         Contract contract = new Contract((byte) 0, Address.parse(contractAddr), "transfer", transfers.toArray());
         Fee[] fees = new Fee[1];
-        ECPoint publicKey = sdk.getWalletMgr().getPubkey(sender.pubkey);
-        fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
+        fees[0] = new Fee(0, Address.addressFromPubKey(sender.pubkey));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contract.toArray(), sender.pubkey, VmType.Native.value(), fees);
-        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(sendAddr, password)}});
+        sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(sendAddr, password,sdk.keyType,sdk.curveParameterSpec)}});
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         System.out.println(tx.toHexString());
         System.out.println(tx.hash().toHexString());
@@ -106,22 +105,21 @@ public class OntAssetTx {
             throw new SDKException("asset name error");
         }
 
-        AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
+        AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password,sdk.keyType,sdk.curveParameterSpec);
         State[] states = new State[recvAddr.length];
         if (amount.length != recvAddr.length) {
             throw new Exception("");
         }
         for (int i = 0; i < recvAddr.length; i++) {
             amount[i] = amount[i] * precision;
-            states[i] = new State(Address.addressFromPubKey(sdk.getWalletMgr().getPubkey(sender.pubkey)), Address.decodeBase58(recvAddr[i]), new BigInteger(String.valueOf(amount[i])));
+            states[i] = new State(Address.addressFromPubKey(sender.pubkey), Address.decodeBase58(recvAddr[i]), new BigInteger(String.valueOf(amount[i])));
         }
         Transfers transfers = new Transfers(states);
         Contract contract = new Contract((byte) 0, Address.parse(contractAddr), "transfer", transfers.toArray());
         Fee[] fees = new Fee[1];
-        ECPoint publicKey = sdk.getWalletMgr().getPubkey(sender.pubkey);
-        fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
+        fees[0] = new Fee(0, Address.addressFromPubKey(sender.pubkey));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contract.toArray(), sender.pubkey, VmType.Native.value(), fees);
-        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(sendAddr, password)}});
+        sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(sendAddr, password,sdk.keyType,sdk.curveParameterSpec)}});
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -153,28 +151,27 @@ public class OntAssetTx {
         State[] states = new State[sendAddr.length];
         Fee[] fees = new Fee[sendAddr.length];
         for (int i = 0; i < sendAddr.length; i++) {
-            AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr[i], password[i]);
+            AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr[i], password[i],sdk.keyType,sdk.curveParameterSpec);
             amount[i] = amount[i] * precision;
-            states[i] = new State(Address.addressFromPubKey(sdk.getWalletMgr().getPubkey(sender.pubkey)), Address.decodeBase58(recvAddr), new BigInteger(String.valueOf(amount[i])));
-            ECPoint publicKey = sdk.getWalletMgr().getPubkey(sender.pubkey);
-            fees[i] = new Fee(0, Address.addressFromPubKey(publicKey));
+            states[i] = new State(Address.addressFromPubKey(sender.pubkey), Address.decodeBase58(recvAddr), new BigInteger(String.valueOf(amount[i])));
+            fees[i] = new Fee(0, Address.addressFromPubKey(sender.pubkey));
         }
 
         Transfers transfers = new Transfers(states);
         Contract contract = new Contract((byte) 0, Address.parse(contractAddr), "transfer", transfers.toArray());
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contract.toArray(), null, VmType.Native.value(), fees);
-        Acct[][] acct = Arrays.stream(sendAddr).map(p -> {
+        Account[][] acct = Arrays.stream(sendAddr).map(p -> {
             for (int i = 0; i < sendAddr.length; i++) {
                 if (sendAddr[i].equals(p)) {
                     try {
-                        return new Acct[]{sdk.getWalletMgr().getAccount(p, password[i])};
-                    } catch (SDKException e) {
+                        return new Account[]{sdk.getWalletMgr().getAccount(p, password[i],sdk.keyType,sdk.curveParameterSpec)};
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             }
             return null;
-        }).toArray(Acct[][]::new);
+        }).toArray(Account[][]::new);
 
         sdk.signTx(tx, acct);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
@@ -186,8 +183,8 @@ public class OntAssetTx {
 
 
     public String voteTx(String addr, String password, ECPoint... pubKeys) throws Exception {
-        Vote tx = makeVoteTx(sdk.getWalletMgr().getAccount(addr, password).addressU160, pubKeys);
-        sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
+        Vote tx = makeVoteTx(sdk.getWalletMgr().getAccount(addr, password,sdk.keyType,sdk.curveParameterSpec).getAddressU160(), pubKeys);
+        sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(addr, password,sdk.keyType,sdk.curveParameterSpec)}});
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();

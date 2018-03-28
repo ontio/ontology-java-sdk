@@ -40,7 +40,7 @@ public class OntAssetDemo {
             Account info2 = null;
             Account info3 = null;
             if (ontSdk.getWalletMgr().getAccounts().size() < 3) {
-                info1 = ontSdk.getWalletMgr().createAccountFromPrikey("passwordtest", "2ff1de0e26990385c5b7aa580e8516de20c95ac77a794e296be9e6fe005d6ed8");
+                info1 = ontSdk.getWalletMgr().createAccountFromPrikey("passwordtest", "9a31d585431ce0aa0aab1f0a432142e98a92afccb7bcbcaff53f758df82acdb3");
                 info2 = ontSdk.getWalletMgr().createAccount("passwordtest");
                 info3 = ontSdk.getWalletMgr().createAccount("passwordtest");
                 ontSdk.getWalletMgr().writeWallet();
@@ -55,9 +55,9 @@ public class OntAssetDemo {
 //            System.out.println(hh);
 //            System.out.println(Helper.getCodeHash("aa", VmType.NEOVM.value()));
 //            System.exit(0);
-            System.out.println(info1.address + " " + Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info1.address, "passwordtest").publicKey));
-            System.out.println(info2.address + " " + Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info2.address, "passwordtest").publicKey));
-            System.out.println(info3.address + " " + Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info3.address, "passwordtest").publicKey));
+            System.out.println(info1.address + " " + Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info1.address, "passwordtest").serializePublicKey()));
+            System.out.println(info2.address + " " + Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info2.address, "passwordtest").serializePublicKey()));
+            System.out.println(info3.address + " " + Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info3.address, "passwordtest").serializePublicKey()));
 
             String hash = ontSdk.getOntAssetTx().transfer("ont",info1.address,"passwordtest",info2.address,100L);
 //            String hash1 = ontSdk.getOntAssetTx().transferToMany("ont",info1.address,"passwordtest",new String[]{info2.address,info3.address},new long[]{100L,200L});
@@ -71,8 +71,8 @@ public class OntAssetDemo {
 
     public static OntSdk getOntSdk() throws Exception {
 
-        String url = "http://127.0.0.1:20386";
-//        String url = "http://54.222.182.88:20336";
+//        String url = "http://127.0.0.1:20386";
+        String url = "http://40.125.165.118:20336";
         OntSdk wm = OntSdk.getInstance();
         wm.setRpcConnection(url);
         wm.openWalletFile("OntAssetDemo.json");

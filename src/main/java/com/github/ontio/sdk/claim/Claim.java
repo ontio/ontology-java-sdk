@@ -19,12 +19,13 @@
 
 package com.github.ontio.sdk.claim;
 
-import com.github.ontio.account.Acct;
+import com.github.ontio.account.Account;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.DataSignature;
 import com.github.ontio.crypto.Digest;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.github.ontio.crypto.SignatureScheme;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -37,7 +38,7 @@ public class Claim {
     private String id = UUID.randomUUID().toString();
     private Map<String, Object> claim = new HashMap<String, Object>();
 
-    public Claim(String alg, Acct acct, String ctx, Map claimMap, String issuer, String subject, Map metadata) {
+    public Claim(SignatureScheme alg, Account acct, String ctx, Map claimMap, String issuer, String subject, Map metadata) {
         context = ctx;
         claim.put("Context", context);
         if (claimMap != null) {

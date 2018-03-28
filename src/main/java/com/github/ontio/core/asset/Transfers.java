@@ -64,11 +64,4 @@ public class Transfers implements Serializable {
         return json;
     }
 
-
-//    @Override
-//	public void fromJson(JsonReader reader) {
-//		JObject json = reader.json();
-////		code = Helper.hexToBytes(json.get("Code").asString());
-////		parameter = Helper.hexToBytes(json.get("Parameter").asString());
-//	}
 }

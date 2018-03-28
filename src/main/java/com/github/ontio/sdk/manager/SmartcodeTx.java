@@ -19,7 +19,7 @@
 
 package com.github.ontio.sdk.manager;
 
-import com.github.ontio.account.Acct;
+import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.core.transaction.Attribute;
 import com.github.ontio.core.transaction.Transaction;
@@ -147,11 +147,10 @@ public class SmartcodeTx {
             tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, null, vmtype, fees);
         } else {
             Fee[] fees = new Fee[1];
-            AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid, password);
-            ECPoint publicKey = sdk.getWalletMgr().getPubkey(info.pubkey);
-            fees[0] = new Fee(0, Address.addressFromPubKey(publicKey));
+            AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid, password,sdk.keyType,sdk.curveParameterSpec);
+            fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
             tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, vmtype, fees);
-            sdk.signTx(tx, new Acct[][]{{sdk.getWalletMgr().getAccount(ontid, password)}});
+            sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(ontid, password,sdk.keyType,sdk.curveParameterSpec)}});
         }
         boolean b = false;
         if (preExec) {
@@ -289,11 +288,7 @@ public class SmartcodeTx {
      * @throws SDKException
      */
     public InvokeCode makeInvokeCodeTransaction(byte[] paramsHexStr, String pubkey, byte vmtype, Fee[] fees) throws SDKException {
-        ECPoint publicKey = null;
-        if (pubkey != null) {
-            sdk.getWalletMgr().getPubkey(pubkey);
-        }
-        InvokeCode tx = new InvokeCode(publicKey);
+        InvokeCode tx = new InvokeCode();
         tx.attributes = new Attribute[1];
         tx.attributes[0] = new Attribute();
         tx.attributes[0].usage = AttributeUsage.Nonce;

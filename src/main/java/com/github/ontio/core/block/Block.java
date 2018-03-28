@@ -57,7 +57,7 @@ public class Block extends Inventory {
     public long consensusData;
     public Address nextBookkeeper;
     public String[] sigData;
-    public ECPoint[] bookkeepers;
+    public byte[][] bookkeepers;
     public Transaction[] transactions;
     public UInt256 hash;
     private Block _header = null;
@@ -125,10 +125,9 @@ public class Block extends Inventory {
             consensusData = Long.valueOf(reader.readLong());
             nextBookkeeper = reader.readSerializable(Address.class);
             int len = (int) reader.readVarInt();
-            bookkeepers = new ECPoint[len];
+            bookkeepers = new byte[len][];
             for (int i = 0; i < len; i++) {
-                this.bookkeepers[i] = ECC.secp256r1.getCurve().createPoint(
-                        new BigInteger(1, reader.readVarBytes()), new BigInteger(1, reader.readVarBytes()));
+                this.bookkeepers[i] = reader.readVarBytes();
             }
             transactions = new Transaction[0];
         } catch (InstantiationException | IllegalAccessException ex) {
@@ -138,8 +137,11 @@ public class Block extends Inventory {
 
     @Override
     public void serialize(BinaryWriter writer) throws IOException {
-
         serializeUnsigned(writer);
+        writer.writeVarInt(bookkeepers.length);
+        for(int i=0;i<bookkeepers.length;i++) {
+            writer.writeVarBytes(bookkeepers[i]);
+        }
         writer.writeVarInt(sigData.length);
         for (int i = 0; i < sigData.length; i++) {
             writer.writeVarBytes(Helper.hexToBytes(sigData[i]));
@@ -160,12 +162,6 @@ public class Block extends Inventory {
         writer.writeInt(height);
         writer.writeLong(consensusData);
         writer.writeSerializable(nextBookkeeper);
-        writer.writeVarInt(bookkeepers.length);
-        for(int i=0;i<bookkeepers.length;i++) {
-            writer.writeVarBytes(Helper.removePrevZero(bookkeepers[i].getXCoord().toBigInteger().toByteArray()));
-            writer.writeVarBytes(Helper.removePrevZero(bookkeepers[i].getYCoord().toBigInteger().toByteArray()));
-        }
-
     }
 
     @Override
@@ -185,27 +181,6 @@ public class Block extends Inventory {
     }
 
 
-    public static Block fromTrimmedData(byte[] data, int index, Function<UInt256, Transaction> txSelector) throws IOException {
-        Block block = new Block();
-        try (ByteArrayInputStream ms = new ByteArrayInputStream(data, index, data.length - index)) {
-            try (BinaryReader reader = new BinaryReader(ms)) {
-                block.deserializeUnsigned(reader);
-                reader.readByte();
-                if (txSelector == null) {
-                    block.transactions = new Transaction[0];
-                } else {
-                    block.transactions = new Transaction[(int) reader.readVarInt(0x10000000)];
-                    for (int i = 0; i < block.transactions.length; i++) {
-                        block.transactions[i] = txSelector.apply(reader.readSerializable(UInt256.class));
-                    }
-                }
-            } catch (InstantiationException | IllegalAccessException ex) {
-                throw new IOException(ex);
-            }
-        }
-        return block;
-    }
-
     @Override
     public Address[] getAddressU160ForVerifying() {
         return null;
@@ -224,9 +199,10 @@ public class Block extends Inventory {
         head.put("Timestamp", timestamp);
         head.put("Height", height);
         head.put("ConsensusData", consensusData & Long.MAX_VALUE);
-        head.put("NextBookkeeper", nextBookkeeper);
+        head.put("NextBookkeeper", nextBookkeeper.toBase58());
         head.put("Hash", hash().toString());
         head.put("SigData", Arrays.stream(sigData).toArray(Object[]::new));
+        head.put("Bookkeepers", Arrays.stream(bookkeepers).map(p->Helper.toHexString(p)).toArray(Object[]::new));
 
         json.put("Header", head);
         json.put("Transactions", Arrays.stream(transactions).map(p -> {
@@ -257,6 +233,26 @@ public class Block extends Inventory {
         }
     }
 
+    public static Block fromTrimmedData(byte[] data, int index, Function<UInt256, Transaction> txSelector) throws IOException {
+        Block block = new Block();
+        try (ByteArrayInputStream ms = new ByteArrayInputStream(data, index, data.length - index)) {
+            try (BinaryReader reader = new BinaryReader(ms)) {
+                block.deserializeUnsigned(reader);
+                reader.readByte();
+                if (txSelector == null) {
+                    block.transactions = new Transaction[0];
+                } else {
+                    block.transactions = new Transaction[(int) reader.readVarInt(0x10000000)];
+                    for (int i = 0; i < block.transactions.length; i++) {
+                        block.transactions[i] = txSelector.apply(reader.readSerializable(UInt256.class));
+                    }
+                }
+            } catch (InstantiationException | IllegalAccessException ex) {
+                throw new IOException(ex);
+            }
+        }
+        return block;
+    }
     @Override
     public boolean verify() {
         return true;

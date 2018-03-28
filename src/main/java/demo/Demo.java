@@ -28,7 +28,8 @@ import com.github.ontio.sdk.wallet.Identity;
 import java.util.List;
 import java.util.Map;
 
-
+//00000000faa4e381315e62c404cf5d1f0a3faf8b68d694a69daa8b5d56123a2e33d70c78b4c5389e3b2373e528654d984dc54942ad7bc3ec922fe782d2b77fe9ed3114d8c5234e828d794a6764efb770a3e4dda792da132636563338982daa6768c50cf46c7cbb5a0f0000009b6193044674538402b516cd1c357114686d697660079e1114451748012312020272c2826f07f5e4f310e2f708689548f0d6d0e007603bdc7e6a2512c673db54df014101ba5e98cef3c4e3f90b479aad001f2039be35e26948c39fccd129622b7679ae176bcc7a985f57449ccbcdc053b76c8f25929a49082fa52f5809805e57617f0b1e01000000000000000000cc8322c00d1220150000000000000000000001012312020272c2826f07f5e4f310e2f708689548f0d6d0e007603bdc7e6a2512c673db54df0101410133d0d8e531062dbb3dd1fabda127baefca0137ed46c23de180106d4f06b3bbde07c82c180c2ed1b66c7b50edeea38ae775964632a12cfebe81f28313bfbe9cdf
+//00000000faa4e381315e62c404cf5d1f0a3faf8b68d694a69daa8b5d56123a2e33d70c78b4c5389e3b2373e528654d984dc54942ad7bc3ec922fe782d2b77fe9ed3114d8c5234e828d794a6764efb770a3e4dda792da132636563338982daa6768c50cf46c7cbb5a0f0000009b6193044674538402b516cd1c357114686d697660079e1114451748012312020272c2826f07f5e4f310e2f708689548f0d6d0e007603bdc7e6a2512c673db54df014101ba5e98cef3c4e3f90b479aad001f2039be35e26948c39fccd129622b7679ae176bcc7a985f57449ccbcdc053b76c8f25929a49082fa52f5809805e57617f0b1e01000000000000000000cc8322c00d1220150000000000000000000001012312020272c2826f07f5e4f310e2f708689548f0d6d0e007603bdc7e6a2512c673db54df0101410133d0d8e531062dbb3dd1fabda127baefca0137ed46c23de180106d4f06b3bbde07c82c180c2ed1b66c7b50edeea38ae775964632a12cfebe81f28313bfbe9cdf
 /**
  *
  */
@@ -38,8 +39,8 @@ public class Demo {
             OntSdk ontSdk = getOntSdk();
 //            System.out.println(ontSdk.getConnectMgr().getBalance("TA5NzM9iE3VT9X8SGk5h3dii6GPFQh2vme"));
 //            System.out.println(Helper.toHexString(ontSdk.getConnectMgr().getBlock(1).transactions[0].sigs[0].sigData[0]));
-//            System.out.println(ontSdk.getConnectMgr().getBlock(1584).json());
-            System.out.println(ontSdk.getConnectMgr().getGenerateBlockTime());
+            System.out.println(ontSdk.getConnectMgr().getBlock(15).json());
+//            System.out.println(ontSdk.getConnectMgr().getGenerateBlockTime());
 //            System.out.println(ontSdk.getConnectMgr().getBlockHeight());
 //            System.out.println(ontSdk.getConnectMgr().getBlockJson(1));
 //            System.out.println(ontSdk.getConnectMgr().getBlockJson("ee2d842fe7cdf48bc39b34d616a9e8f7f046970ed0a988dde3fe05c9126cce74"));

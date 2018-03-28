@@ -44,7 +44,7 @@ public class OntAssetTx {
     public OntSdk sdk;
     private final String ontContract = "ff00000000000000000000000000000000000001";
     private final String ongContract = "ff00000000000000000000000000000000000002";
-
+    private int precision = 1;
     public OntAssetTx(OntSdk sdk) {
         this.sdk = sdk;
     }
@@ -68,7 +68,7 @@ public class OntAssetTx {
             throw new SDKException("asset name error");
         }
 
-        amount = amount * 100000000;
+        amount = amount * precision;
         AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
         State state = new State(Address.addressFromPubKey(sdk.getWalletMgr().getPubkey(sender.pubkey)), Address.decodeBase58(recvAddr), new BigInteger(String.valueOf(amount)));
         Transfers transfers = new Transfers(new State[]{state});
@@ -112,7 +112,7 @@ public class OntAssetTx {
             throw new Exception("");
         }
         for (int i = 0; i < recvAddr.length; i++) {
-            amount[i] = amount[i] * 100000000;
+            amount[i] = amount[i] * precision;
             states[i] = new State(Address.addressFromPubKey(sdk.getWalletMgr().getPubkey(sender.pubkey)), Address.decodeBase58(recvAddr[i]), new BigInteger(String.valueOf(amount[i])));
         }
         Transfers transfers = new Transfers(states);
@@ -154,7 +154,7 @@ public class OntAssetTx {
         Fee[] fees = new Fee[sendAddr.length];
         for (int i = 0; i < sendAddr.length; i++) {
             AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr[i], password[i]);
-            amount[i] = amount[i] * 100000000;
+            amount[i] = amount[i] * precision;
             states[i] = new State(Address.addressFromPubKey(sdk.getWalletMgr().getPubkey(sender.pubkey)), Address.decodeBase58(recvAddr), new BigInteger(String.valueOf(amount[i])));
             ECPoint publicKey = sdk.getWalletMgr().getPubkey(sender.pubkey);
             fees[i] = new Fee(0, Address.addressFromPubKey(publicKey));

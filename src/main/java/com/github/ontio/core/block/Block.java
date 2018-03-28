@@ -138,6 +138,16 @@ public class Block extends Inventory {
 
     @Override
     public void serialize(BinaryWriter writer) throws IOException {
+
+        serializeUnsigned(writer);
+        writer.writeVarInt(sigData.length);
+        for (int i = 0; i < sigData.length; i++) {
+            writer.writeVarBytes(Helper.hexToBytes(sigData[i]));
+        }
+        writer.writeInt(transactions.length);
+        for(int i=0;i<transactions.length;i++) {
+            writer.writeSerializable(transactions[i]);
+        }
     }
 
     @Override
@@ -150,6 +160,12 @@ public class Block extends Inventory {
         writer.writeInt(height);
         writer.writeLong(consensusData);
         writer.writeSerializable(nextBookkeeper);
+        writer.writeVarInt(bookkeepers.length);
+        for(int i=0;i<bookkeepers.length;i++) {
+            writer.writeVarBytes(Helper.removePrevZero(bookkeepers[i].getXCoord().toBigInteger().toByteArray()));
+            writer.writeVarBytes(Helper.removePrevZero(bookkeepers[i].getYCoord().toBigInteger().toByteArray()));
+        }
+
     }
 
     @Override

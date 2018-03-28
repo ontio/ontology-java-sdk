@@ -51,7 +51,6 @@ public class Sig implements Serializable {
         sigData = new byte[len][];
         for(int i=0;i<sigData.length;i++) {
             sigData[i] = reader.readVarBytes();
-            System.out.println(Helper.toHexString(sigData[i]));
         }
     }
 

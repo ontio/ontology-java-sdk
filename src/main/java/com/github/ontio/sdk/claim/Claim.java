@@ -38,7 +38,7 @@ public class Claim {
     private String id = UUID.randomUUID().toString();
     private Map<String, Object> claim = new HashMap<String, Object>();
 
-    public Claim(SignatureScheme alg, Account acct, String ctx, Map claimMap, String issuer, String subject, Map metadata) {
+    public Claim(SignatureScheme scheme, Account acct, String ctx, Map claimMap, String issuer, String subject, Map metadata) {
         context = ctx;
         claim.put("Context", context);
         if (claimMap != null) {
@@ -47,7 +47,7 @@ public class Claim {
         claim.put("Metadata", new MetaData(issuer, subject, metadata).getJson());
         id = Helper.toHexString(Digest.sha256(JSON.toJSONString(claim).getBytes()));
         claim.put("Id", id);
-        DataSignature sign = new DataSignature(alg, acct, getClaim());
+        DataSignature sign = new DataSignature(scheme, acct, getClaim());
         claim.put("Signature", new Sign("", "", sign.signature()).getJson());
 
     }

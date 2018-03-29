@@ -20,6 +20,7 @@
 package com.github.ontio;
 
 import com.github.ontio.account.Account;
+import com.github.ontio.common.Common;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.core.asset.Sig;
 import com.github.ontio.crypto.KeyType;
@@ -30,20 +31,24 @@ import com.github.ontio.sdk.manager.WalletMgr;
 import com.github.ontio.sdk.manager.OntAssetTx;
 import com.github.ontio.sdk.manager.OntIdTx;
 import com.github.ontio.sdk.manager.SmartcodeTx;
-import org.bouncycastle.math.ec.ECPoint;
+import com.github.ontio.sdk.websocket.Websocket;
 
 /**
  * Ont Sdk
  */
 public class OntSdk {
     private WalletMgr walletMgr;
-    private ConnectMgr connManager;
+    private ConnectMgr connRpc;
+    private ConnectMgr connRestful;
+    private Websocket connWebSocket = null;
+    private ConnectMgr connDefault;
+
     private OntIdTx ontIdTx = null;
     private SmartcodeTx smartcodeTx = null;
     private OntAssetTx ontAssetTx = null;
     private static OntSdk instance = null;
     public KeyType keyType = KeyType.ECDSA;
-    public Object[] curveParameterSpec = new Object[]{"P-256"};
+    public Object[] curveParaSpec = new Object[]{"P-256"};
     public SignatureScheme signatureScheme = SignatureScheme.SHA256WITHECDSA;
 
     public static synchronized OntSdk getInstance(){
@@ -53,6 +58,32 @@ public class OntSdk {
         return instance;
     }
     private OntSdk(){
+    }
+
+    public ConnectMgr getRpc() {
+        return connRpc;
+    }
+
+    public ConnectMgr getRestful() {
+        return connRestful;
+    }
+    public ConnectMgr getConnectMgr(){
+        if(connDefault != null){
+            return connDefault;
+        }
+        if(connRpc != null){
+            return  connRpc;
+        }
+        return connRestful;
+    }
+    public void setDefaultConnect(ConnectMgr conn){
+        connDefault = conn;
+    }
+    public Websocket getWebSocket() throws Exception{
+        if(connWebSocket == null){
+            throw new SDKException("websocket not init");
+        }
+        return connWebSocket;
     }
 
     /**
@@ -98,14 +129,6 @@ public class OntSdk {
     }
 
     /**
-     * get Connect Mgr
-     * @return
-     */
-    public ConnectMgr getConnectMgr() {
-        return connManager;
-    }
-
-    /**
      *
      * @param sessionId
      */
@@ -131,34 +154,34 @@ public class OntSdk {
         walletMgr.setSignatureScheme(scheme);
     }
 
-    /**
-     *
-     * @param url
-     */
-    public void setRpcConnection(String url) {
-        this.connManager = new ConnectMgr(url, true);
+
+    public void setRpc(String url) {
+        this.connRpc = new ConnectMgr(url, true);
     }
 
-    /**
-     *
-     * @param url
-     */
-    public void setRestfulConnection(String url) {
-        this.connManager = new ConnectMgr(url);
+    public void setRestful(String url) {
+        this.connRestful = new ConnectMgr(url);
     }
 
+    public void setWesocket(Object lock,String url) {
+        connWebSocket = new Websocket(lock,url,getInstance());
+    }
     /**
      *
      * @param path
      */
     public void openWalletFile(String path) {
 
-        this.walletMgr = new WalletMgr(path,keyType,curveParameterSpec);
+        this.walletMgr = new WalletMgr(path,keyType, curveParaSpec);
         setSignatureScheme(signatureScheme);
     }
 
 
-
+    public Transaction signTx(Transaction tx, String address, String password) throws Exception{
+        address = address.replace(Common.didont, "");
+        signTx(tx, new Account[][]{{getWalletMgr().getAccount(address, password,keyType, curveParaSpec)}});
+        return tx;
+    }
     /**
      * sign tx
      * @param tx

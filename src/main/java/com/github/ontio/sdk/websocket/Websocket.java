@@ -20,64 +20,82 @@
 package com.github.ontio.sdk.websocket;
 
 import com.alibaba.fastjson.JSON;
+import com.github.ontio.OntSdk;
 import okhttp3.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 /**
  *
  */
-public class WsProcess {
+public class Websocket {
 
-    private OkHttpClient mOkHttpClient;
+    private OkHttpClient mClient;
     private Request request;
     private WebSocket mWebSocket = null;
     private Object lock;
     private boolean logFlag;
-    private static boolean broadcastFlag;
+    private boolean broadcastFlag;
+    private OntSdk sdk = null;
     public static String wsUrl = "";
+    private Websocket wsProcess = null;
 
-    public WsProcess(Object lock,String url,boolean logFlag){
-        wsUrl  = url;
+    public Websocket(Object lock, String url, OntSdk sdk) {
+        wsUrl = url;
         this.lock = lock;
-        this.logFlag = logFlag;
+        this.sdk = sdk;
+        wsProcess = this;
     }
-    public static void startWebsocketThread(final Object lock,final String url){
-        startWebsocketThread(lock,url,false);
-    }
-    public static void setBroadcast(final boolean b){
+
+    public void setBroadcast(boolean b) {
         broadcastFlag = b;
     }
-    public static void startWebsocketThread(final Object lock,final String url,final boolean eventLog) {
+
+    public void setLog(boolean b) {
+        logFlag = b;
+    }
+
+    public void startWebsocketThread() {
 
         Thread thread = new Thread(
                 new Runnable() {
                     @Override
                     public void run() {
-                        new WsProcess(lock,url,eventLog).wsStart();
+                        wsProcess.wsStart();
                     }
                 });
         thread.start();
     }
-    public  void wsStart() {
+
+    public void sendRawTransaction(String data) {
+        Map map = new HashMap<>();
+        map.put("Action", "sendrawtransaction");
+        map.put("Version", "1.0.0");
+        map.put("Data", data);
+        mWebSocket.send(JSON.toJSONString(map));
+    }
+
+    public void wsStart() {
         //request = new Request.Builder().url(WS_URL).build();
         String httpUrl = null;
-        if(wsUrl.contains("wss")){
+        if (wsUrl.contains("wss")) {
             httpUrl = "https://" + wsUrl.split("://")[1];
-        }else {
+        } else {
             httpUrl = "http://" + wsUrl.split("://")[1];
         }
         request = new Request.Builder().url(wsUrl).addHeader("Origin", httpUrl).build();
-        mOkHttpClient = new OkHttpClient.Builder().build();
-        mWebSocket = mOkHttpClient.newWebSocket(request, new WebSocketListener() {
+        mClient = new OkHttpClient.Builder().build();
+        mWebSocket = mClient.newWebSocket(request, new WebSocketListener() {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
                 System.out.println("opened websocket connection");
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        if(broadcastFlag) {
+                        if (broadcastFlag) {
                             mWebSocket.send("{\"Action\":\"heartbeat\",\"Broadcast\":true}");
                             return;
                         }
@@ -88,18 +106,19 @@ public class WsProcess {
 
             @Override
             public void onMessage(WebSocket webSocket, String s) {
-                if(logFlag) {
+                if (logFlag) {
                     System.out.println("websoket onMessage:" + s);
                 }
                 Result result = JSON.parseObject(s, Result.class);
                 try {
                     //TODO
                     synchronized (lock) {
-                        if(result.Action.equals("heartbeat")) {
-                            if(MsgQueue.addHeartBeat(result)){
+                        if (result.Action.equals("heartbeat")) {
+                            if (MsgQueue.addHeartBeat(result)) {
                                 lock.notify();
+                                MsgQueue.setChangeFlag(false);
                             }
-                        }else {
+                        } else {
                             //System.out.println("onMessage:"+s);
                             MsgQueue.addResult(result);
                             lock.notify();
@@ -118,12 +137,12 @@ public class WsProcess {
 
             @Override
             public void onClosed(WebSocket webSocket, int code, String reason) {
-                System.out.println("close:"+reason);
+                System.out.println("close:" + reason);
             }
 
             @Override
             public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-                System.out.println("fail:"+response);
+                System.out.println("onFailure:" + response);
                 wsStart();
             }
         });

@@ -17,9 +17,11 @@ public class AccountDemo {
 
         try {
             OntSdk ontSdk = getOntSdk();
-            AccountInfo info = ontSdk.getWalletMgr().createAccountFromPriKey("passwordtest","e467a2a9c9f56b012c71cf2270df42843a9d7ff181934068b4a62bcdd570e8be");
+            AccountInfo info = ontSdk.getWalletMgr().createAccountFromPriKey("passwordtest","e467a2a9c9f56b012c71cf2270df42843a9d7ff181934068b4a62bcdd570e8beaa");
             System.out.println(info.addressBase58);
-
+            Identity accountInfo = ontSdk.getWalletMgr().importIdentity("6PYSGbmZWnP9HZ9UvF7ScZaPRxXWbPeomMN6umP1ur2QnqhVzrsrCmK4Sf", "passwordtest");
+            // System.out.println(accountInfo);
+            //  System.exit(0);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -27,10 +29,18 @@ public class AccountDemo {
 
     public static OntSdk getOntSdk() throws Exception {
 
-        String url = "http://127.0.0.1:20384";
-//        String url = "http://101.132.193.149:20334";
+        String ip = "http://127.0.0.1";
+//        String ip = "http://54.222.182.88;
+//        String ip = "http://101.132.193.149";
+        String restUrl = ip + ":" + "20384";
+        String rpcUrl = ip + ":" + "20386";
+        String wsUrl = ip + ":" + "20385";
+
         OntSdk wm = OntSdk.getInstance();
-        wm.setRestfulConnection(url);
+        wm.setRpc(rpcUrl);
+        wm.setRestful(restUrl);
+        wm.setDefaultConnect(wm.getRestful());
+
         wm.openWalletFile("AccountDemo.json");
 
         return wm;

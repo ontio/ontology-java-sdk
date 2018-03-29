@@ -19,17 +19,18 @@
 
 package demo;
 
-import com.github.ontio.common.Helper;
 import com.github.ontio.OntSdk;
+import com.github.ontio.common.Helper;
+import com.github.ontio.core.transaction.Transaction;
+import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Identity;
 import com.github.ontio.sdk.wallet.Wallet;
 import com.github.ontio.sdk.websocket.MsgQueue;
 import com.github.ontio.sdk.websocket.Result;
-import com.github.ontio.sdk.websocket.WsProcess;
 import com.alibaba.fastjson.JSON;
+import com.sun.xml.internal.ws.server.sei.MessageFiller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -38,18 +39,15 @@ import java.util.Map;
  */
 
 public class WebsocketDemo {
+    public static Object lock = new Object();
     public static void main(String[] args) {
         try {
             OntSdk ontSdk = getOntSdk();
 
 
-            String wsUrl = "ws://127.0.0.1:20385";
-//            String wsUrl = "ws://54.222.182.88:22335";
-//            String wsUrl = "ws://101.132.193.149:21335";
 
-            Object lock = new Object();
-            WsProcess.startWebsocketThread(lock, wsUrl);
-            WsProcess.setBroadcast(true);
+            ontSdk.getWebSocket().startWebsocketThread();
+//            ontSdk.getWsProcess().setBroadcast(true);
 
             Thread thread = new Thread(
                     new Runnable() {
@@ -67,23 +65,14 @@ public class WebsocketDemo {
             //System.out.println("================register=================");
             Identity ident = null;
             if (ontSdk.getWalletMgr().getIdentitys().size() == 0) {
-                ident = ontSdk.getOntIdTx().register("passwordtest");
+                ident = ontSdk.getOntIdTx().sendRegister("passwordtest");
             } else {
                 ident = ontSdk.getWalletMgr().getIdentitys().get(0);
             }
 
             String ontid = ident.ontid;
 
-            //System.exit(0);
-            //waitResult(ontSdk,lock);
-            //Thread.sleep(6000);
-//            System.out.println("===============updateAttribute=================="+ontid);
-//            String ddo = ontSdk.getOntIdTx().getDDO(ontid);
-//            System.out.println("Ddo:"+ddo);
-//            System.exit(0);
-
             String attri = "attri";
-            //String ontid = "did:ont:APoFQzsESEZZ2LzCtZZ4GyAdp8zLwBZQcA";
             for (int i = 0; i < 1000; i++) {
                 Map recordMap = new HashMap();
                 recordMap.put("key0", "world0");
@@ -92,9 +81,36 @@ public class WebsocketDemo {
                 recordMap.put("key2", false);
 
                 //System.out.println(ontid);
-                String hash = ontSdk.getOntIdTx().updateAttribute(ontid, "passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
-                System.out.println("hash:" + hash);
+                //String hash = ontSdk.getOntIdTx().updateAttribute(ontid, "passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
+                //System.out.println("hash:" + hash);
 
+
+                String password = "passwordtest";
+
+                if(true) {
+                    Account info1 = null;
+                    Account info2 = null;
+                    Account info3 = null;
+                    if (ontSdk.getWalletMgr().getAccounts().size() < 3) {
+                        info1 = ontSdk.getWalletMgr().createAccountFromPrikey("passwordtest", "9a31d585431ce0aa0aab1f0a432142e98a92afccb7bcbcaff53f758df82acdb3");
+                        info2 = ontSdk.getWalletMgr().createAccount("passwordtest");
+                        info3 = ontSdk.getWalletMgr().createAccount("passwordtest");
+                        ontSdk.getWalletMgr().writeWallet();
+                    }
+                    info1 = ontSdk.getWalletMgr().getAccounts().get(0);
+                    info2 = ontSdk.getWalletMgr().getAccounts().get(1);
+                    Transaction tx = ontSdk.getOntAssetTx().makeTransfer("ont", info1.address, "passwordtest", info2.address, 100L);
+                    ontSdk.signTx(tx, info1.address, password);
+                    System.out.println(tx.toHexString());
+                    ontSdk.getWebSocket().sendRawTransaction(tx.toHexString());
+                }
+
+                if(false) {
+                    ontSdk.setCodeAddress("80e7d2fc22c24c466f44c7688569cc6e6d6c6f92");
+                    Transaction tx = ontSdk.getOntIdTx().makeUpdateAttribute(ontid, "passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
+                    ontSdk.signTx(tx, ontid, password);
+                    ontSdk.getWebSocket().sendRawTransaction(tx.toHexString());
+                }
                 //waitResult(ontSdk, lock);
                 Thread.sleep(5000);
             }
@@ -118,19 +134,11 @@ public class WebsocketDemo {
                     }
 
                     for (String e : MsgQueue.getResultSet()) {
-                        System.out.println("####" + e);
+                        System.out.println("RECV: " + e);
                         Result rt = JSON.parseObject(e, Result.class);
                         //TODO
                         MsgQueue.removeResult(e);
-                        if (rt.Action.equals("Notify")) {
-                            flag = true;
-                            List<Map<String, Object>> list = (List<Map<String, Object>>) ((Map) rt.Result).get("State");
-                            for (Map m : (List<Map<String, Object>>) (list.get(0).get("Value"))) {
-                                String value = (String) m.get("Value");
-                                String val = new String(Helper.hexToBytes(value));
-                                System.out.print(val + " ");
-                            }
-                            System.out.println();
+                        if (rt.Action.equals("InvokeTransaction")) {
                         }
                     }
                 }
@@ -142,15 +150,20 @@ public class WebsocketDemo {
     }
 
     public static OntSdk getOntSdk() throws Exception {
-//        String url = "http://54.222.182.88:22334";
-        String url = "http://127.0.0.1:20384";
-//        String url = "http://101.132.193.149:21334";
+        String ip = "http://127.0.0.1";
+//        String ip = "http://54.222.182.88;
+//        String ip = "http://101.132.193.149";
+        String restUrl = ip + ":" + "20384";
+        String rpcUrl = ip + ":" + "20386";
+        String wsUrl = ip + ":" + "20385";
+
         OntSdk wm = OntSdk.getInstance();
-        wm.setRestfulConnection(url);
-        wm.openWalletFile("WebsocketDemo.json");
+        wm.setRpc(rpcUrl);
+        wm.setRestful(restUrl);
+        wm.setDefaultConnect(wm.getRestful());
+        wm.setWesocket(lock, wsUrl);
 
-        wm.setCodeAddress("89ff0f39193ddaeeeab9de4873b549f71bbe809c");
-
+        wm.openWalletFile("OntAssetDemo.json");
         return wm;
     }
 }

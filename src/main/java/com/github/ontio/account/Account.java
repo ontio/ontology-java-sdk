@@ -310,7 +310,6 @@ public class Account {
             throw new NullPointerException();
         }
         byte[] decoded = Base58.decodeChecked(encryptedPriKey);
-        System.out.println(decoded.length);
         if (decoded.length != 43 || decoded[0] != (byte) 0x01 || decoded[1] != (byte) 0x42 || decoded[2] != (byte) 0xe0) {
             throw new SDKException("decoded 3 bytes error");
         }
@@ -352,7 +351,7 @@ public class Account {
     private static byte[] XOR(byte[] x, byte[] y) throws Exception
     {
         if (x.length != y.length) {
-            throw new Exception();
+            throw new SDKException("Prikey length error");
         }
         byte[] ret = new byte[x.length];
         for (int i=0; i < x.length; i++) {

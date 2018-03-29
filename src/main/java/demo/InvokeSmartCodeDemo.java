@@ -42,7 +42,7 @@ public class InvokeSmartCodeDemo {
     public static void main(String[] args) {
         try {
             OntSdk ontSdk = getOntSdk();
-            System.out.println(ontSdk.getWalletMgr().getWallet());
+            //System.out.println(ontSdk.getWalletMgr().getWallet());
 
             InputStream is = new FileInputStream("C:\\ZX\\IdContract.abi.json");
             byte[] bys = new byte[is.available()];
@@ -50,44 +50,35 @@ public class InvokeSmartCodeDemo {
             is.close();
             String abi = new String(bys);
 
-            //System.out.println(abi);
             AbiInfo abiinfo = JSON.parseObject(abi, AbiInfo.class);
 //            System.out.println("codeHash:"+abiinfo.getHash());
             System.out.println("Entrypoint:" + abiinfo.getEntrypoint());
             System.out.println("Functions:" + abiinfo.getFunctions());
-//            System.out.println("Events"+abiinfo.getEvents());
 
 
             if (ontSdk.getWalletMgr().getIdentitys().size() == 0) {
                 Map map = new HashMap<>();
                 map.put("test", "value00");
-                Identity did = ontSdk.getOntIdTx().register("passwordtest");
-                System.out.println(did.ontid);
+                Identity did = ontSdk.getOntIdTx().sendRegister("passwordtest");
             }
             Identity did = ontSdk.getWalletMgr().getIdentitys().get(0);
             System.out.println(did.ontid);
             System.out.println("did hex:" + Helper.toHexString(did.ontid.getBytes()) + "  " + Helper.toHexString(did.ontid.getBytes()).length());
+            System.out.println();
 
-
-            String ddo = ontSdk.getOntIdTx().getDDO(did.ontid);
+            String ddo = ontSdk.getOntIdTx().sendGetDDO(did.ontid);
             System.out.println("Ddo:" + ddo);
             System.exit(0);
 
             AccountInfo info = ontSdk.getWalletMgr().getAccountInfo(did.ontid, "passwordtest");
             AbiFunction func = abiinfo.getFunction("AddAttribute");
             System.out.println(func.getName() + ":  " + func.getParameters());
-            func.setParamsValue(did.ontid.getBytes(), "key3".getBytes(), "bytes".getBytes(), "values04".getBytes(), Helper.hexToBytes(info.pubkey));
+            String value = "{\"Context\":\"claim:context\",\"Content\":{\"Issuer\":\"did:ont:TA8WyMDTP7BXFK6pVZ55Wn9gvAjCvsMfTm\",\"Subject\":\"did:ont:TA7idxkVHWXQgk2fd4dPZRyp7V2G7qTBzd\"},\"Signature\":{\"Format\":\"pgp\",\"Value\":\"AXLttwbJT8PV3L8P721PEDSFrMZ+wf4tYEcQMfsBiDH9Wi3DUvUnLdeBkarH2ZcvqB3YICFBcJy8aA46VLjFkFA=\",\"Algorithm\":\"ECDSAwithSHA256\"},\"Metadata\":{\"Issuer\":\"did:ont:TA8WyMDTP7BXFK6pVZ55Wn9gvAjCvsMfTm\",\"CreateTime\":\"2018-03-29T16:45:09Z\",\"Subject\":\"did:ont:TA7idxkVHWXQgk2fd4dPZRyp7V2G7qTBzd\"},\"Id\":\"3903a2f8158d71b976936ab60656fc0b615be40715d9235e4992c15e530b8ed3\"}";
+            func.setParamsValue(did.ontid.getBytes(), "key".getBytes(), "bytes".getBytes(), value.getBytes(), Helper.hexToBytes(info.pubkey));
 
-            String hash = ontSdk.getSmartcodeTx().invokeSmartCodeWithSign(did.ontid, "passwordtest", func, (byte) 0x80);
+            String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", func, (byte) 0x80);
 
             System.out.println("invokeTransaction hash:" + hash);
-
-//            Transaction tx = ontSdk.getConnectMgr().getTransaction(hash);
-//            Thread.sleep(6000);
-//            String ddo = ontSdk.getOntIdTx().getDDO(did.ontid,"passwordtest",did.ontid);
-//            System.out.println("Ddo:"+ddo);
-            //System.out.println(tx);
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -96,13 +87,20 @@ public class InvokeSmartCodeDemo {
 
 
     public static OntSdk getOntSdk() throws Exception {
-//        String url = "http://54.222.182.88:20336";
-//        String url = "http://127.0.0.1:20384";
-        String url = "http://40.125.165.118:20334";
-        OntSdk wm = OntSdk.getInstance();
-        wm.setRestfulConnection(url);
-        wm.openWalletFile("InvokeSmartCodeDemo.json");
+        String ip = "http://127.0.0.1";
+//        String ip = "http://54.222.182.88;
+//        String ip = "http://101.132.193.149";
+//        String ip = " http://139.219.108.204";
+        String restUrl = ip + ":" + "20384";
+        String rpcUrl = ip + ":" + "20386";
+        String wsUrl = ip + ":" + "20385";
 
+        OntSdk wm = OntSdk.getInstance();
+        wm.setRpc(rpcUrl);
+        wm.setRestful(restUrl);
+        wm.setDefaultConnect(wm.getRestful());
+
+        wm.openWalletFile("InvokeSmartCodeDemo.json");
         wm.setCodeAddress("80e7d2fc22c24c466f44c7688569cc6e6d6c6f92");
         return wm;
     }

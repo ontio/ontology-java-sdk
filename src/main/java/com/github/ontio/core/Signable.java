@@ -54,7 +54,7 @@ public interface Signable extends Serializable {
 		return account.generateSignature(Digest.sha256(Digest.sha256(getHashData())), scheme,null);
 	}
 	default boolean verifySignature(Account account, byte[] data, byte[] signature) throws Exception {
-		return account.verifySignature(data, signature);
+		return account.verifySignature(Digest.sha256(Digest.sha256(data)), signature);
 	}
 
 }

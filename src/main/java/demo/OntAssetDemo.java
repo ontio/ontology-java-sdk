@@ -59,7 +59,8 @@ public class OntAssetDemo {
             System.out.println(info2.address + " " + Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info2.address, "passwordtest").serializePublicKey()));
             System.out.println(info3.address + " " + Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info3.address, "passwordtest").serializePublicKey()));
 
-            String hash = ontSdk.getOntAssetTx().sendTransfer("ont",info1.address,"111111",info2.address,100L);
+            String hash = ontSdk.getOntAssetTx().sendOngTransferFrom(info1.address,"passwordtest",info2.address,100);
+//            String hash = ontSdk.getOntAssetTx().sendTransfer("ont",info2.address,"passwordtest",info1.address,100L);
 //            String hash1 = ontSdk.getOntAssetTx().transferToMany("ont",info1.address,"passwordtest",new String[]{info2.address,info3.address},new long[]{100L,200L});
 //            String hash2 = ontSdk.getOntAssetTx().transferFromMany("ont", new String[]{info1.address, info2.address}, new String[]{"passwordtest", "passwordtest"}, info3.address, new long[]{1L, 2L});
             System.out.println(hash);

@@ -17,7 +17,7 @@ public class AccountDemo {
 
         try {
             OntSdk ontSdk = getOntSdk();
-            AccountInfo info = ontSdk.getWalletMgr().createAccountFromPriKey("passwordtest","e467a2a9c9f56b012c71cf2270df42843a9d7ff181934068b4a62bcdd570e8beaa");
+            AccountInfo info = ontSdk.getWalletMgr().createAccountFromPriKey("passwordtest","e467a2a9c9f56b012c71cf2270df42843a9d7ff181934068b4a62bcdd570e8be");
             System.out.println(info.addressBase58);
             Identity accountInfo = ontSdk.getWalletMgr().importIdentity("6PYSGbmZWnP9HZ9UvF7ScZaPRxXWbPeomMN6umP1ur2QnqhVzrsrCmK4Sf", "passwordtest");
             // System.out.println(accountInfo);

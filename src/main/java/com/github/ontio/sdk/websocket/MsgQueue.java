@@ -42,6 +42,7 @@ public class MsgQueue {
     }
     public static boolean addHeartBeat(Result obj) {
         if (heartBeat.equals(JSON.toJSONString(obj))) {
+            changeHeartBeat = false;
             return false;
         }
         changeHeartBeat = true;

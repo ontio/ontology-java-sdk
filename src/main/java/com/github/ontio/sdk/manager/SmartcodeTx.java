@@ -35,7 +35,6 @@ import com.github.ontio.sdk.abi.AbiFunction;
 import com.github.ontio.sdk.abi.Parameter;
 import com.github.ontio.sdk.info.AccountInfo;
 import com.alibaba.fastjson.JSON;
-import org.bouncycastle.math.ec.ECPoint;
 
 import java.lang.reflect.Array;
 import java.math.BigInteger;
@@ -47,7 +46,7 @@ import java.util.UUID;
  *
  */
 public class SmartcodeTx {
-    public OntSdk sdk;
+    private OntSdk sdk;
     private String codeAddress = null;
     private String wsSessionId = "";
 
@@ -80,11 +79,11 @@ public class SmartcodeTx {
      * @return
      * @throws Exception
      */
-    public String invokeSmartCode(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
+    public String sendInvokeSmartCode(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
         return (String) invokeTransaction(false, null, null, abiFunction, vmtype);
     }
 
-    public String invokeSmartCodeWithSign(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
+    public String sendInvokeSmartCodeWithSign(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
         return (String) invokeTransaction(false, ontid, password, abiFunction, vmtype);
     }
 
@@ -147,10 +146,10 @@ public class SmartcodeTx {
             tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, null, vmtype, fees);
         } else {
             Fee[] fees = new Fee[1];
-            AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid, password,sdk.keyType,sdk.curveParameterSpec);
+            AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid, password,sdk.keyType,sdk.curveParaSpec);
             fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
             tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, vmtype, fees);
-            sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(ontid, password,sdk.keyType,sdk.curveParameterSpec)}});
+            sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(ontid, password,sdk.keyType,sdk.curveParaSpec)}});
         }
         boolean b = false;
         if (preExec) {

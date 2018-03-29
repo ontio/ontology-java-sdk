@@ -93,11 +93,18 @@ public class Demo {
     }
 
     public static OntSdk getOntSdk() throws Exception {
-//        String url = "http://54.222.182.88:20336";
-//        String url = "http://127.0.0.1:20386";
-        String url = "http://127.0.0.1:20384";
+        String ip = "http://127.0.0.1";
+//        String ip = "http://54.222.182.88;
+//        String ip = "http://101.132.193.149";
+        String restUrl = ip + ":" + "20384";
+        String rpcUrl = ip + ":" + "20386";
+        String wsUrl = ip + ":" + "20385";
+
         OntSdk wm = OntSdk.getInstance();
-        wm.setRestfulConnection(url);
+        wm.setRpc(rpcUrl);
+        wm.setRestful(restUrl);
+        wm.setDefaultConnect(wm.getRestful());
+
         wm.openWalletFile("Demo3.json");
 
         return wm;

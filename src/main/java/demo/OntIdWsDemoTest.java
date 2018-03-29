@@ -22,11 +22,11 @@ package demo;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.payload.InvokeCode;
 import com.github.ontio.OntSdk;
+import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.wallet.Identity;
 import com.github.ontio.sdk.wallet.Wallet;
 import com.github.ontio.sdk.websocket.MsgQueue;
 import com.github.ontio.sdk.websocket.Result;
-import com.github.ontio.sdk.websocket.WsProcess;
 import com.alibaba.fastjson.JSON;
 
 import java.util.Date;
@@ -40,22 +40,12 @@ import java.util.Map;
  */
 
 public class OntIdWsDemoTest {
+    public static Object lock = new Object();
     public static void main(String[] args) {
         try {
             OntSdk ontSdk = getOntSdk();
-            Identity accountInfo = ontSdk.getWalletMgr().importIdentity("6PYMpk8DjWzaEvneyaqxMBap9DuUPH72W6BsWWTtpWE4JJZkGq5ENtfYbT", "passwordtest");
-            // System.out.println(accountInfo);
-            //  System.exit(0);
-//            System.out.println(ontSdk.getWalletMgr().getWallet().getIdentities());
-            ontSdk.getWalletMgr().getWallet().setDefaultIdentity(0);
-            ontSdk.getWalletMgr().writeWallet();
 
-            String wsUrl = "ws://127.0.0.1:20385";
-//            String wsUrl = "ws://54.222.182.88:22335";
-//            String wsUrl = "ws://101.132.193.149:21335";
-
-            Object lock = new Object();
-            WsProcess.startWebsocketThread(lock, wsUrl);
+            ontSdk.getWebSocket().startWebsocketThread();
 
             //wait ws session uuid，asign websocket client
             String wsUUID = waitUserid(ontSdk, lock);
@@ -66,16 +56,16 @@ public class OntIdWsDemoTest {
             System.out.println("oep6:" + JSON.toJSONString(oep6));
             //System.exit(0);
 
+            System.out.println();
             System.out.println("================register=================");
             //registry ontid
-            Identity ident = ontSdk.getOntIdTx().register("passwordtest");
+            Identity ident = ontSdk.getOntIdTx().sendRegister("passwordtest");
 
             String ontid = ident.ontid;
 
             //System.exit(0);
-            //
             waitResult(ontSdk, lock);
-            //Thread.sleep(6000);
+            System.out.println();
             System.out.println("===============updateAttribute==================");
 
             String attri = "attri";
@@ -88,28 +78,22 @@ public class OntIdWsDemoTest {
 
             System.out.println(JSON.toJSONString(recordMap));
             System.out.println(ontid);
-            String hash = ontSdk.getOntIdTx().updateAttribute(ontid, "passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
+            String hash = ontSdk.getOntIdTx().sendUpdateAttribute(ontid, "passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
             System.out.println("hash:" + hash);
 
             //
             waitResult(ontSdk, lock);
             Thread.sleep(1000);
 
-
+            System.out.println();
             System.out.println("===============getDDO==================");
 
-            String ddo = ontSdk.getOntIdTx().getDDO(ontid);
+            String ddo = ontSdk.getOntIdTx().sendGetDDO(ontid);
             System.out.println("Ddo:" + ddo);
 
-            //parse Attributes
-            String rcd = JSON.parseObject(ddo).getJSONObject("Attributes").getString(attri);
-
-            System.out.println("attri:" + attri);
-            System.out.println("type:" + JSON.parseObject(rcd).get("Type"));
-            System.out.println("value:" + JSON.parseObject(rcd).get("Value"));
 
             System.out.println();
-            System.out.println("===============get Transaction, parse Attribute==================");
+            System.out.println("===============get Transaction==================");
             InvokeCode t = (InvokeCode) ontSdk.getConnectMgr().getTransaction(hash);
 
             System.exit(0);
@@ -141,35 +125,17 @@ public class OntIdWsDemoTest {
     public static void waitResult(OntSdk ontSdk, Object lock) {
         try {
             synchronized (lock) {
-                System.out.println("\nwait begin " + new Date().toString());
                 boolean flag = false;
                 while (true) {
                     lock.wait();
-//                    if(MsgQueue.getChangeFlag()){
-//                        String wsSessionId = waitUserid(ontSdk,lock);
-//                        ontSdk.getOntIdTx().setWsSessionId(wsSessionId);
-//                    }
                     for (String e : MsgQueue.getResultSet()) {
-                        System.out.println(e);
+                        System.out.println("RECV:"+e);
                         Result rt = JSON.parseObject(e, Result.class);
                         //TODO
                         MsgQueue.removeResult(e);
-                        if (rt.Action.equals("Notify")) {
-                            flag = true;
-                            List<Map<String, Object>> list = (List<Map<String, Object>>) ((Map) rt.Result).get("State");
-                            for (Map m : (List<Map<String, Object>>) (list.get(0).get("Value"))) {
-                                String value = (String) m.get("Value");
-                                String val = new String(Helper.hexToBytes(value));
-                                System.out.print(val + " ");
-                            }
-                            System.out.println();
-                        }
-                    }
-                    if (flag) {
-                        break;
+                        return;
                     }
                 }
-                System.out.println("wait end  " + new Date().toString() + "\n");
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -177,14 +143,22 @@ public class OntIdWsDemoTest {
     }
 
     public static OntSdk getOntSdk() throws Exception {
-//        String url = "http://54.222.182.88:22334";
-        String url = "http://127.0.0.1:20384";
-//        String url = "http://101.132.193.149:21334";
+        String ip = "http://127.0.0.1";
+//        String ip = "http://54.222.182.88;
+//        String ip = "http://101.132.193.149";
+        String restUrl = ip + ":" + "20384";
+        String rpcUrl = ip + ":" + "20386";
+        String wsUrl = ip + ":" + "20385";
+
         OntSdk wm = OntSdk.getInstance();
-        wm.setRestfulConnection(url);
+        wm.setRpc(rpcUrl);
+        wm.setRestful(restUrl);
+        wm.setDefaultConnect(wm.getRestful());
+        wm.setWesocket(lock, wsUrl);
+
         wm.openWalletFile("OntIdWsDemo.json");
 
-        wm.setCodeAddress("263dbc0ca10aec184ceced7a998106733852c28a");
+        wm.setCodeAddress("80e7d2fc22c24c466f44c7688569cc6e6d6c6f92");
         return wm;
     }
 }

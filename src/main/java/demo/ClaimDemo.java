@@ -56,7 +56,7 @@ public class ClaimDemo {
 
             String claim = ontSdk.getOntIdTx().createOntIdClaim("passwordtest", "claim:context", map, map);
             System.out.println(claim);
-            boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(dids.get(0).ontid, "passwordtest", claim);
+            boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(claim);
             System.out.println(b);
 
         } catch (Exception e) {

@@ -50,11 +50,11 @@ public class WalletMgr {
     private SignatureScheme scheme = null;
     private String filePath = null;
     private KeyType keyType = null;
-    private Object[] curveParameterSpec = null;
-    public WalletMgr(String path,KeyType type, Object[] curveParameterSpec) {
+    private Object[] curveParaSpec = null;
+    public WalletMgr(String path,KeyType type, Object[] curveParaSpec) {
         try {
             this.keyType = type;
-            this.curveParameterSpec = curveParameterSpec;
+            this.curveParaSpec = curveParaSpec;
             this.filePath = path;
             File file = new File(filePath);
             if (!file.exists()) {
@@ -141,7 +141,7 @@ public class WalletMgr {
         map.put(key + "," + password, prikey);
     }
     public Identity importIdentity(String encryptedPrikey, String password) throws Exception {
-        return importIdentity(encryptedPrikey,password,keyType,curveParameterSpec);
+        return importIdentity(encryptedPrikey,password,keyType,curveParaSpec);
     }
     public Identity importIdentity(String encryptedPrikey, String password, KeyType type, Object[] params) throws Exception {
         String prikey = com.github.ontio.account.Account.getPrivateKey(encryptedPrikey, password, type, params);
@@ -150,7 +150,7 @@ public class WalletMgr {
         return getIdentity(Common.didont + info.addressBase58);
     }
     public Identity createIdentity(String password) throws Exception {
-        return createIdentity(password,keyType,curveParameterSpec);
+        return createIdentity(password,keyType,curveParaSpec);
     }
     public Identity createIdentity(String password, KeyType type, Object[] params) throws Exception {
         AccountInfo info = createIdentity(password, ECC.generateKey(), type, params);
@@ -200,14 +200,14 @@ public class WalletMgr {
         return getAccount(info.addressBase58);
     }
     public Account createAccount(String password) throws Exception {
-        return createAccount(password,keyType,curveParameterSpec);
+        return createAccount(password,keyType,curveParaSpec);
     }
     public Account createAccount(String password, KeyType type, Object[] params) throws Exception {
         AccountInfo info = createAccount(password, ECC.generateKey(), type, params);
         return getAccount(info.addressBase58);
     }
     public Account createAccountFromPrikey(String password, String prikey) throws Exception {
-        return createAccountFromPrikey(password,prikey,keyType,curveParameterSpec);
+        return createAccountFromPrikey(password,prikey,keyType,curveParaSpec);
     }
     public Account createAccountFromPrikey(String password, String prikey, KeyType type, Object[] params) throws Exception {
         AccountInfo info = createAccount(password, Helper.hexToBytes(prikey), type, params);
@@ -232,7 +232,7 @@ public class WalletMgr {
         return info;
     }
     public AccountInfo createAccountFromPriKey(String password,String prikey)throws Exception {
-        return createAccountFromPriKey(password,prikey,keyType,curveParameterSpec);
+        return createAccountFromPriKey(password,prikey,keyType,curveParaSpec);
     }
     public AccountInfo createAccountFromPriKey(String password, String prikey,KeyType type, Object[] params)throws Exception {
         return createAccount(password, Helper.hexToBytes(prikey), type, params);
@@ -268,7 +268,7 @@ public class WalletMgr {
         }
     }
 
-    public boolean verifySignature(String pubkeyStr, byte[] data, byte[] signature) throws SDKException {
+    public boolean verifySign(String pubkeyStr, byte[] data, byte[] signature) throws SDKException {
         DataSignature sign = null;
         try {
             sign = new DataSignature();
@@ -278,7 +278,7 @@ public class WalletMgr {
         }
     }
     public com.github.ontio.account.Account getAccount(String address, String password) throws Exception {
-        return getAccount(address,password,keyType,curveParameterSpec);
+        return getAccount(address,password,keyType,curveParaSpec);
     }
     public com.github.ontio.account.Account getAccount(String address, String password, KeyType type, Object[] params) throws Exception {
         address = address.replace(Common.didont, "");
@@ -316,7 +316,7 @@ public class WalletMgr {
     }
 
     public AccountInfo getAccountInfo(String address, String password) throws Exception{
-        return getAccountInfo(address,password,keyType,curveParameterSpec);
+        return getAccountInfo(address,password,keyType,curveParaSpec);
     }
     public AccountInfo getAccountInfo(String address, String password, KeyType type, Object[] params) throws Exception {
         address = address.replace(Common.didont, "");

@@ -143,12 +143,12 @@ public class SmartcodeTx {
         Transaction tx = null;
         if (ontid == null && password == null) {
             Fee[] fees = new Fee[0];
-            tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, null, vmtype, fees);
+            tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, vmtype, fees);
         } else {
             Fee[] fees = new Fee[1];
             AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid, password,sdk.keyType,sdk.curveParaSpec);
             fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
-            tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, vmtype, fees);
+            tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, vmtype, fees);
             sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(ontid, password,sdk.keyType,sdk.curveParaSpec)}});
         }
         boolean b = false;
@@ -280,13 +280,12 @@ public class SmartcodeTx {
 
     /**
      * @param paramsHexStr
-     * @param pubkey
      * @param vmtype
      * @param fees
      * @return
      * @throws SDKException
      */
-    public InvokeCode makeInvokeCodeTransaction(byte[] paramsHexStr, String pubkey, byte vmtype, Fee[] fees) throws SDKException {
+    public InvokeCode makeInvokeCodeTransaction(byte[] paramsHexStr, byte vmtype, Fee[] fees) throws SDKException {
         InvokeCode tx = new InvokeCode();
         tx.attributes = new Attribute[1];
         tx.attributes[0] = new Attribute();

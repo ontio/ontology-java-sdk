@@ -116,7 +116,7 @@ public class OntIdTx {
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         return tx;
     }
     /**
@@ -218,7 +218,7 @@ public class OntIdTx {
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         sdk.signTx(tx, ontid, password);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.addressBase58);
         sdk.getWalletMgr().writeWallet();
@@ -251,7 +251,7 @@ public class OntIdTx {
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(li);
         params = Helper.addBytes(params, new byte[]{0x69});
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         sdk.signTx(tx, ontid, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
@@ -289,7 +289,7 @@ public class OntIdTx {
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
@@ -327,7 +327,7 @@ public class OntIdTx {
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
@@ -365,7 +365,7 @@ public class OntIdTx {
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         //String txHex = sdk.getWalletMgr().signatureData(password, tx);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
@@ -403,7 +403,7 @@ public class OntIdTx {
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
@@ -439,7 +439,7 @@ public class OntIdTx {
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
@@ -474,7 +474,7 @@ public class OntIdTx {
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
@@ -512,7 +512,7 @@ public class OntIdTx {
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         sdk.signTx(tx, addr, password);;
         boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
@@ -565,7 +565,7 @@ public class OntIdTx {
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         return tx;
     }
     /**
@@ -594,7 +594,7 @@ public class OntIdTx {
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
@@ -708,7 +708,7 @@ public class OntIdTx {
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, null, VmType.NEOVM.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         //System.out.println(obj);
         List listResult = (List) obj;
@@ -762,7 +762,7 @@ public class OntIdTx {
             throw new SDKException("param error");
         }
         byte[] did = (ontid).getBytes();
-        String addr = ontid.replace("did:ont:", "");
+        String addr = ontid.replace(Common.didont, "");
         byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec).pubkey);
         List list = new ArrayList<Object>();
         list.add("AddRecord".getBytes());
@@ -777,7 +777,7 @@ public class OntIdTx {
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, info.pubkey, VmType.NEOVM.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
         if (b) {
@@ -806,7 +806,7 @@ public class OntIdTx {
             String sendDid = (String) metaData.get("Issuer");
             String receiverDid = (String) metaData.get("Subject");
             if (sendDid == null || receiverDid == null) {
-                return null;
+                throw new SDKException("SendDid or receiverDid is null in metaData");
             }
             String[] sendDidStr = sendDid.split(":");
             String[] receiverDidStr = receiverDid.split(":");
@@ -823,13 +823,11 @@ public class OntIdTx {
     /**
      * verify OntId Claim
      *
-     * @param reqOntid
-     * @param password
      * @param claim
      * @return
      * @throws Exception
      */
-    public boolean verifyOntIdClaim(String reqOntid, String password, String claim) throws Exception {
+    public boolean verifyOntIdClaim(String claim) throws Exception {
         DataSignature sign = null;
         try {
             JSONObject obj = JSON.parseObject(claim);

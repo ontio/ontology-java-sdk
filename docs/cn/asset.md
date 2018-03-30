@@ -20,6 +20,7 @@ public class Account {
     public String algorithm = "";
     public Map parameters = new HashMap() ;
     public String key = "";
+    public Object extra = null;
 }
 ```
 

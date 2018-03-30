@@ -5,12 +5,14 @@ The following describes basic blockchain interop function of SDK and defines rel
 Please use the following methods to initialize OntSDK use case before launching JAVA SDK.
 
 ```
-OntSdk ontSdk = OntSdk.getInstance();
-ontSdk.setRpcConnection(url);
-//ontSdk.setRestfulConnection（url）
+OntSdk wm = OntSdk.getInstance();
+wm.setRpc(rpcUrl);
+wm.setRestful(restUrl);
+wm.setDefaultConnect(wm.getRestful());
+wm.openWalletFile("OntAssetDemo.json");
 ```
 
-> Note: setRestfulConnection indicates that the connection is established using the restful interface, and setRpcConnection indicates that the connection is established using the rpc interface.
+> Note: setRestful indicates that the connection is established using the restful interface, and setRpc indicates that the connection is established using the rpc interface,setDefaultConnect is used to set default connect method. 
 
 ### Get the current block height
 
@@ -78,7 +80,7 @@ System.out.println(t);
 |    version|   int|  version  |
 |    txType|   TransactionType|transaction type|
 |    nonce|   int |  random number|
-|    attributes|   TransactionAttribute[]|  transaction attribute list |
+|    attributes|   Attribute[]|  transaction attribute list |
 |    fee|   Fee[] |  transaction fee list |
 |    networkFee|   long| network fee  |
 |    sigs|   Sign[]|   signature array  |
@@ -93,7 +95,9 @@ System.out.println(t);
 | :--------------: | :--------:| :------: |
 |    208|   int |  smart contract deployment |
 |    209|   int | smart contract invocation |
-
+|      0|   int |        Bookkeeping  |
+|      4|   int |     Enrollment       |
+|      5|   int |     Vote |
 
 ### Signature Area
 
@@ -111,11 +115,11 @@ System.out.println(t);
 |    amount|   long|  amount|
 |    payer|   UInt160 | payer |
 
-### TransactionAttribute
+### Attribute
 
 | Field    |     Type |   Description   | 
 | :--------------: | :--------:| :------: |
-|    usage |   TransactionAttributeUsage |  usage|
+|    usage |   AttributeUsage |  usage|
 |    data|   byte[] | attribute value |
 
 

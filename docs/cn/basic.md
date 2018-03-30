@@ -3,12 +3,15 @@
 以下针对使用SDK和区块交互的基本操作，以及相关数据结构定义。
 
 用Java SDK之前，请使用以下方式初始化OntSDK实例。
+
 ```
-OntSdk ontSdk = OntSdk.getInstance();
-ontSdk.setRpcConnection(url);
-//ontSdk.setRestfulConnection（url）
+OntSdk wm = OntSdk.getInstance();
+wm.setRpc(rpcUrl);
+wm.setRestful(restUrl);
+wm.setDefaultConnect(wm.getRestful());
+wm.openWalletFile("OntAssetDemo.json");
 ```
-> Note: setRestfulConnection表示采用restful接口建立连接，setRpcConnection表示采用rpc接口建立连接。
+> Note: setRestful表示采用restful接口建立连接，setRpc表示采用rpc接口建立连接,setDefaultConnect表示设置默认的链接方式。
 
 
 ### 获取当前区块高度
@@ -74,7 +77,7 @@ System.out.println(t);
 |    version|   int|  版本号  |
 |    txType|   TransactionType|  交易类型|
 |    nonce|   int |  随机数|
-|    attributes|   TransactionAttribute[]|  交易属性列表 |
+|    attributes|   Attribute[]|  交易属性列表 |
 |    fee|   Fee[] |  交易手续费列表 |
 |    networkFee|   long| 网络手续费  |
 |    sigs|   Sign[]|   签名数组  |
@@ -89,6 +92,9 @@ System.out.println(t);
 | :--------------: | :--------:| :------: |
 |    208|   int |  部署智能合约交易|
 |    209|   int | 调用智能合约交易 |
+|      0|   int |     Bookkeeping   |
+|      4|   int |     注册       |
+|      5|   int |     投票 |
 
 
 ### 签名字段
@@ -105,13 +111,13 @@ System.out.println(t);
 | Field     |     Type |   Description   | 
 | :--------------: | :--------:| :------: |
 |    amount|   long|  金额|
-|    payer|   UInt160 | 付费者 |
+|    payer|   Address | 付费者 |
 
-### TransactionAttribute交易属性
+### Attribute交易属性
 
 | Field    |     Type |   Description   | 
 | :--------------: | :--------:| :------: |
-|    usage |   TransactionAttributeUsage |  用途|
+|    usage |   AttributeUsage |  用途|
 |    data|   byte[] | 属性值 |
 
 

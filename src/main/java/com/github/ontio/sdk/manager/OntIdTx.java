@@ -872,4 +872,49 @@ public class OntIdTx {
         }
     }
 
+
+    /**
+     * sendRemoveAttribute
+     * @param ontid
+     * @param password
+     * @param path
+     * @return
+     * @throws Exception
+     */
+    public String sendRemoveAttribute(String ontid, String password, byte[] path) throws Exception {
+        Transaction tx = makeRemoveAttribute(ontid,password,path);
+        sdk.signTx(tx,ontid,password);
+        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
+        if (b) {
+            return tx.hash().toString();
+        }
+        return null;
+    }
+
+    public Transaction makeRemoveAttribute(String ontid, String password, byte[] path) throws Exception {
+        if (codeAddress == null) {
+            throw new SDKException("null codeHash");
+        }
+        if (path.length >= 255) {
+            throw new SDKException("param error");
+        }
+        byte[] did = (ontid).getBytes();
+        String addr = ontid.replace(Common.didont, "");
+        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec).pubkey);
+        List list = new ArrayList<Object>();
+        list.add("RemoveAttribute".getBytes());
+        List tmp = new ArrayList<Object>();
+        tmp.add(did);
+        tmp.add(path);
+        tmp.add(pk);
+        list.add(tmp);
+        Fee[] fees = new Fee[1];
+        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
+        fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
+        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
+        params = Helper.addBytes(params, new byte[]{0x69});
+        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
+        return tx;
+    }
 }

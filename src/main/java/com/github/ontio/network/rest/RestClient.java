@@ -211,7 +211,26 @@ public class RestClient extends AbstractConnector {
             return rr.Result;
         }
         throw new RestfulException(to(rr));
+    }
 
+    @Override
+    public int getBlockHeightByTxHash(String hash) throws ConnectorException, IOException {
+        String rs = api.getBlockHeightByTxHash(hash);
+        Result rr = JSON.parseObject(rs, Result.class);
+        if (rr.Error == 0) {
+            return (int)rr.Result;
+        }
+        throw new RestfulException(to(rr));
+    }
+
+    @Override
+    public String getStorage(String codehash,String key) throws ConnectorException, IOException {
+        String rs = api.getStorage(codehash,key);
+        Result rr = JSON.parseObject(rs, Result.class);
+        if (rr.Error == 0) {
+            return (String)rr.Result;
+        }
+        throw new RestfulException(to(rr));
     }
 
     private String to(Result rr) {

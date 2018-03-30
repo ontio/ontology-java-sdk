@@ -20,7 +20,11 @@
 package demo;
 
 import com.github.ontio.OntSdk;
+import com.github.ontio.common.Address;
+import com.github.ontio.common.Helper;
+import com.github.ontio.core.block.Block;
 import com.github.ontio.core.transaction.Transaction;
+import com.github.ontio.io.Serializable;
 import com.github.ontio.network.websocket.WebsocketClient;
 import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Identity;
@@ -53,9 +57,11 @@ public class WebsocketDemo {
                         @Override
                         public void run() {
                             waitResult(ontSdk, lock);
+
                         }
                     });
             thread.start();
+            Thread.sleep(2000);
 
             Wallet oep6 = ontSdk.getWalletMgr().getWallet();
             System.out.println("oep6:" + JSON.toJSONString(oep6));
@@ -74,7 +80,6 @@ public class WebsocketDemo {
 
             for (int i = 0; i < 1000; i++) {
 
-
                 //System.out.println(ontid);
                 //String hash = ontSdk.getOntIdTx().updateAttribute(ontid, "passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
                 //System.out.println("hash:" + hash);
@@ -82,7 +87,7 @@ public class WebsocketDemo {
 
                 String password = "passwordtest";
 
-                if(true) {
+                if(false) {
                     Account info1 = null;
                     Account info2 = null;
                     Account info3 = null;
@@ -112,7 +117,20 @@ public class WebsocketDemo {
                     ontSdk.signTx(tx, ontid, password);
                     ontSdk.getWebSocket().sendRawTransaction(tx.toHexString());
                 }
+
                 //waitResult(ontSdk, lock);
+
+                if(true){
+                    ontSdk.getConnectMgr().getBalance("TA63xZXqdPLtDeznWQ6Ns4UsbqprLrrLJk");
+                    ontSdk.getConnectMgr().getBlockJson("c8c165bf0ac6107f7f324b0badb60af4dc4e1157b5eb9d3163c8f332a8612c98");
+                    ontSdk.getConnectMgr().getNodeCount();
+                    ontSdk.getConnectMgr().getGenerateBlockTime();
+                    ontSdk.getConnectMgr().getContractJson("80e7d2fc22c24c466f44c7688569cc6e6d6c6f92");
+                    ontSdk.getConnectMgr().getSmartCodeEvent("7c3e38afb62db28c7360af7ef3c1baa66aeec27d7d2f60cd22c13ca85b2fd4f3");
+                    ontSdk.getConnectMgr().getBlockHeightByTxHash("7c3e38afb62db28c7360af7ef3c1baa66aeec27d7d2f60cd22c13ca85b2fd4f3");
+                    ontSdk.getConnectMgr().getStorage("ff00000000000000000000000000000000000001", Address.decodeBase58("TA63xZXqdPLtDeznWQ6Ns4UsbqprLrrLJk").toHexString());
+                    ontSdk.getConnectMgr().getTransactionJson("7c3e38afb62db28c7360af7ef3c1baa66aeec27d7d2f60cd22c13ca85b2fd4f3");
+                }
                 Thread.sleep(5000);
             }
 
@@ -139,13 +157,15 @@ public class WebsocketDemo {
                         Result rt = JSON.parseObject(e, Result.class);
                         //TODO
                         MsgQueue.removeResult(e);
-                        if (rt.Action.equals("InvokeTransaction")) {
+                        if (rt.Action.equals("getblockbyheight")) {
+                            Block bb = Serializable.from(Helper.hexToBytes((String) rt.Result), Block.class);
+                            //System.out.println(bb.json());
                         }
                     }
                 }
                 //System.out.println("wait end  " +  new Date().toString()+"\n");
             }
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -156,7 +176,7 @@ public class WebsocketDemo {
 //        String ip = "http://101.132.193.149";
         String restUrl = ip + ":" + "20384";
         String rpcUrl = ip + ":" + "20386";
-        String wsUrl = ip + ":" + "20385";
+        String wsUrl = ip + ":" + "20335";
 
         OntSdk wm = OntSdk.getInstance();
         wm.setRpc(rpcUrl);

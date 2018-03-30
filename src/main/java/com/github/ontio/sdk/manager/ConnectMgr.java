@@ -131,10 +131,12 @@ public class ConnectMgr {
     }
 
     public Transaction getTransaction(String txhash) throws ConnectorException, IOException {
+        txhash = txhash.replace("0x","");
         return connector.getRawTransaction(txhash);
     }
 
     public Object getTransactionJson(String txhash) throws ConnectorException, IOException {
+        txhash = txhash.replace("0x","");
         return connector.getRawTransactionJson(txhash);
     }
 
@@ -172,6 +174,7 @@ public class ConnectMgr {
     }
 
     public Object getContractJson(String hash) throws ConnectorException, IOException {
+        hash = hash.replace("0x","");
         return connector.getContractJson(hash);
     }
 
@@ -181,6 +184,16 @@ public class ConnectMgr {
 
     public Object getSmartCodeEvent(String hash) throws ConnectorException, IOException {
         return connector.getSmartCodeEvent(hash);
+    }
+
+    public int getBlockHeightByTxHash(String hash) throws ConnectorException, IOException {
+        hash = hash.replace("0x", "");
+        return connector.getBlockHeightByTxHash(hash);
+    }
+
+    public String getStorage(String codehash, String key) throws ConnectorException, IOException {
+        codehash = codehash.replace("0x", "");
+        return connector.getStorage(codehash, key);
     }
 }
 

@@ -144,6 +144,24 @@ class Interfaces {
         }
     }
 
+    public String getBlockHeightByTxHash(String hash) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            return http.get(url + UrlConsts.Url_get_block_height_by_txhash + hash, params);
+        } catch (Exception e) {
+            throw new RestfulException("Invalid url:" + url + "," + e.getMessage(), e);
+        }
+    }
+
+    public String getStorage(String codehash,String key) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            return http.get(url + UrlConsts.Url_get_storage + codehash+"/"+key, params);
+        } catch (Exception e) {
+            throw new RestfulException("Invalid url:" + url + "," + e.getMessage(), e);
+        }
+    }
+
     public String getBalance(String address) throws RestfulException {
         Map<String, String> params = new HashMap<String, String>();
         try {

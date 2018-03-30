@@ -205,5 +205,25 @@ public class RpcClient extends AbstractConnector {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public int getBlockHeightByTxHash(String hash) throws ConnectorException, IOException {
+        Object result = rpc.call("getblockheightbytxhash", hash.toString());
+        try {
+            return (int)result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String getStorage(String codehash, String key) throws ConnectorException, IOException {
+        Object result = rpc.call("getstorage", codehash, key);
+        try {
+            return (String)result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 

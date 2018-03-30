@@ -20,7 +20,6 @@
 package com.github.ontio.network.connect;
 
 import java.io.IOException;
-
 import com.github.ontio.core.block.Block;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.network.exception.ConnectorException;
@@ -45,4 +44,7 @@ public interface IConnector {
 	Object getContractJson(String hash) throws ConnectorException, IOException;
 	Object getSmartCodeEvent(int height) throws ConnectorException, IOException;
 	Object getSmartCodeEvent(String hash) throws ConnectorException, IOException;
+	int getBlockHeightByTxHash(String hash) throws ConnectorException, IOException;
+
+	String getStorage(String codehash,String key) throws ConnectorException, IOException;
 }

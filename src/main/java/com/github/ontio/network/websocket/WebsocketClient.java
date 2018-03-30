@@ -135,7 +135,7 @@ public class WebsocketClient extends AbstractConnector {
     @Override
     public int getBlockHeight() throws ConnectorException, IOException{
         Map map = new HashMap<>();
-        map.put("Action", "getblockcount");
+        map.put("Action", "getblockheight");
         map.put("Version", "1.0.0");
         mWebSocket.send(JSON.toJSONString(map));
         return 0;
@@ -143,7 +143,7 @@ public class WebsocketClient extends AbstractConnector {
     @Override
     public Block getBlock(int height) throws ConnectorException, IOException{
         Map map = new HashMap<>();
-        map.put("Action", "getblock");
+        map.put("Action", "getblockbyheight");
         map.put("Version", "1.0.0");
         map.put("Height",height);
         map.put("Raw","1");
@@ -153,7 +153,7 @@ public class WebsocketClient extends AbstractConnector {
     @Override
     public Block getBlock(String hash) throws ConnectorException, IOException{
         Map map = new HashMap<>();
-        map.put("Action", "getblock");
+        map.put("Action", "getblockbyhash");
         map.put("Version", "1.0.0");
         map.put("Hash",hash);
         map.put("Raw","1");
@@ -163,7 +163,7 @@ public class WebsocketClient extends AbstractConnector {
     @Override
     public Block getBlockJson(int height) throws ConnectorException, IOException{
         Map map = new HashMap<>();
-        map.put("Action", "getblock");
+        map.put("Action", "getblockbyheight");
         map.put("Version", "1.0.0");
         map.put("Height",height);
         mWebSocket.send(JSON.toJSONString(map));
@@ -172,7 +172,7 @@ public class WebsocketClient extends AbstractConnector {
     @Override
     public Block getBlockJson(String hash) throws ConnectorException, IOException{
         Map map = new HashMap<>();
-        map.put("Action", "getblock");
+        map.put("Action", "getblockbyhash");
         map.put("Version", "1.0.0");
         map.put("Hash",hash);
         mWebSocket.send(JSON.toJSONString(map));
@@ -181,7 +181,7 @@ public class WebsocketClient extends AbstractConnector {
     @Override
     public Object getBalance(String address) throws ConnectorException, IOException{
         Map map = new HashMap<>();
-        map.put("Action", "getblock");
+        map.put("Action", "getbalance");
         map.put("Version", "1.0.0");
         map.put("Addr",address);
         mWebSocket.send(JSON.toJSONString(map));
@@ -199,7 +199,7 @@ public class WebsocketClient extends AbstractConnector {
     @Override
     public Object getSmartCodeEvent(int height) throws ConnectorException, IOException{
         Map map = new HashMap<>();
-        map.put("Action", "getsmartcodeevent");
+        map.put("Action", "getsmartcodeeventtxs");
         map.put("Version", "1.0.0");
         map.put("Height", height);
         return mWebSocket.send(JSON.toJSONString(map));
@@ -211,6 +211,26 @@ public class WebsocketClient extends AbstractConnector {
         map.put("Version", "1.0.0");
         map.put("Hash", hash);
         return mWebSocket.send(JSON.toJSONString(map));
+    }
+    @Override
+    public int getBlockHeightByTxHash(String hash) throws ConnectorException, IOException{
+        Map map = new HashMap<>();
+        map.put("Action", "getblockheightbytxhash");
+        map.put("Version", "1.0.0");
+        map.put("Hash", hash);
+        mWebSocket.send(JSON.toJSONString(map));
+        return 0;
+    }
+
+    @Override
+    public String getStorage(String codehash, String key) throws ConnectorException, IOException {
+        Map map = new HashMap<>();
+        map.put("Action", "getstorage");
+        map.put("Version", "1.0.0");
+        map.put("Hash", codehash);
+        map.put("Key", key);
+        mWebSocket.send(JSON.toJSONString(map));
+        return "";
     }
     public void wsStart() {
         //request = new Request.Builder().url(WS_URL).build();

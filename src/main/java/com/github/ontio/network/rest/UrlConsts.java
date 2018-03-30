@@ -35,4 +35,6 @@ public class UrlConsts {
 	public static String Url_get_contract_state = "/api/v1/contract/";
 	public static String Url_get_smartcodeevent_txs_by_height = "/api/v1/smartcode/event/transactions/";
 	public static String Url_get_smartcodeevent_by_txhash = "/api/v1/smartcode/event/txhash/";
+	public static String Url_get_block_height_by_txhash = "/api/v1/block/height/txhash/";
+	public static String Url_get_storage = "/api/v1/storage/";
 }

@@ -126,7 +126,7 @@ String ddo = ontSdk.getOntIdTx().getDDO(ontid,"passwordtest",ontid);
 ### 6 **移除身份**
 ```
 ontSdk.getWalletMgr().getWallet().removeIdentity(ontid);
-//写入钱包 
+//写入钱包
 ontSdk.getWalletMgr().writeWallet();
 ```
 
@@ -152,6 +152,17 @@ String updateAttribute(String ontid,String password,byte[] key,byte[] type,byte[
 |        | value   | byte[] | value     | 必选，值 |
 | 输出参数 | txhash   | String  | 交易hash  | 交易hash是64位字符串 |
 
+### 9 **移除链上DDO属性**
+
+```
+String hash = ontSdk.getOntIdTx().sendRemoveAttribute(did.ontid, "passwordtest", "attri".getBytes());
+```
+| 参数      | 字段   | 类型  | 描述 |             说明 |
+| ----- | ------- | ------ | ------------- | ----------- |
+| 输入参数 | password| String | 发行者地址 | 必选，私钥解密的密码 |
+|        | ontid    | String | 资产名称   | 必选，身份Id |
+|        | key    | byte[]  | key       | 必选，key |
+| 输出参数 | txhash   | String  | 交易hash  | 交易hash是64位字符串 |
 
 
 ## **可信申明**
@@ -255,4 +266,3 @@ String claim = ontSdk.getOntIdTx().createOntIdClaim("passwordtest","claim:contex
 System.out.println(claim);
 boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(ontid,"passwordtest",claim);
 ```
-

@@ -23,7 +23,7 @@ public class Parameter {
 
 * codehash是什么
 
-codehash是对智能合约byte code做两次sha160，智能合约的唯一标识。
+codehash是智能合约的唯一标识。
 
 
 * 调用智能合约invokeTransaction的过程，sdk中具体做了什么
@@ -31,13 +31,13 @@ codehash是对智能合约byte code做两次sha160，智能合约的唯一标识
 ```
 //step1：构造交易
 //需先将智能合约参数转换成vm可识别的opcode
-Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(opcodes,codeHash,info.address,info.pubkey);
+Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(params, vmtype, fees);
 
 //step2：对交易签名
-String txHex = sdk.getWalletMgr().signatureData(password,tx);
+ontSdk.signTx(tx, info1.address, password);
 
 //step3：发送交易
-sdk.getConnectMgr().sendRawTransaction(txHex);
+ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
 ```
 
 * invoke时为什么要传入账号和密码
@@ -66,7 +66,7 @@ code = Helper.toHexString(bys);
 ontSdk.setCodeHash(Helper.getCodeHash(code,VmType.NEOVM.value()));
 
 //部署合约
-String txhash = ontSdk.getSmartcodeTx().DeployCodeTransaction(code, true, "name", "1.0", "author", "email", "desp", ContractParameterType.Boolean.name());
+String txhash = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(code, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
 System.out.println("txhash:" + txhash);
 //等待出块
 Thread.sleep(6000);
@@ -116,7 +116,7 @@ func.setParamsValue(did.ontid.getBytes(),"key".getBytes(),"bytes".getBytes(),"va
 System.out.println(func);
 
 //调用智能合约
-String hash = ontSdk.getSmartcodeTx().invokeTransaction(did.ontid,"passwordtest",func);
+String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", func, (byte) VmType.NEOVM.value()););
 
 ```
 > 如果需要监控推送结果，可以了解下面章节。
@@ -127,40 +127,25 @@ String hash = ontSdk.getSmartcodeTx().invokeTransaction(did.ontid,"passwordtest"
 
 Demo例子：
 ```
-String wsUrl = "ws://101.132.193.149:21335";
 
-OntSdk ontSdk = getOntSdk();
-Object lock = new Object();
-WsProcess.startWebsocketThread(lock,wsUrl);
-WsProcess.setBroadcast(true);
-waitResult(ontSdk,lock);
+ontSdk.getWebSocket().startWebsocketThread(false,false);
 
-public static void waitResult(OntSdk ontSdk, Object lock){
+    public static void waitResult(OntSdk ontSdk, Object lock) {
         try {
             synchronized (lock) {
                 boolean flag = false;
-                while(true) {
-                    //等待新的推送
+                while (true) {
                     lock.wait();
-                    //心跳
-                    if(MsgQueue.getChangeFlag()){
+                    if (MsgQueue.getChangeFlag()) {
                         System.out.println(MsgQueue.getHeartBeat());
                     }
-                    //获取推送结果
+
                     for (String e : MsgQueue.getResultSet()) {
-                        System.out.println("####"+e);
+                        System.out.println("RECV: " + e);
                         Result rt = JSON.parseObject(e, Result.class);
                         //TODO
                         MsgQueue.removeResult(e);
-                        if(rt.Action.equals("Notify")) {
-                            flag = true;
-                            List<Map<String,Object>> list = (List<Map<String,Object>>)((Map)rt.Result).get("State");
-                            for(Map m:(List<Map<String,Object>>)(list.get(0).get("Value"))){
-                                String value = (String)m.get("Value");
-                                String val = new String(Helper.hexToBytes(value));
-                                System.out.print(val+" ");
-                            }
-                            System.out.println();
+                        if (rt.Action.equals("InvokeTransaction")) {
                         }
                     }
                 }
@@ -168,7 +153,7 @@ public static void waitResult(OntSdk ontSdk, Object lock){
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
- }
+    }
 
 ```
 

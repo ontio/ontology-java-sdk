@@ -146,7 +146,17 @@ String updateAttribute(String ontid,String password,byte[] key,byte[] type,byte[
 |        | value   | byte[] | value     | required, value |
 | output param | txhash   | String  | transaction hash | 64-bit string |
                         
+### 9 **Remove blockchain-based DDO attribute**
 
+```
+String hash = ontSdk.getOntIdTx().sendRemoveAttribute(did.ontid, "passwordtest", "attri".getBytes());
+```
+| Param        | Field   | Type   | Descriptions  |       Remarks       |
+| -----        | ------- | ------ | ------------- | ------------------- |
+| input param  | password| String | publisher's address | required, password to decrypt private key |
+|   | ontid    | String | name of asset | required, ID |
+|        | key    | byte[]  | key       | required, key |
+| output param | txhash   | String  | transaction hash | 64-bit string |
 
 ## **Verifiable claim**
 

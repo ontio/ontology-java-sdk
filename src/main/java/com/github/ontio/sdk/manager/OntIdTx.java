@@ -689,19 +689,18 @@ public class OntIdTx {
     /**
      * get DDO
      *
-     * @param queryOntid
+     * @param ontid
      * @return
      * @throws Exception
      */
-    public String sendGetDDO(String queryOntid) throws Exception {
+    public String sendGetDDO(String ontid) throws Exception {
         if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
         List list = new ArrayList<Object>();
         list.add("GetDDO".getBytes());
         List tmp = new ArrayList<Object>();
-        System.out.println("GetDDO:" + Helper.toHexString(queryOntid.getBytes()));
-        tmp.add(queryOntid.getBytes());
+        tmp.add(ontid.getBytes());
         tmp.add(UUID.randomUUID().toString().getBytes());
         list.add(tmp);
         Fee[] fees = new Fee[0];
@@ -716,7 +715,7 @@ public class OntIdTx {
         Map map = new HashMap();
         try {
             for (int i = 0; i < listResult.size(); i++) {
-                map = parseDdoData(queryOntid, (String) listResult.get(0));
+                map = parseDdoData(ontid, (String) listResult.get(0));
             }
         } catch (Exception e) {
             e.printStackTrace();

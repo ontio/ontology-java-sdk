@@ -17,7 +17,7 @@
  *
  */
 
-package com.github.ontio.sdk.websocket;
+package com.github.ontio.network.websocket;
 
 /**
  *

@@ -67,7 +67,10 @@ wm.openWalletFile("OntAssetDemo.json");
 //step2:获得ontAssetTx实例
 ontAssetTx = ontSdk.getOntAssetTx()
 //step3:调用转账方法
-ontAssetTx.transfer(from,to,value)
+ontAssetTx.sendTransfer(from,to,value)
+ontSdk.getOntAssetTx().sendTransferToMany("ont",info1.address,"passwordtest",new String[]{info2.address,info3.address},new long[]{100L,200L});
+ontSdk.getOntAssetTx().sendTransferFromMany("ont", new String[]{info1.address, info2.address}, new String[]{"passwordtest", "passwordtest"}, info3.address, new long[]{1L, 2L});
+ontSdk.getOntAssetTx().sendOngTransferFrom(info1.address,"passwordtest",info2.address,100);
 ```
 
 #### 使用智能合约
@@ -156,7 +159,7 @@ System.out.println(func.getParameters());
 func.setParamsValue(from.getBytes(),to.getBytes(),value.getBytes());
 
 //setp5：调用合约
-String hash = ontSdk.getSmartcodeTx().invokeTransaction("passwordtest",addr,func);
+String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign("passwordtest",addr,func);
 ```
 AbiInfo结构是怎样的？
 
@@ -182,7 +185,7 @@ public class Parameter {
 codehash是什么？
 
 ```
-是对智能合约byte code做两次sha160，智能合约的唯一标识。
+是智能合约的唯一标识。
 ```
 
 invoke时为什么要传入账号和密码？

@@ -31,17 +31,17 @@ public interface IConnector {
 	Object sendRawTransaction(boolean preExec,String userid,String hexData) throws ConnectorException, IOException;
 	Object sendRawTransaction(String hexData) throws ConnectorException, IOException;
 	Transaction getRawTransaction(String txhash) throws ConnectorException, IOException;
+	Object getRawTransactionJson(String txhash) throws ConnectorException, IOException;
 	int getGenerateBlockTime() throws ConnectorException, IOException;
 	int getNodeCount() throws ConnectorException, IOException;
 	int getBlockHeight() throws ConnectorException, IOException;
 	Block getBlock(int height) throws ConnectorException, IOException;
 	Block getBlock(String hash) throws ConnectorException, IOException ;
-
-	Object getBalance(String address) throws ConnectorException, IOException;
-	
-	Object getRawTransactionJson(String txhash) throws ConnectorException, IOException;
 	Object getBlockJson(int height) throws ConnectorException, IOException;
 	Object getBlockJson(String hash) throws ConnectorException, IOException;
+
+	Object getBalance(String address) throws ConnectorException, IOException;
+
 	Object getContractJson(String hash) throws ConnectorException, IOException;
 	Object getSmartCodeEvent(int height) throws ConnectorException, IOException;
 	Object getSmartCodeEvent(String hash) throws ConnectorException, IOException;

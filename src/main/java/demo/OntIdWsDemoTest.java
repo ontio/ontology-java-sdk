@@ -19,19 +19,15 @@
 
 package demo;
 
-import com.github.ontio.common.Helper;
 import com.github.ontio.core.payload.InvokeCode;
 import com.github.ontio.OntSdk;
-import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.wallet.Identity;
 import com.github.ontio.sdk.wallet.Wallet;
-import com.github.ontio.sdk.websocket.MsgQueue;
-import com.github.ontio.sdk.websocket.Result;
+import com.github.ontio.network.websocket.MsgQueue;
+import com.github.ontio.network.websocket.Result;
 import com.alibaba.fastjson.JSON;
 
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -45,7 +41,7 @@ public class OntIdWsDemoTest {
         try {
             OntSdk ontSdk = getOntSdk();
 
-            ontSdk.getWebSocket().startWebsocketThread();
+            ontSdk.getWebSocket().startWebsocketThread(false,false);
 
             //wait ws session uuid，asign websocket client
             String wsUUID = waitUserid(ontSdk, lock);
@@ -154,7 +150,7 @@ public class OntIdWsDemoTest {
         wm.setRpc(rpcUrl);
         wm.setRestful(restUrl);
         wm.setDefaultConnect(wm.getRestful());
-        wm.setWesocket(lock, wsUrl);
+        wm.setWesocket(wsUrl,lock);
 
         wm.openWalletFile("OntIdWsDemo.json");
 

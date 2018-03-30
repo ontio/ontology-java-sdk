@@ -22,6 +22,7 @@ package com.github.ontio.sdk.manager;
 import java.io.IOException;
 
 import com.alibaba.fastjson.JSON;
+import com.github.ontio.OntSdk;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.block.Block;
 import com.github.ontio.network.rpc.RpcClient;
@@ -30,24 +31,31 @@ import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.network.connect.IConnector;
 import com.github.ontio.network.rest.RestClient;
 import com.github.ontio.network.rest.Result;
+import com.github.ontio.network.websocket.WebsocketClient;
 
 /**
  *
  */
 public class ConnectMgr {
     private IConnector connector;
-
-    public ConnectMgr(String url) {
-        setConnector(new RestClient(url));
+    public ConnectMgr(String url, String type, Object lock) {
+        if (type.equals("websocket")){
+            setConnector(new WebsocketClient(url,lock));
+        }
     }
-
-    public ConnectMgr(String url, boolean rpc) {
-        if (rpc) {
+    public ConnectMgr(String url, String type) {
+        if (type.equals("rpc")) {
             setConnector(new RpcClient(url));
-        } else {
+        } else if (type.equals("restful")){
             setConnector(new RestClient(url));
         }
     }
+    public void startWebsocketThread(boolean log,boolean broadcast){
+        if(connector instanceof WebsocketClient){
+            ((WebsocketClient) connector).startWebsocketThread(log,broadcast);
+        }
+    }
+
 
     public ConnectMgr(IConnector connector) {
         setConnector(connector);
@@ -67,6 +75,9 @@ public class ConnectMgr {
         if (connector instanceof RpcClient) {
             return true;
         }
+        if (connector instanceof WebsocketClient) {
+            return true;
+        }
         Result rr = JSON.parseObject(rs, Result.class);
         if (rr.Error == 0) {
             return true;
@@ -77,6 +88,9 @@ public class ConnectMgr {
     public boolean sendRawTransaction(String hexData) throws ConnectorException, IOException {
         String rs = (String) connector.sendRawTransaction(hexData);
         if (connector instanceof RpcClient) {
+            return true;
+        }
+        if (connector instanceof WebsocketClient) {
             return true;
         }
         Result rr = JSON.parseObject(rs, Result.class);
@@ -91,6 +105,9 @@ public class ConnectMgr {
         if (connector instanceof RpcClient) {
             return true;
         }
+        if (connector instanceof WebsocketClient) {
+            return true;
+        }
         Result rr = JSON.parseObject(rs, Result.class);
         if (rr.Error == 0) {
             return true;
@@ -101,6 +118,9 @@ public class ConnectMgr {
     public Object sendRawTransactionPreExec(String hexData) throws ConnectorException, IOException {
         Object rs = connector.sendRawTransaction(true, null, hexData);
         if (connector instanceof RpcClient) {
+            return rs;
+        }
+        if (connector instanceof WebsocketClient) {
             return rs;
         }
         Result rr = JSON.parseObject((String) rs, Result.class);

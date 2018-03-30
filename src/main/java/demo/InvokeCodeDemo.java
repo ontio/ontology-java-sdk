@@ -21,14 +21,11 @@ package demo;
 
 import com.github.ontio.common.Helper;
 import com.github.ontio.OntSdk;
-import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.abi.AbiInfo;
 import com.github.ontio.sdk.abi.AbiFunction;
 import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.wallet.Identity;
 import com.alibaba.fastjson.JSON;
-import com.github.ontio.sdk.websocket.MsgQueue;
-import com.github.ontio.sdk.websocket.Result;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -38,7 +35,7 @@ import java.util.*;
 /**
  *
  */
-public class InvokeSmartCodeDemo {
+public class InvokeCodeDemo {
     public static void main(String[] args) {
         try {
             OntSdk ontSdk = getOntSdk();

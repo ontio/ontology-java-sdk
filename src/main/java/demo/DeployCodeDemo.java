@@ -50,7 +50,7 @@ import java.io.InputStream;
 /**
  *
  */
-public class DeployDemo {
+public class DeployCodeDemo {
     public static void main(String[] args) {
         try {
             OntSdk ontSdk = getOntSdk();

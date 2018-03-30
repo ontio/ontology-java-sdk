@@ -31,7 +31,7 @@ import com.github.ontio.sdk.manager.WalletMgr;
 import com.github.ontio.sdk.manager.OntAssetTx;
 import com.github.ontio.sdk.manager.OntIdTx;
 import com.github.ontio.sdk.manager.SmartcodeTx;
-import com.github.ontio.sdk.websocket.Websocket;
+import com.github.ontio.network.websocket.WebsocketClient;
 
 /**
  * Ont Sdk
@@ -40,7 +40,7 @@ public class OntSdk {
     private WalletMgr walletMgr;
     private ConnectMgr connRpc;
     private ConnectMgr connRestful;
-    private Websocket connWebSocket = null;
+    private ConnectMgr connWebSocket;
     private ConnectMgr connDefault;
 
     private OntIdTx ontIdTx = null;
@@ -60,11 +60,17 @@ public class OntSdk {
     private OntSdk(){
     }
 
-    public ConnectMgr getRpc() {
+    public ConnectMgr getRpc() throws SDKException{
+        if(connRpc == null){
+            throw new SDKException("connRestful not init");
+        }
         return connRpc;
     }
 
-    public ConnectMgr getRestful() {
+    public ConnectMgr getRestful() throws SDKException{
+        if(connRestful == null){
+            throw new SDKException("connRestful not init");
+        }
         return connRestful;
     }
     public ConnectMgr getConnectMgr(){
@@ -74,12 +80,18 @@ public class OntSdk {
         if(connRpc != null){
             return  connRpc;
         }
-        return connRestful;
+        if(connRestful != null){
+            return  connRestful;
+        }
+        if(connWebSocket != null){
+            return  connWebSocket;
+        }
+        return null;
     }
     public void setDefaultConnect(ConnectMgr conn){
         connDefault = conn;
     }
-    public Websocket getWebSocket() throws Exception{
+    public ConnectMgr getWebSocket() throws SDKException{
         if(connWebSocket == null){
             throw new SDKException("websocket not init");
         }
@@ -156,15 +168,15 @@ public class OntSdk {
 
 
     public void setRpc(String url) {
-        this.connRpc = new ConnectMgr(url, true);
+        this.connRpc = new ConnectMgr(url, "rpc");
     }
 
     public void setRestful(String url) {
-        this.connRestful = new ConnectMgr(url);
+        this.connRestful = new ConnectMgr(url,"restful");
     }
 
-    public void setWesocket(Object lock,String url) {
-        connWebSocket = new Websocket(lock,url,getInstance());
+    public void setWesocket(String url,Object lock) {
+        connWebSocket = new ConnectMgr(url,"websocket",lock);
     }
     /**
      *

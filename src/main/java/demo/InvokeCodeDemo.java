@@ -21,6 +21,7 @@ package demo;
 
 import com.github.ontio.common.Helper;
 import com.github.ontio.OntSdk;
+import com.github.ontio.core.VmType;
 import com.github.ontio.sdk.abi.AbiInfo;
 import com.github.ontio.sdk.abi.AbiFunction;
 import com.github.ontio.sdk.info.AccountInfo;
@@ -73,7 +74,7 @@ public class InvokeCodeDemo {
             String value = "{\"Context\":\"claim:context\",\"Content\":{\"Issuer\":\"did:ont:TA8WyMDTP7BXFK6pVZ55Wn9gvAjCvsMfTm\",\"Subject\":\"did:ont:TA7idxkVHWXQgk2fd4dPZRyp7V2G7qTBzd\"},\"Signature\":{\"Format\":\"pgp\",\"Value\":\"AXLttwbJT8PV3L8P721PEDSFrMZ+wf4tYEcQMfsBiDH9Wi3DUvUnLdeBkarH2ZcvqB3YICFBcJy8aA46VLjFkFA=\",\"Algorithm\":\"ECDSAwithSHA256\"},\"Metadata\":{\"Issuer\":\"did:ont:TA8WyMDTP7BXFK6pVZ55Wn9gvAjCvsMfTm\",\"CreateTime\":\"2018-03-29T16:45:09Z\",\"Subject\":\"did:ont:TA7idxkVHWXQgk2fd4dPZRyp7V2G7qTBzd\"},\"Id\":\"3903a2f8158d71b976936ab60656fc0b615be40715d9235e4992c15e530b8ed3\"}";
             func.setParamsValue(did.ontid.getBytes(), "key".getBytes(), "bytes".getBytes(), value.getBytes(), Helper.hexToBytes(info.pubkey));
 
-            String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", func, (byte) 0x80);
+            String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", func, (byte) VmType.NEOVM.value());
 
             System.out.println("invokeTransaction hash:" + hash);
 

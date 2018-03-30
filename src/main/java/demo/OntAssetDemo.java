@@ -61,8 +61,8 @@ public class OntAssetDemo {
 
             String hash = ontSdk.getOntAssetTx().sendOngTransferFrom(info1.address,"passwordtest",info2.address,100);
 //            String hash = ontSdk.getOntAssetTx().sendTransfer("ont",info2.address,"passwordtest",info1.address,100L);
-//            String hash1 = ontSdk.getOntAssetTx().transferToMany("ont",info1.address,"passwordtest",new String[]{info2.address,info3.address},new long[]{100L,200L});
-//            String hash2 = ontSdk.getOntAssetTx().transferFromMany("ont", new String[]{info1.address, info2.address}, new String[]{"passwordtest", "passwordtest"}, info3.address, new long[]{1L, 2L});
+//            String hash1 = ontSdk.getOntAssetTx().sendTransferToMany("ont",info1.address,"passwordtest",new String[]{info2.address,info3.address},new long[]{100L,200L});
+//            String hash2 = ontSdk.getOntAssetTx().sendTransferFromMany("ont", new String[]{info1.address, info2.address}, new String[]{"passwordtest", "passwordtest"}, info3.address, new long[]{1L, 2L});
             System.out.println(hash);
         } catch (Exception e) {
             e.printStackTrace();

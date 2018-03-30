@@ -57,6 +57,20 @@ public class Control {
 
 ### 2 **Create a digital identity**
 
+
+ontsdk instance init
+
+```
+String url = "http://127.0.0.1:20384";
+OntSdk wm = OntSdk.getInstance();
+wm.setRpc(rpcUrl);
+wm.setRestful(restUrl);
+wm.setDefaultConnect(wm.getRestful());
+wm.openWalletFile("InvokeSmartCodeDemo.json");
+ontSdk.setCodeHash("89ff0f39193ddaeeeab9de4873b549f71bbe809c");
+```
+> Note: Ontid is implemented by a smart contract, so the ontid smart contract codeHash needs to be set.
+
 Digital identity creation refers to generation of a digital identity with identity data structure and writing it to wallet file. 
 
 ```

@@ -29,33 +29,13 @@ import java.util.*;
 public class MsgQueue {
 
     private static Set<String> resultSet = new HashSet<String>();
-    private static String heartBeat = "";
-    private static boolean changeHeartBeat = false;
-    public static boolean getChangeFlag() {
-        return changeHeartBeat;
-    }
-    public static void setChangeFlag(boolean b) {
-       changeHeartBeat = b;
-    }
     public static void addResult(Result obj) {
         resultSet.add(JSON.toJSONString(obj));
-    }
-    public static boolean addHeartBeat(Result obj) {
-        if (heartBeat.equals(JSON.toJSONString(obj))) {
-            changeHeartBeat = false;
-            return false;
-        }
-        changeHeartBeat = true;
-        heartBeat = JSON.toJSONString(obj);
-        return true;
     }
     public static  Set<String> getResultSet(){
         Set<String> rt = new HashSet<String>();
         rt.addAll(resultSet);
         return rt;
-    }
-    public static  String getHeartBeat(){
-        return heartBeat;
     }
 
     public static  void removeResult(String ele){

@@ -40,7 +40,6 @@ public class WebsocketClient extends AbstractConnector {
     private WebSocket mWebSocket = null;
     private Object lock;
     private boolean logFlag;
-    private boolean broadcastFlag;
     public static String wsUrl = "";
     private WebsocketClient wsClient = null;
 
@@ -50,17 +49,13 @@ public class WebsocketClient extends AbstractConnector {
         wsClient = this;
     }
 
-    public void setBroadcast(boolean b) {
-        broadcastFlag = b;
-    }
 
     public void setLog(boolean b) {
         logFlag = b;
     }
 
-    public void startWebsocketThread(boolean log,boolean broadcastFlag) {
+    public void startWebsocketThread(boolean log) {
         this.logFlag = log;
-        this.broadcastFlag = broadcastFlag;
         Thread thread = new Thread(
                 new Runnable() {
                     @Override
@@ -74,12 +69,20 @@ public class WebsocketClient extends AbstractConnector {
     public String getUrl(){
         return wsUrl;
     }
+
+    public void sendHeartBeat(Map map) {
+        map.put("Action", "heartbeat");
+        map.put("Version", "V1.0.0");
+        mWebSocket.send(JSON.toJSONString(map));
+    }
+    public void send(Map map) {
+        mWebSocket.send(JSON.toJSONString(map));
+    }
     @Override
     public Object sendRawTransaction(boolean preExec,String userid,String hexData) throws ConnectorException, IOException{
         Map map = new HashMap<>();
         map.put("Action", "sendrawtransaction");
         map.put("Version", "1.0.0");
-        map.put("Userid", userid);
         map.put("Data", hexData);
         if(preExec){
             map.put("PreExec", "1");
@@ -187,12 +190,21 @@ public class WebsocketClient extends AbstractConnector {
         mWebSocket.send(JSON.toJSONString(map));
         return null;
     }
-
+    @Override
+    public Object getContract(String hash) throws ConnectorException, IOException{
+        Map map = new HashMap<>();
+        map.put("Action", "getcontract");
+        map.put("Version", "1.0.0");
+        map.put("Raw","1");
+        map.put("Hash", hash);
+        return mWebSocket.send(JSON.toJSONString(map));
+    }
     @Override
     public Object getContractJson(String hash) throws ConnectorException, IOException{
         Map map = new HashMap<>();
         map.put("Action", "getcontract");
         map.put("Version", "1.0.0");
+        map.put("Raw","0");
         map.put("Hash", hash);
         return mWebSocket.send(JSON.toJSONString(map));
     }
@@ -246,16 +258,15 @@ public class WebsocketClient extends AbstractConnector {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
                 System.out.println("opened websocket connection");
+                mWebSocket.send("{\"Action\":\"heartbeat\"}");
+                /*
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        if (broadcastFlag) {
-                            mWebSocket.send("{\"Action\":\"heartbeat\",\"Broadcast\":true}");
-                            return;
-                        }
                         mWebSocket.send("{\"Action\":\"heartbeat\"}");
                     }
                 }, 1000, 30000);
+                */
             }
 
             @Override
@@ -265,19 +276,9 @@ public class WebsocketClient extends AbstractConnector {
                 }
                 Result result = JSON.parseObject(s, Result.class);
                 try {
-                    //TODO
                     synchronized (lock) {
-                        if (result.Action.equals("heartbeat")) {
-                            if (MsgQueue.addHeartBeat(result)) {
-                                lock.notify();
-                                MsgQueue.setChangeFlag(false);
-                            }
-                        } else {
-                            //System.out.println("onMessage:"+s);
-                            MsgQueue.addResult(result);
-                            lock.notify();
-                        }
-
+                        MsgQueue.addResult(result);
+                        lock.notify();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

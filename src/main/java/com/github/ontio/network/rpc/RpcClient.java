@@ -133,10 +133,21 @@ public class RpcClient extends AbstractConnector {
     }
 
     @Override
-    public Object getContractJson(String hash) throws RpcException {
+    public Object getContract(String hash) throws RpcException {
         Object result = null;
         try {
             result = rpc.call("getcontractstate", hash);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    public Object getContractJson(String hash) throws RpcException {
+        Object result = null;
+        try {
+            result = rpc.call("getcontractstate", hash,1);
         } catch (IOException e) {
             e.printStackTrace();
         }

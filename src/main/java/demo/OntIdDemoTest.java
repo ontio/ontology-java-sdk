@@ -35,18 +35,13 @@ import java.util.Map;
  *
  */
 
-public class OntIdWsDemoTest {
+public class OntIdDemoTest {
     public static Object lock = new Object();
     public static void main(String[] args) {
         try {
             OntSdk ontSdk = getOntSdk();
 
-            ontSdk.getWebSocket().startWebsocketThread(false,false);
-
-            //wait ws session uuid，asign websocket client
-            String wsUUID = waitUserid(ontSdk, lock);
-            System.out.println("wsSessionID:" + wsUUID);
-            ontSdk.setWsSessionId(wsUUID);
+            ontSdk.getWebSocket().startWebsocketThread(false);
 
             Wallet oep6 = ontSdk.getWalletMgr().getWallet();
             System.out.println("oep6:" + JSON.toJSONString(oep6));
@@ -56,11 +51,10 @@ public class OntIdWsDemoTest {
             System.out.println("================register=================");
             //registry ontid
             Identity ident = ontSdk.getOntIdTx().sendRegister("passwordtest");
-
+            Thread.sleep(6000);
             String ontid = ident.ontid;
 
-            //System.exit(0);
-            waitResult(ontSdk, lock);
+
             System.out.println();
             System.out.println("===============updateAttribute==================");
 
@@ -77,9 +71,8 @@ public class OntIdWsDemoTest {
             String hash = ontSdk.getOntIdTx().sendUpdateAttribute(ontid, "passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
             System.out.println("hash:" + hash);
 
-            //
-            waitResult(ontSdk, lock);
-            Thread.sleep(1000);
+
+            Thread.sleep(6000);
 
             System.out.println();
             System.out.println("===============getDDO==================");
@@ -95,45 +88,6 @@ public class OntIdWsDemoTest {
             System.exit(0);
 
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static String waitUserid(OntSdk ontSdk, Object lock) {
-        try {
-            synchronized (lock) {
-                while (true) {
-                    lock.wait();
-                    System.out.println(MsgQueue.getHeartBeat());
-                    Result rt = JSON.parseObject(MsgQueue.getHeartBeat(), Result.class);
-                    MsgQueue.setChangeFlag(false);
-                    if (rt.Action.equals("heartbeat")) {
-                        return (String) rt.Result;
-                    }
-                }
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static void waitResult(OntSdk ontSdk, Object lock) {
-        try {
-            synchronized (lock) {
-                boolean flag = false;
-                while (true) {
-                    lock.wait();
-                    for (String e : MsgQueue.getResultSet()) {
-                        System.out.println("RECV:"+e);
-                        Result rt = JSON.parseObject(e, Result.class);
-                        //TODO
-                        MsgQueue.removeResult(e);
-                        return;
-                    }
-                }
-            }
-        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }

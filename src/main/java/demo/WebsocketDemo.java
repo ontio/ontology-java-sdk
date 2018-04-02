@@ -22,10 +22,13 @@ package demo;
 import com.github.ontio.OntSdk;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
+import com.github.ontio.core.VmType;
 import com.github.ontio.core.block.Block;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.Serializable;
 import com.github.ontio.network.websocket.WebsocketClient;
+import com.github.ontio.sdk.abi.AbiFunction;
+import com.github.ontio.sdk.abi.AbiInfo;
 import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Identity;
 import com.github.ontio.sdk.wallet.Wallet;
@@ -33,6 +36,8 @@ import com.github.ontio.network.websocket.MsgQueue;
 import com.github.ontio.network.websocket.Result;
 import com.alibaba.fastjson.JSON;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,25 +48,24 @@ import java.util.Map;
 
 public class WebsocketDemo {
     public static Object lock = new Object();
+
     public static void main(String[] args) {
         try {
             OntSdk ontSdk = getOntSdk();
 
 
-
-            ontSdk.getWebSocket().startWebsocketThread(false,false);
+            ontSdk.getWebSocket().startWebsocketThread(false);
 //            ontSdk.getWebSocket().setBroadcast(true);
 
             Thread thread = new Thread(
                     new Runnable() {
                         @Override
                         public void run() {
-                            waitResult(ontSdk, lock);
-
+                            waitResult(lock);
                         }
                     });
             thread.start();
-            Thread.sleep(2000);
+            Thread.sleep(5000);
 
             Wallet oep6 = ontSdk.getWalletMgr().getWallet();
             System.out.println("oep6:" + JSON.toJSONString(oep6));
@@ -87,7 +91,7 @@ public class WebsocketDemo {
 
                 String password = "passwordtest";
 
-                if(false) {
+                if (false) {
                     Account info1 = null;
                     Account info2 = null;
                     Account info3 = null;
@@ -105,7 +109,7 @@ public class WebsocketDemo {
                     ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
                 }
 
-                if(false) {
+                if (false) {
                     String attri = "attri";
                     Map recordMap = new HashMap();
                     recordMap.put("key0", "world0");
@@ -120,7 +124,7 @@ public class WebsocketDemo {
 
                 //waitResult(ontSdk, lock);
 
-                if(true){
+                if (false) {
                     ontSdk.getConnectMgr().getBalance("TA63xZXqdPLtDeznWQ6Ns4UsbqprLrrLJk");
                     ontSdk.getConnectMgr().getBlockJson("c8c165bf0ac6107f7f324b0badb60af4dc4e1157b5eb9d3163c8f332a8612c98");
                     ontSdk.getConnectMgr().getNodeCount();
@@ -131,7 +135,39 @@ public class WebsocketDemo {
                     ontSdk.getConnectMgr().getStorage("ff00000000000000000000000000000000000001", Address.decodeBase58("TA63xZXqdPLtDeznWQ6Ns4UsbqprLrrLJk").toHexString());
                     ontSdk.getConnectMgr().getTransactionJson("7c3e38afb62db28c7360af7ef3c1baa66aeec27d7d2f60cd22c13ca85b2fd4f3");
                 }
-                Thread.sleep(5000);
+                if (false) {
+                    ontSdk.setCodeAddress("803ca638069742da4b6871fe3d7f78718eeee78a");
+                    InputStream is = new FileInputStream("C:\\ZX\\huguanjun.abi.json");//IdContract
+                    byte[] bys = new byte[is.available()];
+                    is.read(bys);
+                    is.close();
+                    String abi = new String(bys);
+
+                    AbiInfo abiinfo = JSON.parseObject(abi, AbiInfo.class);
+//            System.out.println("codeHash:"+abiinfo.getHash());
+                    //System.out.println("Entrypoint:" + abiinfo.getEntrypoint());
+                    //System.out.println("Functions:" + abiinfo.getFunctions());
+
+                    AbiFunction func0 = abiinfo.getFunction("Put");
+                    Identity did0 = ontSdk.getWalletMgr().getIdentitys().get(0);
+                    func0.setParamsValue("key".getBytes(), "value".getBytes());
+                    //func0.name = func0.name.toLowerCase();
+                    String hash0 = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did0.ontid, "passwordtest", func0, (byte) VmType.NEOVM.value());
+                    System.out.println(hash0);
+                }
+                if(true){
+                    Map map = new HashMap();
+                    if(i%2 >0) {
+                        map.put("SubscribeJsonBlock", true);
+                        map.put("SubscribeRawBlock", false);
+                    }else{
+                        map.put("SubscribeJsonBlock", false);
+                        map.put("SubscribeRawBlock", true);
+                    }
+                    //System.out.println(map);
+                    ontSdk.getWebSocket().sendHeartBeat(map);
+                }
+                Thread.sleep(10000);
             }
 
             System.exit(0);
@@ -141,17 +177,11 @@ public class WebsocketDemo {
         }
     }
 
-    public static void waitResult(OntSdk ontSdk, Object lock) {
+    public static void waitResult(Object lock) {
         try {
             synchronized (lock) {
-                //System.out.println("\nwait begin " + new Date().toString());
-                boolean flag = false;
                 while (true) {
                     lock.wait();
-                    if (MsgQueue.getChangeFlag()) {
-                        System.out.println(MsgQueue.getHeartBeat());
-                    }
-
                     for (String e : MsgQueue.getResultSet()) {
                         System.out.println("RECV: " + e);
                         Result rt = JSON.parseObject(e, Result.class);
@@ -163,7 +193,6 @@ public class WebsocketDemo {
                         }
                     }
                 }
-                //System.out.println("wait end  " +  new Date().toString()+"\n");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -181,7 +210,7 @@ public class WebsocketDemo {
         OntSdk wm = OntSdk.getInstance();
         wm.setRpc(rpcUrl);
         wm.setRestful(restUrl);
-        wm.setWesocket(wsUrl,lock);
+        wm.setWesocket(wsUrl, lock);
         wm.setDefaultConnect(wm.getWebSocket());
 
         wm.openWalletFile("OntAssetDemo.json");

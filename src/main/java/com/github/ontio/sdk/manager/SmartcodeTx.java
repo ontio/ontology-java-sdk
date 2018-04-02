@@ -48,7 +48,6 @@ import java.util.UUID;
 public class SmartcodeTx {
     private OntSdk sdk;
     private String codeAddress = null;
-    private String wsSessionId = "";
 
     public void setCodeAddress(String codeHash) {
         this.codeAddress = codeHash.replace("0x", "");
@@ -56,19 +55,6 @@ public class SmartcodeTx {
 
     public SmartcodeTx(OntSdk sdk) {
         this.sdk = sdk;
-    }
-
-    public void setWsSessionId(String sessionId) {
-        if (!this.wsSessionId.equals(sessionId)) {
-            this.wsSessionId = sessionId;
-        }
-    }
-
-    /**
-     * @return
-     */
-    public String getWsSessionId() {
-        return wsSessionId;
     }
 
     /**
@@ -155,7 +141,7 @@ public class SmartcodeTx {
         if (preExec) {
             return (String) sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         } else {
-            b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
+            b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         }
         if (!b) {
             throw new SDKException("sendRawTransaction error");
@@ -177,9 +163,9 @@ public class SmartcodeTx {
      */
     public String DeployCodeTransaction(String codeHexStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp, byte vmtype) throws Exception {
         Transaction tx = makeDeployCodeTransaction(codeHexStr, needStorage, name, codeVersion, author, email, desp, vmtype);
-        String txHex = tx.toHexString();//sdk.getWalletMgr().signatureData(tx);
+        String txHex = tx.toHexString();
         System.out.println(txHex);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, txHex);
+        boolean b = sdk.getConnectMgr().sendRawTransaction(txHex);
         if (!b) {
             throw new SDKException("sendRawTransaction error");
         }

@@ -41,6 +41,7 @@ public interface IConnector {
 
 	Object getBalance(String address) throws ConnectorException, IOException;
 
+	Object getContract(String hash) throws ConnectorException, IOException;
 	Object getContractJson(String hash) throws ConnectorException, IOException;
 	Object getSmartCodeEvent(int height) throws ConnectorException, IOException;
 	Object getSmartCodeEvent(String hash) throws ConnectorException, IOException;

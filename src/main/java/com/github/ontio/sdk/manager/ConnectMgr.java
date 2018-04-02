@@ -20,6 +20,7 @@
 package com.github.ontio.sdk.manager;
 
 import java.io.IOException;
+import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.github.ontio.OntSdk;
@@ -50,13 +51,21 @@ public class ConnectMgr {
             setConnector(new RestClient(url));
         }
     }
-    public void startWebsocketThread(boolean log,boolean broadcast){
+    public void startWebsocketThread(boolean log){
         if(connector instanceof WebsocketClient){
-            ((WebsocketClient) connector).startWebsocketThread(log,broadcast);
+            ((WebsocketClient) connector).startWebsocketThread(log);
         }
     }
-
-
+    public void send(Map map){
+        if(connector instanceof WebsocketClient){
+            ((WebsocketClient) connector).send(map);
+        }
+    }
+    public void sendHeartBeat(Map map){
+        if(connector instanceof WebsocketClient){
+            ((WebsocketClient) connector).sendHeartBeat(map);
+        }
+    }
     public ConnectMgr(IConnector connector) {
         setConnector(connector);
     }
@@ -68,7 +77,6 @@ public class ConnectMgr {
     private String getUrl() {
         return connector.getUrl();
     }
-
 
     public boolean sendRawTransaction(Transaction tx) throws ConnectorException, IOException {
         String rs = (String) connector.sendRawTransaction(Helper.toHexString(tx.toArray()));
@@ -87,21 +95,6 @@ public class ConnectMgr {
 
     public boolean sendRawTransaction(String hexData) throws ConnectorException, IOException {
         String rs = (String) connector.sendRawTransaction(hexData);
-        if (connector instanceof RpcClient) {
-            return true;
-        }
-        if (connector instanceof WebsocketClient) {
-            return true;
-        }
-        Result rr = JSON.parseObject(rs, Result.class);
-        if (rr.Error == 0) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean sendRawTransaction(String uuid, String hexData) throws ConnectorException, IOException {
-        String rs = (String) connector.sendRawTransaction(false, uuid, hexData);
         if (connector instanceof RpcClient) {
             return true;
         }
@@ -173,6 +166,10 @@ public class ConnectMgr {
         return connector.getBlockJson(hash);
     }
 
+    public Object getContract(String hash) throws ConnectorException, IOException {
+        hash = hash.replace("0x","");
+        return connector.getContract(hash);
+    }
     public Object getContractJson(String hash) throws ConnectorException, IOException {
         hash = hash.replace("0x","");
         return connector.getContractJson(hash);

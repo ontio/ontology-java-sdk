@@ -46,7 +46,6 @@ import java.util.*;
 public class OntIdTx {
     private OntSdk sdk;
     private String codeAddress = null;
-    private String wsSessionId = "";
 
 
     public OntIdTx(OntSdk sdk) {
@@ -61,15 +60,6 @@ public class OntIdTx {
         return codeAddress;
     }
 
-    public void setWsSessionId(String sessionId) {
-        if (!this.wsSessionId.equals(sessionId)) {
-            this.wsSessionId = sessionId;
-        }
-    }
-
-    public String getWsSessionId() {
-        return wsSessionId;
-    }
 
     /**
      * register
@@ -87,7 +77,7 @@ public class OntIdTx {
         sdk.signTx(tx, ontid, password);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.addressBase58);
         sdk.getWalletMgr().writeWallet();
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (!b) {
             throw new SDKException("sendRawTransaction error");
         }
@@ -137,7 +127,7 @@ public class OntIdTx {
         sdk.signTx(tx, ontid, password);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.addressBase58);
         sdk.getWalletMgr().writeWallet();
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (!b) {
             throw new SDKException("sendRawTransaction error");
         }
@@ -222,7 +212,7 @@ public class OntIdTx {
         sdk.signTx(tx, ontid, password);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.addressBase58);
         sdk.getWalletMgr().writeWallet();
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (!b) {
             return null;
         }
@@ -253,7 +243,7 @@ public class OntIdTx {
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         sdk.signTx(tx, ontid, password);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -291,7 +281,7 @@ public class OntIdTx {
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         sdk.signTx(tx, addr, password);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -329,7 +319,7 @@ public class OntIdTx {
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         sdk.signTx(tx, addr, password);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -368,7 +358,7 @@ public class OntIdTx {
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         //String txHex = sdk.getWalletMgr().signatureData(password, tx);
         sdk.signTx(tx, addr, password);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -405,7 +395,7 @@ public class OntIdTx {
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         sdk.signTx(tx, addr, password);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -441,7 +431,7 @@ public class OntIdTx {
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         sdk.signTx(tx, addr, password);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -476,7 +466,7 @@ public class OntIdTx {
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         sdk.signTx(tx, addr, password);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -514,7 +504,7 @@ public class OntIdTx {
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         sdk.signTx(tx, addr, password);;
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -533,7 +523,7 @@ public class OntIdTx {
     public String sendUpdateAttribute(String ontid, String password, byte[] path, byte[] type, byte[] value) throws Exception {
         Transaction tx = makeUpdateAttribute(ontid,password,path,type,value);
         sdk.signTx(tx,ontid,password);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -596,7 +586,7 @@ public class OntIdTx {
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         sdk.signTx(tx, addr, password);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -778,7 +768,7 @@ public class OntIdTx {
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         sdk.signTx(tx, addr, password);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -884,7 +874,7 @@ public class OntIdTx {
     public String sendRemoveAttribute(String ontid, String password, byte[] path) throws Exception {
         Transaction tx = makeRemoveAttribute(ontid,password,path);
         sdk.signTx(tx,ontid,password);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(wsSessionId, tx.toHexString());
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }

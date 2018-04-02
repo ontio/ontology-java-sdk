@@ -119,6 +119,16 @@ class Interfaces {
 
     public String getContract(String hash) throws RestfulException {
         Map<String, String> params = new HashMap<String, String>();
+        params.put("raw","1");
+        try {
+            return http.get(url + UrlConsts.Url_get_contract_state + hash, params);
+        } catch (Exception e) {
+            throw new RestfulException("Invalid url:" + url + "," + e.getMessage(), e);
+        }
+    }
+
+    public String getContractJson(String hash) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
         try {
             return http.get(url + UrlConsts.Url_get_contract_state + hash, params);
         } catch (Exception e) {

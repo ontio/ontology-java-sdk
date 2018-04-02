@@ -28,8 +28,6 @@ import com.github.ontio.sdk.wallet.Identity;
 import java.util.List;
 import java.util.Map;
 
-//00000000faa4e381315e62c404cf5d1f0a3faf8b68d694a69daa8b5d56123a2e33d70c78b4c5389e3b2373e528654d984dc54942ad7bc3ec922fe782d2b77fe9ed3114d8c5234e828d794a6764efb770a3e4dda792da132636563338982daa6768c50cf46c7cbb5a0f0000009b6193044674538402b516cd1c357114686d697660079e1114451748012312020272c2826f07f5e4f310e2f708689548f0d6d0e007603bdc7e6a2512c673db54df014101ba5e98cef3c4e3f90b479aad001f2039be35e26948c39fccd129622b7679ae176bcc7a985f57449ccbcdc053b76c8f25929a49082fa52f5809805e57617f0b1e01000000000000000000cc8322c00d1220150000000000000000000001012312020272c2826f07f5e4f310e2f708689548f0d6d0e007603bdc7e6a2512c673db54df0101410133d0d8e531062dbb3dd1fabda127baefca0137ed46c23de180106d4f06b3bbde07c82c180c2ed1b66c7b50edeea38ae775964632a12cfebe81f28313bfbe9cdf
-//00000000faa4e381315e62c404cf5d1f0a3faf8b68d694a69daa8b5d56123a2e33d70c78b4c5389e3b2373e528654d984dc54942ad7bc3ec922fe782d2b77fe9ed3114d8c5234e828d794a6764efb770a3e4dda792da132636563338982daa6768c50cf46c7cbb5a0f0000009b6193044674538402b516cd1c357114686d697660079e1114451748012312020272c2826f07f5e4f310e2f708689548f0d6d0e007603bdc7e6a2512c673db54df014101ba5e98cef3c4e3f90b479aad001f2039be35e26948c39fccd129622b7679ae176bcc7a985f57449ccbcdc053b76c8f25929a49082fa52f5809805e57617f0b1e01000000000000000000cc8322c00d1220150000000000000000000001012312020272c2826f07f5e4f310e2f708689548f0d6d0e007603bdc7e6a2512c673db54df0101410133d0d8e531062dbb3dd1fabda127baefca0137ed46c23de180106d4f06b3bbde07c82c180c2ed1b66c7b50edeea38ae775964632a12cfebe81f28313bfbe9cdf
 /**
  *
  */
@@ -49,9 +47,9 @@ public class Demo {
 //            System.out.println(((InvokeCodeTransaction)ontSdk.getConnectMgr().getRawTransaction("c2592940837c2347f6a7b391d4940abb7171dd5dd156b7c031d20a5940142b5a")).fee[0].payer.toBase58());
 //            System.out.println((ontSdk.getConnectMgr().getTransaction("d441a967315989116bf0afad498e4016f542c1e7f8605da943f07633996c24cc")));
 //            System.out.println(ontSdk.getConnectMgr().getSmartCodeEvent(59));
-//            System.out.println(ontSdk.getConnectMgr().getContractJson("80e7d2fc22c24c466f44c7688569cc6e6d6c6f92"));
-            System.out.println(ontSdk.getConnectMgr().getBlockHeightByTxHash("7c3e38afb62db28c7360af7ef3c1baa66aeec27d7d2f60cd22c13ca85b2fd4f3"));
-            String v = (String)ontSdk.getConnectMgr().getStorage("ff00000000000000000000000000000000000001", Address.decodeBase58("TA63xZXqdPLtDeznWQ6Ns4UsbqprLrrLJk").toHexString());
+            System.out.println(ontSdk.getConnectMgr().getContractJson("803ca638069742da4b6871fe3d7f78718eeee78a"));
+            //System.out.println(ontSdk.getConnectMgr().getBlockHeightByTxHash("7c3e38afb62db28c7360af7ef3c1baa66aeec27d7d2f60cd22c13ca85b2fd4f3"));
+            //String v = (String)ontSdk.getConnectMgr().getStorage("ff00000000000000000000000000000000000001", Address.decodeBase58("TA63xZXqdPLtDeznWQ6Ns4UsbqprLrrLJk").toHexString());
             //System.out.println(v);
             System.exit(0);
             List list = (List) ontSdk.getConnectMgr().getSmartCodeEvent("a12117c319aa6906efd8869ba65c221f4e2ee44a8a2766fd326c8d7125beffbf");
@@ -100,7 +98,7 @@ public class Demo {
 //        String ip = "http://54.222.182.88;
 //        String ip = "http://101.132.193.149";
         String restUrl = ip + ":" + "20334";
-        String rpcUrl = ip + ":" + "20386";
+        String rpcUrl = ip + ":" + "20336";
         String wsUrl = ip + ":" + "20385";
 
         OntSdk wm = OntSdk.getInstance();

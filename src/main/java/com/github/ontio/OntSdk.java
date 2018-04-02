@@ -140,14 +140,6 @@ public class OntSdk {
         return walletMgr;
     }
 
-    /**
-     *
-     * @param sessionId
-     */
-    public void setWsSessionId(String sessionId){
-        getOntIdTx().setWsSessionId(sessionId);
-        getSmartcodeTx().setWsSessionId(sessionId);
-    }
 
     /**
      *

@@ -26,11 +26,7 @@ import com.github.ontio.core.asset.Sig;
 import com.github.ontio.crypto.KeyType;
 import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.sdk.manager.ConnectMgr;
-import com.github.ontio.sdk.manager.WalletMgr;
-import com.github.ontio.sdk.manager.OntAssetTx;
-import com.github.ontio.sdk.manager.OntIdTx;
-import com.github.ontio.sdk.manager.SmartcodeTx;
+import com.github.ontio.sdk.manager.*;
 import com.github.ontio.network.websocket.WebsocketClient;
 
 /**
@@ -44,6 +40,7 @@ public class OntSdk {
     private ConnectMgr connDefault;
 
     private OntIdTx ontIdTx = null;
+    private RecordTx recordTx = null;
     private SmartcodeTx smartcodeTx = null;
     private OntAssetTx ontAssetTx = null;
     private static OntSdk instance = null;
@@ -111,6 +108,18 @@ public class OntSdk {
     }
 
     /**
+     * RecordTx
+     * @return instance
+     */
+    public RecordTx getRecordTx() {
+        if(recordTx == null){
+            getSmartcodeTx();
+            recordTx = new RecordTx(getInstance());
+        }
+        return recordTx;
+    }
+
+    /**
      *  Smartcode Tx
      * @return instance
      */
@@ -148,6 +157,7 @@ public class OntSdk {
     public void setCodeAddress(String codeAddress){
         getOntIdTx().setCodeAddress(codeAddress);
         getSmartcodeTx().setCodeAddress(codeAddress);
+        getRecordTx().setCodeAddress(codeAddress);
     }
 
     /**

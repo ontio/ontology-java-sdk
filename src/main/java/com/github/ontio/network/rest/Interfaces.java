@@ -171,7 +171,14 @@ class Interfaces {
             throw new RestfulException("Invalid url:" + url + "," + e.getMessage(), e);
         }
     }
-
+    public String getMerkleProof(String hash) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            return http.get(url + UrlConsts.Url_get_merkleproof + hash, params);
+        } catch (Exception e) {
+            throw new RestfulException("Invalid url:" + url + "," + e.getMessage(), e);
+        }
+    }
     public String getBalance(String address) throws RestfulException {
         Map<String, String> params = new HashMap<String, String>();
         try {

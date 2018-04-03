@@ -48,4 +48,5 @@ public interface IConnector {
 	int getBlockHeightByTxHash(String hash) throws ConnectorException, IOException;
 
 	String getStorage(String codehash,String key) throws ConnectorException, IOException;
+	Object getMerkleProof(String hash) throws ConnectorException, IOException;
 }

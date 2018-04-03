@@ -192,6 +192,11 @@ public class ConnectMgr {
         codehash = codehash.replace("0x", "");
         return connector.getStorage(codehash, key);
     }
+
+    public Object getMerkleProof(String hash) throws ConnectorException, IOException {
+        hash = hash.replace("0x", "");
+        return connector.getMerkleProof(hash);
+    }
 }
 
 

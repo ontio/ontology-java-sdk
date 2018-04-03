@@ -37,4 +37,5 @@ public class UrlConsts {
 	public static String Url_get_smartcodeevent_by_txhash = "/api/v1/smartcode/event/txhash/";
 	public static String Url_get_block_height_by_txhash = "/api/v1/block/height/txhash/";
 	public static String Url_get_storage = "/api/v1/storage/";
+	public static String Url_get_merkleproof = "/api/v1/merkleproof/";
 }

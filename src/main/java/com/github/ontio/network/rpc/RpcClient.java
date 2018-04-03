@@ -236,5 +236,14 @@ public class RpcClient extends AbstractConnector {
             throw new RuntimeException(e);
         }
     }
+    @Override
+    public Object getMerkleProof(String hash) throws ConnectorException, IOException {
+        Object result = rpc.call("getmerkleproof", hash);
+        try {
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 

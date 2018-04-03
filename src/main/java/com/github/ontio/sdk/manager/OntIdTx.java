@@ -101,12 +101,7 @@ public class OntIdTx {
         tmp.add(ontid.getBytes());
         tmp.add(pk);
         list.add(tmp);
-        Fee[] fees = new Fee[1];
-        fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
-        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
+        Transaction tx = makeInvokeTransaction(list,info);
         return tx;
     }
     /**
@@ -122,7 +117,6 @@ public class OntIdTx {
         }
         AccountInfo info = sdk.getWalletMgr().createIdentityInfo(password,sdk.keyType,sdk.curveParaSpec);
         String ontid = Common.didont + info.addressBase58;
-
         Transaction tx = makeRegister(info);
         sdk.signTx(tx, ontid, password);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.addressBase58);
@@ -151,7 +145,7 @@ public class OntIdTx {
         String ontid = Common.didont + info.addressBase58;
         byte[] pk = Helper.hexToBytes(info.pubkey);
         List list = new ArrayList<Object>();
-        list.add("RegIdWithPublicKey".getBytes());
+        list.add("RegIdWithAttributes".getBytes());
         List tmp = new ArrayList<Object>();
         tmp.add(ontid.getBytes());
         tmp.add(pk);
@@ -203,12 +197,7 @@ public class OntIdTx {
 
         tmp.add(Helper.addBytes(new byte[]{attriNum}, allAttrsBys));
         list.add(tmp);
-        Fee[] fees = new Fee[1];
-        fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
-        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
+        Transaction tx = makeInvokeTransaction(list,info);
         sdk.signTx(tx, ontid, password);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.addressBase58);
         sdk.getWalletMgr().writeWallet();
@@ -236,12 +225,7 @@ public class OntIdTx {
         li.add("CreateIdentityByGuardian".getBytes());
         li.add(ontid.getBytes());
         li.add(guardianDid);
-        Fee[] fees = new Fee[1];
-        fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
-        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(li);
-        params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
+        Transaction tx = makeInvokeTransaction(li,ontid,password);
         sdk.signTx(tx, ontid, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -272,14 +256,9 @@ public class OntIdTx {
         tmp.add(did);
         tmp.add(Helper.hexToBytes(newpubkey));
         tmp.add(pk);
-        tmp.add(new byte[]{0});
+//        tmp.add(new byte[]{0});
         list.add(tmp);
-        Fee[] fees = new Fee[1];
-        fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
-        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
+        Transaction tx = makeInvokeTransaction(list,addr,password);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -312,12 +291,7 @@ public class OntIdTx {
         tmp.add(Helper.hexToBytes(recoveryScriptHash));
         tmp.add(new byte[]{1});
         list.add(tmp);
-        Fee[] fees = new Fee[1];
-        fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
-        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
+        Transaction tx = makeInvokeTransaction(list,addr,password);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -349,13 +323,7 @@ public class OntIdTx {
         tmp.add(Helper.hexToBytes(newpubkey));
         tmp.add(guardianDid);
         list.add(tmp);
-        Fee[] fees = new Fee[1];
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
-        fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
-        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
+        Transaction tx = makeInvokeTransaction(list,addr,password);
         //String txHex = sdk.getWalletMgr().signatureData(password, tx);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
@@ -387,13 +355,7 @@ public class OntIdTx {
         tmp.add(Helper.hexToBytes(removepk));
         tmp.add(pk);
         list.add(tmp);
-        Fee[] fees = new Fee[1];
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
-        fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
-        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
+        Transaction tx = makeInvokeTransaction(list,addr,password);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -423,13 +385,7 @@ public class OntIdTx {
         tmp.add(Helper.hexToBytes(recoveryScriptHash));
         tmp.add(1);
         list.add(tmp);
-        Fee[] fees = new Fee[1];
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
-        fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
-        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
+        Transaction tx = makeInvokeTransaction(list,addr,password);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -458,13 +414,7 @@ public class OntIdTx {
         tmp.add(Helper.hexToBytes(recoveryScriptHash));
         tmp.add(pk);
         list.add(tmp);
-        Fee[] fees = new Fee[1];
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
-        fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
-        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
+        Transaction tx = makeInvokeTransaction(list,addr,password);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -496,13 +446,7 @@ public class OntIdTx {
         tmp.add(Helper.hexToBytes(newRecoveryScriptHash));
         tmp.add(pk);
         list.add(tmp);
-        Fee[] fees = new Fee[1];
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
-        fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
-        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
+        Transaction tx = makeInvokeTransaction(list,addr,password);
         sdk.signTx(tx, addr, password);;
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -549,13 +493,7 @@ public class OntIdTx {
         tmp.add(value);
         tmp.add(pk);
         list.add(tmp);
-        Fee[] fees = new Fee[1];
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
-        fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
-        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
+        Transaction tx = makeInvokeTransaction(list,addr,password);
         return tx;
     }
     /**
@@ -578,13 +516,7 @@ public class OntIdTx {
         tmp.add(pk);
         tmp.add(attriList);
         list.add(tmp);
-        Fee[] fees = new Fee[1];
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
-        fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
-        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
+        Transaction tx = makeInvokeTransaction(list,addr,password);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -593,6 +525,16 @@ public class OntIdTx {
         return null;
     }
 
+    private int bytes2int(byte[] b)
+    {
+        int i = 0;
+        int ret = 0;
+        for (; i < b.length; i++) {
+            ret = ret * 256;
+            ret = ret + b[i];
+        }
+        return ret;
+    }
     /**
      * @param ontid
      * @param obj
@@ -600,20 +542,25 @@ public class OntIdTx {
      */
     private Map parseDdoData(String ontid, String obj) {
         byte[] bys = Helper.hexToBytes(obj);
-        int elen = (bys[0] & 0xFF) * 256 * 256 * 256 + (bys[1] & 0xFF) * 256 * 256 + (bys[2] & 0xFF) * 256 + (bys[3] & 0xFF);
+        int elen = parse4bytes(bys,0);
         int offset = 4;
         if (elen == 0) {
             return new HashMap();
         }
         byte[] pubkeysData = new byte[elen];
         System.arraycopy(bys, offset, pubkeysData, 0, elen);
-        int pubkeysNum = pubkeysData[0];
-        offset = 1;
+//        int pubkeysNum = pubkeysData[0];
+
+        byte[] tmpb = new byte[4];
+        System.arraycopy(bys,offset, tmpb, 0, 4);
+        int pubkeysNum = bytes2int(tmpb);
+
+        offset = 4;
         Map map = new HashMap();
         Map attriMap = new HashMap();
         List ownersList = new ArrayList();
         for (int i = 0; i < pubkeysNum; i++) {
-            int len = (pubkeysData[offset] & 0xFF) * 256 * 256 * 256 + (pubkeysData[offset + 1] & 0xFF) * 256 * 256 + (pubkeysData[offset + 2] & 0xFF) * 256 + (pubkeysData[offset + 3] & 0xFF);
+            int len = parse4bytes(pubkeysData,offset);
             offset = offset + 4;
             byte[] data = new byte[len];
             System.arraycopy(pubkeysData, offset, data, 0, len);
@@ -627,53 +574,68 @@ public class OntIdTx {
         map.put("OntId", ontid);
         offset = 4 + elen;
 
-        elen = (bys[offset] & 0xFF) * 256 * 256 * 256 + (bys[offset + 1] & 0xFF) * 256 * 256 + (bys[offset + 2] & 0xFF) * 256 + (bys[offset + 3] & 0xFF);
+        elen = parse4bytes(bys,offset);
         offset = offset + 4;
-        if (elen == 0) {
+        int totalOffset = offset + elen;
+        if (elen != 0) {
+            byte[] attrisData = new byte[elen];
+            System.arraycopy(bys, offset, attrisData, 0, elen);
+
+//        int attrisNum = attrisData[0];
+            System.arraycopy(bys,offset, tmpb, 0, 4);
+            int attrisNum = bytes2int(tmpb);
+
+            offset = 4;
+            for (int i = 0; i < attrisNum; i++) {
+
+                int dataLen = parse4bytes(attrisData,offset);
+                offset = offset + 4;
+                byte[] data = new byte[dataLen];
+                System.arraycopy(attrisData, offset, data, 0, dataLen);
+                offset = offset + dataLen;
+
+
+                int index = 0;
+                int len = parse4bytes(data,index);
+                index = index + 4;
+                byte[] key = new byte[len];
+                System.arraycopy(data, index, key, 0, len);
+                index = index + len;
+
+                len = parse4bytes(data,index);
+                index = index + 4;
+                len = data[index];
+                index++;
+                byte[] type = new byte[len];
+                System.arraycopy(data, index, type, 0, len);
+                index = index + len;
+
+                byte[] value = new byte[dataLen - index];
+                System.arraycopy(data, index, value, 0, dataLen - index);
+
+                Map tmp = new HashMap();
+                tmp.put("Type", new String(type));
+                tmp.put("Value", new String(value));
+                attriMap.put(new String(key), tmp);
+            }
             map.put("Attributes", attriMap);
-            return map;
         }
-
-        byte[] attrisData = new byte[elen];
-        System.arraycopy(bys, offset, attrisData, 0, elen);
-
-        int attrisNum = attrisData[0];
-        offset = 1;
-        for (int i = 0; i < attrisNum; i++) {
-
-            int dataLen = (attrisData[offset] & 0xFF) * 256 * 256 * 256 + (attrisData[offset + 1] & 0xFF) * 256 * 256 + (attrisData[offset + 2] & 0xFF) * 256 + (attrisData[offset + 3] & 0xFF);
-            offset = offset + 4;
-            byte[] data = new byte[dataLen];
-            System.arraycopy(attrisData, offset, data, 0, dataLen);
-            offset = offset + dataLen;
-
-
-            int index = 0;
-            int len = (data[index] & 0xFF) * 256 * 256 * 256 + (data[index + 1] & 0xFF) * 256 * 256 + (data[index + 2] & 0xFF) * 256 + (data[index + 3] & 0xFF);
-            index = index + 4;
-            byte[] key = new byte[len];
-            System.arraycopy(data, index, key, 0, len);
-            index = index + len;
-
-            len = (data[index] & 0xFF) * 256 * 256 * 256 + (data[index + 1] & 0xFF) * 256 * 256 + (data[index + 2] & 0xFF) * 256 + (data[index + 3] & 0xFF);
-            index = index + 4;
-            len = data[index];
-            index++;
-            byte[] type = new byte[len];
-            System.arraycopy(data, index, type, 0, len);
-            index = index + len;
-
-            byte[] value = new byte[dataLen - index];
-            System.arraycopy(data, index, value, 0, dataLen - index);
-
-            Map tmp = new HashMap();
-            tmp.put("Type", new String(type));
-            tmp.put("Value", new String(value));
-            attriMap.put(new String(key), tmp);
-        }
-        map.put("Attributes", attriMap);
         //System.out.println(JSON.toJSONString(map));
+        if(totalOffset < bys.length){
+            elen = parse4bytes(bys,totalOffset);
+            if(elen == 0){
+                return map;
+            }
+            byte[] recoveryData = new byte[elen];
+            offset = 4;
+            System.arraycopy(bys, totalOffset + 4, recoveryData, 0, elen);
+            System.out.println("recoveryData:"+Helper.toHexString(recoveryData));
+            map.put("Recovery",Helper.toHexString(recoveryData));
+        }
         return map;
+    }
+    private int parse4bytes(byte[] bs,int offset){
+        return (bs[offset] & 0xFF) * 256 * 256 * 256 + (bs[offset + 1] & 0xFF) * 256 * 256 + (bs[offset + 2] & 0xFF) * 256 + (bs[offset + 3] & 0xFF);
     }
 
     /**
@@ -760,13 +722,7 @@ public class OntIdTx {
         tmp.add(key);
         tmp.add(value);
         list.add(tmp);
-        Fee[] fees = new Fee[1];
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
-        fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
-        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
+        Transaction tx = makeInvokeTransaction(list,addr,password);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -898,13 +854,30 @@ public class OntIdTx {
         tmp.add(path);
         tmp.add(pk);
         list.add(tmp);
+        Transaction tx = makeInvokeTransaction(list,addr,password);
+        return tx;
+    }
+
+    public Transaction makeInvokeTransaction(List<Object> list,AccountInfo acctinfo) throws Exception {
         Fee[] fees = new Fee[1];
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
-        fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
+        fees[0] = new Fee(0, Address.addressFromPubKey(acctinfo.pubkey));
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         params = Helper.addBytes(params, new byte[]{0x69});
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         return tx;
     }
+    public Transaction makeInvokeTransaction(List<Object> list,String addr, String password) throws Exception {
+        addr = addr.replace(Common.didont, "");
+        AccountInfo acctinfo = sdk.getWalletMgr().getAccountInfo(addr,password,sdk.keyType,sdk.curveParaSpec);
+        Fee[] fees = new Fee[1];
+        fees[0] = new Fee(0, Address.addressFromPubKey(acctinfo.pubkey));
+        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
+        params = Helper.addBytes(params, new byte[]{0x69});
+        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
+        return tx;
+    }
+
+
 }

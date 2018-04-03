@@ -72,7 +72,6 @@ public class RecordTx {
         list.add(tmp);
         Transaction tx = makeInvokeTransaction(list,info);
         sdk.signTx(tx, addr, password);
-        System.out.println(tx.toHexString());
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         List listResult = (List) obj;
         byte[] res = Helper.hexToBytes((String)listResult.get(0));

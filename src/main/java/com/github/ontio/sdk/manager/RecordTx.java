@@ -1,5 +1,6 @@
 package com.github.ontio.sdk.manager;
 
+import com.alibaba.fastjson.JSON;
 import com.github.ontio.OntSdk;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Common;
@@ -7,10 +8,12 @@ import com.github.ontio.common.Helper;
 import com.github.ontio.core.VmType;
 import com.github.ontio.core.asset.Fee;
 import com.github.ontio.core.transaction.Transaction;
+import com.github.ontio.crypto.KeyType;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class RecordTx {
@@ -45,7 +48,7 @@ public class RecordTx {
         list.add("put".getBytes());
         List tmp = new ArrayList<Object>();
         tmp.add(key.getBytes());
-        tmp.add(value.getBytes());
+        tmp.add(JSON.toJSONString(constructRecord(value)).getBytes());
         list.add(tmp);
         Transaction tx = makeInvokeTransaction(list,info);
         sdk.signTx(tx, addr, password);
@@ -87,5 +90,20 @@ public class RecordTx {
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         return tx;
+    }
+
+    private LinkedHashMap<String, Object> constructRecord(String text) {
+        LinkedHashMap<String, Object> recordData = new LinkedHashMap<String, Object>();
+        LinkedHashMap<String, Object> data = new LinkedHashMap<String, Object>();
+        data.put("Algrithem", KeyType.SM2.name());
+        data.put("Hash", "");
+        data.put("Text", text);
+        data.put("Signature", "");
+
+        recordData.put("Data", data);
+        recordData.put("CAkey", "");
+        recordData.put("SeqNo", "");
+        recordData.put("Timestamp", 0);
+        return recordData;
     }
 }

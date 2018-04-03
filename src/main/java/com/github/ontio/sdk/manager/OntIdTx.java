@@ -682,20 +682,6 @@ public class OntIdTx {
         return new String[]{};
     }
 
-    private LinkedHashMap<String, Object> constructRecord(String text) {
-        LinkedHashMap<String, Object> recordData = new LinkedHashMap<String, Object>();
-        LinkedHashMap<String, Object> data = new LinkedHashMap<String, Object>();
-        data.put("Algrithem", KeyType.SM2.name());
-        data.put("Hash", "");
-        data.put("Text", text);
-        data.put("Signature", "");
-
-        recordData.put("Data", data);
-        recordData.put("CAkey", "");
-        recordData.put("SeqNo", "");
-        recordData.put("Timestamp", 0);
-        return recordData;
-    }
 
     /**
      * @param ontid

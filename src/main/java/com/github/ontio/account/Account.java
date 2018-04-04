@@ -91,6 +91,7 @@ public class Account {
     }
     // construct an account from a serialized pubic key or private key
     public Account(boolean fromPrivate, byte[] data) throws Exception {
+        Security.addProvider(new BouncyCastleProvider());
         if (fromPrivate) {
             //parsePrivateKey(data);
         }

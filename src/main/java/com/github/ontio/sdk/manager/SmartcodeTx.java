@@ -94,7 +94,7 @@ public class SmartcodeTx {
      * @return
      * @throws Exception
      */
-    private String invokeTransaction(boolean preExec, String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
+    private Object invokeTransaction(boolean preExec, String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
         if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
@@ -139,7 +139,7 @@ public class SmartcodeTx {
         }
         boolean b = false;
         if (preExec) {
-            return (String) sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+            return sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         } else {
             b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         }

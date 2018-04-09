@@ -928,8 +928,6 @@ public class OntIdTx {
             throw new SDKException("null pkId");
         }
         byte[] did = (ontid).getBytes();
-        System.out.println("did....:"+did.length);
-        System.out.println("did....:"+Helper.toHexString(did));
         String addr = ontid.replace(Common.didont, "");
         byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec).pubkey);
         List list = new ArrayList<Object>();

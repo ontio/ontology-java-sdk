@@ -45,7 +45,7 @@ public class RecordTx {
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
         byte[] pk = Helper.hexToBytes(info.pubkey);
         List list = new ArrayList<Object>();
-        list.add("put".getBytes());
+        list.add("Put".getBytes());
         List tmp = new ArrayList<Object>();
         tmp.add(key.getBytes());
         tmp.add(JSON.toJSONString(constructRecord(value)).getBytes());
@@ -69,7 +69,7 @@ public class RecordTx {
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
         byte[] pk = Helper.hexToBytes(info.pubkey);
         List list = new ArrayList<Object>();
-        list.add("get".getBytes());
+        list.add("Get".getBytes());
         List tmp = new ArrayList<Object>();
         tmp.add(key.getBytes());
         list.add(tmp);

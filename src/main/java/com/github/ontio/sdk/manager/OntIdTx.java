@@ -819,7 +819,7 @@ public class OntIdTx {
             for (int i = 0; i < hashes.size(); i++) {
                 targetHashes[i] = UInt256.parse((String) hashes.get(i));
             }
-            return MerkleVerifier.VerifyLeafHashInclusion(txroot, blockHeight, targetHashes, curBlockRoot, curBlockHeight);
+            return MerkleVerifier.VerifyLeafHashInclusion(txroot, blockHeight, targetHashes, curBlockRoot, curBlockHeight + 1);
         } catch (Exception e) {
             e.printStackTrace();
             throw new SDKException(e);

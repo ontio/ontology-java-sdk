@@ -908,4 +908,47 @@ public class OntIdTx {
     }
 
 
+    public String sendGetPublicKeyId(String ontid,String password) throws Exception {
+        if (codeAddress == null) {
+            throw new SDKException("null codeHash");
+        }
+        byte[] did = (ontid).getBytes();
+        String addr = ontid.replace(Common.didont, "");
+        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec).pubkey);
+        List list = new ArrayList<Object>();
+        list.add("GetPublicKeyId".getBytes());
+        List tmp = new ArrayList<Object>();
+        tmp.add(did);
+        tmp.add(pk);
+        list.add(tmp);
+        Transaction tx = makeInvokeTransaction(list,addr,password);
+        sdk.signTx(tx,addr,password);
+        Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        List listResult = (List) obj;
+        return (String) listResult.get(0);
+    }
+
+    public String sendGetPublicKeyStatus(String ontid,String password,byte[] pkId) throws Exception{
+        if (codeAddress == null) {
+            throw new SDKException("null codeHash");
+        }
+        if (pkId.length == 0) {
+            throw new SDKException("null pkId");
+        }
+        byte[] did = (ontid).getBytes();
+        String addr = ontid.replace(Common.didont, "");
+        List list = new ArrayList<Object>();
+        list.add("GetPublicKeyStatus".getBytes());
+        List tmp = new ArrayList<Object>();
+        tmp.add(did);
+        tmp.add(pkId);
+        list.add(tmp);
+        Transaction tx = makeInvokeTransaction(list,addr,password);
+        sdk.signTx(tx,addr,password);
+        Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        List listResult = (List) obj;
+        return (String) listResult.get(0);
+    }
+
+
 }

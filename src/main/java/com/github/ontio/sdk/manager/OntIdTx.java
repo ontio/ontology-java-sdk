@@ -25,6 +25,8 @@ import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.Helper;
+import com.github.ontio.common.UInt256;
+import com.github.ontio.merkle.MerkleVerifier;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.wallet.Identity;
@@ -779,10 +781,42 @@ public class OntIdTx {
             byte[] data = JSON.toJSONString(obj).getBytes();
             return sign.verifySignature(new Account(false, Helper.hexToBytes(pubkeyStr)), data, Base64.getDecoder().decode(signature));
         } catch (Exception e) {
+            e.printStackTrace();
             throw new SDKException(e);
         }
     }
 
+    /**
+     *
+     * @param claim
+     * @return
+     * @throws Exception
+     */
+    public boolean verifyMerkleProof(String claim) throws Exception {
+        try {
+            JSONObject obj = JSON.parseObject(claim);
+            Map prf = (Map) obj.getJSONObject("Proof");
+            String txhash = (String) prf.get("TxnHash");
+            int height = sdk.getConnectMgr().getBlockHeightByTxHash(txhash);
+            if (height != (int) prf.get("BlockHeight")) {
+                throw new SDKException("BlockHeight not match");
+            }
+            Map proof = (Map) sdk.getConnectMgr().getMerkleProof(txhash);
+            UInt256 txroot = UInt256.parse((String) proof.get("TransactionsRoot"));
+            int blockHeight = (int) proof.get("BlockHeight");
+            UInt256 curBlockRoot = UInt256.parse((String) proof.get("CurBlockRoot"));
+            int curBlockHeight = (int) proof.get("CurBlockHeight");
+            List hashes = (List) proof.get("TargetHashes");
+            UInt256[] targetHashes = new UInt256[hashes.size()];
+            for (int i = 0; i < hashes.size(); i++) {
+                targetHashes[i] = UInt256.parse((String) hashes.get(i));
+            }
+            return MerkleVerifier.VerifyLeafHashInclusion(txroot, blockHeight, targetHashes, curBlockRoot, curBlockHeight);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SDKException(e);
+        }
+    }
     /**
      * verify Signature
      *

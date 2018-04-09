@@ -82,7 +82,7 @@ public class WebsocketDemo {
             String ontid = ident.ontid;
 
 
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i >= 0; i++) {
 
                 //System.out.println(ontid);
                 //String hash = ontSdk.getOntIdTx().updateAttribute(ontid, "passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
@@ -144,30 +144,31 @@ public class WebsocketDemo {
                     String abi = new String(bys);
 
                     AbiInfo abiinfo = JSON.parseObject(abi, AbiInfo.class);
-//            System.out.println("codeHash:"+abiinfo.getHash());
                     //System.out.println("Entrypoint:" + abiinfo.getEntrypoint());
                     //System.out.println("Functions:" + abiinfo.getFunctions());
 
                     AbiFunction func0 = abiinfo.getFunction("Put");
                     Identity did0 = ontSdk.getWalletMgr().getIdentitys().get(0);
                     func0.setParamsValue("key".getBytes(), "value".getBytes());
-                    //func0.name = func0.name.toLowerCase();
                     String hash0 = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did0.ontid, "passwordtest", func0, (byte) VmType.NEOVM.value());
+
                     System.out.println(hash0);
                 }
                 if(true){
                     Map map = new HashMap();
-                    if(i%2 >0) {
-                        map.put("SubscribeJsonBlock", true);
+                    if(i >0) {
+                        map.put("SubscribeEvent", true);
                         map.put("SubscribeRawBlock", false);
                     }else{
                         map.put("SubscribeJsonBlock", false);
                         map.put("SubscribeRawBlock", true);
                     }
                     //System.out.println(map);
+                    ontSdk.getWebSocket().setReqId(i);
                     ontSdk.getWebSocket().sendHeartBeat(map);
+//                    ontSdk.getWebSocket().getBlockHeight();
                 }
-                Thread.sleep(10000);
+                Thread.sleep(6000);
             }
 
             System.exit(0);

@@ -20,7 +20,6 @@
 package com.github.ontio.network.websocket;
 
 import com.alibaba.fastjson.JSON;
-import com.github.ontio.OntSdk;
 import com.github.ontio.core.block.Block;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.network.connect.AbstractConnector;
@@ -28,10 +27,7 @@ import com.github.ontio.network.exception.ConnectorException;
 import okhttp3.*;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 /**
  *
@@ -40,6 +36,7 @@ public class WebsocketClient extends AbstractConnector {
     private WebSocket mWebSocket = null;
     private Object lock;
     private boolean logFlag;
+    private long reqId = 0;
     public static String wsUrl = "";
     private WebsocketClient wsClient = null;
 
@@ -73,10 +70,20 @@ public class WebsocketClient extends AbstractConnector {
     public void sendHeartBeat(Map map) {
         map.put("Action", "heartbeat");
         map.put("Version", "V1.0.0");
+        map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
     }
     public void send(Map map) {
         mWebSocket.send(JSON.toJSONString(map));
+    }
+    public void setReqId(long reqId){
+        this.reqId = reqId;
+    }
+    private long generateReqId(){
+        if(reqId == 0) {
+            return new Random().nextInt() & Integer.MAX_VALUE;
+        }
+        return reqId;
     }
     @Override
     public Object sendRawTransaction(boolean preExec,String userid,String hexData) throws ConnectorException, IOException{
@@ -84,6 +91,7 @@ public class WebsocketClient extends AbstractConnector {
         map.put("Action", "sendrawtransaction");
         map.put("Version", "1.0.0");
         map.put("Data", hexData);
+        map.put("Id", generateReqId());
         if(preExec){
             map.put("PreExec", "1");
         }
@@ -96,6 +104,7 @@ public class WebsocketClient extends AbstractConnector {
         map.put("Action", "sendrawtransaction");
         map.put("Version", "1.0.0");
         map.put("Data", hexData);
+        map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
         return "";
     }
@@ -106,6 +115,7 @@ public class WebsocketClient extends AbstractConnector {
         map.put("Version", "1.0.0");
         map.put("Hash", txhash);
         map.put("Raw", "1");
+        map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
         return null;
     }
@@ -116,6 +126,7 @@ public class WebsocketClient extends AbstractConnector {
         map.put("Version", "1.0.0");
         map.put("Hash", txhash);
         map.put("Raw", "0");
+        map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
         return null;
     }
@@ -124,6 +135,7 @@ public class WebsocketClient extends AbstractConnector {
         Map map = new HashMap<>();
         map.put("Action", "getgenerateblocktime");
         map.put("Version", "1.0.0");
+        map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
         return 0;
     }
@@ -132,6 +144,7 @@ public class WebsocketClient extends AbstractConnector {
         Map map = new HashMap<>();
         map.put("Action", "getconnectioncount");
         map.put("Version", "1.0.0");
+        map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
         return 0;
     }
@@ -140,6 +153,7 @@ public class WebsocketClient extends AbstractConnector {
         Map map = new HashMap<>();
         map.put("Action", "getblockheight");
         map.put("Version", "1.0.0");
+        map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
         return 0;
     }
@@ -150,6 +164,7 @@ public class WebsocketClient extends AbstractConnector {
         map.put("Version", "1.0.0");
         map.put("Height",height);
         map.put("Raw","1");
+        map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
         return null;
     }
@@ -160,6 +175,7 @@ public class WebsocketClient extends AbstractConnector {
         map.put("Version", "1.0.0");
         map.put("Hash",hash);
         map.put("Raw","1");
+        map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
         return null;
     }
@@ -169,6 +185,7 @@ public class WebsocketClient extends AbstractConnector {
         map.put("Action", "getblockbyheight");
         map.put("Version", "1.0.0");
         map.put("Height",height);
+        map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
         return null;
     }
@@ -178,6 +195,7 @@ public class WebsocketClient extends AbstractConnector {
         map.put("Action", "getblockbyhash");
         map.put("Version", "1.0.0");
         map.put("Hash",hash);
+        map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
         return null;
     }
@@ -187,6 +205,7 @@ public class WebsocketClient extends AbstractConnector {
         map.put("Action", "getbalance");
         map.put("Version", "1.0.0");
         map.put("Addr",address);
+        map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
         return null;
     }
@@ -197,6 +216,7 @@ public class WebsocketClient extends AbstractConnector {
         map.put("Version", "1.0.0");
         map.put("Raw","1");
         map.put("Hash", hash);
+        map.put("Id", generateReqId());
         return mWebSocket.send(JSON.toJSONString(map));
     }
     @Override
@@ -206,6 +226,7 @@ public class WebsocketClient extends AbstractConnector {
         map.put("Version", "1.0.0");
         map.put("Raw","0");
         map.put("Hash", hash);
+        map.put("Id", generateReqId());
         return mWebSocket.send(JSON.toJSONString(map));
     }
     @Override
@@ -214,6 +235,7 @@ public class WebsocketClient extends AbstractConnector {
         map.put("Action", "getsmartcodeeventtxs");
         map.put("Version", "1.0.0");
         map.put("Height", height);
+        map.put("Id", generateReqId());
         return mWebSocket.send(JSON.toJSONString(map));
     }
     @Override
@@ -230,6 +252,7 @@ public class WebsocketClient extends AbstractConnector {
         map.put("Action", "getblockheightbytxhash");
         map.put("Version", "1.0.0");
         map.put("Hash", hash);
+        map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
         return 0;
     }
@@ -241,6 +264,7 @@ public class WebsocketClient extends AbstractConnector {
         map.put("Version", "1.0.0");
         map.put("Hash", codehash);
         map.put("Key", key);
+        map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
         return "";
     }
@@ -250,6 +274,7 @@ public class WebsocketClient extends AbstractConnector {
         map.put("Action", "getmerkleproof");
         map.put("Version", "1.0.0");
         map.put("Hash", hash);
+        map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
         return "";
     }

@@ -40,7 +40,6 @@ public class MerkleVerifier {
         if (calculated_root_hash.equals(new UInt256())) {
             return false;
         }
-        System.out.println(calculated_root_hash.toHexString());
         if (!calculated_root_hash.equals(root_hash)) {
             throw new Exception("Constructed root hash differs from provided root hash. Constructed: %x, Expected: " +
                     calculated_root_hash + root_hash);
@@ -72,6 +71,7 @@ public class MerkleVerifier {
         if (pos < path_len) {
             return new UInt256();
         }
+
         return calculated_hash;
     }
 }

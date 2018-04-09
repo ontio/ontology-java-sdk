@@ -28,4 +28,5 @@ public class Result {
     public String Desc;
     public Object Result;
     public String Version;
+    public Object Id;
 }

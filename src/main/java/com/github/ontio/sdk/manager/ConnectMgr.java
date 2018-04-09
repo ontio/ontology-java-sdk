@@ -56,6 +56,11 @@ public class ConnectMgr {
             ((WebsocketClient) connector).startWebsocketThread(log);
         }
     }
+    public void setReqId(long n){
+        if(connector instanceof WebsocketClient){
+            ((WebsocketClient) connector).setReqId(n);
+        }
+    }
     public void send(Map map){
         if(connector instanceof WebsocketClient){
             ((WebsocketClient) connector).send(map);

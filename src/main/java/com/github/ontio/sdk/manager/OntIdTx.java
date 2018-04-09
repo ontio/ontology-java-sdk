@@ -791,6 +791,7 @@ public class OntIdTx {
         int height = sdk.getConnectMgr().getBlockHeightByTxHash(txhash);
         map.put("TxnHash",txhash);
         map.put("BlockHeight",height);
+        map.put("Type","MerkleProof");
         proof.put("Proof",map);
         return proof;
     }

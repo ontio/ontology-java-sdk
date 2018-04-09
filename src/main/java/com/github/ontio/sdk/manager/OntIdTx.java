@@ -785,7 +785,15 @@ public class OntIdTx {
             throw new SDKException(e);
         }
     }
-
+    public Object getProof(String txhash) throws Exception {
+        Map proof = new HashMap();
+        Map map = new HashMap();
+        int height = sdk.getConnectMgr().getBlockHeightByTxHash(txhash);
+        map.put("TxnHash",txhash);
+        map.put("BlockHeight",height);
+        proof.put("Proof",map);
+        return proof;
+    }
     /**
      *
      * @param claim

@@ -929,7 +929,6 @@ public class OntIdTx {
         }
         byte[] did = (ontid).getBytes();
         String addr = ontid.replace(Common.didont, "");
-        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec).pubkey);
         List list = new ArrayList<Object>();
         list.add("GetPublicKeyStatus".getBytes());
         List tmp = new ArrayList<Object>();

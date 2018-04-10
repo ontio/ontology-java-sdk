@@ -82,7 +82,7 @@ public class SmartcodeTxTest {
     @Test
     public void invokeTransactionPreExec() throws Exception {
 
-        ontSdk.getSmartcodeTx().invokeTransactionPreExec(did.ontid, "passwordtest", func, (byte) VmType.NEOVM.value());
+        ontSdk.getSmartcodeTx().sendInvokeTransactionPreExec(did.ontid, "passwordtest", func, (byte) VmType.NEOVM.value());
     }
 
     @Test

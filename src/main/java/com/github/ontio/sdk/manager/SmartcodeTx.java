@@ -66,11 +66,22 @@ public class SmartcodeTx {
      * @throws Exception
      */
     public String sendInvokeSmartCode(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
-        return (String) invokeTransaction(false, null, null, abiFunction, vmtype);
+        Transaction tx = invokeTransaction(null, null, abiFunction, vmtype);
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        if (!b) {
+            throw new SDKException("sendRawTransaction error");
+        }
+        return tx.hash().toString();
     }
 
     public String sendInvokeSmartCodeWithSign(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
-        return (String) invokeTransaction(false, ontid, password, abiFunction, vmtype);
+        Transaction tx = invokeTransaction( ontid, password, abiFunction, vmtype);
+        sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(ontid, password,sdk.keyType,sdk.curveParaSpec)}});
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        if (!b) {
+            throw new SDKException("sendRawTransaction error");
+        }
+        return tx.hash().toString();
     }
 
     /**
@@ -81,12 +92,12 @@ public class SmartcodeTx {
      * @return
      * @throws Exception
      */
-    public Object invokeTransactionPreExec(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
-        return invokeTransaction(true, ontid, password, abiFunction, vmtype);
+    public Object sendInvokeTransactionPreExec(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
+        Transaction tx = invokeTransaction( ontid, password, abiFunction, vmtype);
+        return sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
     }
 
     /**
-     * @param preExec
      * @param ontid
      * @param password
      * @param abiFunction
@@ -94,7 +105,7 @@ public class SmartcodeTx {
      * @return
      * @throws Exception
      */
-    private Object invokeTransaction(boolean preExec, String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
+    private Transaction invokeTransaction(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
         if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
@@ -135,18 +146,8 @@ public class SmartcodeTx {
             AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid, password,sdk.keyType,sdk.curveParaSpec);
             fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
             tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, vmtype, fees);
-            sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(ontid, password,sdk.keyType,sdk.curveParaSpec)}});
         }
-        boolean b = false;
-        if (preExec) {
-            return sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-        } else {
-            b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
-        }
-        if (!b) {
-            throw new SDKException("sendRawTransaction error");
-        }
-        return tx.hash().toString();
+        return tx;
     }
 
     /**

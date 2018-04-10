@@ -76,9 +76,7 @@ public class RecordTx {
         Transaction tx = makeInvokeTransaction(list,info);
         sdk.signTx(tx, addr, password);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-        List listResult = (List) obj;
-        byte[] res = Helper.hexToBytes((String)listResult.get(0));
-        return new String(res);
+        return new String(Helper.hexToBytes((String)obj));
     }
 
     public Transaction makeInvokeTransaction(List<Object> list,AccountInfo acctinfo) throws Exception {

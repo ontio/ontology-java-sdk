@@ -664,17 +664,7 @@ public class OntIdTx {
         params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-        //System.out.println(obj);
-        List listResult = (List) obj;
-        //System.out.println(listResult);
-        Map map = new HashMap();
-        try {
-            for (int i = 0; i < listResult.size(); i++) {
-                map = parseDdoData(ontid, (String) listResult.get(0));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Map map = parseDdoData(ontid, (String)obj);
         if (map.size() == 0) {
             return "";
         }

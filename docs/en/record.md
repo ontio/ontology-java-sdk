@@ -2,7 +2,9 @@
 
 ### Step
 
+
 1. SDK init
+
 
 ```
 String ip = "http://127.0.0.1";
@@ -19,7 +21,9 @@ wm.setCodeAddress("803ca638069742da4b6871fe3d7f78718eeee78a");
 
 > Note: codeAddress is the address of the record contract。
 
+
 2. Save data to the chain
+
 
 ```
 String res = ontSdk.getRecordTx().sendPut("TA9WXpq7GNAc2D6gX9NZtCdybRq8ehGUxw","passwordtest","key","value");
@@ -27,13 +31,17 @@ String res = ontSdk.getRecordTx().sendPut("TA9WXpq7GNAc2D6gX9NZtCdybRq8ehGUxw","
 
 > Note: The key represents the key of the data value stored in the chain, which can later be stored according to the key.
 
+
 3. Get data from the chain based on the key
+
 
 ```
 String res = ontSdk.getRecordTx().sendGet("TA9WXpq7GNAc2D6gX9NZtCdybRq8ehGUxw","passwordtest","key");
 ```
 
+
 4. response description
+
 
 ```
 {"Data":{"Algrithem":"SM2","Hash":"","Text":"value","Signature":""},"CAkey":"","SeqNo":"","Timestamp":0}

@@ -238,6 +238,10 @@ public class WalletMgr {
         return createAccount(password, Helper.hexToBytes(prikey), type, params);
     }
 
+    public AccountInfo createIdentityFromPriKey(String password, String prikey) throws Exception{
+        return createIdentity(password, Helper.hexToBytes(prikey), keyType,curveParaSpec);
+    }
+
     public AccountInfo createIdentityFromPriKey(String password, String prikey,KeyType type, Object[] params) throws Exception{
         return createIdentity(password, Helper.hexToBytes(prikey), type, params);
     }

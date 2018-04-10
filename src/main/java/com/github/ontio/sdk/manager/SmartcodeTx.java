@@ -81,7 +81,7 @@ public class SmartcodeTx {
      * @return
      * @throws Exception
      */
-    public Object invokeTransactionPreExec(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
+    public Object sendInvokeTransactionPreExec(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
         return invokeTransaction(true, ontid, password, abiFunction, vmtype);
     }
 

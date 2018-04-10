@@ -29,6 +29,7 @@ import com.github.ontio.common.UInt256;
 import com.github.ontio.merkle.MerkleVerifier;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
+import com.github.ontio.sdk.info.IdentityInfo;
 import com.github.ontio.sdk.wallet.Identity;
 import com.github.ontio.crypto.KeyType;
 import com.github.ontio.core.VmType;
@@ -72,12 +73,12 @@ public class OntIdTx {
      * @throws Exception
      */
     public Identity sendRegister(Identity ident, String password) throws Exception {
-        AccountInfo info = sdk.getWalletMgr().getIdentityInfo(ident.ontid, password,sdk.keyType,sdk.curveParaSpec);
-        String ontid = Common.didont + info.addressBase58;
+        IdentityInfo info = sdk.getWalletMgr().getIdentityInfo(ident.ontid, password,sdk.keyType,sdk.curveParaSpec);
+        String ontid = info.ontid;
 
         Transaction tx = makeRegister(info);
         sdk.signTx(tx, ontid, password);
-        Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.addressBase58);
+        Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.ontid);
         sdk.getWalletMgr().writeWallet();
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (!b) {
@@ -93,9 +94,9 @@ public class OntIdTx {
      * @return
      * @throws Exception
      */
-    public Transaction makeRegister(AccountInfo info) throws Exception {
+    public Transaction makeRegister(IdentityInfo info) throws Exception {
 
-        String ontid = Common.didont + info.addressBase58;
+        String ontid = info.ontid;
         byte[] pk = Helper.hexToBytes(info.pubkey);
         List list = new ArrayList<Object>();
         list.add("RegIdWithPublicKey".getBytes());
@@ -117,11 +118,11 @@ public class OntIdTx {
         if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
-        AccountInfo info = sdk.getWalletMgr().createIdentityInfo(password,sdk.keyType,sdk.curveParaSpec);
-        String ontid = Common.didont + info.addressBase58;
+        IdentityInfo info = sdk.getWalletMgr().createIdentityInfo(password,sdk.keyType,sdk.curveParaSpec);
+        String ontid = info.ontid;
         Transaction tx = makeRegister(info);
         sdk.signTx(tx, ontid, password);
-        Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.addressBase58);
+        Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.ontid);
         sdk.getWalletMgr().writeWallet();
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (!b) {
@@ -143,8 +144,8 @@ public class OntIdTx {
         if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
-        AccountInfo info = sdk.getWalletMgr().createIdentityInfo(password,sdk.keyType,sdk.curveParaSpec);
-        String ontid = Common.didont + info.addressBase58;
+        IdentityInfo info = sdk.getWalletMgr().createIdentityInfo(password,sdk.keyType,sdk.curveParaSpec);
+        String ontid = info.ontid;
         byte[] pk = Helper.hexToBytes(info.pubkey);
         List list = new ArrayList<Object>();
         list.add("RegIdWithAttributes".getBytes());
@@ -201,7 +202,7 @@ public class OntIdTx {
         list.add(tmp);
         Transaction tx = makeInvokeTransaction(list,info);
         sdk.signTx(tx, ontid, password);
-        Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.addressBase58);
+        Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.ontid);
         sdk.getWalletMgr().writeWallet();
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (!b) {
@@ -220,8 +221,8 @@ public class OntIdTx {
         if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
-        AccountInfo info = sdk.getWalletMgr().createIdentityInfo(password,sdk.keyType,sdk.curveParaSpec);
-        String ontid = Common.didont + info.addressBase58;
+        IdentityInfo info = sdk.getWalletMgr().createIdentityInfo(password,sdk.keyType,sdk.curveParaSpec);
+        String ontid = info.ontid;
         byte[] guardianDid = (Common.didont + guardianAddr).getBytes();
         List li = new ArrayList<Object>();
         li.add("CreateIdentityByGuardian".getBytes());
@@ -887,7 +888,7 @@ public class OntIdTx {
         return tx;
     }
 
-    public Transaction makeInvokeTransaction(List<Object> list,AccountInfo acctinfo) throws Exception {
+    public Transaction makeInvokeTransaction(List<Object> list,IdentityInfo acctinfo) throws Exception {
         Fee[] fees = new Fee[1];
         fees[0] = new Fee(0, Address.addressFromPubKey(acctinfo.pubkey));
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);

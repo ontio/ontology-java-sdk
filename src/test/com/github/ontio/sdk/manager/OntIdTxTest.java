@@ -3,6 +3,7 @@ package com.github.ontio.sdk.manager;
 import com.github.ontio.OntSdk;
 import com.github.ontio.common.Common;
 import com.github.ontio.sdk.info.AccountInfo;
+import com.github.ontio.sdk.info.IdentityInfo;
 import com.github.ontio.sdk.wallet.Identity;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +57,7 @@ public class OntIdTxTest {
     @Test
     public void makeRegister() throws Exception {
 
-        AccountInfo acctinfo = ontSdk.getWalletMgr().createIdentityInfo("passwordtest",ontSdk.keyType,ontSdk.curveParaSpec);
+        IdentityInfo acctinfo = ontSdk.getWalletMgr().createIdentityInfo("passwordtest",ontSdk.keyType,ontSdk.curveParaSpec);
         ontSdk.getOntIdTx().makeRegister(acctinfo);
     }
 
@@ -87,14 +88,14 @@ public class OntIdTxTest {
 
     @Test
     public void sendAddPubKey() throws Exception {
-        AccountInfo acctinfo = ontSdk.getWalletMgr().createIdentityInfo("passwordtest",ontSdk.keyType,ontSdk.curveParaSpec);
+        IdentityInfo acctinfo = ontSdk.getWalletMgr().createIdentityInfo("passwordtest",ontSdk.keyType,ontSdk.curveParaSpec);
         String res = ontSdk.getOntIdTx().sendAddPubKey(id.ontid.replace(Common.didont,""),"passwordtest",acctinfo.pubkey);
 
     }
 
     @Test
     public void sendAddPubKeyWithRecovery() throws Exception {
-        AccountInfo acctinfo = ontSdk.getWalletMgr().createIdentityInfo("passwordtest",ontSdk.keyType,ontSdk.curveParaSpec);
+        IdentityInfo acctinfo = ontSdk.getWalletMgr().createIdentityInfo("passwordtest",ontSdk.keyType,ontSdk.curveParaSpec);
         String res = ontSdk.getOntIdTx().sendAddPubKey("passwordtest",id.ontid.replace(Common.didont,""),acctinfo.pubkey,acctinfo.addressU160);
     }
 
@@ -117,13 +118,13 @@ public class OntIdTxTest {
 
     @Test
     public void sendAddRecovery() throws Exception {
-        AccountInfo acctinfo = ontSdk.getWalletMgr().createIdentityInfo("passwordtest",ontSdk.keyType,ontSdk.curveParaSpec);
+        IdentityInfo acctinfo = ontSdk.getWalletMgr().createIdentityInfo("passwordtest",ontSdk.keyType,ontSdk.curveParaSpec);
         ontSdk.getOntIdTx().sendAddRecovery(id.ontid.replace(Common.didont,""),"passwordtest",acctinfo.addressU160);
     }
 
     @Test
     public void sendChangeRecovery() throws Exception {
-        AccountInfo acctinfo = ontSdk.getWalletMgr().createIdentityInfo("passwordtest",ontSdk.keyType,ontSdk.curveParaSpec);
+        IdentityInfo acctinfo = ontSdk.getWalletMgr().createIdentityInfo("passwordtest",ontSdk.keyType,ontSdk.curveParaSpec);
         ontSdk.getOntIdTx().sendChangeRecovery(id.ontid.replace(Common.didont,""),"passwordtest",acctinfo.addressU160,"f27a8d0c6e5b856a8c3b3e4900510f7d669ca9a3");
     }
 
@@ -193,7 +194,7 @@ public class OntIdTxTest {
     public void makeInvokeTransaction() throws Exception {
         List list = new ArrayList();
         list.add("test");
-        AccountInfo acctinfo = ontSdk.getWalletMgr().createIdentityInfo("passwordtest",ontSdk.keyType,ontSdk.curveParaSpec);
+        IdentityInfo acctinfo = ontSdk.getWalletMgr().createIdentityInfo("passwordtest",ontSdk.keyType,ontSdk.curveParaSpec);
         ontSdk.getOntIdTx().makeInvokeTransaction(list,acctinfo);
     }
 

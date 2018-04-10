@@ -96,7 +96,7 @@ public class WebsocketDemo {
                     Account info2 = null;
                     Account info3 = null;
                     if (ontSdk.getWalletMgr().getAccounts().size() < 3) {
-                        info1 = ontSdk.getWalletMgr().createAccountFromPrikey("passwordtest", "9a31d585431ce0aa0aab1f0a432142e98a92afccb7bcbcaff53f758df82acdb3");
+                        info1 = ontSdk.getWalletMgr().createAccountFromPriKey("passwordtest", "9a31d585431ce0aa0aab1f0a432142e98a92afccb7bcbcaff53f758df82acdb3");
                         info2 = ontSdk.getWalletMgr().createAccount("passwordtest");
                         info3 = ontSdk.getWalletMgr().createAccount("passwordtest");
                         ontSdk.getWalletMgr().writeWallet();

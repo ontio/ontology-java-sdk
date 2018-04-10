@@ -20,6 +20,8 @@
 package demo;
 
 import com.github.ontio.OntSdk;
+import com.github.ontio.common.UInt256;
+import com.github.ontio.merkle.MerkleVerifier;
 import com.github.ontio.network.rpc.*;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.wallet.Identity;
@@ -69,9 +71,9 @@ public class ClaimDemo {
         String ip = "http://127.0.0.1";
 //        String ip = "http://54.222.182.88;
 //        String ip = "http://101.132.193.149";
-        String restUrl = ip + ":" + "20384";
-        String rpcUrl = ip + ":" + "20386";
-        String wsUrl = ip + ":" + "20385";
+        String restUrl = ip + ":" + "20334";
+        String rpcUrl = ip + ":" + "20336";
+        String wsUrl = ip + ":" + "20335";
 
         OntSdk wm = OntSdk.getInstance();
         wm.setRpc(rpcUrl);

@@ -22,7 +22,7 @@ public class OntAssetTxTest {
         ontSdk.openWalletFile("OntAssetTxTest.json");
 
         if (ontSdk.getWalletMgr().getAccounts().size() < 3) {
-            info1 = ontSdk.getWalletMgr().createAccountFromPrikey("passwordtest", "be4400a0b15e8b15cc3c8103839f766b8b1dd05b4b41885bab8eb06867262cfe");
+            info1 = ontSdk.getWalletMgr().createAccountFromPriKey("passwordtest", "be4400a0b15e8b15cc3c8103839f766b8b1dd05b4b41885bab8eb06867262cfe");
             info2 = ontSdk.getWalletMgr().createAccount("passwordtest");
             info3 = ontSdk.getWalletMgr().createAccount("passwordtest");
             ontSdk.getWalletMgr().writeWallet();

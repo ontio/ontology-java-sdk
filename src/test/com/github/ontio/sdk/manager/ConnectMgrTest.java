@@ -9,6 +9,7 @@ import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
+import com.github.ontio.sdk.info.IdentityInfo;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -66,7 +67,7 @@ public class ConnectMgrTest {
 
     @Test
     public void sendRawTransactionByTx() throws Exception {
-        AccountInfo info = ontSdk.getWalletMgr().createIdentityInfo("passwordtest",ontSdk.keyType,ontSdk.curveParaSpec);
+        IdentityInfo info = ontSdk.getWalletMgr().createIdentityInfo("passwordtest",ontSdk.keyType,ontSdk.curveParaSpec);
         ontSdk.setCodeAddress("803ca638069742da4b6871fe3d7f78718eeee78a");
 
         byte[] pk = Helper.hexToBytes(info.pubkey);

@@ -96,9 +96,9 @@ public class OntIdDemoTest {
         String ip = "http://127.0.0.1";
 //        String ip = "http://54.222.182.88;
 //        String ip = "http://101.132.193.149";
-        String restUrl = ip + ":" + "20384";
-        String rpcUrl = ip + ":" + "20386";
-        String wsUrl = ip + ":" + "20385";
+        String restUrl = ip + ":" + "20334";
+        String rpcUrl = ip + ":" + "20336";
+        String wsUrl = ip + ":" + "20335";
 
         OntSdk wm = OntSdk.getInstance();
         wm.setRpc(rpcUrl);
@@ -106,7 +106,7 @@ public class OntIdDemoTest {
         wm.setDefaultConnect(wm.getRestful());
         wm.setWesocket(wsUrl,lock);
 
-        wm.openWalletFile("OntIdWsDemo.json");
+        wm.openWalletFile("OntIdDemo.json");
 
         wm.setCodeAddress("80e7d2fc22c24c466f44c7688569cc6e6d6c6f92");
         return wm;

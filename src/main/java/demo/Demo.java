@@ -54,7 +54,7 @@ public class Demo {
             //System.out.println(ontSdk.getConnectMgr().getBlockHeightByTxHash("7c3e38afb62db28c7360af7ef3c1baa66aeec27d7d2f60cd22c13ca85b2fd4f3"));
             //String v = (String)ontSdk.getConnectMgr().getStorage("ff00000000000000000000000000000000000001", Address.decodeBase58("TA63xZXqdPLtDeznWQ6Ns4UsbqprLrrLJk").toHexString());
             //System.out.println(v);
-            Block block = ontSdk.getConnectMgr().getBlock(ontSdk.getConnectMgr().getBlockHeight()-1);
+            Block block = ontSdk.getConnectMgr().getBlock(ontSdk.getConnectMgr().getBlockHeight());
             String hash = block.transactions[0].hash().toHexString();
             System.out.println(ontSdk.getConnectMgr().getMerkleProof(hash));
             Object proof = ontSdk.getOntIdTx().getProof(hash);

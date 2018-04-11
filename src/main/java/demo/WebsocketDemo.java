@@ -55,7 +55,6 @@ public class WebsocketDemo {
 
 
             ontSdk.getWebSocket().startWebsocketThread(false);
-//            ontSdk.getWebSocket().setBroadcast(true);
 
             Thread thread = new Thread(
                     new Runnable() {

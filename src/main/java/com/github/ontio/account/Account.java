@@ -103,6 +103,12 @@ public class Account {
         return addressU160;
     }
 
+    public PublicKey getPublicKey(){
+        return publicKey;
+    }
+    public PrivateKey getPrivateKey(){
+        return privateKey;
+    }
     public byte[] generateSignature(byte[] msg, SignatureScheme scheme, Object param) throws Exception {
         if (msg == null || msg.length == 0) {
             throw new Exception("invalid message");

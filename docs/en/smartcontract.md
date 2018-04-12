@@ -203,5 +203,98 @@ for (;;){
             }
 ```
 
+5. Push result case details
 
+Take the put event of the deposit certificate as an example.
+
+//The certificate abi.json document is as follows.
+
+```
+{
+    "hash":"0x27f5ae9dd51499e7ac4fe6a5cc44526aff909669",
+    "entrypoint":"Main",
+    "functions":
+    [
+        {
+            "name":"Main",
+            "parameters":
+            [
+                {
+                    "name":"operation",
+                    "type":"String"
+                },
+                {
+                    "name":"args",
+                    "type":"Array"
+                }
+            ],
+            "returntype":"Any"
+        },
+        {
+            "name":"Put",
+            "parameters":
+            [
+                {
+                    "name":"key",
+                    "type":"ByteArray"
+                },
+                {
+                    "name":"value",
+                    "type":"ByteArray"
+                }
+            ],
+            "returntype":"Boolean"
+        },
+        {
+            "name":"Get",
+            "parameters":
+            [
+                {
+                    "name":"key",
+                    "type":"ByteArray"
+                }
+            ],
+            "returntype":"ByteArray"
+        }
+    ],
+    "events":
+    [
+        {
+            "name":"putRecord",
+            "parameters":
+            [
+                {
+                    "name":"arg1",
+                    "type":"String"
+                },
+                {
+                    "name":"arg2",
+                    "type":"ByteArray"
+                },
+                {
+                    "name":"arg3",
+                    "type":"ByteArray"
+                }
+            ],
+            "returntype":"Void"
+        },
+        {
+            "name":"getRecord",
+            "parameters":
+            [
+                {
+                    "name":"arg1",
+                    "type":"String"
+                },
+                {
+                    "name":"arg2",
+                    "type":"ByteArray"
+                }
+            ],
+            "returntype":"Void"
+        }
+    ]
+}
+```
+When the put function is called to save the data, the result pushed by websocket is {"putRecord", "arg1", "arg2", "arg3"}
 

@@ -125,35 +125,78 @@ String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "pa
 
 创建websocket线程，解析推送结果。
 
-Demo例子：
+1. 设置websocket链接
+
+```
+//lock 全局变量,同步锁
+public static Object lock = new Object();
+
+//获得ont实例
+String ip = "http://127.0.0.1";
+String wsUrl = ip + ":" + "20335";
+OntSdk wm = OntSdk.getInstance();
+wm.setWesocket(wsUrl, lock);
+wm.setDefaultConnect(wm.getWebSocket());
+wm.openWalletFile("OntAssetDemo.json");
+
 ```
 
-ontSdk.getWebSocket().startWebsocketThread(false,false);
+2. 启动websocket线程
 
-    public static void waitResult(OntSdk ontSdk, Object lock) {
-        try {
-            synchronized (lock) {
-                boolean flag = false;
-                while (true) {
-                    lock.wait();
-                    if (MsgQueue.getChangeFlag()) {
-                        System.out.println(MsgQueue.getHeartBeat());
-                    }
+```
+//false 表示不打印回调函数信息
+ontSdk.getWebSocket().startWebsocketThread(false);
 
-                    for (String e : MsgQueue.getResultSet()) {
-                        System.out.println("RECV: " + e);
-                        Result rt = JSON.parseObject(e, Result.class);
-                        //TODO
-                        MsgQueue.removeResult(e);
-                        if (rt.Action.equals("InvokeTransaction")) {
+```
+
+3. 启动结果处理线程
+```
+Thread thread = new Thread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            waitResult(lock);
                         }
+                    });
+            thread.start();
+            //将MsgQueue中的数据取出打印
+            public static void waitResult(Object lock) {
+                    try {
+                        synchronized (lock) {
+                            while (true) {
+                                lock.wait();
+                                for (String e : MsgQueue.getResultSet()) {
+                                    System.out.println("RECV: " + e);
+                                    Result rt = JSON.parseObject(e, Result.class);
+                                    //TODO
+                                    MsgQueue.removeResult(e);
+                                    if (rt.Action.equals("getblockbyheight")) {
+                                        Block bb = Serializable.from(Helper.hexToBytes((String) rt.Result), Block.class);
+                                        //System.out.println(bb.json());
+                                    }
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+```
+4. 每6秒发送一次心跳程序，维持socket链接
 
 ```
-
+for (;;){
+                    Map map = new HashMap();
+                    if(i >0) {
+                        map.put("SubscribeEvent", true);
+                        map.put("SubscribeRawBlock", false);
+                    }else{
+                        map.put("SubscribeJsonBlock", false);
+                        map.put("SubscribeRawBlock", true);
+                    }
+                    //System.out.println(map);
+                    ontSdk.getWebSocket().setReqId(i);
+                    ontSdk.getWebSocket().sendHeartBeat(map);     
+                Thread.sleep(6000);
+            }
+```

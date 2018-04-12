@@ -215,47 +215,7 @@ Take the put event of the deposit certificate as an example.
     "entrypoint":"Main",
     "functions":
     [
-        {
-            "name":"Main",
-            "parameters":
-            [
-                {
-                    "name":"operation",
-                    "type":"String"
-                },
-                {
-                    "name":"args",
-                    "type":"Array"
-                }
-            ],
-            "returntype":"Any"
-        },
-        {
-            "name":"Put",
-            "parameters":
-            [
-                {
-                    "name":"key",
-                    "type":"ByteArray"
-                },
-                {
-                    "name":"value",
-                    "type":"ByteArray"
-                }
-            ],
-            "returntype":"Boolean"
-        },
-        {
-            "name":"Get",
-            "parameters":
-            [
-                {
-                    "name":"key",
-                    "type":"ByteArray"
-                }
-            ],
-            "returntype":"ByteArray"
-        }
+        
     ],
     "events":
     [
@@ -277,24 +237,8 @@ Take the put event of the deposit certificate as an example.
                 }
             ],
             "returntype":"Void"
-        },
-        {
-            "name":"getRecord",
-            "parameters":
-            [
-                {
-                    "name":"arg1",
-                    "type":"String"
-                },
-                {
-                    "name":"arg2",
-                    "type":"ByteArray"
-                }
-            ],
-            "returntype":"Void"
         }
     ]
 }
 ```
-When the put function is called to save the data, the result pushed by websocket is {"putRecord", "arg1", "arg2", "arg3"}
-
+When the put function is called to save the data, the putRecord event is fired. The result of the websocket push is the hexadecimal string of {"putRecord", "arg1", "arg2", "arg3"}

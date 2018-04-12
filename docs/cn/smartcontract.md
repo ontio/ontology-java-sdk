@@ -206,7 +206,7 @@ for (;;){
 
 以调用存证合约的put函数为例，
 
-//存证合约abi.json文件如下
+//存证合约abi.json文件部分内容如下
 
 ```
 {
@@ -214,47 +214,7 @@ for (;;){
     "entrypoint":"Main",
     "functions":
     [
-        {
-            "name":"Main",
-            "parameters":
-            [
-                {
-                    "name":"operation",
-                    "type":"String"
-                },
-                {
-                    "name":"args",
-                    "type":"Array"
-                }
-            ],
-            "returntype":"Any"
-        },
-        {
-            "name":"Put",
-            "parameters":
-            [
-                {
-                    "name":"key",
-                    "type":"ByteArray"
-                },
-                {
-                    "name":"value",
-                    "type":"ByteArray"
-                }
-            ],
-            "returntype":"Boolean"
-        },
-        {
-            "name":"Get",
-            "parameters":
-            [
-                {
-                    "name":"key",
-                    "type":"ByteArray"
-                }
-            ],
-            "returntype":"ByteArray"
-        }
+        
     ],
     "events":
     [
@@ -276,25 +236,10 @@ for (;;){
                 }
             ],
             "returntype":"Void"
-        },
-        {
-            "name":"getRecord",
-            "parameters":
-            [
-                {
-                    "name":"arg1",
-                    "type":"String"
-                },
-                {
-                    "name":"arg2",
-                    "type":"ByteArray"
-                }
-            ],
-            "returntype":"Void"
         }
     ]
 }
 ```
-当调用put函数保存数据时，websocket 推送的结果是 {"putRecord", "arg1", "arg2", "arg3"}
+当调用put函数保存数据时，触发putRecord事件，websocket 推送的结果是{"putRecord", "arg1", "arg2", "arg3"}的十六进制字符串
 
 

@@ -41,7 +41,7 @@ public class ClaimDemo {
         try {
             OntSdk ontSdk = getOntSdk();
 
-            ontSdk.setCodeAddress("80e7d2fc22c24c466f44c7688569cc6e6d6c6f92");
+            ontSdk.setCodeAddress("80b0cc71bda8653599c5666cae084bff587e2de1");
 
             List<Identity> dids = ontSdk.getWalletMgr().getIdentitys();
             if (dids.size() < 2) {
@@ -56,7 +56,7 @@ public class ClaimDemo {
             map.put("Subject", dids.get(1).ontid);
 
 
-            String claim = ontSdk.getOntIdTx().createOntIdClaim("passwordtest", "claim:context", map, map);
+            String claim = ontSdk.getOntIdTx().createOntIdClaim(dids.get(0).ontid,"passwordtest", "claim:context", map, map);
             System.out.println(claim);
             boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(claim);
             System.out.println(b);

@@ -79,9 +79,7 @@ public class ConnectMgrTest {
         Fee[] fees = new Fee[1];
         fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
         byte[] params = ontSdk.getSmartcodeTx().createCodeParamsScript(list);
-        params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes("803ca638069742da4b6871fe3d7f78718eeee78a"));
-        Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(),fees);
+        Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction("803ca638069742da4b6871fe3d7f78718eeee78a",null,params, VmType.NEOVM.value(),fees);
         System.out.println(ontSdk.getConnectMgr().sendRawTransaction(tx));
     }
 

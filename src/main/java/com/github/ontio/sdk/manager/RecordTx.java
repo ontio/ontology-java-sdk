@@ -83,9 +83,7 @@ public class RecordTx {
         Fee[] fees = new Fee[1];
         fees[0] = new Fee(0, Address.addressFromPubKey(acctinfo.pubkey));
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), fees);
         return tx;
     }
 

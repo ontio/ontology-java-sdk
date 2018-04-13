@@ -21,6 +21,7 @@ package demo;
 
 import com.github.ontio.core.payload.InvokeCode;
 import com.github.ontio.OntSdk;
+import com.github.ontio.sdk.info.IdentityInfo;
 import com.github.ontio.sdk.wallet.Identity;
 import com.github.ontio.sdk.wallet.Wallet;
 import com.github.ontio.network.websocket.MsgQueue;
@@ -41,49 +42,57 @@ public class OntIdDemoTest {
         try {
             OntSdk ontSdk = getOntSdk();
 
-            ontSdk.getWebSocket().startWebsocketThread(false);
+            //ontSdk.getWebSocket().startWebsocketThread(false);
 
             Wallet oep6 = ontSdk.getWalletMgr().getWallet();
             System.out.println("oep6:" + JSON.toJSONString(oep6));
             //System.exit(0);
+            String ontid;
+            if(false) {
+                System.out.println();
+                System.out.println("================register=================");
+                //registry ontid
+                Identity ident = ontSdk.getOntIdTx().sendRegister("passwordtest");
+                Thread.sleep(6000);
+                ontid = ident.ontid;
 
-            System.out.println();
-            System.out.println("================register=================");
-            //registry ontid
-            Identity ident = ontSdk.getOntIdTx().sendRegister("passwordtest");
+
+                System.out.println();
+                System.out.println("===============updateAttribute==================");
+
+                String attri = "attri";
+                Map recordMap = new HashMap();
+                recordMap.put("key0", "world0");
+                //recordMap.put("key1", i);
+                recordMap.put("keyNum", 1234589);
+                recordMap.put("key2", false);
+
+
+                System.out.println(JSON.toJSONString(recordMap));
+                System.out.println(ontid);
+                String hash = ontSdk.getOntIdTx().sendUpdateAttribute(ontid, "passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
+                System.out.println("hash:" + hash);
+
+
+                Thread.sleep(6000);
+
+                System.out.println();
+                System.out.println("===============getDDO==================");
+            }
+
+
+            ontid = "did:ont:TA71v7vbtAJeBAaRZYCcYWBjmtd9GCT3yo";
+            IdentityInfo info = ontSdk.getWalletMgr().getIdentityInfo(ontSdk.getWalletMgr().getIdentitys().get(0).ontid,"passwordtest");
+            System.out.println(ontSdk.getWalletMgr().getIdentitys().get(0).ontid);
+            ontSdk.getOntIdTx().sendAddPubKey(ontid,"passwordtest",info.pubkey);
             Thread.sleep(6000);
-            String ontid = ident.ontid;
-
-
-            System.out.println();
-            System.out.println("===============updateAttribute==================");
-
-            String attri = "attri";
-            Map recordMap = new HashMap();
-            recordMap.put("key0", "world0");
-            //recordMap.put("key1", i);
-            recordMap.put("keyNum", 1234589);
-            recordMap.put("key2", false);
-
-
-            System.out.println(JSON.toJSONString(recordMap));
-            System.out.println(ontid);
-            String hash = ontSdk.getOntIdTx().sendUpdateAttribute(ontid, "passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
-            System.out.println("hash:" + hash);
-
-
-            Thread.sleep(6000);
-
-            System.out.println();
-            System.out.println("===============getDDO==================");
 
             String ddo = ontSdk.getOntIdTx().sendGetDDO(ontid);
             System.out.println("Ddo:" + ddo);
 
-
             System.out.println();
             System.out.println("===============get Transaction==================");
-            InvokeCode t = (InvokeCode) ontSdk.getConnectMgr().getTransaction(hash);
+            //InvokeCode t = (InvokeCode) ontSdk.getConnectMgr().getTransaction(hash);
 
             System.exit(0);
 
@@ -108,7 +117,7 @@ public class OntIdDemoTest {
 
         wm.openWalletFile("OntIdDemo.json");
 
-        wm.setCodeAddress("80e7d2fc22c24c466f44c7688569cc6e6d6c6f92");
+        wm.setCodeAddress("80b0cc71bda8653599c5666cae084bff587e2de1");
         return wm;
     }
 }

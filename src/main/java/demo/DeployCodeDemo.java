@@ -55,7 +55,7 @@ public class DeployCodeDemo {
         try {
             OntSdk ontSdk = getOntSdk();
 
-            InputStream is = new FileInputStream("C:\\ZX\\IdContract.avm");
+            InputStream is = new FileInputStream("C:\\ZX\\IdContract.avm");//IdContract
             byte[] bys = new byte[is.available()];
             is.read(bys);
             is.close();
@@ -84,9 +84,9 @@ public class DeployCodeDemo {
     }
 
     public static OntSdk getOntSdk() throws Exception {
-//        String ip = "http://127.0.0.1";
+        String ip = "http://127.0.0.1";
 //        String ip = "http://54.222.182.88;
-        String ip = "http://139.219.108.204";
+//        String ip = "http://139.219.108.204";
         String restUrl = ip + ":" + "20334";
         String rpcUrl = ip + ":" + "20386";
         String wsUrl = ip + ":" + "20385";

@@ -19,6 +19,7 @@
 
 package demo;
 
+import com.alibaba.fastjson.JSON;
 import com.github.ontio.OntSdk;
 import com.github.ontio.common.Helper;
 import com.github.ontio.sdk.manager.ECIES;
@@ -32,17 +33,18 @@ public class ECIESDemo {
         try {
             OntSdk ontSdk = getOntSdk();
 
-            com.github.ontio.account.Account account = new com.github.ontio.account.Account(Helper.hexToBytes("9a31d585431ce0aa0aab1f0a432142e98a92afccb7bcbcaff53f758df82acdb3"), ontSdk.keyType, ontSdk.curveParaSpec);
-            System.out.println(Helper.toHexString(account.serializePublicKey()));
-            System.out.println(Helper.toHexString(account.serializePrivateKey()));
+//            com.github.ontio.account.Account account = new com.github.ontio.account.Account(Helper.hexToBytes("9a31d585431ce0aa0aab1f0a432142e98a92afccb7bcbcaff53f758df82acdb3"), ontSdk.keyType, ontSdk.curveParaSpec);
+//            System.out.println(Helper.toHexString(account.serializePublicKey()));
+//            System.out.println(Helper.toHexString(account.serializePrivateKey()));
 
             byte[] msg = new String("1234567890").getBytes();
             String[] ret = ECIES.Encrypt("1202021401156f187ec23ce631a489c3fa17f292171009c6c3162ef642406d3d09c74d",msg);
             byte[] msg2 = ECIES.Decrypt("9a31d585431ce0aa0aab1f0a432142e98a92afccb7bcbcaff53f758df82acdb3",ret);
-            byte[] msg3 = ECIES.Decrypt(account,ret);
+//            byte[] msg3 = ECIES.Decrypt(account,ret);
             System.out.println(Helper.toHexString(msg));
+            System.out.println(JSON.toJSONString(ret));
             System.out.println(Helper.toHexString(msg2));
-            System.out.println(Helper.toHexString(msg3));
+//            System.out.println(Helper.toHexString(msg3));
 
         } catch (Exception e) {
             e.printStackTrace();

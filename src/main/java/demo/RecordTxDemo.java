@@ -23,9 +23,9 @@ public class RecordTxDemo {
             System.out.println(hash);
             Thread.sleep(6000);
             String res = ontSdk.getRecordTx().sendGet(id.ontid,"passwordtest","key");
-            System.out.println(res);
+            System.out.println("result:"+res);
 
-            System.out.println(ontSdk.getConnectMgr().getSmartCodeEvent(hash));
+            //System.out.println(ontSdk.getConnectMgr().getSmartCodeEvent(hash));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -50,7 +50,7 @@ public class RecordTxDemo {
 
         wm.openWalletFile("RecordTxDemo.json");
 
-        wm.setCodeAddress("809690ff6a5244cca5e64face79914d59daef527");
+        wm.setCodeAddress("80f6bff7645a84298a1a52aa3745f84dba6615cf");
         return wm;
     }
 }

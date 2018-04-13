@@ -166,14 +166,11 @@ public class WalletMgr {
         IdentityInfo info = createIdentity(password, ECC.generateKey(), type, params);
         return info;
     }
-
+    public IdentityInfo getIdentityInfo(String ontid, String password) throws Exception {
+        return getIdentityInfo(ontid, password, keyType, curveParaSpec);
+    }
     public IdentityInfo getIdentityInfo(String ontid, String password, KeyType type, Object[] params) throws Exception {
-        String prikeyStr = (String) identityPriKeyMap.get(ontid + "," + password);
-        if (prikeyStr == null) {
-            return null;
-        }
-        byte[] prikey = Helper.hexToBytes(prikeyStr);
-        com.github.ontio.account.Account acct = createAccount(password, prikey, false, type, params);
+        com.github.ontio.account.Account acct = getAccountByAddress(Address.decodeBase58(ontid.replace(Common.didont,"")), password, type, params);
         IdentityInfo info = new IdentityInfo();
         info.ontid = Common.didont+Address.addressFromPubKey(acct.serializePublicKey()).toBase58();
         info.pubkey = Helper.toHexString(acct.serializePublicKey());
@@ -181,7 +178,6 @@ public class WalletMgr {
         info.setPriwif(acct.exportWif());
         info.encryptedPrikey = acct.exportEncryptedPrikey(password);
         info.addressU160 = acct.getAddressU160().toString();
-        storePrivateKey(identityPriKeyMap, info.ontid, password, Helper.toHexString(prikey));
         return info;
     }
 

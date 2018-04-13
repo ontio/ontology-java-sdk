@@ -80,10 +80,10 @@ public class OntAssetTx {
         AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password,sdk.keyType,sdk.curveParaSpec);
         State state = new State(Address.addressFromPubKey(sender.pubkey), Address.decodeBase58(recvAddr), new BigInteger(String.valueOf(amount)));
         Transfers transfers = new Transfers(new State[]{state});
-        Contract contract = new Contract((byte) 0, Address.parse(contractAddr), "transfer", transfers.toArray());
+        Contract contract = new Contract((byte) 0,null, Address.parse(contractAddr), "transfer", transfers.toArray());
         Fee[] fees = new Fee[1];
         fees[0] = new Fee(0, Address.addressFromPubKey(sender.pubkey));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contract.toArray(), VmType.Native.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,null,contract.toArray(), VmType.Native.value(), fees);
         return tx;
     }
     /**
@@ -115,10 +115,10 @@ public class OntAssetTx {
             states[i] = new State(Address.addressFromPubKey(sender.pubkey), Address.decodeBase58(recvAddr[i]), new BigInteger(String.valueOf(amount[i])));
         }
         Transfers transfers = new Transfers(states);
-        Contract contract = new Contract((byte) 0, Address.parse(contractAddr), "transfer", transfers.toArray());
+        Contract contract = new Contract((byte) 0, null,Address.parse(contractAddr), "transfer", transfers.toArray());
         Fee[] fees = new Fee[1];
         fees[0] = new Fee(0, Address.addressFromPubKey(sender.pubkey));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contract.toArray(), VmType.Native.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,null,contract.toArray(), VmType.Native.value(), fees);
         sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(sendAddr, password,sdk.keyType,sdk.curveParaSpec)}});
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -158,8 +158,8 @@ public class OntAssetTx {
         }
 
         Transfers transfers = new Transfers(states);
-        Contract contract = new Contract((byte) 0, Address.parse(contractAddr), "transfer", transfers.toArray());
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contract.toArray(), VmType.Native.value(), fees);
+        Contract contract = new Contract((byte) 0,null, Address.parse(contractAddr), "transfer", transfers.toArray());
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,null,contract.toArray(), VmType.Native.value(), fees);
         Account[][] acct = Arrays.stream(sendAddr).map(p -> {
             for (int i = 0; i < sendAddr.length; i++) {
                 if (sendAddr[i].equals(p)) {
@@ -184,10 +184,10 @@ public class OntAssetTx {
     public String sendOngTransferFrom(String sendAddr, String password, String to, long amount) throws Exception {
         AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password,sdk.keyType,sdk.curveParaSpec);
         TransferFrom transferFrom = new TransferFrom(Address.addressFromPubKey(sender.pubkey),Address.parse(ontContract),Address.decodeBase58(to),new BigInteger(String.valueOf(amount)));
-        Contract contract = new Contract((byte) 0, Address.parse(ongContract), "transferFrom", transferFrom.toArray());
+        Contract contract = new Contract((byte) 0,null, Address.parse(ongContract), "transferFrom", transferFrom.toArray());
         Fee[] fees = new Fee[1];
         fees[0] = new Fee(0, Address.addressFromPubKey(sender.pubkey));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contract.toArray(), VmType.Native.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(ontContract,null,contract.toArray(), VmType.Native.value(), fees);
         sdk.signTx(tx, sendAddr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {

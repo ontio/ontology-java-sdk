@@ -126,9 +126,7 @@ public class SmartcodeTxTest {
         List list = new ArrayList<Object>();
         list.add("test");
         byte[] params = ontSdk.getSmartcodeTx().createCodeParamsScript(list);
-        params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes("80a45524f3f6a5b98d633e5c7a7458472ec5d625"));
         Fee[] fees = new Fee[0];
-        ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(params, VmType.NEOVM.value(), fees);
+        ontSdk.getSmartcodeTx().makeInvokeCodeTransaction("80a45524f3f6a5b98d633e5c7a7458472ec5d625",null,params, VmType.NEOVM.value(), fees);
     }
 }

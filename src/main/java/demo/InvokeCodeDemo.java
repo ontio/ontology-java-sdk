@@ -89,7 +89,7 @@ public class InvokeCodeDemo {
 //        String ip = "http://54.222.182.88;
 //        String ip = "http://101.132.193.149";
 //        String ip = " http://139.219.108.204";
-        String restUrl = ip + ":" + "20384";
+        String restUrl = ip + ":" + "20334";
         String rpcUrl = ip + ":" + "20386";
         String wsUrl = ip + ":" + "20385";
 
@@ -98,8 +98,8 @@ public class InvokeCodeDemo {
         wm.setRestful(restUrl);
         wm.setDefaultConnect(wm.getRestful());
 
-        wm.openWalletFile("InvokeSmartCodeDemo.json");
-        wm.setCodeAddress("80e7d2fc22c24c466f44c7688569cc6e6d6c6f92");
+        wm.openWalletFile("InvokeSmartCodeDemo.json");//803ca638069742da4b6871fe3d7f78718eeee78a
+        wm.setCodeAddress("803ca638069742da4b6871fe3d7f78718eeee78a");//80e7d2fc22c24c466f44c7688569cc6e6d6c6f92
         return wm;
     }
 }

@@ -103,8 +103,8 @@ public class Demo {
     }
 
     public static OntSdk getOntSdk() throws Exception {
+//        String ip = "http://139.219.108.204";
         String ip = "http://127.0.0.1";
-//        String ip = "http://54.222.182.88;
 //        String ip = "http://101.132.193.149";
         String restUrl = ip + ":" + "20334";
         String rpcUrl = ip + ":" + "20336";

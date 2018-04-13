@@ -167,7 +167,7 @@ public class OntIdTxTest {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("Issuer", dids.get(0).ontid);
         map.put("Subject", dids.get(1).ontid);
-        String claim = ontSdk.getOntIdTx().createOntIdClaim("passwordtest", "claim:context", map, map);
+        String claim = ontSdk.getOntIdTx().createOntIdClaim(dids.get(0).ontid,"passwordtest", "claim:context", map, map);
         System.out.println(claim);
     }
 

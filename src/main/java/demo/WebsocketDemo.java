@@ -134,8 +134,8 @@ public class WebsocketDemo {
                     ontSdk.getConnectMgr().getStorage("ff00000000000000000000000000000000000001", Address.decodeBase58("TA63xZXqdPLtDeznWQ6Ns4UsbqprLrrLJk").toHexString());
                     ontSdk.getConnectMgr().getTransactionJson("7c3e38afb62db28c7360af7ef3c1baa66aeec27d7d2f60cd22c13ca85b2fd4f3");
                 }
-                if (false) {
-                    ontSdk.setCodeAddress("803ca638069742da4b6871fe3d7f78718eeee78a");
+                if (true) {
+                    ontSdk.setCodeAddress("80f6bff7645a84298a1a52aa3745f84dba6615cf");
                     InputStream is = new FileInputStream("C:\\ZX\\huguanjun.abi.json");//IdContract
                     byte[] bys = new byte[is.available()];
                     is.read(bys);
@@ -153,7 +153,7 @@ public class WebsocketDemo {
 
                     System.out.println(hash0);
                 }
-                if(true){
+                if(false){
                     Map map = new HashMap();
                     if(i >0) {
                         map.put("SubscribeEvent", true);
@@ -212,7 +212,7 @@ public class WebsocketDemo {
         wm.setRestful(restUrl);
         wm.setWesocket(wsUrl, lock);
         wm.setDefaultConnect(wm.getWebSocket());
-
+        wm.setCodeAddress("80f6bff7645a84298a1a52aa3745f84dba6615cf");
         wm.openWalletFile("OntAssetDemo.json");
         return wm;
     }

@@ -38,22 +38,27 @@ public class Claim {
     private String id = UUID.randomUUID().toString();
     private Map<String, Object> claim = new HashMap<String, Object>();
 
-    public Claim(SignatureScheme scheme, Account acct, String ctx, Map claimMap, String issuer, String subject, Map metadata) {
+    public Claim(SignatureScheme scheme, Account acct, String ctx, Map claimMap, Map metadata,String publicKeyId) {
         context = ctx;
         claim.put("Context", context);
         if (claimMap != null) {
             claim.put("Content", claimMap);
         }
-        claim.put("Metadata", new MetaData(issuer, subject, metadata).getJson());
+        claim.put("Metadata", new MetaData(metadata).getJson());
         id = Helper.toHexString(Digest.sha256(JSON.toJSONString(claim).getBytes()));
         claim.put("Id", id);
+        claim.put("Version", "v1.0");
         DataSignature sign = new DataSignature(scheme, acct, getClaim());
-        claim.put("Signature", new Sign("", "", sign.signature()).getJson());
+        claim.put("Signature", new Sign("", "",publicKeyId, sign.signature()).getJson());
 
     }
 
     public String getClaim() {
-        return JSONObject.toJSONString(claim);
+        Map tmp = new HashMap<String, Object>();
+        for (Map.Entry<String, Object> e : claim.entrySet()) {
+            tmp.put(e.getKey(), e.getValue());
+        }
+        return JSONObject.toJSONString(tmp);
     }
 }
 
@@ -62,9 +67,11 @@ class Sign {
     private String Format = "pgp";
     private String Algorithm = "ECDSAwithSHA256";
     private byte[] Value;
+    private String PublicKeyId;
 
-    public Sign(String format, String alg, byte[] val) {
+    public Sign(String format, String alg ,String publicKeyId,byte[] val) {
         Value = val;
+        PublicKeyId = publicKeyId;
     }
 
     public Object getJson() {
@@ -72,6 +79,7 @@ class Sign {
         signature.put("Format", Format);
         signature.put("Algorithm", Algorithm);
         signature.put("Value", Value);
+        signature.put("PublicKeyId", PublicKeyId);
         return signature;
     }
 }
@@ -79,22 +87,20 @@ class Sign {
 class MetaData {
 
     private String CreateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(new Date());//"2017-08-25T10:03:04Z";
-    private String Issuer = "";
-    private String Subject = "";
-    private Map meta = new HashMap();
+    private Map<String, Object> meta = new HashMap();
 
-    public MetaData(String issuer, String subject, Map map) {
+    public MetaData(Map map) {
         if (map != null) {
             meta = map;
         }
-        Issuer = issuer;
-        Subject = subject;
     }
 
     public Object getJson() {
         meta.put("CreateTime", CreateTime);
-        meta.put("Issuer", Issuer);
-        meta.put("Subject", Subject);
-        return meta;
+        Map tmp = new HashMap<String, Object>();
+        for (Map.Entry<String, Object> e : meta.entrySet()) {
+            tmp.put(e.getKey(), e.getValue());
+        }
+        return tmp;
     }
 }

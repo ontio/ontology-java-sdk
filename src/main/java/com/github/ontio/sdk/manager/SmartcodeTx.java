@@ -21,6 +21,8 @@ package com.github.ontio.sdk.manager;
 
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
+import com.github.ontio.core.VmType;
+import com.github.ontio.core.asset.Contract;
 import com.github.ontio.core.transaction.Attribute;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.core.transaction.AttributeUsage;
@@ -38,9 +40,8 @@ import com.alibaba.fastjson.JSON;
 
 import java.lang.reflect.Array;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.rmi.dgc.VMID;
+import java.util.*;
 
 /**
  *
@@ -48,7 +49,9 @@ import java.util.UUID;
 public class SmartcodeTx {
     private OntSdk sdk;
     private String codeAddress = null;
-
+    public String getCodeAddress() {
+        return codeAddress;
+    }
     public void setCodeAddress(String codeHash) {
         this.codeAddress = codeHash.replace("0x", "");
     }
@@ -134,18 +137,16 @@ public class SmartcodeTx {
         }
         list.add(tmp);
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        params = Helper.addBytes(params, new byte[]{0x69});
-        params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
 
         Transaction tx = null;
         if (ontid == null && password == null) {
             Fee[] fees = new Fee[0];
-            tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, vmtype, fees);
+            tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(codeAddress,null,params, vmtype, fees);
         } else {
             Fee[] fees = new Fee[1];
             AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid, password,sdk.keyType,sdk.curveParaSpec);
             fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
-            tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(params, vmtype, fees);
+            tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(codeAddress,null,params, vmtype, fees);
         }
         return tx;
     }
@@ -236,6 +237,78 @@ public class SmartcodeTx {
         return sb.toArray();
     }
 
+    public String buildWasmContractJsonParam(Object[] objs) {
+        List params = new ArrayList();
+        for (int i = 0; i < objs.length; i++) {
+            Object val = objs[i];
+            if (val instanceof String) {
+                Map map = new HashMap();
+                map.put("type","string");
+                map.put("value",val);
+                params.add(map);
+            } else if (val instanceof Integer) {
+                Map map = new HashMap();
+                map.put("type","int");
+                map.put("value",String.valueOf(val));
+                params.add(map);
+            } else if (val instanceof Long) {
+                Map map = new HashMap();
+                map.put("type","int64");
+                map.put("value",String.valueOf(val));
+                params.add(map);
+            } else if (val instanceof int[]) {
+                Map map = new HashMap();
+                map.put("type","int_array");
+                map.put("value",val);
+                params.add(map);
+            } else if (val instanceof long[]) {
+                Map map = new HashMap();
+                map.put("type","int_array");
+                map.put("value",val);
+                params.add(map);
+            } else {
+                continue;
+            }
+        }
+        Map result = new HashMap();
+        result.put("Params",params);
+        return JSON.toJSONString(result);
+    }
+    public byte[] buildWasmContractRawParam(List<Object> list) {
+        List params = new ArrayList();
+        for (int i = 0; i < list.size(); i++) {
+            Object val = list.get(i);
+            if (val instanceof String) {
+                Map map = new HashMap();
+                map.put("type","string");
+                map.put("value",val);
+                params.add(map);
+            } else if (val instanceof Integer) {
+                Map map = new HashMap();
+                map.put("type","int");
+                map.put("value",val);
+                params.add(map);
+            } else if (val instanceof Long) {
+                Map map = new HashMap();
+                map.put("type","int64");
+                map.put("value",val);
+                params.add(map);
+            } else if (val instanceof int[]) {
+                Map map = new HashMap();
+                map.put("type","int_array");
+                map.put("value",val);
+                params.add(map);
+            } else if (val instanceof long[]) {
+                Map map = new HashMap();
+                map.put("type","int_array");
+                map.put("value",val);
+                params.add(map);
+            } else {
+                continue;
+            }
+        }
+        return JSON.toJSONString(params).getBytes();
+    }
     /**
      * @param codeStr
      * @param needStorage
@@ -266,19 +339,29 @@ public class SmartcodeTx {
     }
 
     /**
-     * @param paramsHexStr
+     * @param codeAddr
+     * @param params
      * @param vmtype
      * @param fees
      * @return
      * @throws SDKException
      */
-    public InvokeCode makeInvokeCodeTransaction(byte[] paramsHexStr, byte vmtype, Fee[] fees) throws SDKException {
+    public InvokeCode makeInvokeCodeTransaction(String codeAddr,String method,byte[] params, byte vmtype, Fee[] fees) throws SDKException {
+        if(vmtype == VmType.NEOVM.value()) {
+            Contract contract = new Contract((byte) 0, null, Address.parse(codeAddr), "", params);
+            params = Helper.addBytes(new byte[]{0x67}, contract.toArray());
+//            params = Helper.addBytes(params, new byte[]{0x69});
+//            params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
+        }else if(vmtype == VmType.WASMVM.value()) {
+            Contract contract = new Contract((byte) 1, null, Address.parse(codeAddr), method, params);
+            params = contract.toArray();
+        }
         InvokeCode tx = new InvokeCode();
         tx.attributes = new Attribute[1];
         tx.attributes[0] = new Attribute();
         tx.attributes[0].usage = AttributeUsage.Nonce;
         tx.attributes[0].data = UUID.randomUUID().toString().getBytes();
-        tx.code = paramsHexStr;
+        tx.code = params;
         tx.gasLimit = 0;
         tx.vmType = vmtype;
         tx.fee = fees;

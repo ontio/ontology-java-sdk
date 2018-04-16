@@ -92,11 +92,11 @@ public class MerkleVerifier {
                 nodes.add(map);
                 pos += 1;
             } else if (node_index < last_node) {
-                pos += 1;
                 Map map = new HashMap();
                 map.put("Direction","Right");
                 map.put("TargetHash",audit_path[pos].toHexString());
                 nodes.add(map);
+                pos += 1;
             }
             node_index /= 2;
             last_node /= 2;

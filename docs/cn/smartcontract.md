@@ -197,7 +197,7 @@ for (;;){
                     }
                     //System.out.println(map);
                     ontSdk.getWebSocket().setReqId(i);
-                    ontSdk.getWebSocket().sendHeartBeat(map);     
+                    ontSdk.getWebSocket().sendSubscribe(map);     
                 Thread.sleep(6000);
             }
 ```

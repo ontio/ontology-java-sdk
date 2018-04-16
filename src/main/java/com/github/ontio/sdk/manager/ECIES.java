@@ -25,6 +25,7 @@ import com.github.ontio.common.Helper;
 import com.github.ontio.crypto.KeyType;
 import com.github.ontio.crypto.SignatureScheme;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.bouncycastle.crypto.generators.KDF2BytesGenerator;
 import org.bouncycastle.crypto.kems.ECIESKeyEncapsulation;
@@ -53,7 +54,13 @@ import java.security.Security;
 public class ECIES {
     public static KeyType keyType = KeyType.ECDSA;
     public static Object[] curveParaSpec = new Object[]{"P-256"};
-
+    public static Digest digest = new SHA1Digest();
+    public ECIES(Digest dig){
+        digest = dig;
+    }
+    public static void setDigest(Digest dig){
+        digest = dig;
+    }
     public static String[] Encrypt(String pubkey, byte[] msg) {
         return Encrypt(pubkey, msg, 32);
     }
@@ -69,7 +76,7 @@ public class ECIES {
                     new ECPublicKeyParameters(((BCECPublicKey) account.getPublicKey()).getQ(), ecDomain), null);
 
             byte[] out = new byte[(ecDomain.getCurve().getFieldSize() / 8) * 2 + 1];
-            ECIESKeyEncapsulation kem = new ECIESKeyEncapsulation(new KDF2BytesGenerator(new SHA1Digest()), new SecureRandom());
+            ECIESKeyEncapsulation kem = new ECIESKeyEncapsulation(new KDF2BytesGenerator(digest), new SecureRandom());
             KeyParameter key1;
 
             kem.init(keys.getPublic());

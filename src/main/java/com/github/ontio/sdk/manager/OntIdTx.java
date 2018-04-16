@@ -85,7 +85,6 @@ public class OntIdTx {
         if (!b) {
             throw new SDKException("sendRawTransaction error");
         }
-        System.out.println("hash:" + tx.hash().toString());
         return identity;
     }
 
@@ -125,13 +124,10 @@ public class OntIdTx {
         sdk.signTx(tx, ontid, password);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.ontid);
         sdk.getWalletMgr().writeWallet();
-        String aa = tx.toHexString();
-        System.out.println(aa);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (!b) {
             throw new SDKException("sendRawTransaction error");
         }
-        System.out.println("hash:" + tx.hash().toString());
         return identity;
     }
 
@@ -640,7 +636,6 @@ public class OntIdTx {
             }
             map.put("Attributes", attriMap);
         }
-        //System.out.println(JSON.toJSONString(map));
         if(totalOffset < bys.length){
             elen = parse4bytes(bys,totalOffset);
             if(elen == 0){
@@ -649,7 +644,6 @@ public class OntIdTx {
             byte[] recoveryData = new byte[elen];
             offset = 4;
             System.arraycopy(bys, totalOffset + 4, recoveryData, 0, elen);
-            System.out.println("recoveryData:"+Helper.toHexString(recoveryData));
             map.put("Recovery",Helper.toHexString(recoveryData));
         }
         return map;
@@ -677,15 +671,12 @@ public class OntIdTx {
         list.add(tmp);
         Fee[] fees = new Fee[0];
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        System.out.println(codeAddress);
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), fees);
 String aa = tx.toHexString();
-        System.out.println(tx.toHexString());
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         if(obj == null || ((String)obj).length() == 0){
             throw new SDKException("result is null");
         }
-        System.out.println(obj);
         Map map = parseDdoData(ontid, (String)obj);
         if (map.size() == 0) {
             return "";
@@ -753,7 +744,6 @@ String aa = tx.toHexString();
                 throw new SDKException("SendDid or receiverDid is null in metaData");
             }
             String issuerDdo = sendGetDDO(sendDid);
-            System.out.println(issuerDdo);
 
             JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("Owners");
             if(owners == null){

@@ -1,7 +1,10 @@
 package com.github.ontio.sdk.manager;
 
+import com.alibaba.fastjson.JSON;
 import com.github.ontio.OntSdk;
+import com.github.ontio.account.Account;
 import com.github.ontio.common.Common;
+import com.github.ontio.common.Helper;
 import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.info.IdentityInfo;
 import com.github.ontio.sdk.wallet.Identity;
@@ -24,15 +27,14 @@ public class OntIdTxTest {
     public void setUp() throws Exception {
 
         ontSdk = OntSdk.getInstance();
-        ontSdk.setRestful("http://127.0.0.1:20384");
+        ontSdk.setRestful("http://127.0.0.1:20334");
         ontSdk.setDefaultConnect(ontSdk.getRestful());
-        ontSdk.openWalletFile("OntIdTxTest.json");
-        ontSdk.setCodeAddress("80a45524f3f6a5b98d633e5c7a7458472ec5d625");
+        ontSdk.openWalletFile("OntIdDemoSSS.json");
+        ontSdk.setCodeAddress("80b0cc71bda8653599c5666cae084bff587e2de1");
 
         if(ontSdk.getWalletMgr().getIdentitys().size() < 1){
             ontSdk.getOntIdTx().sendRegister("passwordtest");
         }
-
         id = ontSdk.getWalletMgr().getIdentitys().get(0);
     }
 
@@ -204,4 +206,30 @@ public class OntIdTxTest {
         list.add("test");
         ontSdk.getOntIdTx().makeInvokeTransaction(list,id.ontid,"passwordtest");
     }
+
+    @Test
+    public void sendGetPublicKeyId() throws Exception {
+        String res = ontSdk.getOntIdTx().sendGetPublicKeyId(id.ontid,"passwordtest");
+        System.out.println("res:" + res);
+    }
+
+    @Test
+    public void sendGetPublicKeyStatus() throws Exception {
+        AccountInfo accountInfo = ontSdk.getWalletMgr().getAccountInfo(id.ontid.replace(Common.didont,""),"passwordtest");
+        String res = ontSdk.getOntIdTx().sendGetPublicKeyStatus(id.ontid,"passwordtest", Helper.hexToBytes("01"));
+        System.out.println("res:" + res);
+    }
+
+    @Test
+    public void getProof() throws Exception {
+        Object obj = ontSdk.getOntIdTx().getProof("237d65f620f241c41ee80da348ebdd530d35dfb8c1662050d5c7fbda531c29eb");
+        System.out.println(JSON.toJSONString(obj));
+    }
+
+    @Test
+    public void verifyMerkleProof() throws Exception {
+        boolean b = ontSdk.getOntIdTx().verifyMerkleProof("{\"Proof\":{\"Type\":\"MerkleProof\",\"TxnHash\":\"237d65f620f241c41ee80da348ebdd530d35dfb8c1662050d5c7fbda531c29eb\",\"BlockHeight\":804}}");
+        System.out.println("b:" + b);
+    }
+
 }

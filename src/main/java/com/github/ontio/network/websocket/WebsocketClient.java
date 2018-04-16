@@ -67,8 +67,15 @@ public class WebsocketClient extends AbstractConnector {
         return wsUrl;
     }
 
-    public void sendHeartBeat(Map map) {
+    public void sendHeartBeat() {
+        Map map = new HashMap<>();
         map.put("Action", "heartbeat");
+        map.put("Version", "V1.0.0");
+        map.put("Id", generateReqId());
+        mWebSocket.send(JSON.toJSONString(map));
+    }
+    public void sendSubscribe(Map map) {
+        map.put("Action", "subscribe");
         map.put("Version", "V1.0.0");
         map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
@@ -292,15 +299,13 @@ public class WebsocketClient extends AbstractConnector {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
                 System.out.println("opened websocket connection");
-                mWebSocket.send("{\"Action\":\"heartbeat\"}");
-                /*
+                sendHeartBeat();
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        mWebSocket.send("{\"Action\":\"heartbeat\"}");
+                        sendHeartBeat();
                     }
                 }, 1000, 30000);
-                */
             }
 
             @Override

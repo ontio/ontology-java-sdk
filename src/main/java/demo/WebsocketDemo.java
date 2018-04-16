@@ -164,7 +164,7 @@ public class WebsocketDemo {
                     }
                     //System.out.println(map);
                     ontSdk.getWebSocket().setReqId(i);
-                    ontSdk.getWebSocket().sendHeartBeat(map);
+                    ontSdk.getWebSocket().sendSubscribe(map);
 //                    ontSdk.getWebSocket().getBlockHeight();
                 }
                 Thread.sleep(6000);

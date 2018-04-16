@@ -66,9 +66,14 @@ public class ConnectMgr {
             ((WebsocketClient) connector).send(map);
         }
     }
-    public void sendHeartBeat(Map map){
+    public void sendHeartBeat(){
         if(connector instanceof WebsocketClient){
-            ((WebsocketClient) connector).sendHeartBeat(map);
+            ((WebsocketClient) connector).sendHeartBeat();
+        }
+    }
+    public void sendSubscribe(Map map){
+        if(connector instanceof WebsocketClient){
+            ((WebsocketClient) connector).sendSubscribe(map);
         }
     }
     public ConnectMgr(IConnector connector) {

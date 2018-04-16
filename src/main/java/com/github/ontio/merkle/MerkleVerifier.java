@@ -21,6 +21,11 @@ package com.github.ontio.merkle;
 
 import com.github.ontio.common.UInt256;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @Description:
  * @date 2018/4/4
@@ -73,5 +78,29 @@ public class MerkleVerifier {
         }
 
         return calculated_hash;
+    }
+
+    public static List getProof(UInt256 leaf_hash, int node_index, UInt256[] audit_path, int tree_size) {
+        List nodes = new ArrayList<>();
+        int last_node = tree_size - 1;
+        int pos = 0;
+        for (; last_node > 0; ) {
+            if (node_index % 2 == 1) {
+                Map map = new HashMap();
+                map.put("Direction","Left");
+                map.put("TargetHash",audit_path[pos].toHexString());
+                nodes.add(map);
+                pos += 1;
+            } else if (node_index < last_node) {
+                pos += 1;
+                Map map = new HashMap();
+                map.put("Direction","Right");
+                map.put("TargetHash",audit_path[pos].toHexString());
+                nodes.add(map);
+            }
+            node_index /= 2;
+            last_node /= 2;
+        }
+        return nodes;
     }
 }

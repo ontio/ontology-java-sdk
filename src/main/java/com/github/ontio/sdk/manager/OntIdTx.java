@@ -856,9 +856,22 @@ public class OntIdTx {
         Map proof = new HashMap();
         Map map = new HashMap();
         int height = sdk.getConnectMgr().getBlockHeightByTxHash(txhash);
+        map.put("Type","MerkleProof");
         map.put("TxnHash",txhash);
         map.put("BlockHeight",height);
-        map.put("Type","MerkleProof");
+
+        Map tmpProof = (Map) sdk.getConnectMgr().getMerkleProof(txhash);
+        UInt256 txroot = UInt256.parse((String) tmpProof.get("TransactionsRoot"));
+        int blockHeight = (int) tmpProof.get("BlockHeight");
+        UInt256 curBlockRoot = UInt256.parse((String) tmpProof.get("CurBlockRoot"));
+        int curBlockHeight = (int) tmpProof.get("CurBlockHeight");
+        List hashes = (List) tmpProof.get("TargetHashes");
+        UInt256[] targetHashes = new UInt256[hashes.size()];
+        for (int i = 0; i < hashes.size(); i++) {
+            targetHashes[i] = UInt256.parse((String) hashes.get(i));
+        }
+        map.put("MerkleRoot",curBlockRoot.toHexString());
+        map.put("Nodes",MerkleVerifier.getProof(txroot, blockHeight, targetHashes, curBlockHeight + 1));
         proof.put("Proof",map);
         return proof;
     }
@@ -886,6 +899,10 @@ public class OntIdTx {
             UInt256[] targetHashes = new UInt256[hashes.size()];
             for (int i = 0; i < hashes.size(); i++) {
                 targetHashes[i] = UInt256.parse((String) hashes.get(i));
+            }
+            List nodes = (List)prf.get("Nodes");
+            if(!nodes.equals(MerkleVerifier.getProof(txroot, blockHeight, targetHashes, curBlockHeight + 1))){
+                throw new SDKException("nodes not match");
             }
             return MerkleVerifier.VerifyLeafHashInclusion(txroot, blockHeight, targetHashes, curBlockRoot, curBlockHeight + 1);
         } catch (Exception e) {

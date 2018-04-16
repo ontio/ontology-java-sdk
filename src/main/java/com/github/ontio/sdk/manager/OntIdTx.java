@@ -125,6 +125,8 @@ public class OntIdTx {
         sdk.signTx(tx, ontid, password);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.ontid);
         sdk.getWalletMgr().writeWallet();
+        String aa = tx.toHexString();
+        System.out.println(aa);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (!b) {
             throw new SDKException("sendRawTransaction error");
@@ -241,17 +243,17 @@ public class OntIdTx {
     /**
      * add PubKey
      *
-     * @param addr
+     * @param ontid
      * @param password
      * @param newpubkey
      * @return
      * @throws Exception
      */
-    public String sendAddPubKey(String addr, String password, String newpubkey) throws Exception {
+    public String sendAddPubKey(String ontid, String password, String newpubkey) throws Exception {
         if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
-        addr = addr.replace(Common.didont, "");
+        String addr = ontid.replace(Common.didont, "");
         byte[] did = (Common.didont + addr).getBytes();
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
         byte[] pk = Helper.hexToBytes(info.pubkey);
@@ -677,6 +679,8 @@ public class OntIdTx {
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         System.out.println(codeAddress);
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), fees);
+String aa = tx.toHexString();
+        System.out.println(tx.toHexString());
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         if(obj == null || ((String)obj).length() == 0){
             throw new SDKException("result is null");
@@ -988,8 +992,7 @@ public class OntIdTx {
         Transaction tx = makeInvokeTransaction(list,addr,password);
         sdk.signTx(tx,addr,password);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-        List listResult = (List) obj;
-        return (String) listResult.get(0);
+        return (String)obj;
     }
 
     public String sendGetPublicKeyStatus(String ontid,String password,byte[] pkId) throws Exception{
@@ -1010,8 +1013,7 @@ public class OntIdTx {
         Transaction tx = makeInvokeTransaction(list,addr,password);
         sdk.signTx(tx,addr,password);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-        List listResult = (List) obj;
-        return (String) listResult.get(0);
+        return (String)obj;
     }
 
 

@@ -1,4 +1,4 @@
-## Digital certificate
+## Attest Attestation
 
 ### Step
 
@@ -22,7 +22,7 @@ wm.setCodeAddress("803ca638069742da4b6871fe3d7f78718eeee78a");
 > Note: codeAddress is the address of the record contract。
 
 
-2. Save data to the chain
+2. attest data onto the blockchain
 
 
 ```
@@ -32,7 +32,7 @@ String res = ontSdk.getRecordTx().sendPut("TA9WXpq7GNAc2D6gX9NZtCdybRq8ehGUxw","
 > Note: The key represents the key of the data value stored in the chain, which can later be stored according to the key.
 
 
-3. Get data from the chain based on the key
+3. Get data from the chain by the key
 
 
 ```
@@ -40,7 +40,7 @@ String res = ontSdk.getRecordTx().sendGet("TA9WXpq7GNAc2D6gX9NZtCdybRq8ehGUxw","
 ```
 
 
-4. response description
+4. description of response 
 
 
 ```

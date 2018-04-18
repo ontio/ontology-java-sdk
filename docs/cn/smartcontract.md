@@ -21,9 +21,9 @@ public class Parameter {
 }
 ```
 
-* codehash是什么
+* codeAddress是什么
 
-codehash是智能合约的唯一标识。
+codeAddress是智能合约的唯一标识。
 
 
 * 调用智能合约invokeTransaction的过程，sdk中具体做了什么
@@ -63,7 +63,7 @@ byte[] bys = new byte[is.available()];
 is.read(bys);
 is.close();
 code = Helper.toHexString(bys);
-ontSdk.setCodeHash(Helper.getCodeHash(code,VmType.NEOVM.value()));
+ontSdk.setCodeAddress(Helper.getCodeAddress(code,VmType.NEOVM.value()));
 
 //部署合约
 String txhash = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(code, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
@@ -102,8 +102,8 @@ System.out.println("Entrypoint:"+abiinfo.getEntrypoint());
 System.out.println("Functions:"+abiinfo.getFunctions());
 System.out.println("Events"+abiinfo.getEvents());
 
-//设置智能合约codehash
-ontSdk.setCodeHash(abiinfo.getHash());
+//设置智能合约codeAddress
+ontSdk.setCodeAddress(abiinfo.getHash());
 
 //获取账号信息
 Identity did = ontSdk.getWalletMgr().getIdentitys().get(0);

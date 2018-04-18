@@ -127,7 +127,9 @@ String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "pa
 
 Create a websocket thread and analyse the push notification.
 
+
 1. Set websocket link
+
 
 ```
 //lock global variable, synchronization lock
@@ -143,7 +145,9 @@ wm.openWalletFile("OntAssetDemo.json");
 
 ```
 
+
 2. Start websocket thread
+
 
 ```
 //false means not printing callback function information
@@ -151,7 +155,10 @@ ontSdk.getWebSocket().startWebsocketThread(false);
 
 ```
 
+
 3. Start result processing thread
+
+
 ```
 Thread thread = new Thread(
                     new Runnable() {
@@ -184,7 +191,10 @@ Thread thread = new Thread(
                     }
                 }
 ```
+
+
 4. Send a heartbeat every 6 seconds to maintain the socket link
+
 
 ```
 for (;;){
@@ -202,6 +212,7 @@ for (;;){
                 Thread.sleep(6000);
             }
 ```
+
 
 5. Push result case details
 
@@ -241,6 +252,8 @@ Take the put event of the deposit certificate as an example.
     ]
 }
 ```
+
+
 When the put function is called to save the data, the putRecord event is fired. The result of the websocket push is the hexadecimal string of {"putRecord", "arg1", "arg2", "arg3"}
 
 example:

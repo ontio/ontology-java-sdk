@@ -38,6 +38,7 @@ Account acct = ontSdk.getWalletMgr().createAccount("password");
 ontSdk.getWalletMgr().writeWallet();
 ```
 
+
 **移除数字资产账号**
 
 ```
@@ -73,6 +74,7 @@ ontSdk.getOntAssetTx().sendTransferToMany("ont",info1.address,"passwordtest",new
 ontSdk.getOntAssetTx().sendTransferFromMany("ont", new String[]{info1.address, info2.address}, new String[]{"passwordtest", "passwordtest"}, info3.address, new long[]{1L, 2L});
 ontSdk.getOntAssetTx().sendOngTransferFrom(info1.address,"passwordtest",info2.address,100);
 ```
+
 
 #### 使用智能合约
 
@@ -162,6 +164,7 @@ func.setParamsValue(from.getBytes(),to.getBytes(),value.getBytes());
 //setp5：调用合约
 String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign("passwordtest",addr,func);
 ```
+
 AbiInfo结构是怎样的？
 
 ```
@@ -202,5 +205,10 @@ invoke时为什么要传入账号和密码？
 发送交易时调用预执行接口
 String result = (String) sdk.getConnectMgr().sendRawTransactionPreExec(txHex);
 ```
+
+想查看转账时的推送结果？
+
+
+请查看智能合约采用websocket连接调用合约方法，详见[smartcontract](smartcontract.md)。
 
 

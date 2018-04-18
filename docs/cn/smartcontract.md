@@ -21,9 +21,9 @@ public class Parameter {
 }
 ```
 
-* codehash是什么
+* codeAddress是什么
 
-codehash是智能合约的唯一标识。
+codeAddress是智能合约的唯一标识。
 
 
 * 调用智能合约invokeTransaction的过程，sdk中具体做了什么
@@ -63,7 +63,7 @@ byte[] bys = new byte[is.available()];
 is.read(bys);
 is.close();
 code = Helper.toHexString(bys);
-ontSdk.setCodeHash(Helper.getCodeHash(code,VmType.NEOVM.value()));
+ontSdk.setCodeAddress(Helper.getCodeAddress(code,VmType.NEOVM.value()));
 
 //部署合约
 String txhash = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(code, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
@@ -102,8 +102,8 @@ System.out.println("Entrypoint:"+abiinfo.getEntrypoint());
 System.out.println("Functions:"+abiinfo.getFunctions());
 System.out.println("Events"+abiinfo.getEvents());
 
-//设置智能合约codehash
-ontSdk.setCodeHash(abiinfo.getHash());
+//设置智能合约codeAddress
+ontSdk.setCodeAddress(abiinfo.getHash());
 
 //获取账号信息
 Identity did = ontSdk.getWalletMgr().getIdentitys().get(0);
@@ -125,7 +125,9 @@ String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "pa
 
 创建websocket线程，解析推送结果。
 
+
 1. 设置websocket链接
+
 
 ```
 //lock 全局变量,同步锁
@@ -141,7 +143,9 @@ wm.openWalletFile("OntAssetDemo.json");
 
 ```
 
+
 2. 启动websocket线程
+
 
 ```
 //false 表示不打印回调函数信息
@@ -149,7 +153,10 @@ ontSdk.getWebSocket().startWebsocketThread(false);
 
 ```
 
+
 3. 启动结果处理线程
+
+
 ```
 Thread thread = new Thread(
                     new Runnable() {
@@ -183,7 +190,9 @@ Thread thread = new Thread(
                 }
 ```
 
+
 4. 每6秒发送一次心跳程序，维持socket链接
+
 
 ```
 for (;;){
@@ -202,7 +211,9 @@ for (;;){
             }
 ```
 
+
 5. 推送结果事例详解
+
 
 以调用存证合约的put函数为例，
 
@@ -240,6 +251,8 @@ for (;;){
     ]
 }
 ```
+
+
 当调用put函数保存数据时，触发putRecord事件，websocket 推送的结果是{"putRecord", "arg1", "arg2", "arg3"}的十六进制字符串
 
 例子如下：

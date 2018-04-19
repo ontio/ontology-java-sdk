@@ -22,7 +22,9 @@ package com.github.ontio.sdk.wallet;
 import com.alibaba.fastjson.JSON;
 import com.github.ontio.sdk.exception.SDKException;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,6 +33,9 @@ import java.util.List;
 public class Wallet {
     private String name = "com.github.ontio";
     private String version = "1.0";
+    private String createTime = "";
+    private String defaultOntid = "";
+    private String defaultAccountAddress = "";
     private Scrypt scrypt = new Scrypt();
     private Object extra = null;
     private List<Identity> identities = new ArrayList<Identity>();
@@ -53,6 +58,24 @@ public class Wallet {
     }
     public void setVersion(String version){
         this.version = version;
+    }
+    public void setDefaultOntid(String defaultOntid){
+        this.defaultOntid = defaultOntid;
+    }
+    public String getDefaultOntid(){
+        return defaultOntid;
+    }
+    public void setCreateTime(String createTime){
+        this.createTime = createTime;
+    }
+    public String getCreateTime(){
+        return createTime;
+    }
+    public void setDefaultAccountAddress(String defaultAccountAddress){
+        this.defaultAccountAddress = defaultAccountAddress;
+    }
+    public String getDefaultAccountAddress(){
+        return defaultAccountAddress;
     }
     public String getVersion(){
         return version;
@@ -118,11 +141,13 @@ public class Wallet {
             e.isDefault = false;
         }
         accounts.get(index).isDefault = true;
+        defaultAccountAddress = accounts.get(index).address;
     }
     public void setDefaultAccount(String address){
         for(Account e:accounts){
             if(e.address.equals(address)){
                 e.isDefault = true;
+                defaultAccountAddress = address;
             }else {
                 e.isDefault = false;
             }
@@ -136,11 +161,13 @@ public class Wallet {
             e.isDefault = false;
         }
         identities.get(index).isDefault = true;
+        defaultOntid = identities.get(index).ontid;
     }
     public void setDefaultIdentity(String ontid){
         for(Identity e:identities){
             if(e.ontid.equals(ontid)){
                 e.isDefault = true;
+                defaultOntid = ontid;
             }else {
                 e.isDefault = false;
             }

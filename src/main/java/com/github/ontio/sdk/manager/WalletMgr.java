@@ -38,6 +38,7 @@ import com.alibaba.fastjson.util.IOUtils;
 import org.bouncycastle.math.ec.ECPoint;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -60,6 +61,7 @@ public class WalletMgr {
             File file = new File(filePath);
             if (!file.exists()) {
                 wallet = new Wallet();
+                wallet.setCreateTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(new Date()));
                 walletFile = new Wallet();
                 file.createNewFile();
                 writeWallet();
@@ -81,6 +83,7 @@ public class WalletMgr {
             File file = new File(filePath);
             if (!file.exists()) {
                 wallet = new Wallet();
+                wallet.setCreateTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(new Date()));
                 walletFile = new Wallet();
                 file.createNewFile();
                 createIdentity(password,type,params);
@@ -401,6 +404,7 @@ public class WalletMgr {
             }
             if (wallet.getAccounts().size() == 0) {
                 at.isDefault = true;
+                wallet.setDefaultAccountAddress(at.address);
             }
             wallet.getAccounts().add(at);
         } else {
@@ -410,10 +414,11 @@ public class WalletMgr {
                 }
             }
             Identity idt = new Identity();
+            idt.ontid = Common.didont + at.address;
             if (wallet.getIdentities().size() == 0) {
                 idt.isDefault = true;
+                wallet.setDefaultOntid(idt.ontid);
             }
-            idt.ontid = Common.didont + at.address;
             idt.controls = new ArrayList<Control>();
             Control ctl = new Control(at.key, "");
             idt.controls.add(ctl);

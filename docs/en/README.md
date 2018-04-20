@@ -27,3 +27,26 @@ This is a comprehensive Java library for the Ontology blockchain,which is releas
 * network: Interfacing with the restful or rpc interface of the chain.
 * sdk: Underlying encapsulation, info management, communications management, UTXO management, wallet file management, exception class.
 * ontsdk class: Provide manager and transaction use cases. There are two types of managers: walletMgr and connManager. walletMgr manages digital identities and digital asset accounts. Transactions sent to the blockchain need to be digitally signed with the user's private key. connManager manages blockchain communications system. Any send transaction and query needs to be processed by connManager.
+
+## Installation Environment
+
+Please configure JDK 8 and above.
+
+> **Note:** As the length of key used in SDK is greater than 128, due to the restriction of JAVA security policy files, it is necessary to download local_policy.jar and US_export_policy.jar from the official website , to replace the two jar of ${java_home}/jre/lib/security in JRE directory.
+
+Download URL：
+
+>http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html
+
+
+## Build
+
+```
+mvn clean install
+```
+
+## Preparations
+
+* Make sure Ontology Blockchain has deployed well,  RPC port has been opened, and SDK will connect the RPC server to initialize.
+
+

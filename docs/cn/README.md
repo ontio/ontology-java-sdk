@@ -28,3 +28,23 @@
 * sdk：对底层做封装、Info信息、通信管理、UTXO管理、钱包文件管理、异常类。
 * ontsdk类：提供管理器和交易实例，管理器包括：walletMgr、connManager。walletMgr钱包管理器主要管理数字身份及数字资产账户，用户向链上发送交易需要私钥做签名。 connManager与链上通信管理。任何发送交易和查询都需要通过连接管理器。
 
+## 安装说明
+
+### 请配置JDK 8的开发环境
+
+> **注意:**  SDK用的key的长度超过128位，由于java的安全策略文件对key的长度的限制，需要下载local_policy.jar和US_export_policy.jar这两个jar包，替换JRE库${java_home}/jre/lib/security目录下对应的jar包。
+
+jar包下载地址：
+
+>http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html
+
+
+### Build
+
+```
+mvn clean install
+```
+
+## 预准备
+
+启动Ontology节点，rpc端口已经打开，并且SDK可以连接RPC服务器来初始化。

@@ -153,8 +153,8 @@ String abi = new String(bys);
 //step2：解析abi文件
 AbiInfo abiinfo = JSON.parseObject(abi, AbiInfo.class);
 
-//step3：设置智能合约codehash
-ontSdk.setCodeHash(abiinfo.getHash());
+//step3：设置智能合约codeaddress
+ontSdk.setCodeAddress(abiinfo.getHash());
 
 //step4：选择函数，设置函数参数
 AbiFunction func = abiinfo.getFunction("Transfer");
@@ -186,7 +186,7 @@ public class Parameter {
 }
 ```
 
-codehash是什么？
+codeAddress是什么？
 
 ```
 是智能合约的唯一标识。

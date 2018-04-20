@@ -80,9 +80,9 @@ ontSdk.getWalletMgr().writeWallet();
 只有向区块链链成功注册身份之后，该身份才可以真正使用。
 
 ```
-ontSdk.getOntIdTx().register(identity,"passwordtest");
+ontSdk.getOntIdTx().sendRegister(identity,"passwordtest");
 或
-ontSdk.getOntIdTx().register("passwordtest");
+ontSdk.getOntIdTx().sendRegister("passwordtest");
 ```
 
 链上注册成功后，对应此ONT ID的身份描述对象DDO将被存储在本体区块链上。关于DDO的信息可以从[ONT ID 身份标识协议及智能合约实现说明](https://git.ont.network/Ontology_Open_Platform/ontid/src/master/docs/en/ONTID_protocol_spec.md)详细了解。
@@ -105,7 +105,7 @@ ontSdk.getWalletMgr().writeWallet();
 链上身份DDO信息，可以通过ONT ID进行查询。
 ```
 //通过ONT ID获取DDO
-String ddo = ontSdk.getOntIdTx().getDDO(ontid,"passwordtest",ontid);
+String ddo = ontSdk.getOntIdTx().sendGetDDO(ontid,"passwordtest",ontid);
 
 //返回DDO格式
 {
@@ -136,14 +136,14 @@ ontSdk.getWalletMgr().writeWallet();
 ```
 ontSdk.getWalletMgr().getWallet().setDefaultAccount(address);
 ontSdk.getWalletMgr().getWallet().setDefaultIdentity(index);
-ontSdk.getWalletMgr().getWallet().setDefaultIdentity("ontid");
+ontSdk.getWalletMgr().getWallet().setDefaultIdentity(ontid);
 ```
 
 ### 8 **更新链上DDO属性**
 
 ```
 //更新一个属性
-String updateAttribute(String ontid,String password,byte[] key,byte[] type,byte[] value)
+String sendUpdateAttribute(String ontid,String password,byte[] key,byte[] type,byte[] value)
 ```
 | 参数      | 字段   | 类型  | 描述 |             说明 |
 | ----- | ------- | ------ | ------------- | ----------- |
@@ -251,10 +251,10 @@ boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(dids.get(0).ontid,"passwordtest
 
 ```
 //注册ontid
-Identity ident = ontSdk.getOntIdTx().register("passwordtest");
+Identity ident = ontSdk.getOntIdTx().sendRegister("passwordtest");
 String ontid = ident.ontid;
 //更新属性
-String hash = ontSdk.getOntIdTx().updateAttribute(ontid,"passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
+String hash = ontSdk.getOntIdTx().sendUpdateAttribute(ontid,"passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
 ```
 
 Claim签发和验证：

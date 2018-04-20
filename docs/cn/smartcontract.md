@@ -1,30 +1,21 @@
 ## 智能合约基本说明
 
-* AbiInfo结构是怎样的？
-
-```
-public class AbiInfo {
-    public String hash;
-    public String entrypoint;
-    public List<AbiFunction> functions;
-    public List<AbiEvent> events;
-}
-public class AbiFunction {
-    public String name;
-    public String returntype;
-    public List<Parameter> parameters;
-}
-public class Parameter {
-    public String name;
-    public String type;
-    public String value;
-}
-```
-
 * codeAddress是什么
 
 codeAddress是智能合约的唯一标识。
 
+如何获得codeAddress ？
+
+```
+InputStream is = new FileInputStream("IdContract.avm");
+byte[] bys = new byte[is.available()];
+is.read(bys);
+is.close();
+code = Helper.toHexString(bys);
+System.out.println("Code:" + Helper.toHexString(bys));
+System.out.println("CodeAddress:" + Helper.getCodeAddress(code, VmType.NEOVM.value()));
+```
+> Note: 在获得codeAddress的时候，需要设置该合约需要运行在什么虚拟机上，目前支持的虚拟机是NEO和WASM。
 
 * 调用智能合约invokeTransaction的过程，sdk中具体做了什么
 
@@ -42,7 +33,7 @@ ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
 
 * invoke时为什么要传入账号和密码
 
-调用智能合约时需要用户签名，钱包中保存的是加密后的用户私钥，需要密码才能解密获取私钥。
+调用智能合约时需要用户签名，如果是预执行不需要签名，钱包中保存的是加密后的用户私钥，需要密码才能解密获取私钥。
 
 
 * 查询资产操作时，智能合约预执行是怎么回事，如何使用？
@@ -52,9 +43,10 @@ ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
 String result = (String) sdk.getConnectMgr().sendRawTransactionPreExec(txHex);
 ```
 
+## 智能合约部署和调用
 
+> Note:目前java-sdk支持neo和wasm智能合约部署和调用，NEO和WASM合约部署操作一样，调用略有不同，见下面详解：
 
-## 智能合约部署
 
 #### **部署智能合约Demo例子**：
 ```
@@ -74,7 +66,7 @@ DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getRawT
 ```
 | 参数      | 字段   | 类型  | 描述 |             说明 |
 | ----- | ------- | ------ | ------------- | ----------- |
-| 输入参数 | codeHexStr| String | 合约code | 必选 |
+| 输入参数 | codeHexStr| String | 合约code十六进制字符串 | 必选 |
 |        | needStorage    | Boolean | 是否需要存储   | 必选 |
 |        | name    | String  | 名字       | 必选|
 |        | codeVersion   | String | 版本       |  必选 |
@@ -86,7 +78,16 @@ DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getRawT
 
 ## 智能合约调用
 
-读取智能合约的abi文件，构造调用智能合约函数，发送交易。
+### NEO智能合约调用
+
+基本流程：
+
+ 1. 读取智能合约的abi文件；
+ 2. 构造调用智能合约函数；
+ 3. 构造交易；
+ 4. 交易签名(预执行不需要签名)；
+ 5. 发送交易。
+
 ```
 //读取智能合约的abi文件
 InputStream is = new FileInputStream("C:\\ZX\\NeoContract1.abi.json");
@@ -114,11 +115,56 @@ AbiFunction func = abiinfo.getFunction("AddAttribute");
 System.out.println(func.getParameters());
 func.setParamsValue(did.ontid.getBytes(),"key".getBytes(),"bytes".getBytes(),"values02".getBytes(),Helper.hexToBytes(info.pubkey));
 System.out.println(func);
-
-//调用智能合约
+//调用智能合约，sendInvokeSmartCodeWithSign方法封装好了构造交易，签名交易，发送交易步骤
 String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", func, (byte) VmType.NEOVM.value()););
 
 ```
+
+* AbiInfo结构(NEO合约调用的时候需要，WASM合约不需要)
+
+```
+public class AbiInfo {
+    public String hash;
+    public String entrypoint;
+    public List<AbiFunction> functions;
+    public List<AbiEvent> events;
+}
+public class AbiFunction {
+    public String name;
+    public String returntype;
+    public List<Parameter> parameters;
+}
+public class Parameter {
+    public String name;
+    public String type;
+    public String value;
+}
+```
+
+## WASM智能合约调用
+
+基本流程：
+  1. 构造调用合约中的方法需要的参数；
+  2. 构造交易；
+  3. 交易签名(如果是预执行不需要签名)；
+  4. 发送交易。
+
+示例：
+
+```
+//设置要调用的合约地址codeAddress
+ontSdk.getSmartcodeTx().setCodeAddress(codeAddress);
+String funcName = "add";
+//构造合约函数需要的参数
+String params = ontSdk.getSmartcodeTx().buildWasmContractJsonParam(new Object[]{20,30});
+//指定虚拟机类型构造交易
+Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(ontSdk.getSmartcodeTx().getCodeAddress(),funcName,params.getBytes(),VmType.WASMVM.value(),new Fee[0]);
+//发送交易
+ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+
+```
+
+
 > 如果需要监控推送结果，可以了解下面章节。
 
 ## 智能合约执行过程推送
@@ -126,7 +172,7 @@ String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "pa
 创建websocket线程，解析推送结果。
 
 
-1. 设置websocket链接
+### 1. 设置websocket链接
 
 
 ```
@@ -144,7 +190,7 @@ wm.openWalletFile("OntAssetDemo.json");
 ```
 
 
-2. 启动websocket线程
+### 2. 启动websocket线程
 
 
 ```
@@ -154,7 +200,7 @@ ontSdk.getWebSocket().startWebsocketThread(false);
 ```
 
 
-3. 启动结果处理线程
+### 3. 启动结果处理线程
 
 
 ```
@@ -191,7 +237,7 @@ Thread thread = new Thread(
 ```
 
 
-4. 每6秒发送一次心跳程序，维持socket链接
+### 4. 每6秒发送一次心跳程序，维持socket链接
 
 
 ```
@@ -212,7 +258,7 @@ for (;;){
 ```
 
 
-5. 推送结果事例详解
+### 5. 推送结果事例详解
 
 
 以调用存证合约的put函数为例，

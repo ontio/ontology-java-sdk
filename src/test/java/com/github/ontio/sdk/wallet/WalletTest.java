@@ -1,6 +1,7 @@
 package com.github.ontio.sdk.wallet;
 
 import com.github.ontio.OntSdk;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,31 +43,39 @@ public class WalletTest {
 
     @Test
     public void removeAccount() {
-        System.out.println(ontSdk.getWalletMgr().getWallet().removeAccount(acct1.address));
+
+        boolean b = ontSdk.getWalletMgr().getWallet().removeAccount(acct1.address);
+        Assert.assertTrue(b);
     }
 
     @Test
     public void getAccount() {
-        System.out.println(ontSdk.getWalletMgr().getAccount(acct1.address));
+        Account acct = ontSdk.getWalletMgr().getAccount(acct1.address);
+        Assert.assertNotNull(acct);
+
     }
 
     @Test
     public void removeIdentity() {
 
-        System.out.println(ontSdk.getWalletMgr().getWallet().removeIdentity(id1.ontid));
+        boolean b = ontSdk.getWalletMgr().getWallet().removeIdentity(id1.ontid);
+        Assert.assertTrue(b);
 
 
     }
 
     @Test
     public void getIdentity() {
-        System.out.println(ontSdk.getWalletMgr().getIdentity(id1.ontid));
+
+        Identity did = ontSdk.getWalletMgr().getIdentity(id1.ontid);
+        Assert.assertNotNull(did);
     }
 
     @Test
     public void setDefaultAccount() throws Exception {
 
         ontSdk.getWalletMgr().getWallet().setDefaultAccount(1);
+
 
     }
 

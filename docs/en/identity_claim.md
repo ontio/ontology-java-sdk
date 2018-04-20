@@ -67,7 +67,7 @@ wm.setRpc(rpcUrl);
 wm.setRestful(restUrl);
 wm.setDefaultConnect(wm.getRestful());
 wm.openWalletFile("InvokeSmartCodeDemo.json");
-ontSdk.setCodeHash("89ff0f39193ddaeeeab9de4873b549f71bbe809c");
+ontSdk.setCodeAddress("89ff0f39193ddaeeeab9de4873b549f71bbe809c");
 ```
 > Note: Ontid is implemented by a smart contract, so the ontid smart contract codeHash needs to be set.
 
@@ -84,9 +84,9 @@ ontSdk.getWalletMgr().writeWallet();
 The identity cannot be put to use until being successfully registered on the blockchain.
 
 ```
-ontSdk.getOntIdTx().register(identity,"passwordtest");
+ontSdk.getOntIdTx().sendRegister(identity,"passwordtest");
 或
-ontSdk.getOntIdTx().register("passwordtest");
+ontSdk.getOntIdTx().sendRegister("passwordtest");
 ```
 
 Upon successful registration, the corresponding DDO of the ONT ID will be stored in Ontology blockchain. Detailed information about DDO can be found in [ONT ID identity protocol and smart contract implementation](https://git.ont.network/Ontology_Open_Platform/ontid/src/master/docs/en/ONTID_protocol_spec.md).
@@ -109,7 +109,7 @@ ontSdk.getWalletMgr().writeWallet();
 DDO of blockchain-based identity can be queried by entering ONT ID.
 ```
 //get DDO by entering ONT ID
-String ddo = ontSdk.getOntIdTx().getDDO(ontid,"passwordtest",ontid);
+String ddo = ontSdk.getOntIdTx().sendGetDDO(ontid,"passwordtest",ontid);
 
 //return in DDO format
 {
@@ -141,15 +141,15 @@ ontSdk.getWalletMgr().writeWallet();
 ### 7 **Set default account or identity**
 
 ```
-ontSdk.getWalletMgr().getWallet().setDefaultIdentity(index);setDefaultAccount
-ontSdk.getWalletMgr().getWallet().setDefaultIdentity("ontid");
+ontSdk.getWalletMgr().getWallet().setDefaultIdentity(index);
+ontSdk.getWalletMgr().getWallet().setDefaultIdentity(ontid);
 ```
 
 ### 8 **Update blockchain-based DDO attribute**
 
 ```
 //update an attribute
-String updateAttribute(String ontid,String password,byte[] key,byte[] type,byte[] value)
+String sendUpdateAttribute(String ontid,String password,byte[] key,byte[] type,byte[] value)
 ```
 | Param   | Field   | Type  | Descriptions |      Remarks |
 | ----- | ------- | ------ | ------------- | ----------- |
@@ -256,7 +256,7 @@ boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(dids.get(0).ontid,"passwordtest
 
 ```
 //register ontid
-Identity ident = ontSdk.getOntIdTx().register("passwordtest");
+Identity ident = ontSdk.getOntIdTx().sendRegister("passwordtest");
 String ontid = ident.ontid;
 //update attribute
 String hash = ontSdk.getOntIdTx().updateAttribute(ontid,"passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());

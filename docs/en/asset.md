@@ -154,8 +154,8 @@ String abi = new String(bys);
 //step2：parse ABI file
 AbiInfo abiinfo = JSON.parseObject(abi, AbiInfo.class);
 
-//step3：set smart contract codehash
-ontSdk.setCodeHash(abiinfo.getHash());
+//step3：set smart contract codeAddress
+ontSdk.setCodeAddress(abiinfo.getHash());
 
 //step4：select a function and set parameter value
 AbiFunction func = abiinfo.getFunction("Transfer");
@@ -187,10 +187,10 @@ public class Parameter {
 }
 ```
 
-What is codehash?
+What is codeaddress?
 
 ```
-codehash is the unique identifier of smart contract.
+codeaddress is the unique identifier of smart contract.
 ```
 
 

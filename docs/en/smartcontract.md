@@ -1,30 +1,23 @@
 
 ## Smart Contract 
 
-* What would be the AbiInfo structure?
-
-```
-public class AbiInfo {
-    public String hash;
-    public String entrypoint;
-    public List<AbiFunction> functions;
-    public List<AbiEvent> events;
-}
-public class AbiFunction {
-    public String name;
-    public String returntype;
-    public List<Parameter> parameters;
-}
-public class Parameter {
-    public String name;
-    public String type;
-    public String value;
-}
-```
-
 * What is codeAddress?
 
 codeAddress is the unique identifier of smart contract.
+
+* how to get codeAddress?
+
+```
+InputStream is = new FileInputStream("IdContract.avm");
+byte[] bys = new byte[is.available()];
+is.read(bys);
+is.close();
+code = Helper.toHexString(bys);
+System.out.println("Code:" + Helper.toHexString(bys));
+System.out.println("CodeAddress:" + Helper.getCodeAddress(code, VmType.NEOVM.value()));
+```
+
+> Note: When you get the codeAddress, you need to set which virtual machine the contract needs to run on. The java-sdk currently supported virtual machines are NEO and WASM.。
 
 * What would sdk do in detail when calling the invokeTransaction function of smart contract?
 
@@ -52,7 +45,10 @@ Operations of smart contract, such as get, do not need to go through any consens
 String result = (String) sdk.getConnectMgr().sendRawTransactionPreExec(txHex);
 ```
 
-## Deployment of smart contract
+
+## Deployment and invocation of smart contract
+
+> Note: At present, java-sdk supports neo and wasm smart contract deployment and invocation. Deployment operations of NEO and WASM contract are the same,but the invocation is slightly different. See below for details.
 
 #### **A deployment example of smart contract**
 
@@ -73,7 +69,7 @@ DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getRawT
 ```
 | Parameters    | Field       | Type                  | Description                       | Explaination                           |
 | -----         | -------     | ------                | -------------                     | -----------                            |
-| Input params  | codeHexStr  | String                | Contract code                     | Required                               |
+| Input params  | codeHexStr  | String                | Contract code hexadecimal string  | Required                               |
 |               | needStorage | Boolean               | Need storage or not               | Required                               |
 |               | name        | String                | Contract name                     | Required                               |
 |               | codeVersion | String                | Contract version                  | Required                               |
@@ -87,7 +83,18 @@ DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getRawT
 
 ## Invocation of smart contract
 
-Read the abi file of smart contract, construct the function that calls the smart contract, and send transactions.
+Invocation of NEO smart contarct
+
+Basic process
+
+   1. Read the abi file of smart contract;
+   2. construct the function that calls the smart contract;
+   3. construct trasanction;
+   4. sign transaction;
+   5. send transactions.
+
+example:
+
 ```
 //Load the abi file of smart contract
 InputStream is = new FileInputStream("C:\\ZX\\NeoContract1.abi.json");
@@ -114,10 +121,53 @@ AccountInfo info = ontSdk.getWalletMgr().getAccountInfo(did.ontid,"passwordtest"
 AbiFunction func = abiinfo.getFunction("AddAttribute");
 System.out.println(func.getParameters());
 func.setParamsValue(did.ontid.getBytes(),"key".getBytes(),"bytes".getBytes(),"values02".getBytes(),Helper.hexToBytes(info.pubkey));
-System.out.println(func);
 
-//Call the smart contract
+//Call a smart contract, sendInvokeSmartCodeWithSign method encapsulates a structured transaction, signing a transaction, sending a transaction step
 String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", func, (byte) VmType.NEOVM.value());
+
+```
+
+* What would be the AbiInfo structure?
+
+```
+public class AbiInfo {
+    public String hash;
+    public String entrypoint;
+    public List<AbiFunction> functions;
+    public List<AbiEvent> events;
+}
+public class AbiFunction {
+    public String name;
+    public String returntype;
+    public List<Parameter> parameters;
+}
+public class Parameter {
+    public String name;
+    public String type;
+    public String value;
+}
+```
+
+## Invocation of WASM smart contract
+
+basic process：
+  1. Constructing the parameters required by the method in the calling contract；
+  2. Structure transaction；
+  3. Transaction signature (no signature required for pre-execution)；
+  4. send Transaction。
+
+example：
+
+```
+//set codeAddress
+ontSdk.getSmartcodeTx().setCodeAddress(codeAddress);
+String funcName = "add";
+//The parameters needed to construct a contract function
+String params = ontSdk.getSmartcodeTx().buildWasmContractJsonParam(new Object[]{20,30});
+//Specify a virtual machine type to construct a transaction
+Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(ontSdk.getSmartcodeTx().getCodeAddress(),funcName,params.getBytes(),VmType.WASMVM.value(),new Fee[0]);
+//send transaction
+ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
 
 ```
 

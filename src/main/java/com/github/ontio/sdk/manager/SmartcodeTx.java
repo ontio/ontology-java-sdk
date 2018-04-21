@@ -135,7 +135,9 @@ public class SmartcodeTx {
                 throw new SDKException("type error");
             }
         }
-        list.add(tmp);
+        if(list.size()>0) {
+            list.add(tmp);
+        }
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
 
         Transaction tx = null;

@@ -1,5 +1,7 @@
+<h1 align="center"> Ontology Java SDK User Guide </h1>
+<p align="center" class="version">Version 0.7.0 </p>
 
-## Smart Contract 
+# Smart Contract
 
 * What is codeAddress?
 
@@ -50,7 +52,7 @@ String result = (String) sdk.getConnectMgr().sendRawTransactionPreExec(txHex);
 
 > Note: At present, java-sdk supports neo and wasm smart contract deployment and invocation. Deployment operations of NEO and WASM contract are the same,but the invocation is slightly different. See below for details.
 
-#### **A deployment example of smart contract**
+### A deployment example of smart contract
 
 ```
 InputStream is = new FileInputStream("/Users/sss/dev/ontologytest/IdContract/IdContract.avm");
@@ -83,9 +85,9 @@ DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getTran
 
 ## Invocation of smart contract
 
-Invocation of NEO smart contarct
+### Invocation of NEO smart contarct
 
-Basic process
+* Basic process
 
    1. Read the abi file of smart contract;
    2. construct the function that calls the smart contract;
@@ -93,7 +95,7 @@ Basic process
    4. sign transaction;
    5. send transactions.
 
-example:
+* example:
 
 ```
 //Load the abi file of smart contract
@@ -148,15 +150,15 @@ public class Parameter {
 }
 ```
 
-## Invocation of WASM smart contract
+###  Invocation of WASM smart contract
 
-basic process：
+* basic process：
   1. Constructing the parameters required by the method in the calling contract；
   2. Structure transaction；
   3. Transaction signature (no signature required for pre-execution)；
   4. send Transaction。
 
-example：
+* example：
 
 ```
 //set codeAddress

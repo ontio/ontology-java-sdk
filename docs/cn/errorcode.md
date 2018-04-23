@@ -1,6 +1,7 @@
+<h1 align="center"> Ontology Java SDK User Guide </h1>
+<p align="center" class="version">Version 0.7.0 </p>
 
-
-## 错误码
+# 错误码
 
 | 返回代码 | 描述信息 | 说明 |
 | :---- | ----------------------------- | ----------------- |

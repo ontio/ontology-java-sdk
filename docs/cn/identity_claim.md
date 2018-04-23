@@ -1,8 +1,11 @@
-## **总体介绍**
+<h1 align="center"> Ontology Java SDK User Guide </h1>
+<p align="center" class="version">Version 0.7.0 </p>
 
-数字身份相关介绍可参考[ONT ID 身份标识协议及信任框架](https://git.ont.network/Ontology_Open_Platform/ontid)。
+# 总体介绍
 
-## **钱包文件及规范**
+数字身份相关介绍可参考[ONT ID 身份标识协议及信任框架](https://github.com/ontio/ontology-DID)。
+
+## 钱包文件及规范
 
 钱包文件是一个Json格式的数据存储文件，可同时存储多个数字身份和多个数字资产账户。具体参考[钱包文件规范](Wallet_File_Specification.md)。
 
@@ -17,9 +20,9 @@ wm.openWalletFile("Demo3.json");
 
 
 
-## **数字身份账户管理**
+## 数字身份账户管理
 
-### 1 **数据结构说明**
+* 1 数据结构说明
 
 `ontid` 是代表身份的唯一的id
 `label` 是用户给身份所取的名称。
@@ -52,7 +55,7 @@ public class Control {
 }
 ```
 
-### 2 **创建数字身份**
+* 2 创建数字身份
 
 ontsdk实例初始化
 
@@ -75,7 +78,7 @@ Identity identity = ontSdk.getWalletMgr().createIdentity("passwordtest");
 ontSdk.getWalletMgr().writeWallet();
 ```
 
-### 3 **向链上注册身份**
+* 3 向链上注册身份
 
 只有向区块链链成功注册身份之后，该身份才可以真正使用。
 
@@ -88,11 +91,11 @@ ontSdk.getOntIdTx().sendRegister("passwordtest");
 链上注册成功后，对应此ONT ID的身份描述对象DDO将被存储在本体区块链上。关于DDO的信息可以从[ONT ID 身份标识协议及智能合约实现说明](https://git.ont.network/Ontology_Open_Platform/ontid/src/master/docs/en/ONTID_protocol_spec.md)详细了解。
 
 
-### 4 **导入账号或身份**
+* 4 导入账号或身份
 
 当用户已经拥有了一个数字身份或者数字账户，SDK支持将其导入到钱包文件中。
 
-> **Note：** 建议导入一个数字身份之前，建议查询链上身份，如果链上身份DDO不存在，表示此数字身份未在链上注册，请使用ontSdk.getOntIdTx().register(identity)把身份注册到链上。
+> Note: 建议导入一个数字身份之前，建议查询链上身份，如果链上身份DDO不存在，表示此数字身份未在链上注册，请使用ontSdk.getOntIdTx().register(identity)把身份注册到链上。
 
 ```
 Identity identity = ontSdk.getWalletMgr().importIdentity("6PYMpk8DjWzaEvneyaqxMBap9DuUPH72W6BsWWTtpWE4JJZkGq5ENtfYbT","passwordtest");
@@ -100,7 +103,7 @@ Identity identity = ontSdk.getWalletMgr().importIdentity("6PYMpk8DjWzaEvneyaqxMB
 ontSdk.getWalletMgr().writeWallet();
 ```
 
-### 5 **查询链上身份**
+* 5 查询链上身份
 
 链上身份DDO信息，可以通过ONT ID进行查询。
 
@@ -126,14 +129,14 @@ String ddo = ontSdk.getOntIdTx().sendGetDDO(ontid,"passwordtest",ontid);
 
 ```
 
-### 6 **移除身份**
+* 6 移除身份
 ```
 ontSdk.getWalletMgr().getWallet().removeIdentity(ontid);
 //写入钱包
 ontSdk.getWalletMgr().writeWallet();
 ```
 
-### 7 **设置默认账号或身份**
+* 7 设置默认账号或身份
 ```
 //根据账户地址设置默认账户
 ontSdk.getWalletMgr().getWallet().setDefaultAccount(address);
@@ -142,7 +145,7 @@ ontSdk.getWalletMgr().getWallet().setDefaultIdentity(index);
 ontSdk.getWalletMgr().getWallet().setDefaultIdentity(ontid);
 ```
 
-### 8 **更新链上DDO属性**
+* 8 更新链上DDO属性
 
 ```
 //更新一个属性
@@ -157,7 +160,7 @@ String sendUpdateAttribute(String ontid,String password,byte[] key,byte[] type,b
 |        | value   | byte[] | value     | 必选，值 |
 | 输出参数 | txhash   | String  | 交易hash  | 交易hash是64位字符串 |
 
-### 9 **移除链上DDO属性**
+* 9 移除链上DDO属性
 
 ```
 String hash = ontSdk.getOntIdTx().sendRemoveAttribute(did.ontid, "passwordtest", "attri".getBytes());
@@ -170,9 +173,9 @@ String hash = ontSdk.getOntIdTx().sendRemoveAttribute(did.ontid, "passwordtest",
 | 输出参数 | txhash   | String  | 交易hash  | 交易hash是64位字符串 |
 
 
-## **可信申明**
+## 可信申明
 
-### 1 **数据结构和规范**
+### 1 数据结构和规范
 
 * Claim 具有以下数据结构
 

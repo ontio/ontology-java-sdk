@@ -63,9 +63,9 @@ wm.setRpc(rpcUrl);
 wm.setRestful(restUrl);
 wm.setDefaultConnect(wm.getRestful());
 wm.openWalletFile("InvokeSmartCodeDemo.json");
-ontSdk.setCodeHash("89ff0f39193ddaeeeab9de4873b549f71bbe809c");
+ontSdk.setCodeAddress("89ff0f39193ddaeeeab9de4873b549f71bbe809c");
 ```
-> Note: ontid是由智能合约实现，所以需要设置ontid的智能合约codeHash。
+> Note: ontid是由智能合约实现，所以需要设置ontid的智能合约codeAddress。
 
 创建数字身份指的是产生一个Identity数据结构的身份信息，并写入到到钱包文件中。
 
@@ -103,6 +103,7 @@ ontSdk.getWalletMgr().writeWallet();
 ### 5 **查询链上身份**
 
 链上身份DDO信息，可以通过ONT ID进行查询。
+
 ```
 //通过ONT ID获取DDO
 String ddo = ontSdk.getOntIdTx().sendGetDDO(ontid,"passwordtest",ontid);
@@ -134,7 +135,9 @@ ontSdk.getWalletMgr().writeWallet();
 
 ### 7 **设置默认账号或身份**
 ```
+//根据账户地址设置默认账户
 ontSdk.getWalletMgr().getWallet().setDefaultAccount(address);
+//根据identity索引设置默认identity
 ontSdk.getWalletMgr().getWallet().setDefaultIdentity(index);
 ontSdk.getWalletMgr().getWallet().setDefaultIdentity(ontid);
 ```
@@ -234,9 +237,11 @@ value 是计算后的签名值。
 Map<String, Object> map = new HashMap<String, Object>();
 map.put("Issuer", dids.get(0).ontid);
 map.put("Subject", dids.get(1).ontid);
-String claim = ontSdk.getOntIdTx().createOntIdClaim("passwordtest","claim:context",map,map);
+String claim = ontSdk.getOntIdTx().createOntIdClaim(ontid,"passwordtest","claim:context",map,map);
 System.out.println(claim);
 ```
+
+> Note: Issuer可能有多把公钥，createOntIdClaim的参数ontid指定使用哪一把公钥。
 
 ### 3 验证可信申明
 
@@ -254,8 +259,16 @@ boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(dids.get(0).ontid,"passwordtest
 Identity ident = ontSdk.getOntIdTx().sendRegister("passwordtest");
 String ontid = ident.ontid;
 //更新属性
+String attri = "attri";
+Map recordMap = new HashMap();
+recordMap.put("key0", "world0");
+//recordMap.put("key1", i);
+recordMap.put("keyNum", 1234589);
+recordMap.put("key2", false);
 String hash = ontSdk.getOntIdTx().sendUpdateAttribute(ontid,"passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
 ```
+
+> Note: 当不存在该属性时，调用sendUpdateAttribute方法，会增加相应的属性，当属性存在时，会更新相应属性，attri代表属性名称，"Json"是属性值得数据类型，recordMap表示属性的值。
 
 Claim签发和验证：
 ```
@@ -264,7 +277,7 @@ map.put("Issuer", dids.get(0).ontid);
 map.put("Subject", dids.get(1).ontid);
 
 //密码是签发人的秘密，钱包文件ontid中必须要有该签发人。
-String claim = ontSdk.getOntIdTx().createOntIdClaim("passwordtest","claim:context",map,map);
+String claim = ontSdk.getOntIdTx().createOntIdClaim(ontid,"passwordtest","claim:context",map,map);
 System.out.println(claim);
 boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(ontid,"passwordtest",claim);
 ```

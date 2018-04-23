@@ -49,7 +49,7 @@ System.out.println(info);
 ### Get InvokeTransaction 
 
 ```
-InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getRawTransaction(hash);
+InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getTransaction(hash);
 System.out.println(t);
 ```
 

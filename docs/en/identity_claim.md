@@ -239,9 +239,10 @@ Verifiable claim is constructed based on user input, which contains signed data.
 Map<String, Object> map = new HashMap<String, Object>();
 map.put("Issuer", dids.get(0).ontid);
 map.put("Subject", dids.get(1).ontid);
-String claim = ontSdk.getOntIdTx().createOntIdClaim("passwordtest","claim:context",map,map);
+String claim = ontSdk.getOntIdTx().createOntIdClaim(ontid,"passwordtest","claim:context",map,map);
 System.out.println(claim);
 ```
+> Note: The Issuer may have multiple public keys. The parameter ontid of createOntIdClaim specifies which public key to use.
 
 ### 3 Verify verifiable claim
 
@@ -259,8 +260,9 @@ boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(dids.get(0).ontid,"passwordtest
 Identity ident = ontSdk.getOntIdTx().sendRegister("passwordtest");
 String ontid = ident.ontid;
 //update attribute
-String hash = ontSdk.getOntIdTx().updateAttribute(ontid,"passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
+String hash = ontSdk.getOntIdTx().sendUpdateAttribute(ontid,"passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
 ```
+> Note: When the attribute does not exist, calling the sendUpdateAttribute method will increase the corresponding attribute. When the attribute exists, the corresponding attribute will be updated. Attri represents the attribute name, "Json" is the attribute value data type, and recordMap represents the attribute value.
 
 Claim issuance and verification:
 ```
@@ -269,7 +271,7 @@ map.put("Issuer", dids.get(0).ontid);
 map.put("Subject", dids.get(1).ontid);
 
 //Password is confidentially held by the issuer, who must be contained in wallet file ontid.
-String claim = ontSdk.getOntIdTx().createOntIdClaim("passwordtest","claim:context",map,map);
+String claim = ontSdk.getOntIdTx().createOntIdClaim(ontid,"passwordtest","claim:context",map,map);
 System.out.println(claim);
 boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(ontid,"passwordtest",claim);
 ```

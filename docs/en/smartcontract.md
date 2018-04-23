@@ -65,7 +65,7 @@ String txhash = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(code, true, "n
 System.out.println("txhash:" + txhash);
 //Waiting for block generation
 Thread.sleep(6000);
-DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getRawTransaction(txhash);
+DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getTransaction(txhash);
 ```
 | Parameters    | Field       | Type                  | Description                       | Explaination                           |
 | -----         | -------     | ------                | -------------                     | -----------                            |

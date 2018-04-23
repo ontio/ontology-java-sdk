@@ -5,11 +5,11 @@
 用Java SDK之前，请使用以下方式初始化OntSDK实例。
 
 ```
-OntSdk wm = OntSdk.getInstance();
-wm.setRpc(rpcUrl);
-wm.setRestful(restUrl);
-wm.setDefaultConnect(wm.getRestful());
-wm.openWalletFile("OntAssetDemo.json");
+OntSdk ontSdk = OntSdk.getInstance();
+ontSdk.setRpc(rpcUrl);
+ontSdk.setRestful(restUrl);
+ontSdk.setDefaultConnect(wm.getRestful());
+ontSdk.openWalletFile("OntAssetDemo.json");
 ```
 > Note: setRestful表示采用restful接口建立连接，setRpc表示采用rpc接口建立连接,setDefaultConnect表示设置默认的链接方式。
 
@@ -47,7 +47,7 @@ System.out.println(info);
 ```
 ###从区块链中获取InvokeCodeTransaction
 ```
-InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getRawTransaction(txhash);
+InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getTransaction(txhash);
 System.out.println(t);
 ```
 ## 数据结构说明

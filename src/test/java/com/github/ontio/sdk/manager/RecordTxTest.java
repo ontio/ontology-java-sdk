@@ -3,6 +3,7 @@ package com.github.ontio.sdk.manager;
 import com.github.ontio.OntSdk;
 import com.github.ontio.common.Common;
 import com.github.ontio.sdk.wallet.Identity;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,13 +37,13 @@ public class RecordTxTest {
     public void sendPut() throws Exception {
 
         String res = ontSdk.getRecordTx().sendPut(id.ontid.replace("did:ont:",""),"passwordtest","key","value");
-        System.out.println(res);
+        Assert.assertNotNull(res);
     }
 
     @Test
     public void sendGet() throws Exception {
 
         String res = ontSdk.getRecordTx().sendGet(id.ontid.replace("did:ont:",""),"passwordtest","key");
-        System.out.println(res);
+        Assert.assertNotNull(res);
     }
 }

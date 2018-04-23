@@ -1,7 +1,9 @@
 package com.github.ontio.sdk.manager;
 
 import com.github.ontio.OntSdk;
+import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.wallet.Account;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,32 +38,35 @@ public class OntAssetTxTest {
     @Test
     public void sendTransfer() throws Exception {
 
-        ontSdk.getOntAssetTx().sendTransfer("ont",info1.address,"passwordtest",info2.address,100L);
+        String res= ontSdk.getOntAssetTx().sendTransfer("ont",info1.address,"passwordtest",info2.address,100L);
+        Assert.assertNotNull(res);
     }
 
     @Test
     public void makeTransfer() throws Exception {
 
-        ontSdk.getOntAssetTx().makeTransfer("ont",info1.address,"passwordtest",info2.address,100L);
+        Transaction tx = ontSdk.getOntAssetTx().makeTransfer("ont",info1.address,"passwordtest",info2.address,100L);
+        Assert.assertNotNull(tx);
     }
 
     @Test
     public void sendTransferToMany() throws Exception {
         String hash1 = ontSdk.getOntAssetTx().sendTransferToMany("ont",info1.address,"passwordtest",new String[]{info2.address,info3.address},new long[]{100L,200L});
-        System.out.println(hash1);
+        Assert.assertNotNull(hash1);
     }
 
     @Test
     public void sendTransferFromMany() throws Exception {
 
         String hash2 = ontSdk.getOntAssetTx().sendTransferFromMany("ont", new String[]{info1.address, info2.address}, new String[]{"passwordtest", "passwordtest"}, info3.address, new long[]{1L, 2L});
-        System.out.println(hash2);
+        Assert.assertNotNull(hash2);
     }
 
     @Test
     public void sendOngTransferFrom() throws Exception {
 
-        ontSdk.getOntAssetTx().sendOngTransferFrom(info1.address,"passwordtest",info2.address,10L);
+        String res = ontSdk.getOntAssetTx().sendOngTransferFrom(info1.address,"passwordtest",info2.address,10L);
+        Assert.assertNotNull(res);
     }
 
 

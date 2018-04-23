@@ -115,6 +115,9 @@ public class OntIdTx {
      * @throws Exception
      */
     public Identity sendRegister(String password) throws Exception {
+        return sendRegister("",password);
+    }
+    public Identity sendRegister(String label,String password) throws Exception {
         if (codeAddress == null) {
             throw new SDKException("null codeHash");
         }
@@ -123,6 +126,7 @@ public class OntIdTx {
         Transaction tx = makeRegister(info);
         sdk.signTx(tx, ontid, password);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.ontid);
+        identity.label = label;
         sdk.getWalletMgr().writeWallet();
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (!b) {

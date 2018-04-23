@@ -135,7 +135,9 @@ public class SmartcodeTx {
                 throw new SDKException("type error");
             }
         }
-        list.add(tmp);
+        if(list.size()>0) {
+            list.add(tmp);
+        }
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
 
         Transaction tx = null;
@@ -173,7 +175,14 @@ public class SmartcodeTx {
         }
         return tx.hash().toString();
     }
-
+    public static byte[] Int2Bytes_LittleEndian(int iValue){
+        byte[] rst = new byte[4];
+        rst[0] = (byte)(iValue & 0xFF);
+        rst[1] = (byte)((iValue & 0xFF00) >> 8 );
+        rst[2] = (byte)((iValue & 0xFF0000) >> 16 );
+        rst[3] = (byte)((iValue & 0xFF000000) >> 24 );
+        return rst;
+    }
     /**
      * @param builder
      * @param list
@@ -183,14 +192,12 @@ public class SmartcodeTx {
         try {
             for (int i = list.size() - 1; i >= 0; i--) {
                 Object val = list.get(i);
-                if (val instanceof BigInteger) {
-                    builder.push((BigInteger) val);
-                } else if (val instanceof byte[]) {
+                if (val instanceof byte[]) {
                     builder.push((byte[]) val);
                 } else if (val instanceof Boolean) {
                     builder.push((Boolean) val);
                 } else if (val instanceof Integer) {
-                    builder.push(new BigInteger(String.valueOf(val)));
+                    builder.push(new BigInteger(Int2Bytes_LittleEndian((int)val)));
                 } else if (val instanceof List) {
                     List tmp = (List) val;
                     createCodeParamsScript(builder, tmp);
@@ -215,14 +222,12 @@ public class SmartcodeTx {
         try {
             for (int i = list.size() - 1; i >= 0; i--) {
                 Object val = list.get(i);
-                if (val instanceof BigInteger) {
-                    sb.push((BigInteger) val);
-                } else if (val instanceof byte[]) {
+                if (val instanceof byte[]) {
                     sb.push((byte[]) val);
                 } else if (val instanceof Boolean) {
                     sb.push((Boolean) val);
                 } else if (val instanceof Integer) {
-                    sb.push(new BigInteger(String.valueOf(val)));
+                    sb.push(new BigInteger(Int2Bytes_LittleEndian((int)val)));
                 } else if (val instanceof List) {
                     List tmp = (List) val;
                     createCodeParamsScript(sb, tmp);

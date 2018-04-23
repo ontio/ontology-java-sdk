@@ -1,6 +1,5 @@
-
-<h1 align="center">Ontology Java SDK Developer's Guide</h1>
-<h4 align="center">Version V0.6.0 </h4>
+<h1 align="center"> Ontology Java SDK User Guide </h1>
+<p align="center" class="version">Version 0.7.0 </p>
 
 ## Overview
 
@@ -39,13 +38,13 @@ Download URL：
 >http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html
 
 
-## Build
+### Build
 
 ```
 mvn clean install
 ```
 
-## Preparations
+### Preparations
 
 * Make sure Ontology Blockchain has deployed well,  RPC port has been opened, and SDK will connect the RPC server to initialize.
 

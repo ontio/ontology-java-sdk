@@ -1,6 +1,7 @@
+<h1 align="center"> Ontology Java SDK User Guide </h1>
+<p align="center" class="version">Version 0.7.0 </p>
 
-
-## Error code
+# Error code
 
 | Return Code | Description                   | Explaination                                     |
 | :----------:|:-----------------------------:|:------------------------------------------------:|
@@ -17,5 +18,6 @@
 | 44001       | UNKNOWN_TRANSACTION           | Transaction not found                            |
 | 44002       | UNKNOWN_ASSET                 | Asset not found                                  |
 | 44003       | UNKNOWN_BLOCK                 | Block not found                                  |
+| 44004       | UNKNWN_CONTRACT               | Contract not found                                  |
 | 45001       | INTERNAL_ERROR                | Internal error                                   |
 | 47001       | SMARTCODE_ERROR               | smartcode error                                  |

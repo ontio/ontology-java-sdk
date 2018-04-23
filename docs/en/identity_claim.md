@@ -1,8 +1,11 @@
-## Overivew
+<h1 align="center"> Ontology Java SDK User Guide </h1>
+<p align="center" class="version">Version 0.7.0 </p>
 
-Relevant descriptions of digital ID can be found in [ONT ID Protocol and Trust Framework](https://git.ont.network/Ontology_Open_Platform/ontid).
+# Overivew
 
-## **Wallet file specification**
+Relevant descriptions of digital ID can be found in [ONT ID Protocol and Trust Framework](https://github.com/ontio/ontology-DID).
+
+## Wallet file specification
 
 A wallet file is a JSON data storage file that stores multiple digital identities and digital asset accounts. 
 You may refer to [Wallet File Specification](Wallet_File_Specification.md) for detailed information.
@@ -18,9 +21,9 @@ wm.openWalletFile("Demo3.json");
 
 
 
-## **Digital ID account management**
+## Digital ID account management
 
-### 1 **Data structure**
+* 1 Data structure
 
 `ontid` A user’s only identity  
 `label` The name of a user ID  
@@ -55,7 +58,7 @@ public class Control {
 }
 ```
 
-### 2 **Create a digital identity**
+* 2 Create a digital identity
 
 
 ontsdk instance init
@@ -79,7 +82,7 @@ Identity identity = ontSdk.getWalletMgr().createIdentity("password");
 ontSdk.getWalletMgr().writeWallet();
 ```
 
-### 3 **Register blockchain-based identity**
+* 3 Register blockchain-based identity
 
 The identity cannot be put to use until being successfully registered on the blockchain.
 
@@ -92,7 +95,7 @@ ontSdk.getOntIdTx().sendRegister("passwordtest");
 Upon successful registration, the corresponding DDO of the ONT ID will be stored in Ontology blockchain. Detailed information about DDO can be found in [ONT ID identity protocol and smart contract implementation](https://git.ont.network/Ontology_Open_Platform/ontid/src/master/docs/en/ONTID_protocol_spec.md).
 
 
-### 4 **Import account or identity**
+* 4 Import account or identity
 
 Users who have already created a digital identity or account may import it into a wallet file from SDK.
 
@@ -104,7 +107,7 @@ Identity identity = ontSdk.getWalletMgr().importIdentity("6PYMpk8DjWzaEvneyaqxMB
 ontSdk.getWalletMgr().writeWallet();
 ```
 
-### 5 **Query blockchain-based identity**
+* 5 Query blockchain-based identity
 
 DDO of blockchain-based identity can be queried by entering ONT ID.
 ```
@@ -130,7 +133,7 @@ String ddo = ontSdk.getOntIdTx().sendGetDDO(ontid,"passwordtest",ontid);
 
 ```
 
-### 6 **Remove identity**
+* 6 Remove identity
 
 ```
 ontSdk.getWalletMgr().getWallet().removeIdentity(ontid);
@@ -138,14 +141,14 @@ ontSdk.getWalletMgr().getWallet().removeIdentity(ontid);
 ontSdk.getWalletMgr().writeWallet();
 ```
 
-### 7 **Set default account or identity**
+* 7 Set default account or identity
 
 ```
 ontSdk.getWalletMgr().getWallet().setDefaultIdentity(index);
 ontSdk.getWalletMgr().getWallet().setDefaultIdentity(ontid);
 ```
 
-### 8 **Update blockchain-based DDO attribute**
+* 8 Update blockchain-based DDO attribute
 
 ```
 //update an attribute
@@ -160,7 +163,7 @@ String sendUpdateAttribute(String ontid,String password,byte[] key,byte[] type,b
 |        | value   | byte[] | value     | required, value |
 | output param | txhash   | String  | transaction hash | 64-bit string |
                         
-### 9 **Remove blockchain-based DDO attribute**
+* 9 Remove blockchain-based DDO attribute
 
 ```
 String hash = ontSdk.getOntIdTx().sendRemoveAttribute(did.ontid, "passwordtest", "attri".getBytes());
@@ -172,9 +175,9 @@ String hash = ontSdk.getOntIdTx().sendRemoveAttribute(did.ontid, "passwordtest",
 |        | key    | byte[]  | key       | required, key |
 | output param | txhash   | String  | transaction hash | 64-bit string |
 
-## **Verifiable claim**
+## Verifiable claim
 
-### 1 **Data structure specification**
+### 1 Data structure specification
 
 * Claim has the following data structure:
 
@@ -239,9 +242,10 @@ Verifiable claim is constructed based on user input, which contains signed data.
 Map<String, Object> map = new HashMap<String, Object>();
 map.put("Issuer", dids.get(0).ontid);
 map.put("Subject", dids.get(1).ontid);
-String claim = ontSdk.getOntIdTx().createOntIdClaim("passwordtest","claim:context",map,map);
+String claim = ontSdk.getOntIdTx().createOntIdClaim(ontid,"passwordtest","claim:context",map,map);
 System.out.println(claim);
 ```
+> Note: The Issuer may have multiple public keys. The parameter ontid of createOntIdClaim specifies which public key to use.
 
 ### 3 Verify verifiable claim
 
@@ -259,8 +263,9 @@ boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(dids.get(0).ontid,"passwordtest
 Identity ident = ontSdk.getOntIdTx().sendRegister("passwordtest");
 String ontid = ident.ontid;
 //update attribute
-String hash = ontSdk.getOntIdTx().updateAttribute(ontid,"passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
+String hash = ontSdk.getOntIdTx().sendUpdateAttribute(ontid,"passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
 ```
+> Note: When the attribute does not exist, calling the sendUpdateAttribute method will increase the corresponding attribute. When the attribute exists, the corresponding attribute will be updated. Attri represents the attribute name, "Json" is the attribute value data type, and recordMap represents the attribute value.
 
 Claim issuance and verification:
 ```
@@ -269,7 +274,7 @@ map.put("Issuer", dids.get(0).ontid);
 map.put("Subject", dids.get(1).ontid);
 
 //Password is confidentially held by the issuer, who must be contained in wallet file ontid.
-String claim = ontSdk.getOntIdTx().createOntIdClaim("passwordtest","claim:context",map,map);
+String claim = ontSdk.getOntIdTx().createOntIdClaim(ontid,"passwordtest","claim:context",map,map);
 System.out.println(claim);
 boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(ontid,"passwordtest",claim);
 ```

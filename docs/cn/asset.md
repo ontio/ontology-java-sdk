@@ -1,6 +1,10 @@
-## 数字资产
+<h1 align="center"> Ontology Java SDK User Guide </h1>
+<p align="center" class="version">Version 0.7.0 </p>
 
-### **数据结构说明**
+
+# 数字资产
+
+## 数据结构说明
 `address` 是base58编码的账户地址。
 `label` 是账户的名称。
 `isDefault`表明账户是否是默认的账户。默认值为false。
@@ -24,9 +28,9 @@ public class Account {
 }
 ```
 
-### **数字资产账户管理**
+## 数字资产账户管理
 
-**创建数字资产账号**
+* 创建数字资产账号
 
 ```
 String url = "http://127.0.0.1:20386";
@@ -39,7 +43,7 @@ ontSdk.getWalletMgr().writeWallet();
 ```
 
 
-**移除数字资产账号**
+* 移除数字资产账号
 
 ```
 ontSdk.getWalletMgr().getWallet().removeAccount(address);
@@ -47,7 +51,7 @@ ontSdk.getWalletMgr().getWallet().removeAccount(address);
 ontSdk.getWalletMgr().writeWallet();
 ```
 
-**设置默认数字资产账号**
+* 设置默认数字资产账号
 
 ```
 ontSdk.getWalletMgr().getWallet().setDefaultAccount(index);
@@ -55,9 +59,9 @@ ontSdk.getWalletMgr().getWallet().setDefaultAccount("address");
 ```
 > Note: index表示设置第index个account为默认账户，address表示设置该address对应的account为默认账户
 
-### 原生数字资产
+## 原生数字资产
 
-#### 使用SDK方法
+* 使用SDK方法
 
 我们建议您使用SDK封装的方法操作原生数字资产，比如 ONT Token等。
 
@@ -76,7 +80,7 @@ ontSdk.getOntAssetTx().sendOngTransferFrom(info1.address,"passwordtest",info2.ad
 ```
 
 
-#### 使用智能合约
+* 使用智能合约
 
 您也可以使用智能合约操作原生数字资产。
 
@@ -186,19 +190,21 @@ public class Parameter {
 }
 ```
 
-codeAddress是什么？
+## 说明
+
+* codeAddress是什么？
 
 ```
-是智能合约的唯一标识。
+是智能合约的唯一标识。在这里代表资产合约的codeAddress。
 ```
 
-invoke时为什么要传入账号和密码？
+* invoke时为什么要传入账号和密码？
 
 ```
 调用智能合约时需要用户签名，钱包中保存的是加密后的用户私钥，需要密码才能解密获取私钥。
 ```
 
-查询资产操作时，智能合约预执行是怎么回事，如何使用？
+* 查询资产操作时，智能合约预执行是怎么回事，如何使用？
 
 ```
 如智能合约get相关操作，从智能合约存储空间里读取数据，无需走节点共识，只在该节点执行即可返回结果。
@@ -206,7 +212,7 @@ invoke时为什么要传入账号和密码？
 String result = (String) sdk.getConnectMgr().sendRawTransactionPreExec(txHex);
 ```
 
-想查看转账时的推送结果？
+* 想查看转账时的推送结果？
 
 
 请查看智能合约采用websocket连接调用合约方法，详见[smartcontract](smartcontract.md)。

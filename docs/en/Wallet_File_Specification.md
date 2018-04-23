@@ -1,3 +1,5 @@
+<h1 align="center"> Ontology Java SDK User Guide </h1>
+<p align="center" class="version">Version 0.7.0 </p>
 # Wallet File Specification
 
 ## Wallet

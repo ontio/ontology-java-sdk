@@ -1,4 +1,7 @@
-## 区块链交互基本操作
+<h1 align="center"> Ontology Java SDK User Guide </h1>
+<p align="center" class="version">Version 0.7.0 </p>
+
+# 区块链交互基本操作
 
 以下针对使用SDK和区块交互的基本操作，以及相关数据结构定义。
 
@@ -13,46 +16,46 @@ wm.openWalletFile("OntAssetDemo.json");
 ```
 > Note: setRestful表示采用restful接口建立连接，setRpc表示采用rpc接口建立连接,setDefaultConnect表示设置默认的链接方式。
 
+## 基本操作接口
 
-### 获取当前区块高度
+* 获取当前区块高度
 ```
 int height = ontSdk.getConnectMgr().getBlockHeight();
 ```
 
-### 获取区块
+* 获取区块
 
 ```
 Block block = ontSdk.getConnectMgr().getBlock(9757);
 ```
 
-
-
-### 获取区块链节点数
+* 获取区块链节点数
 
 ```
 System.out.println(ontSdk.getConnectMgr().getNodeCount());
 ```
 
-### 获取出块时间
+* 获取出块时间
 
 ```
 System.out.println(ontSdk.getConnectMgr().getGenerateBlockTime());
 ```
 
-### 从区块链中获取交易
+* 从区块链中获取交易
 
 ```
 String info = ontSdk.getConnectMgr().getTransaction(txhash);
 System.out.println(info);
 ```
-###从区块链中获取InvokeCodeTransaction
+* 从区块链中获取InvokeCodeTransaction
+
 ```
 InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getRawTransaction(txhash);
 System.out.println(t);
 ```
 ## 数据结构说明
 
-### Block区块
+* Block区块
 
 | Field     |     Type |   Description   | 
 | :--------------: | :--------:| :------: |
@@ -70,7 +73,7 @@ System.out.println(t);
 |    transactions|   Transaction[] |  该区块的交易列表 |
 
 
-### Transaction交易
+* Transaction交易
 
 | Field     |     Type |   Description   | 
 | :--------------: | :--------:| :------: |
@@ -84,9 +87,7 @@ System.out.println(t);
 |    payload| Payload |  payload  |
 
 
-
-
-### TransactionType交易类型
+* TransactionType交易类型
 
 | Value     |     Type |   Description   | 
 | :--------------: | :--------:| :------: |
@@ -97,7 +98,7 @@ System.out.println(t);
 |      5|   int |     投票 |
 
 
-### 签名字段
+* 签名字段
 
 | Field     |     Type |   Description   | 
 | :--------------: | :--------:| :------: |
@@ -106,14 +107,14 @@ System.out.println(t);
 |    sigData|   array | 签名值数组 |
 
 
-### Fee交易手续费
+* Fee交易手续费
 
 | Field     |     Type |   Description   | 
 | :--------------: | :--------:| :------: |
 |    amount|   long|  金额|
 |    payer|   Address | 付费者 |
 
-### Attribute交易属性
+* Attribute交易属性
 
 | Field    |     Type |   Description   | 
 | :--------------: | :--------:| :------: |
@@ -121,7 +122,7 @@ System.out.println(t);
 |    data|   byte[] | 属性值 |
 
 
-### TransactionAttributeUsage属性用途
+* TransactionAttributeUsage属性用途
 
 | Value     |     Type |   Description   | 
 | :--------------: | :--------:| :------: |

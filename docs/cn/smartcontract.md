@@ -1,10 +1,13 @@
-## 智能合约基本说明
+<h1 align="center"> Ontology Java SDK User Guide </h1>
+<p align="center" class="version">Version 0.7.0 </p>
+
+# 智能合约基本说明
 
 * codeAddress是什么
 
 codeAddress是智能合约的唯一标识。
 
-如何获得codeAddress ？
+* 如何获得codeAddress ？
 
 ```
 InputStream is = new FileInputStream("IdContract.avm");
@@ -48,7 +51,7 @@ String result = (String) sdk.getConnectMgr().sendRawTransactionPreExec(txHex);
 > Note:目前java-sdk支持neo和wasm智能合约部署和调用，NEO和WASM合约部署操作一样，调用略有不同，见下面详解：
 
 
-#### **部署智能合约Demo例子**：
+### 部署智能合约Demo例子
 ```
 InputStream is = new FileInputStream("/Users/sss/dev/ontologytest/IdContract/IdContract.avm");
 byte[] bys = new byte[is.available()];
@@ -80,13 +83,15 @@ DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getRawT
 
 ### NEO智能合约调用
 
-基本流程：
+* 基本流程：
 
  1. 读取智能合约的abi文件；
  2. 构造调用智能合约函数；
  3. 构造交易；
  4. 交易签名(预执行不需要签名)；
  5. 发送交易。
+
+* 示例
 
 ```
 //读取智能合约的abi文件
@@ -141,15 +146,15 @@ public class Parameter {
 }
 ```
 
-## WASM智能合约调用
+### WASM智能合约调用
 
-基本流程：
+* 基本流程：
   1. 构造调用合约中的方法需要的参数；
   2. 构造交易；
   3. 交易签名(如果是预执行不需要签名)；
   4. 发送交易。
 
-示例：
+* 示例：
 
 ```
 //设置要调用的合约地址codeAddress

@@ -18,5 +18,6 @@
 | 44001       | UNKNOWN_TRANSACTION           | Transaction not found                            |
 | 44002       | UNKNOWN_ASSET                 | Asset not found                                  |
 | 44003       | UNKNOWN_BLOCK                 | Block not found                                  |
+| 44004       | UNKNWN_CONTRACT               | Contract not found                                  |
 | 45001       | INTERNAL_ERROR                | Internal error                                   |
 | 47001       | SMARTCODE_ERROR               | smartcode error                                  |

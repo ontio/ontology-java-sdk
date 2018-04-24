@@ -1,6 +1,7 @@
 package com.github.ontio.account;
 
 
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.crypto.*;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.Helper;
@@ -46,7 +47,7 @@ public class Account {
             case ECDSA:
             case SM2:
                 if (!(params[0] instanceof String)) {
-                    throw new Exception("invalid params");
+                    throw new Exception(ErrorCode.InvalidParams);
                 }
                 String curveName = (String)params[0];
                 paramSpec = new ECGenParameterSpec(curveName);

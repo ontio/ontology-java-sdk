@@ -263,7 +263,6 @@ public class OntIdTx {
         tmp.add(did);
         tmp.add(Helper.hexToBytes(newpubkey));
         tmp.add(pk);
-//        tmp.add(new byte[]{0});
         list.add(tmp);
         Transaction tx = makeInvokeTransaction(list,addr,password);
         sdk.signTx(tx, addr, password);

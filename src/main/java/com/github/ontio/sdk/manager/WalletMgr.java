@@ -452,9 +452,8 @@ public class WalletMgr {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new SDKRuntimeException("getAccountByAddress err", e);
         }
-        return null;
+        throw new SDKRuntimeException("getAccountByAddress err");
     }
 
 }

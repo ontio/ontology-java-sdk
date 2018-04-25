@@ -21,6 +21,7 @@ package com.github.ontio.sdk.manager;
 
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.crypto.KeyType;
 import com.github.ontio.crypto.SignatureScheme;
@@ -102,14 +103,14 @@ public class ECIES {
 
     public static byte[] Decrypt(Account account, String[] params) throws Exception {
         if (params.length != 3) {
-            throw new Exception("params error");
+            throw new Exception(ErrorCode.ParamError);
         }
         return Decrypt(account.serializePrivateKey(), Helper.hexToBytes(params[0]), Helper.hexToBytes(params[1]), Helper.hexToBytes(params[2]), 32);
     }
 
     public static byte[] Decrypt(String prikey, String[] params) throws Exception {
         if (params.length != 3) {
-            throw new Exception("params error");
+            throw new Exception(ErrorCode.ParamError);
         }
         return Decrypt(Helper.hexToBytes(prikey), Helper.hexToBytes(params[0]), Helper.hexToBytes(params[1]), Helper.hexToBytes(params[2]), 32);
     }

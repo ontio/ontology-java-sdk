@@ -1,5 +1,7 @@
 package com.github.ontio.crypto;
 
+import com.github.ontio.common.ErrorCode;
+
 public enum KeyType {
     ECDSA(0x12),
     SM2(0x14);
@@ -21,6 +23,6 @@ public enum KeyType {
                 return k;
             }
         }
-        throw new Exception("unknown asymmetric key type");
+        throw new Exception(ErrorCode.UnknownAsymmetricKeyType);
     }
 }

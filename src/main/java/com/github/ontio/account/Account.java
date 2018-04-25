@@ -56,7 +56,7 @@ public class Account {
                 break;
             default:
                 //should not reach here
-                throw new Exception("unsupported key type");
+                throw new Exception(ErrorCode.UnsupportedKeyType);
         }
         gen.initialize(paramSpec, new SecureRandom());
         KeyPair keyPair = gen.generateKeyPair();
@@ -87,7 +87,7 @@ public class Account {
                 this.addressU160 = Address.toScriptHash(serializePublicKey());
                 break;
             default:
-                throw new Exception("unknown key type");
+                throw new Exception(ErrorCode.UnsupportedKeyType);
         }
     }
     // construct an account from a serialized pubic key or private key
@@ -112,7 +112,7 @@ public class Account {
     }
     public byte[] generateSignature(byte[] msg, SignatureScheme scheme, Object param) throws Exception {
         if (msg == null || msg.length == 0) {
-            throw new Exception("invalid message");
+            throw new Exception(ErrorCode.InvalidMessage);
         }
         if (this.privateKey == null) {
             throw new Exception("account without private key cannot generate signature");
@@ -140,7 +140,7 @@ public class Account {
             throw new Exception("invalid input");
         }
         if (this.publicKey == null) {
-            throw new Exception("account without public key cannot verify signature");
+            throw new Exception(ErrorCode.AccountWithoutPublicKey);
         }
         Signature sig = new Signature(signature);
         SignatureHandler ctx = new SignatureHandler(type, sig.getScheme());
@@ -161,7 +161,7 @@ public class Account {
                     break;
                 default:
                     // Should not reach here
-                    throw new Exception("unknown key type");
+                    throw new Exception(ErrorCode.UnknownKeyType);
             }
         }
         catch (Exception e) {
@@ -174,10 +174,10 @@ public class Account {
 
     private void parsePublicKey(byte[] data) throws Exception {
         if (data == null) {
-            throw new Exception("null input");
+            throw new Exception(ErrorCode.NullInput);
         }
         if (data.length < 2) {
-            throw new Exception("invalid data");
+            throw new Exception(ErrorCode.InvalidData);
         }
         this.param = null;
         this.privateKey = null;
@@ -198,7 +198,7 @@ public class Account {
                 this.publicKey = kf.generatePublic(pubSpec);
                 break;
             default:
-                throw new Exception("unknown public key type");
+                throw new Exception(ErrorCode.UnknownKeyType);
         }
     }
 
@@ -217,7 +217,7 @@ public class Account {
                 return d;
             default:
                 // should not reach here
-                throw new Exception("unknown key type");
+                throw new Exception(ErrorCode.UnknownKeyType);
         }
     }
 
@@ -319,7 +319,7 @@ public class Account {
         }
         byte[] decoded = Base58.decodeChecked(encryptedPriKey);
         if (decoded.length != 43 || decoded[0] != (byte) 0x01 || decoded[1] != (byte) 0x42 || decoded[2] != (byte) 0xe0) {
-            throw new SDKException("decoded 3 bytes error");
+            throw new SDKException(ErrorCode.Decoded3bytesError);
         }
         byte[] data = Arrays.copyOfRange(decoded, 0, decoded.length - 4);
         return decode(passphrase, data,type,params);
@@ -352,14 +352,14 @@ public class Account {
         byte[] addresshashNew =  Arrays.copyOfRange(addresshashTmp, 0, 4);
 
         if(!new String(addresshash).equals(new String(addresshashNew))){
-            throw new SDKException("decode prikey passphrase error. " + Helper.toHexString(addresshash) + "," + Helper.toHexString(addresshashNew));
+            throw new SDKException(ErrorCode.DecodePrikeyPassphraseError + Helper.toHexString(addresshash) + "," + Helper.toHexString(addresshashNew));
         }
         return priKey;
     }
     private static byte[] XOR(byte[] x, byte[] y) throws Exception
     {
         if (x.length != y.length) {
-            throw new SDKException("Prikey length error");
+            throw new SDKException(ErrorCode.PrikeyLengthError);
         }
         byte[] ret = new byte[x.length];
         for (int i=0; i < x.length; i++) {

@@ -19,9 +19,11 @@
 
 package com.github.ontio.sdk.abi;
 
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.sdk.exception.SDKException;
 import com.alibaba.fastjson.JSON;
-import java.lang.reflect.Array;
+
+import java.util.List;
 
 /**
  *
@@ -59,14 +61,14 @@ public class Parameter {
                 int tmp = (int) value;
                 this.value = JSON.toJSONString(tmp);
             } else if ("Array".equals(type)) {
-                Array tmp = (Array) value;
+                List tmp = (List) value;
                 this.value = JSON.toJSONString(tmp);
             } else if ("InteropInterface".equals(type)) {
                 Object tmp = (Object) value;
                 this.value = JSON.toJSONString(tmp);
             } else if ("Void".equals(type)) {
             } else {
-                throw new SDKException("type error");
+                throw new SDKException(ErrorCode.TypeError);
             }
             return true;
         } catch (Exception e) {

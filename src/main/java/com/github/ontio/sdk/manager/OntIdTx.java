@@ -22,10 +22,7 @@ package com.github.ontio.sdk.manager;
 import com.alibaba.fastjson.JSONArray;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
-import com.github.ontio.common.Address;
-import com.github.ontio.common.Common;
-import com.github.ontio.common.Helper;
-import com.github.ontio.common.UInt256;
+import com.github.ontio.common.*;
 import com.github.ontio.core.asset.Contract;
 import com.github.ontio.merkle.MerkleVerifier;
 import com.github.ontio.sdk.exception.SDKException;
@@ -83,7 +80,7 @@ public class OntIdTx {
         sdk.getWalletMgr().writeWallet();
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (!b) {
-            throw new SDKException("sendRawTransaction error");
+            throw new SDKException(ErrorCode.SendRawTxError);
         }
         return identity;
     }
@@ -130,7 +127,7 @@ public class OntIdTx {
         sdk.getWalletMgr().writeWallet();
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (!b) {
-            throw new SDKException("sendRawTransaction error");
+            throw new SDKException(ErrorCode.SendRawTxError);
         }
         return identity;
     }
@@ -145,7 +142,7 @@ public class OntIdTx {
      */
     public Identity sendRegister(String password, Map<String, Object> attrsMap) throws Exception {
         if (codeAddress == null) {
-            throw new SDKException("null codeHash");
+            throw new SDKException(ErrorCode.NullCodeHash);
         }
         IdentityInfo info = sdk.getWalletMgr().createIdentityInfo(password,sdk.keyType,sdk.curveParaSpec);
         String ontid = info.ontid;
@@ -222,7 +219,7 @@ public class OntIdTx {
      */
     public String sendRegisterByGuardian(String guardianAddr, String password) throws Exception {
         if (codeAddress == null) {
-            throw new SDKException("null codeHash");
+            throw new SDKException(ErrorCode.NullCodeHash);
         }
         IdentityInfo info = sdk.getWalletMgr().createIdentityInfo(password,sdk.keyType,sdk.curveParaSpec);
         String ontid = info.ontid;
@@ -251,7 +248,7 @@ public class OntIdTx {
      */
     public String sendAddPubKey(String ontid, String password, String newpubkey) throws Exception {
         if (codeAddress == null) {
-            throw new SDKException("null codeHash");
+            throw new SDKException(ErrorCode.NullCodeHash);
         }
         String addr = ontid.replace(Common.didont, "");
         byte[] did = (Common.didont + addr).getBytes();
@@ -285,7 +282,7 @@ public class OntIdTx {
      */
     public String sendAddPubKey(String password, String ontid, String newpubkey, String recoveryScriptHash) throws Exception {
         if (codeAddress == null) {
-            throw new SDKException("null codeHash");
+            throw new SDKException(ErrorCode.NullCodeHash);
         }
         String addr = ontid.replace(Common.didont, "");
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
@@ -319,7 +316,7 @@ public class OntIdTx {
      */
     public String sendAddPubKeyByGuardian(String addr, String password, String newpubkey, String guardianAddr) throws Exception {
         if (codeAddress == null) {
-            throw new SDKException("null codeHash");
+            throw new SDKException(ErrorCode.NullCodeHash);
         }
         addr = addr.replace(Common.didont, "");
         byte[] did = (Common.didont + addr).getBytes();
@@ -352,7 +349,7 @@ public class OntIdTx {
      */
     public String sendRemovePubKey(String ontid, String password, String removepk) throws Exception {
         if (codeAddress == null) {
-            throw new SDKException("null codeHash");
+            throw new SDKException(ErrorCode.NullCodeHash);
         }
         String addr = ontid.replace(Common.didont, "");
         byte[] did = (Common.didont + addr).getBytes();
@@ -383,7 +380,7 @@ public class OntIdTx {
      */
     public String sendRemovePubKey(String ontid, String password, byte[] key, String recoveryScriptHash) throws Exception {
         if (codeAddress == null) {
-            throw new SDKException("null codeHash");
+            throw new SDKException(ErrorCode.NullCodeHash);
         }
         String addr = ontid.replace(Common.didont, "");
         byte[] did = (Common.didont + addr).getBytes();
@@ -413,7 +410,7 @@ public class OntIdTx {
      */
     public String sendAddRecovery(String ontid, String password, String recoveryScriptHash) throws Exception {
         if (codeAddress == null) {
-            throw new SDKException("null codeHash");
+            throw new SDKException(ErrorCode.NullCodeHash);
         }
         String addr = ontid.replace(Common.didont, "");
         byte[] did = (Common.didont + addr).getBytes();
@@ -446,7 +443,7 @@ public class OntIdTx {
      */
     public String sendChangeRecovery(String ontid, String password, String newRecoveryScriptHash, String oldRecoveryScriptHash) throws Exception {
         if (codeAddress == null) {
-            throw new SDKException("null codeHash");
+            throw new SDKException(ErrorCode.NullCodeHash);
         }
         String addr = ontid.replace(Common.didont,"");
         byte[] did = (Common.didont + addr).getBytes();
@@ -488,10 +485,10 @@ public class OntIdTx {
 
     public Transaction makeUpdateAttribute(String ontid, String password, byte[] path, byte[] type, byte[] value) throws Exception {
         if (codeAddress == null) {
-            throw new SDKException("null codeHash");
+            throw new SDKException(ErrorCode.NullCodeHash);
         }
         if (type.length >= 255 || path.length >= 255) {
-            throw new SDKException("param error");
+            throw new SDKException(ErrorCode.ParamError);
         }
         byte[] did = (ontid).getBytes();
         String addr = ontid.replace(Common.didont, "");
@@ -517,7 +514,7 @@ public class OntIdTx {
      */
     public String sendUpdateAttributeArray(String ontid, String password, List<Object> attriList) throws Exception {
         if (codeAddress == null) {
-            throw new SDKException("null codeHash");
+            throw new SDKException(ErrorCode.NullCodeHash);
         }
         String addr = ontid.replace(Common.didont,"");
         byte[] did = (Common.didont + addr).getBytes();
@@ -664,7 +661,7 @@ public class OntIdTx {
      */
     public String sendGetDDO(String ontid) throws Exception {
         if (codeAddress == null) {
-            throw new SDKException("null codeHash");
+            throw new SDKException(ErrorCode.NullCodeHash);
         }
         List list = new ArrayList<Object>();
         list.add("GetDDO".getBytes());
@@ -678,7 +675,7 @@ public class OntIdTx {
 String aa = tx.toHexString();
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         if(obj == null || ((String)obj).length() == 0){
-            throw new SDKException("result is null");
+            throw new SDKException(ErrorCode.ResultIsNull);
         }
         Map map = parseDdoData(ontid, (String)obj);
         if (map.size() == 0) {
@@ -702,7 +699,7 @@ String aa = tx.toHexString();
      */
     private String sendAddRecord(String ontid, String password, byte[] key, byte[] value) throws Exception {
         if (codeAddress == null) {
-            throw new SDKException("null codeHash");
+            throw new SDKException(ErrorCode.NullCodeHash);
         }
         if (key.length >= 255) {
             throw new SDKException("param error");
@@ -744,13 +741,13 @@ String aa = tx.toHexString();
             String sendDid = (String) metaData.get("Issuer");
             String receiverDid = (String) metaData.get("Subject");
             if (sendDid == null || receiverDid == null) {
-                throw new SDKException("SendDid or receiverDid is null in metaData");
+                throw new SDKException(ErrorCode.DidNull);
             }
             String issuerDdo = sendGetDDO(sendDid);
-
+System.out.println("DDO:" + issuerDdo);
             JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("Owners");
             if(owners == null){
-                throw new SDKException("Not exist cliam issuer");
+                throw new SDKException(ErrorCode.NotExistCliamIssuer);
             }
             String pubkeyId = null;
             com.github.ontio.account.Account acct =  sdk.getWalletMgr().getAccount(signerOntid, password,sdk.keyType,sdk.curveParaSpec);
@@ -762,11 +759,11 @@ String aa = tx.toHexString();
                 }
             }
             if(pubkeyId == null){
-                throw new SDKException("not found PublicKeyId");
+                throw new SDKException(ErrorCode.NotFoundPublicKeyId);
             }
             String[] receiverDidStr = receiverDid.split(":");
             if (receiverDidStr.length != 3) {
-                throw new SDKException("Did error");
+                throw new SDKException(ErrorCode.DidError);
             }
             claim = new Claim(sdk.getWalletMgr().getSignatureScheme(),acct, context, contentMap, sortMap(metaData),pubkeyId);
             return claim.getClaim();
@@ -819,12 +816,12 @@ String aa = tx.toHexString();
             String issuerDid = obj.getJSONObject("Metadata").getString("Issuer");
             String[] str = issuerDid.split(":");
             if (str.length != 3) {
-                throw new SDKException("Did error");
+                throw new SDKException(ErrorCode.DidError);
             }
             String issuerDdo = sendGetDDO(issuerDid);
             JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("Owners");
             if(owners == null){
-                throw new SDKException("Not exist cliam issuer");
+                throw new SDKException(ErrorCode.NotExistCliamIssuer);
             }
             String signature = obj.getJSONObject("Signature").getString("Value");
             String publicKeyId = obj.getJSONObject("Signature").getString("PublicKeyId");
@@ -837,7 +834,7 @@ String aa = tx.toHexString();
                 }
             }
             if(!verify){
-                throw new SDKException("PublicKeyId err");
+                throw new SDKException(ErrorCode.PublicKeyIdErr);
             }
             String pubkeyStr = owners.getJSONObject(0).getString("Value");
             obj.remove("Signature");
@@ -899,7 +896,7 @@ String aa = tx.toHexString();
             }
             List nodes = (List)prf.get("Nodes");
             if(!nodes.equals(MerkleVerifier.getProof(txroot, blockHeight, targetHashes, curBlockHeight + 1))){
-                throw new SDKException("nodes not match");
+                throw new SDKException(ErrorCode.NodesNotMatch);
             }
             return MerkleVerifier.VerifyLeafHashInclusion(txroot, blockHeight, targetHashes, curBlockRoot, curBlockHeight + 1);
         } catch (Exception e) {
@@ -949,10 +946,10 @@ String aa = tx.toHexString();
 
     public Transaction makeRemoveAttribute(String ontid, String password, byte[] path) throws Exception {
         if (codeAddress == null) {
-            throw new SDKException("null codeHash");
+            throw new SDKException(ErrorCode.NullCodeHash);
         }
         if (path.length >= 255) {
-            throw new SDKException("param error");
+            throw new SDKException(ErrorCode.ParamError);
         }
         byte[] did = (ontid).getBytes();
         String addr = ontid.replace(Common.didont, "");
@@ -988,7 +985,7 @@ String aa = tx.toHexString();
 
     public String sendGetPublicKeyId(String ontid,String password) throws Exception {
         if (codeAddress == null) {
-            throw new SDKException("null codeHash");
+            throw new SDKException(ErrorCode.NullCodeHash);
         }
         byte[] did = (ontid).getBytes();
         String addr = ontid.replace(Common.didont, "");
@@ -1007,10 +1004,10 @@ String aa = tx.toHexString();
 
     public String sendGetPublicKeyStatus(String ontid,String password,byte[] pkId) throws Exception{
         if (codeAddress == null) {
-            throw new SDKException("null codeHash");
+            throw new SDKException(ErrorCode.NullCodeHash);
         }
         if (pkId.length == 0) {
-            throw new SDKException("null pkId");
+            throw new SDKException(ErrorCode.NullPkId);
         }
         byte[] did = (ontid).getBytes();
         String addr = ontid.replace(Common.didont, "");
@@ -1025,6 +1022,5 @@ String aa = tx.toHexString();
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         return (String)obj;
     }
-
 
 }

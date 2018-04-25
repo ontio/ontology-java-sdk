@@ -21,6 +21,7 @@ package com.github.ontio;
 
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Common;
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.core.asset.Sig;
 import com.github.ontio.crypto.KeyType;
@@ -59,14 +60,14 @@ public class OntSdk {
 
     public ConnectMgr getRpc() throws SDKException{
         if(connRpc == null){
-            throw new SDKException("connRestful not init");
+            throw new SDKException(ErrorCode.ConnRestfulNotInit);
         }
         return connRpc;
     }
 
     public ConnectMgr getRestful() throws SDKException{
         if(connRestful == null){
-            throw new SDKException("connRestful not init");
+            throw new SDKException(ErrorCode.ConnRestfulNotInit);
         }
         return connRestful;
     }
@@ -90,7 +91,7 @@ public class OntSdk {
     }
     public ConnectMgr getWebSocket() throws SDKException{
         if(connWebSocket == null){
-            throw new SDKException("websocket not init");
+            throw new SDKException(ErrorCode.WebsocketNotInit);
         }
         return connWebSocket;
     }

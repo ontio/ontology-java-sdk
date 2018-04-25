@@ -61,11 +61,12 @@ code = Helper.toHexString(bys);
 ontSdk.setCodeAddress(Helper.getCodeAddress(code,VmType.NEOVM.value()));
 
 //部署合约
-String txhash = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(code, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
-System.out.println("txhash:" + txhash);
+Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(code, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
+String txHex = Helper.toHexString(tx.toArray());
+ontSdk.getConnectMgr().sendRawTransaction(txHex);
 //等待出块
 Thread.sleep(6000);
-DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getTransaction(txhash);
+DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getTransaction(txHex);
 ```
 | 参数      | 字段   | 类型  | 描述 |             说明 |
 | ----- | ------- | ------ | ------------- | ----------- |
@@ -76,8 +77,8 @@ DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getTran
 |        | author   | String | 作者     | 必选 |
 |        | email   | String | emal     | 必选 |
 |        | desp   | String | 描述信息     | 必选 |
-|        | returnType   | ContractParameterType | 合约返回的数据类型     | 必选 |
-| 输出参数 | txid   | String  | 交易编号  | 交易编号是64位字符串 |
+|        | VmType   | byte | 虚拟机类型     | 必选 |
+| 输出参数 | tx   | Transaction  | 交易实例  |  |
 
 ## 智能合约调用
 

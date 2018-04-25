@@ -19,6 +19,7 @@
 
 package com.github.ontio.sdk.manager;
 
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.common.Address;
 import com.github.ontio.crypto.SignatureScheme;
@@ -453,7 +454,7 @@ public class WalletMgr {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        throw new SDKRuntimeException("getAccountByAddress err");
+        throw new SDKRuntimeException(ErrorCode.GetAccountByAddressErr);
     }
 
 }

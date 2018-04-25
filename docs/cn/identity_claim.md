@@ -249,7 +249,7 @@ System.out.println(claim);
 ### 3 验证可信申明
 
 ```
-boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(dids.get(0).ontid,"passwordtest",claim);
+boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(claim);
 
 ```
 

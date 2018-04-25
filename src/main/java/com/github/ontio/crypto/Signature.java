@@ -1,5 +1,6 @@
 package com.github.ontio.crypto;
 
+import com.github.ontio.common.ErrorCode;
 import org.bouncycastle.jcajce.spec.SM2ParameterSpec;
 
 import java.io.ByteArrayOutputStream;
@@ -25,7 +26,7 @@ public class Signature {
         }
 
         if (data.length < 2) {
-            throw new Exception("invalid signature data length");
+            throw new Exception(ErrorCode.InvalidSignatureDataLen);
         }
 
         this.scheme = SignatureScheme.values()[data[0]];
@@ -35,7 +36,7 @@ public class Signature {
                 i++;
             }
             if (i >= data.length) {
-                throw new Exception("invalid signature data: missing the ID parameter for SM3withSM2");
+                throw new Exception(ErrorCode.InvalidSignatureData);
             }
             this.param = new SM2ParameterSpec(Arrays.copyOfRange(data, 1, i));
         }

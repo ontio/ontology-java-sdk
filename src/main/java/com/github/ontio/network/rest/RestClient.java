@@ -21,6 +21,7 @@ package com.github.ontio.network.rest;
 
 import java.io.IOException;
 
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.block.Block;
 import com.github.ontio.io.Serializable;
@@ -72,7 +73,7 @@ public class RestClient extends AbstractConnector {
             try {
                 return Transaction.deserializeFrom(Helper.hexToBytes((String) rr.Result));
             } catch (IOException e) {
-                throw new RestfulException("Transaction.deserializeFrom(txhash) failed", e);
+                throw new RestfulException(ErrorCode.TxDeserializeError, e);
             }
         }
         throw new RestfulException(to(rr));
@@ -119,7 +120,7 @@ public class RestClient extends AbstractConnector {
             try {
                 return Serializable.from(Helper.hexToBytes((String) rr.Result), Block.class);
             } catch (InstantiationException | IllegalAccessException e) {
-                throw new RestfulException("Block.deserializeFrom(height) failed", e);
+                throw new RestfulException(ErrorCode.BlockDeserializeError, e);
             }
         }
         throw new RestfulException(to(rr));
@@ -134,7 +135,7 @@ public class RestClient extends AbstractConnector {
             try {
                 return Serializable.from(Helper.hexToBytes((String) rr.Result), Block.class);
             } catch (InstantiationException | IllegalAccessException e) {
-                throw new RestfulException("Block.deserializeFrom(hash) failed", e);
+                throw new RestfulException(ErrorCode.BlockDeserializeError, e);
             }
         }
         throw new RestfulException(to(rr));

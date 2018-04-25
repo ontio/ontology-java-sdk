@@ -276,6 +276,6 @@ map.put("Subject", dids.get(1).ontid);
 //Password is confidentially held by the issuer, who must be contained in wallet file ontid.
 String claim = ontSdk.getOntIdTx().createOntIdClaim(ontid,"passwordtest","claim:context",map,map);
 System.out.println(claim);
-boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(ontid,"passwordtest",claim);
+boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(claim);
 ```
 

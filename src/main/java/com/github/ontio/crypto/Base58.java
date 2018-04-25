@@ -19,6 +19,8 @@
 
 package com.github.ontio.crypto;
 
+import com.github.ontio.common.ErrorCode;
+
 import java.math.BigInteger;
 import java.util.Arrays;
 
@@ -88,13 +90,13 @@ public class Base58 {
 
         byte[] decoded  = decode(input);
         if (decoded.length < 4) {
-            throw new Exception("Input too short");
+            throw new Exception(ErrorCode.InputTooShort);
         }
         byte[] data = Arrays.copyOfRange(decoded, 0, decoded.length - 4);
         byte[] checksum = Arrays.copyOfRange(decoded, decoded.length - 4, decoded.length);
         byte[] actualChecksum = Arrays.copyOfRange(Digest.sha256(Digest.sha256(data)), 0, 4);
         if (!Arrays.equals(checksum, actualChecksum)) {
-            throw new Exception("Checksum does not validate");
+            throw new Exception(ErrorCode.ChecksumNotValidate);
         }
         return decoded;
     }

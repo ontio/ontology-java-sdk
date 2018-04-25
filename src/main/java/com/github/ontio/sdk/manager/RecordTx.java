@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.github.ontio.OntSdk;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Common;
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.VmType;
 import com.github.ontio.core.asset.Fee;
@@ -36,11 +37,12 @@ public class RecordTx {
 
     public String sendPut(String addr,String password,String key,String value) throws Exception {
         if (codeAddress == null) {
-            throw new SDKException("null codeHash");
+            throw new SDKException(ErrorCode.NullCodeHash);
         }
         if (key == null || value == null || key == "" || value == ""){
-            throw new SDKException("null key or value");
+            throw new SDKException(ErrorCode.NullKeyOrValue);
         }
+        addr = addr.replace(Common.didont,"");
         byte[] did = (Common.didont + addr).getBytes();
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
         byte[] pk = Helper.hexToBytes(info.pubkey);
@@ -60,10 +62,10 @@ public class RecordTx {
     }
     public String sendGet(String addr,String password,String key) throws Exception {
         if (codeAddress == null) {
-            throw new SDKException("null codeHash");
+            throw new SDKException(ErrorCode.NullCodeHash);
         }
         if (key == null || key == ""){
-            throw new SDKException("null  key");
+            throw new SDKException(ErrorCode.NullKey);
         }
         byte[] did = (Common.didont + addr).getBytes();
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);

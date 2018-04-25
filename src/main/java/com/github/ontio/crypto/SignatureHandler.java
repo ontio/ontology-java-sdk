@@ -1,5 +1,6 @@
 package com.github.ontio.crypto;
 
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import org.bouncycastle.asn1.*;
 
@@ -30,17 +31,17 @@ public class SignatureHandler {
                         ctx = java.security.Signature.getInstance(scheme.toString(), "BC");
                         break;
                     default:
-                        throw new Exception("unsupported signature scheme: " + scheme.toString());
+                        throw new Exception(ErrorCode.UnsupportedSignatureScheme + scheme.toString());
                 }
                 break;
             case SM2:
                 if (scheme.compareTo(SignatureScheme.SM3WITHSM2) != 0) {
-                    throw new Exception("unsupported signature scheme: " + scheme.toString());
+                    throw new Exception(ErrorCode.UnsupportedSignatureScheme+ scheme.toString());
                 }
                 ctx = java.security.Signature.getInstance(scheme.toString(), "BC");
                 break;
             default:
-                throw new Exception("unknown key type");
+                throw new Exception(ErrorCode.UnknownKeyType);
         }
 
     }
@@ -81,9 +82,9 @@ public class SignatureHandler {
     private byte[] DSADERtoPlain(byte[] sig) throws IOException {
         ASN1Sequence seq = (ASN1Sequence) ASN1Primitive.fromByteArray(sig);
         if (seq.size() != 2) {
-            throw new IOException("malformed signature");
+            throw new IOException(ErrorCode.MalformedSignature);
         } else if (!Arrays.equals(sig, seq.getEncoded("DER"))) {
-            throw new IOException("malformed signature");
+            throw new IOException(ErrorCode.MalformedSignature);
         }
 
         byte[] r = ASN1Integer.getInstance(seq.getObjectAt(0)).getValue().toByteArray();

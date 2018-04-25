@@ -1,5 +1,6 @@
 package com.github.ontio.crypto;
 
+import com.github.ontio.common.ErrorCode;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.math.ec.ECCurve;
 
@@ -33,7 +34,7 @@ public enum Curve {
             }
         }
 
-        throw new Exception("unknown curve");
+        throw new Exception(ErrorCode.UnknownCurve);
     }
 
     public static Curve fromLabel(int v) throws Exception {
@@ -43,6 +44,6 @@ public enum Curve {
             }
         }
 
-        throw new Exception("unknown curve label");
+        throw new Exception(ErrorCode.UnknownCurveLabel);
     }
 }

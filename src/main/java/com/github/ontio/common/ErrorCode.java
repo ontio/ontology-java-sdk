@@ -87,16 +87,16 @@ public class ErrorCode {
     public static String NullClaimId = getError(58015,"OntAsset Error,null claimId");
 
 
-    public static String NullKeyOrValue = getError(58012,"RecordTx Error,null key or value");
-    public static String NullKey = getError(58013,"RecordTx Error,null  key");
+    public static String NullKeyOrValue = getError(58016,"RecordTx Error,null key or value");
+    public static String NullKey = getError(58017,"RecordTx Error,null  key");
 
-    public static String GetAccountByAddressErr = getError(58014,"WalletManager Error,getAccountByAddress err");
-    public static String WebsocketNotInit = getError(58015,"OntSdk Error,websocket not init");
-    public static String ConnRestfulNotInit = getError(58016,"OntSdk Error,connRestful not init");
+    public static String GetAccountByAddressErr = getError(58018,"WalletManager Error,getAccountByAddress err");
+    public static String WebsocketNotInit = getError(58019,"OntSdk Error,websocket not init");
+    public static String ConnRestfulNotInit = getError(58020,"OntSdk Error,connRestful not init");
 
     //abi error
-    public static String SetParamsValueValueNumError = getError(58017,"AbiFunction Error,setParamsValue value num error");
-    public static String InvalidUrl = getError(58018,"Interfaces Error,Invalid url:");
-    public static String AESailed = getError(58019,"ECIES Error,AES failed initialisation -");
+    public static String SetParamsValueValueNumError = getError(58021,"AbiFunction Error,setParamsValue value num error");
+    public static String InvalidUrl = getError(58022,"Interfaces Error,Invalid url:");
+    public static String AESailed = getError(58023,"ECIES Error,AES failed initialisation -");
 
 }

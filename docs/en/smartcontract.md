@@ -63,8 +63,9 @@ code = Helper.toHexString(bys);
 ontSdk.setCodeAddress(Helper.getCodeAddress(codeHexStr,vmtype));
 
 //Deploy the contract
-String txhash = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(code, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
-System.out.println("txhash:" + txhash);
+Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(code, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
+String txHex = Helper.toHexString(tx.toArray());
+ontSdk.getConnectMgr().sendRawTransaction(txHex);
 //Waiting for block generation
 Thread.sleep(6000);
 DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getTransaction(txhash);
@@ -78,8 +79,8 @@ DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getTran
 |               | author      | String                | Contract author                   | Required                               |
 |               | email       | String                | Author email                      | Required                               |
 |               | desp        | String                | Description                       | Required                               |
-|               | returnType  | ContractParameterType | Type of data returned by contract | Required                               |
-| Output params | txid        | String                | Transaction ID                    | Transaction ID should be 64-bit string |
+|               | VmType      | byte                  | Virtual machine type              | Required                               |
+| Output params | tx          | Transaction           | Transaction instance              | |
 
 ----
 

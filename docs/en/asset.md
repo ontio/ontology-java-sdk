@@ -73,10 +73,11 @@ wm.setRpcConnection(url);
 wm.openWalletFile("OntAssetDemo.json");
 //step2:get ontAssetTx instance
 ontAssetTx = ontSdk.getOntAssetTx()
-//step3:transfer 
-ontSdk.getOntAssetTx().sendTransferToMany("ont",info1.address,"passwordtest",new String[]{info2.address,info3.address},new long[]{100L,200L});
-ontSdk.getOntAssetTx().sendTransferFromMany("ont", new String[]{info1.address, info2.address}, new String[]{"passwordtest", "passwordtest"}, info3.address, new long[]{1L, 2L});
-ontSdk.getOntAssetTx().sendOngTransferFrom(info1.address,"passwordtest",info2.address,100);
+//step3:transfer
+ontAssetTx.sendTransfer("ont",info2.address,"passwordtest",info1.address,100000000L);
+ontAssetTx.sendTransferToMany("ont",info1.address,"passwordtest",new String[]{info2.address,info3.address},new long[]{100L,200L});
+ontAssetTx.sendTransferFromMany("ont", new String[]{info1.address, info2.address}, new String[]{"passwordtest", "passwordtest"}, info3.address, new long[]{1L, 2L});
+ontAssetTx.sendOngTransferFrom(info1.address,"passwordtest",info2.address,100);
 ```
 
 * Use Smart Contract

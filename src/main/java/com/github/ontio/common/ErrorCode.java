@@ -99,4 +99,7 @@ public class ErrorCode {
     public static String InvalidUrl = getError(58022,"Interfaces Error,Invalid url:");
     public static String AESailed = getError(58023,"ECIES Error,AES failed initialisation -");
 
+    public static String OtherError(String msg) {
+        return getError(59000, "Other Error," + msg);
+    }
 }

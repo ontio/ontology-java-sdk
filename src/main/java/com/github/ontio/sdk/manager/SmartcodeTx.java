@@ -48,12 +48,12 @@ import java.util.*;
  */
 public class SmartcodeTx {
     private OntSdk sdk;
-    private String codeAddress = null;
+    private String contractAddress = null;
     public String getCodeAddress() {
-        return codeAddress;
+        return contractAddress;
     }
     public void setCodeAddress(String codeHash) {
-        this.codeAddress = codeHash.replace("0x", "");
+        this.contractAddress = codeHash.replace("0x", "");
     }
 
     public SmartcodeTx(OntSdk sdk) {
@@ -108,8 +108,8 @@ public class SmartcodeTx {
      * @return
      * @throws Exception
      */
-    private Transaction invokeTransaction(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
-        if (codeAddress == null) {
+    public Transaction invokeTransaction(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
+        if (contractAddress == null) {
             throw new SDKException("null codeHash");
         }
 
@@ -143,12 +143,12 @@ public class SmartcodeTx {
         Transaction tx = null;
         if (ontid == null && password == null) {
             Fee[] fees = new Fee[0];
-            tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(codeAddress,null,params, vmtype, fees);
+            tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress,null,params, vmtype, fees);
         } else {
             Fee[] fees = new Fee[1];
             AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid, password,sdk.keyType,sdk.curveParaSpec);
             fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
-            tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(codeAddress,null,params, vmtype, fees);
+            tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress,null,params, vmtype, fees);
         }
         return tx;
     }

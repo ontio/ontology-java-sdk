@@ -494,7 +494,6 @@ public class OntIdTx {
         list.add(tmp);
         Transaction tx = makeInvokeTransaction(list, addr, password);
         sdk.signTx(tx, addr, password);
-        ;
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();

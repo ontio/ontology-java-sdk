@@ -13,9 +13,9 @@
 `curve` elliptic curve  
 `key` NEP-2 private key, whose value can be null (in case of read-only or non-standard address)  
 `contract` smart contract, whose value can be null (in case of read-only address)  
-`extra` extra information stored by client developer, whose value can be null  
-
+`extra` extra information stored by client developer, whose value can be null
 ```
+
 public class Account {
     public String label = "";
     public String address = "";
@@ -27,6 +27,7 @@ public class Account {
     public Contract contract = new Contract();
 
 ```
+
 ## Digital asset account management
 
 * Create digital asset account

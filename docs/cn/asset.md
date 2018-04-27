@@ -296,6 +296,7 @@ namespace Nep5Template
     }
 }
 ```
+
 部署合约：
 ```
   InputStream is = new FileInputStream("C:\\smartcontract.avm");//
@@ -310,6 +311,7 @@ namespace Nep5Template
   Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(code, true, "name", "v1.0", "author", "email", "desc", VmType.NEOVM.value());
 ```
 调用合约：
+
 ```
   AbiInfo abiinfo = JSON.parseObject(nep5abi, AbiInfo.class);
   //选个智能合约方法

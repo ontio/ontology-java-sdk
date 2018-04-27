@@ -72,6 +72,12 @@ public class SmartcodeTxTest {
 
         abiFunction2 = JSON.parseObject(funcStr2,AbiFunction.class);
         abiFunction2.setParamsValue(did.ontid.getBytes(),UUID.randomUUID().toString().getBytes());
+
+        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
+
+        String txHex = Helper.toHexString(tx.toArray());
+        boolean b = ontSdk.getConnectMgr().sendRawTransaction(txHex);
+        Thread.sleep(6000);
     }
 
     @Test

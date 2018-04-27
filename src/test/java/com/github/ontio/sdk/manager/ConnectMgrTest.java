@@ -127,14 +127,16 @@ public class ConnectMgrTest {
 
     @Test
     public void getBlock() throws ConnectorException, IOException {
-        Block b = ontSdk.getConnectMgr().getBlock(20);
+        int blockHeight =  ontSdk.getConnectMgr().getBlockHeight();
+        Block b = ontSdk.getConnectMgr().getBlock(blockHeight);
         Assert.assertNotNull(b);
 
     }
 
     @Test
     public void getBlockByBlockhash() throws ConnectorException, IOException {
-        Block b2 = ontSdk.getConnectMgr().getBlock(20);
+        int blockHeight =  ontSdk.getConnectMgr().getBlockHeight();
+        Block b2 = ontSdk.getConnectMgr().getBlock(blockHeight);
         blockHash = b2.hash().toString();
         Block b = ontSdk.getConnectMgr().getBlock(blockHash);
         Assert.assertNotNull(b);
@@ -149,14 +151,15 @@ public class ConnectMgrTest {
 
     @Test
     public void getBlockJson() throws ConnectorException, IOException {
-
-        Object obj = ontSdk.getConnectMgr().getBlockJson(20);
+        int blockHeight =  ontSdk.getConnectMgr().getBlockHeight();
+        Object obj = ontSdk.getConnectMgr().getBlockJson(blockHeight);
         Assert.assertNotNull(obj);
     }
 
     @Test
     public void getBlockJsonbyHash() throws ConnectorException, IOException {
-        Block b2 = ontSdk.getConnectMgr().getBlock(20);
+        int blockHeight =  ontSdk.getConnectMgr().getBlockHeight();
+        Block b2 = ontSdk.getConnectMgr().getBlock(blockHeight);
         blockHash = b2.hash().toString();
         Object obj = ontSdk.getConnectMgr().getBlockJson(blockHash);
         Assert.assertNotNull(obj);

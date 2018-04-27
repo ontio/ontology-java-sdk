@@ -103,6 +103,9 @@ public class WebsocketClient extends AbstractConnector {
             map.put("PreExec", "1");
         }
         mWebSocket.send(JSON.toJSONString(map));
+        if(preExec){
+            return "0";
+        }
         return "";
     }
     @Override

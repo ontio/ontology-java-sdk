@@ -211,8 +211,6 @@ public class WalletMgr {
         IdentityInfo info = new IdentityInfo();
         info.ontid = Common.didont + Address.addressFromPubKey(acct.serializePublicKey()).toBase58();
         info.pubkey = Helper.toHexString(acct.serializePublicKey());
-        System.out.println(Helper.toHexString(prikey));
-        System.out.println(info.pubkey);
         info.setPrikey(Helper.toHexString(acct.serializePrivateKey()));
         info.setPriwif(acct.exportWif());
         info.encryptedPrikey = acct.exportEncryptedPrikey(password, walletFile.getScrypt().getN());
@@ -269,10 +267,10 @@ public class WalletMgr {
     }
 
     public AccountInfo createAccountInfoFromPriKey(String password, String prikey) throws Exception {
-        return createAccountFromInfoPriKey(password, prikey, keyType, curveParaSpec);
+        return createAccountInfoFromPriKey(password, prikey, keyType, curveParaSpec);
     }
 
-    public AccountInfo createAccountFromInfoPriKey(String password, String prikey, KeyType type, Object[] params) throws Exception {
+    public AccountInfo createAccountInfoFromPriKey(String password, String prikey, KeyType type, Object[] params) throws Exception {
         return createAccount(password, Helper.hexToBytes(prikey), type, params);
     }
 
@@ -289,16 +287,6 @@ public class WalletMgr {
         return act.exportWif();
     }
 
-//    public ECPoint getPubkey(String pubkeyHexStr) {
-//        ECPoint pubkey;
-//        byte[] pubkeyBys = Helper.hexToBytes(pubkeyHexStr);
-//        if (getAlgrithem().equals(KeyType.SM2.name())) {
-//            pubkey = SM2Utils.decodePoint(pubkeyBys);
-//        } else {
-//            pubkey = ECC.secp256r1.getCurve().decodePoint(pubkeyBys);
-//        }
-//        return pubkey;
-//    }
 
     public byte[] signatureData(com.github.ontio.account.Account acct, String str) throws SDKException {
         DataSignature sign = null;
@@ -366,6 +354,7 @@ public class WalletMgr {
     public AccountInfo getAccountInfo(String address, String password, KeyType type, Object[] params) throws Exception {
         address = address.replace(Common.didont, "");
         AccountInfo info = new AccountInfo();
+        System.out.println(address);
         com.github.ontio.account.Account acc = getAccountByAddress(Address.decodeBase58(address), password, type, params);
         info.addressBase58 = address;
         info.pubkey = Helper.toHexString(acc.serializePublicKey());

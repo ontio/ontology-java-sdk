@@ -63,7 +63,7 @@ public class Account {
         this.privateKey = keyPair.getPrivate();
         this.publicKey = keyPair.getPublic();
         this.type = type;
-        this.addressU160 = Address.toScriptHash(serializePublicKey());
+        this.addressU160 = Address.addressFromPubKey(serializePublicKey());
     }
 
     public Account(byte[] data, KeyType type, Object... params) throws Exception {

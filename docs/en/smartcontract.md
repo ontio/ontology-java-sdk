@@ -70,6 +70,7 @@ ontSdk.getConnectMgr().sendRawTransaction(txHex);
 Thread.sleep(6000);
 DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getTransaction(txhash);
 ```
+
 | Parameters    | Field       | Type                  | Description                       | Explaination                           |
 | -----         | -------     | ------                | -------------                     | -----------                            |
 | Input params  | codeHexStr  | String                | Contract code hexadecimal string  | Required                               |
@@ -181,7 +182,7 @@ ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
 Create a websocket thread and analyse the push notification.
 
 
-1. Set websocket link
+1 Set websocket link
 
 
 ```
@@ -199,7 +200,7 @@ wm.openWalletFile("OntAssetDemo.json");
 ```
 
 
-2. Start websocket thread
+2 Start websocket thread
 
 
 ```
@@ -209,7 +210,7 @@ ontSdk.getWebSocket().startWebsocketThread(false);
 ```
 
 
-3. Start result processing thread
+3 Start result processing thread
 
 
 ```
@@ -246,7 +247,7 @@ Thread thread = new Thread(
 ```
 
 
-4. Send a heartbeat every 6 seconds to maintain the socket link
+4 Send a heartbeat every 6 seconds to maintain the socket link
 
 
 ```
@@ -267,7 +268,7 @@ for (;;){
 ```
 
 
-5. Push result case details
+5 Push result case details
 
 Take the put event of the deposit certificate as an example.
 

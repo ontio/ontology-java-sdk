@@ -68,6 +68,7 @@ ontSdk.getConnectMgr().sendRawTransaction(txHex);
 Thread.sleep(6000);
 DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getTransaction(txHex);
 ```
+
 | 参数      | 字段   | 类型  | 描述 |             说明 |
 | ----- | ------- | ------ | ------------- | ----------- |
 | 输入参数 | codeHexStr| String | 合约code十六进制字符串 | 必选 |
@@ -178,7 +179,7 @@ ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
 创建websocket线程，解析推送结果。
 
 
-### 1. 设置websocket链接
+### 1 设置websocket链接
 
 
 ```
@@ -196,7 +197,7 @@ wm.openWalletFile("OntAssetDemo.json");
 ```
 
 
-### 2. 启动websocket线程
+### 2 启动websocket线程
 
 
 ```
@@ -206,7 +207,7 @@ ontSdk.getWebSocket().startWebsocketThread(false);
 ```
 
 
-### 3. 启动结果处理线程
+### 3 启动结果处理线程
 
 
 ```
@@ -243,7 +244,7 @@ Thread thread = new Thread(
 ```
 
 
-### 4. 每6秒发送一次心跳程序，维持socket链接
+### 4 每6秒发送一次心跳程序，维持socket链接
 
 
 ```
@@ -264,7 +265,7 @@ for (;;){
 ```
 
 
-### 5. 推送结果事例详解
+### 5 推送结果事例详解
 
 
 以调用存证合约的put函数为例，

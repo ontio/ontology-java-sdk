@@ -648,6 +648,9 @@ public class OntIdTx {
         elen = parse4bytes(bys, offset);
         offset = offset + 4;
         int totalOffset = offset + elen;
+        if(elen == 0){
+            map.put("Attributes", attriMap);
+        }
         if (elen != 0) {
             byte[] attrisData = new byte[elen];
             System.arraycopy(bys, offset, attrisData, 0, elen);

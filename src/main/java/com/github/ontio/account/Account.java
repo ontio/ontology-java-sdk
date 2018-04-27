@@ -84,7 +84,7 @@ public class Account {
                         paramSpec);
                 this.publicKey = kf.generatePublic(pubSpec);
                 this.type = type;
-                this.addressU160 = Address.toScriptHash(serializePublicKey());
+                this.addressU160 = Address.addressFromPubKey(serializePublicKey());
                 break;
             default:
                 throw new Exception(ErrorCode.UnsupportedKeyType);

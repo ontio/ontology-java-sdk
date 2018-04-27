@@ -211,7 +211,7 @@ public class OntSdk {
             sigs[i].sigData = new byte[accounts[i].length][];
             for (int j = 0; j < accounts[i].length; j++) {
                 sigs[i].M++;
-                byte[] signature = tx.sign(accounts[i][j], getWalletMgr().getSignatureScheme());
+                byte[] signature = tx.sign(accounts[i][j], signatureScheme);
                 sigs[i].pubKeys[j] = accounts[i][j].serializePublicKey();
                 sigs[i].sigData[j] = signature;
             }

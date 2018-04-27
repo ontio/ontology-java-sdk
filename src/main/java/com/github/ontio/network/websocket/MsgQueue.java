@@ -41,7 +41,10 @@ public class MsgQueue {
     public static  void removeResult(String ele){
         resultSet.remove(ele);
     }
-    public static int resultSize() {
+    public static  void clear(){
+        resultSet.clear();
+    }
+    public static int size() {
         return resultSet.size();
     }
 }

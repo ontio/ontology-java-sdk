@@ -648,7 +648,7 @@ public class OntIdTx {
         elen = parse4bytes(bys, offset);
         offset = offset + 4;
         int totalOffset = offset + elen;
-        if(elen == 0){
+        if (elen == 0) {
             map.put("Attributes", attriMap);
         }
         if (elen != 0) {
@@ -803,16 +803,16 @@ public class OntIdTx {
                 throw new SDKException(ErrorCode.DidNull);
             }
             String issuerDdo = sendGetDDO(sendDid);
-            System.out.println("DDO:" + issuerDdo);
             JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("Owners");
             if (owners == null) {
                 throw new SDKException(ErrorCode.NotExistCliamIssuer);
             }
             String pubkeyId = null;
-            com.github.ontio.account.Account acct = sdk.getWalletMgr().getAccount(signerOntid, password, sdk.keyType, sdk.curveParaSpec);
+            com.github.ontio.account.Account acct = sdk.getWalletMgr().getAccount(signerOntid, password);
+            String pk = Helper.toHexString(acct.serializePublicKey());
             for (int i = 0; i < owners.size(); i++) {
                 JSONObject obj = owners.getJSONObject(i);
-                if (obj.getString("Value").equals(Helper.toHexString(acct.serializePublicKey()))) {
+                if (obj.getString("Value").equals(pk)) {
                     pubkeyId = obj.getString("PublicKeyId");
                     break;
                 }
@@ -824,10 +824,11 @@ public class OntIdTx {
             if (receiverDidStr.length != 3) {
                 throw new SDKException(ErrorCode.DidError);
             }
-            claim = new Claim(sdk.getWalletMgr().getSignatureScheme(), acct, context, contentMap, sortMap(metaData), pubkeyId);
+            metaData = sortMap(metaData);
+            claim = new Claim(sdk.getWalletMgr().getSignatureScheme(), acct, context, contentMap, metaData, pubkeyId);
             return claim.getClaim();
         } catch (SDKException e) {
-            throw new SDKException(e);
+            throw new SDKException(ErrorCode.OtherError("createOntIdClaim error"));
         }
     }
 
@@ -884,7 +885,7 @@ public class OntIdTx {
             if (owners == null) {
                 throw new SDKException(ErrorCode.NotExistCliamIssuer);
             }
-            String signature = obj.getJSONObject("Signature").getString("Value");
+            String signatureValue = obj.getJSONObject("Signature").getString("Value");
             String publicKeyId = obj.getJSONObject("Signature").getString("PublicKeyId");
             boolean verify = false;
             for (int i = 0; i < owners.size(); i++) {
@@ -897,14 +898,14 @@ public class OntIdTx {
             if (!verify) {
                 throw new SDKException(ErrorCode.PublicKeyIdErr);
             }
-            String pubkeyStr = owners.getJSONObject(0).getString("Value");
+            String id = publicKeyId.split("#keys-")[1];
+            String pubkeyStr = owners.getJSONObject(Integer.parseInt(id) - 1).getString("Value");
             obj.remove("Signature");
             sign = new DataSignature();
             byte[] data = JSON.toJSONString(obj).getBytes();
-            return sign.verifySignature(new Account(false, Helper.hexToBytes(pubkeyStr)), data, Base64.getDecoder().decode(signature));
+            return sign.verifySignature(new Account(false, Helper.hexToBytes(pubkeyStr)), data, Base64.getDecoder().decode(signatureValue));
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new SDKException(e);
+            throw new SDKException(ErrorCode.OtherError("verifyOntIdClaim error"));
         }
     }
 

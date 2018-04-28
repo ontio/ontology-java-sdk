@@ -124,12 +124,12 @@ String ddo = ontSdk.getOntIdTx().sendGetDDO(ontid,"passwordtest",ontid);
 			"Value": "\"value0\""
 		}
 	},
-	"Owners": [
-		{
-			"Type": "ECDSA",
-			"Value": "0392a4dbb2a44da81e0942cee1a62ff4298e04ed463b88911b97de19a1597fa83d"
-		}
-	]
+	"Owners": [{
+		"Type": "ECDSA",
+		"Curve": "P-256",
+		"Value": "120202535a446befcf7a68b6656307928f25aab847d04a7533dfc8affab73e01785dbe",
+		"PublicKeyId": "did:ont:TA9VPsYoQMHWBWCxyGNvrb5RK47mvbFBQ7#keys-1"
+	}]
 }
 ```
 

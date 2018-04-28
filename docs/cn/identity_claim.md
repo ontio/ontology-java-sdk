@@ -121,11 +121,12 @@ String ddo = ontSdk.getOntIdTx().sendGetDDO(ontid,"passwordtest",ontid);
 			"Value": "\"value0\""
 		}
 	},
-	"Owners": [
-		{
-			"Value": "0392a4dbb2a44da81e0942cee1a62ff4298e04ed463b88911b97de19a1597fa83d"
-		}
-	]
+	"Owners": [{
+		"Type": "ECDSA",
+		"Curve": "P-256",
+		"Value": "120202535a446befcf7a68b6656307928f25aab847d04a7533dfc8affab73e01785dbe",
+		"PublicKeyId": "did:ont:TA9VPsYoQMHWBWCxyGNvrb5RK47mvbFBQ7#keys-1"
+	}]
 }
 
 ```
@@ -237,7 +238,12 @@ value 是计算后的签名值。
 
 ### 2 签发可信申明
 根据用户输入内容构造声明对象，该声明对象里包含了签名后的数据。
-
+创建claim：
+1.查询链上是否存在Issuer的DDO
+2.签名者的公钥必须在DDO的Owners中存在
+3.Id 是对claim中删除Signature、Id、Proof的数据转byte数组，做一次sha256，再转hexstring 
+4.对要签名的json数据转成Map对key做排序。
+5.Signature中Value值：claim 删除Signature、Proof后转byte数组, 做两次sha256得到的byte数组。
 ```
 Map<String, Object> map = new HashMap<String, Object>();
 map.put("Issuer", dids.get(0).ontid);
@@ -249,7 +255,11 @@ System.out.println(claim);
 > Note: Issuer可能有多把公钥，createOntIdClaim的参数ontid指定使用哪一把公钥。
 
 ### 3 验证可信申明
-
+验证cliam：
+1.查询链上是否存在Metadata中Issuer的DDO
+2.Owner是否存在SIgnature中的PublicKeyId
+3.对要验签的json数据转成Map对key做排序。
+4.删除Signature做验签（根据PublicKeyId的id值查找到公钥,签名是Signature中Value做base64解码）
 ```
 boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(claim);
 

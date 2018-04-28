@@ -21,6 +21,7 @@ package com.github.ontio.sdk.manager;
 
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.core.VmType;
 import com.github.ontio.core.asset.Contract;
 import com.github.ontio.core.transaction.Attribute;
@@ -61,6 +62,27 @@ public class SmartcodeTx {
     }
 
     /**
+     * @param abiFunction
+     * @param vmtype
+     * @return
+     * @throws Exception
+     */
+    public String sendInvokeSmartCodeWithNoSign(AbiFunction abiFunction, byte vmtype) throws Exception {
+        Transaction tx = invokeTransaction(null, null, abiFunction, vmtype);
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        if (!b) {
+            throw new SDKException(ErrorCode.SendRawTxError);
+        }
+        return tx.hash().toString();
+    }
+
+    public String sendInvokeSmartCodeWithNoSignPreExec(AbiFunction abiFunction, byte vmtype) throws Exception {
+        Transaction tx = invokeTransaction(null, null, abiFunction, vmtype);
+        String result = (String)sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        return result;
+    }
+    /**
+     *
      * @param ontid
      * @param password
      * @param abiFunction
@@ -68,25 +90,22 @@ public class SmartcodeTx {
      * @return
      * @throws Exception
      */
-    public String sendInvokeSmartCode(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
-        Transaction tx = invokeTransaction(null, null, abiFunction, vmtype);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
-        if (!b) {
-            throw new SDKException("sendRawTransaction error");
-        }
-        return tx.hash().toString();
-    }
-
     public String sendInvokeSmartCodeWithSign(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
         Transaction tx = invokeTransaction( ontid, password, abiFunction, vmtype);
-        sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(ontid, password,sdk.keyType,sdk.curveParaSpec)}});
+        sdk.signTx(tx,ontid,password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (!b) {
-            throw new SDKException("sendRawTransaction error");
+            throw new SDKException(ErrorCode.SendRawTxError);
         }
         return tx.hash().toString();
     }
 
+    public String sendInvokeSmartCodeWithSignPreExec(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
+        Transaction tx = invokeTransaction( ontid, password, abiFunction, vmtype);
+        sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(ontid, password,sdk.keyType,sdk.curveParaSpec)}});
+        String result = (String)sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        return result;
+    }
     /**
      * @param ontid
      * @param password
@@ -99,7 +118,9 @@ public class SmartcodeTx {
         Transaction tx = invokeTransaction( ontid, password, abiFunction, vmtype);
         return sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
     }
-
+    public Transaction invokeTransactionNoSign(AbiFunction abiFunction, byte vmtype) throws Exception {
+        return invokeTransaction(null,null,abiFunction,vmtype);
+    }
     /**
      * @param ontid
      * @param password

@@ -26,10 +26,12 @@ import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Identity;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
 /**
+ *
  *
  */
 public class Nep5Demo {
@@ -50,11 +52,31 @@ public class Nep5Demo {
             Account acct = ontSdk.getWalletMgr().createAccountFromPriKey("passwordtest","c19f16785b8f3543bbaf5e1dbb5d398dfa6c85aaad54fc9d71203ce83e505c07");
             ontSdk.getWalletMgr().writeWallet();
             System.out.println("recv:"+acct.address);
+            if(false) {
+                String result = ontSdk.getNep5Tx().sendInit();
+                System.out.println(result);
+                System.exit(0);
+            }
             String txhash = ontSdk.getNep5Tx().sendTransfer(acct.address,"passwordtest",acct1.getAddressU160().toBase58(),10);
-//            String txhash = ontSdk.getNep5Tx().sendInit(acct.address,"passwordtest",false);
-//            System.out.println(txhash);
-//            System.out.println(acct1.getAddressU160().toHexString());
-            //  System.out.println(info2);
+            System.out.println(txhash);
+
+            String balance = ontSdk.getNep5Tx().sendBalanceOf(acct.address);
+            System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(balance))).longValue());
+
+            String totalSupply = ontSdk.getNep5Tx().sendTotalSupply();
+            System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(totalSupply))).longValue());
+
+            String decimals = ontSdk.getNep5Tx().sendDecimals();
+            System.out.println(decimals);
+
+            String name = ontSdk.getNep5Tx().sendName();
+            System.out.println(new String(Helper.hexToBytes(name)));
+            String symbol = ontSdk.getNep5Tx().sendSymbol();
+            System.out.println(new String(Helper.hexToBytes(symbol)));
+
+            System.out.println(Address.decodeBase58(acct.address).toHexString());
+            System.out.println(acct1.getAddressU160().toHexString());
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -73,7 +95,7 @@ public class Nep5Demo {
         wm.setRpc(rpcUrl);
         wm.setRestful(restUrl);
         wm.setDefaultConnect(wm.getRestful());
-        wm.setCodeAddress("80f022bc6febeaeb0045f25a510a3a100572d3c2");
+        wm.setCodeAddress("809071dac173b27f467d0e062bfdb24ff43ac74d");
         wm.openWalletFile("nep5.json");
 
 

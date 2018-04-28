@@ -89,7 +89,7 @@ public class RecordTx {
         return tx;
     }
 
-    private LinkedHashMap<String, Object> constructRecord(String text) {
+    public LinkedHashMap<String, Object> constructRecord(String text) {
         LinkedHashMap<String, Object> recordData = new LinkedHashMap<String, Object>();
         LinkedHashMap<String, Object> data = new LinkedHashMap<String, Object>();
         data.put("Algrithem", KeyType.SM2.name());

@@ -40,6 +40,7 @@ public class OntSdk {
     private ConnectMgr connWebSocket;
     private ConnectMgr connDefault;
 
+    private Nep5Tx nep5Tx = null;
     private OntIdTx ontIdTx = null;
     private RecordTx recordTx = null;
     private SmartcodeTx smartcodeTx = null;
@@ -142,6 +143,13 @@ public class OntSdk {
         return ontAssetTx;
     }
 
+    public Nep5Tx getNep5Tx() {
+        if(nep5Tx == null){
+            nep5Tx = new Nep5Tx(getInstance());
+        }
+        return nep5Tx;
+    }
+
     /**
      * get Wallet Mgr
      * @return
@@ -159,6 +167,7 @@ public class OntSdk {
         getOntIdTx().setCodeAddress(codeAddress);
         getSmartcodeTx().setCodeAddress(codeAddress);
         getRecordTx().setCodeAddress(codeAddress);
+        getNep5Tx().setCodeAddress(codeAddress);
     }
 
     /**

@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ClaimRecordTxDemo {
+public class ClaimRecordTx {
     public static void main(String[] args) {
 
         try {
@@ -42,20 +42,20 @@ public class ClaimRecordTxDemo {
 
             ontSdk.setCodeAddress("804d601325908f3fa43c2b11d79a56ef835afb73");
 
-            String commitRes = ontSdk.getClaimRecordTx().sendCommit(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"));
+            String commitRes = ontSdk.getRecordTx().sendCommit(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"));
             System.out.println("commitRes:" + commitRes);
             Thread.sleep(6000);
 
-            String getstatusRes = ontSdk.getClaimRecordTx().sendGetStatus(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"));
+            String getstatusRes = ontSdk.getRecordTx().sendGetStatus(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"));
             byte[] getstatusResBytes = Helper.hexToBytes(getstatusRes);
             System.out.println("getstatusResBytes:" + new String(getstatusResBytes));
             Thread.sleep(6000);
 
-            String revokeRes = ontSdk.getClaimRecordTx().sendRevoke(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"));
+            String revokeRes = ontSdk.getRecordTx().sendRevoke(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"));
             System.out.println("revokeRes:" + revokeRes);
             Thread.sleep(6000);
 
-            String getstatusRes2 = ontSdk.getClaimRecordTx().sendGetStatus(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"));
+            String getstatusRes2 = ontSdk.getRecordTx().sendGetStatus(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"));
             byte[] getstatusResBytes2 = Helper.hexToBytes(getstatusRes2);
             System.out.println("getstatusResBytes2:" + new String(getstatusResBytes2));
 

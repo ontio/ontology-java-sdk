@@ -8,10 +8,8 @@ import com.github.ontio.common.Helper;
 import com.github.ontio.core.VmType;
 import com.github.ontio.core.asset.Fee;
 import com.github.ontio.core.transaction.Transaction;
-import com.github.ontio.crypto.Curve;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
-import com.github.ontio.crypto.KeyType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +40,7 @@ public class ClaimRecordTx {
         }
         String addr = ontid.replace(Common.didont,"");
         byte[] did = (Common.didont + addr).getBytes();
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
+        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
         List list = new ArrayList<Object>();
         list.add("Commit".getBytes());
         List tmp = new ArrayList<Object>();
@@ -66,7 +64,7 @@ public class ClaimRecordTx {
         }
         String addr = ontid.replace(Common.didont,"");
         byte[] did = (Common.didont + addr).getBytes();
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
+        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
         List list = new ArrayList<Object>();
         list.add("Revoke".getBytes());
         List tmp = new ArrayList<Object>();
@@ -89,7 +87,7 @@ public class ClaimRecordTx {
             throw new SDKException(ErrorCode.NullKeyOrValue);
         }
         String addr = ontid.replace(Common.didont,"");
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
+        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
         List list = new ArrayList<Object>();
         list.add("GetStatus".getBytes());
         List tmp = new ArrayList<Object>();

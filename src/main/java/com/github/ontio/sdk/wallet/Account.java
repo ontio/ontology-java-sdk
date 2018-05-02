@@ -51,7 +51,6 @@ public class Account {
         this.signatureScheme = scheme;
         this.encAlg = encAlg;
         this.hash = hash;
-        this.algorithm = algorithm;
         this.extra = null;
     }
     public void setKey(String key){

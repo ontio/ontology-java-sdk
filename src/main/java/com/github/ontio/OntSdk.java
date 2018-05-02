@@ -45,6 +45,7 @@ public class OntSdk {
     private RecordTx recordTx = null;
     private SmartcodeTx smartcodeTx = null;
     private OntAssetTx ontAssetTx = null;
+    private ClaimRecordTx claimRecordTx = null;
     private static OntSdk instance = null;
     public SignatureScheme signatureScheme = SignatureScheme.SHA256WITHECDSA;
 
@@ -119,6 +120,14 @@ public class OntSdk {
         return recordTx;
     }
 
+    public ClaimRecordTx getClaimRecordTx(){
+        if (claimRecordTx == null){
+            getSmartcodeTx();
+            claimRecordTx = new ClaimRecordTx(getInstance());
+        }
+        return claimRecordTx;
+    }
+
     /**
      *  Smartcode Tx
      * @return instance
@@ -166,6 +175,7 @@ public class OntSdk {
         getSmartcodeTx().setCodeAddress(codeAddress);
         getRecordTx().setCodeAddress(codeAddress);
         getNep5Tx().setCodeAddress(codeAddress);
+        getClaimRecordTx().setCodeAddress(codeAddress);
     }
 
     /**

@@ -55,6 +55,7 @@ public class Block extends Inventory {
     public int timestamp;
     public int height;
     public long consensusData;
+    public byte[] consensusPayload;
     public Address nextBookkeeper;
     public String[] sigData;
     public byte[][] bookkeepers;
@@ -123,6 +124,7 @@ public class Block extends Inventory {
             timestamp = reader.readInt();
             height = reader.readInt();
             consensusData = Long.valueOf(reader.readLong());
+            consensusPayload = reader.readVarBytes();
             nextBookkeeper = reader.readSerializable(Address.class);
             int len = (int) reader.readVarInt();
             bookkeepers = new byte[len][];

@@ -189,8 +189,24 @@ public class Parameter {
 }
 ```
 ## nep-5智能合约数字资产
+
 nep-5文档：
 >https://github.com/neo-project/proposals/blob/master/nep-5.mediawiki
+
+数字资产模板:
+>https://github.com/neo-project/examples/tree/master/ICO_Template
+
+
+|方法名|输入参数|返回值|描述|
+|:--|:--|:--|:--|
+|sendInit    |boolean preExec|String|如果是true表示预执行以便测试是否已经初始化，如果是false初始化合约参数|
+|sendTransfer|String sendAddr, String password, String recvAddr, int amount|String|转移资产|
+|sendBalanceOf|String addr|String|获得账户余额|
+|sendTotalSupply||String|获得总供应量|
+|sendName||String|获取名字|
+|sendDecimals||String|查询精度|
+|sendSymbol||String|查询Token缩写|
+
 
 nep-5智能合约模板：
 

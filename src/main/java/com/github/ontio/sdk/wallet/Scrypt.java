@@ -27,6 +27,8 @@ public class Scrypt {
     private int n = 16384;
     private int r = 8;
     private int p = 8;
+    private int DkLen = 64;
+    private String Salt;
     public Scrypt(){
     }
     public Scrypt(int n,int r,int p){
@@ -51,6 +53,12 @@ public class Scrypt {
     }
     public int getP(){
         return p;
+    }
+    public void setDkLen(int DkLen){
+        this.DkLen = DkLen;
+    }
+    public int getDkLen(){
+        return DkLen;
     }
     @Override
     public String toString() {

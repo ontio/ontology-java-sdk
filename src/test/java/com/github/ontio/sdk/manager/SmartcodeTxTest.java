@@ -83,7 +83,7 @@ public class SmartcodeTxTest {
     @Test
     public void sendInvokeSmartCode() throws Exception {
 
-        String res = ontSdk.getSmartcodeTx().sendInvokeSmartCode(did.ontid,"passwordtest",abiFunction2,(byte) VmType.NEOVM.value());
+        String res = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithNoSign(abiFunction2,(byte) VmType.NEOVM.value());
         Assert.assertNotNull(res);
     }
 

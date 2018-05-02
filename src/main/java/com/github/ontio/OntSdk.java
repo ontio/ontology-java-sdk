@@ -46,8 +46,6 @@ public class OntSdk {
     private SmartcodeTx smartcodeTx = null;
     private OntAssetTx ontAssetTx = null;
     private static OntSdk instance = null;
-    public KeyType keyType = KeyType.ECDSA;
-    public Object[] curveParaSpec = new Object[]{"P-256"};
     public SignatureScheme signatureScheme = SignatureScheme.SHA256WITHECDSA;
 
     public static synchronized OntSdk getInstance(){
@@ -196,14 +194,14 @@ public class OntSdk {
      */
     public void openWalletFile(String path) {
 
-        this.walletMgr = new WalletMgr(path,keyType, curveParaSpec);
+        this.walletMgr = new WalletMgr(path,signatureScheme);
         setSignatureScheme(signatureScheme);
     }
 
 
     public Transaction signTx(Transaction tx, String address, String password) throws Exception{
         address = address.replace(Common.didont, "");
-        signTx(tx, new Account[][]{{getWalletMgr().getAccount(address, password,keyType, curveParaSpec)}});
+        signTx(tx, new Account[][]{{getWalletMgr().getAccount(address, password)}});
         return tx;
     }
     /**

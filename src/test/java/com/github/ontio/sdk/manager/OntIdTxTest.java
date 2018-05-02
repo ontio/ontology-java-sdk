@@ -79,7 +79,7 @@ public class OntIdTxTest {
     @Test
     public void makeRegister() throws Exception {
 
-        IdentityInfo acctinfo = ontSdk.getWalletMgr().createIdentityInfo("passwordtest",ontSdk.keyType,ontSdk.curveParaSpec);
+        IdentityInfo acctinfo = ontSdk.getWalletMgr().createIdentityInfo("passwordtest");
         Transaction tx = ontSdk.getOntIdTx().makeRegister(acctinfo);
         Assert.assertNotNull(tx);
     }
@@ -151,7 +151,7 @@ public class OntIdTxTest {
     public void sendChangeRecovery() throws Exception {
 
         IdentityInfo acctinfo = ontSdk.getWalletMgr().getIdentityInfo(did.get(1).ontid,"passwordtest");
-        IdentityInfo acctinfo2 = ontSdk.getWalletMgr().createIdentityInfo("passwordtest",ontSdk.keyType,ontSdk.curveParaSpec);
+        IdentityInfo acctinfo2 = ontSdk.getWalletMgr().createIdentityInfo("passwordtest");
         String res = ontSdk.getOntIdTx().sendChangeRecovery(did.get(0).ontid.replace(Common.didont,""),"passwordtest",acctinfo2.addressU160,acctinfo.addressU160);
         Assert.assertNotNull(res);
     }
@@ -235,7 +235,7 @@ public class OntIdTxTest {
     public void makeInvokeTransaction() throws Exception {
         List list = new ArrayList();
         list.add("test");
-        IdentityInfo acctinfo = ontSdk.getWalletMgr().createIdentityInfo("passwordtest",ontSdk.keyType,ontSdk.curveParaSpec);
+        IdentityInfo acctinfo = ontSdk.getWalletMgr().createIdentityInfo("passwordtest");
         Transaction tx = ontSdk.getOntIdTx().makeInvokeTransaction(list,acctinfo);
         Assert.assertNotNull(tx);
     }

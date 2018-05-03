@@ -163,6 +163,7 @@ public class Block extends Inventory {
         writer.writeInt(timestamp);
         writer.writeInt(height);
         writer.writeLong(consensusData);
+        writer.writeVarBytes(consensusPayload);
         writer.writeSerializable(nextBookkeeper);
     }
 

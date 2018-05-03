@@ -40,7 +40,7 @@ public class ClaimRecordTx {
         }
         String addr = ontid.replace(Common.didont,"");
         byte[] did = (Common.didont + addr).getBytes();
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
+        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
         List list = new ArrayList<Object>();
         list.add("Commit".getBytes());
         List tmp = new ArrayList<Object>();
@@ -64,7 +64,7 @@ public class ClaimRecordTx {
         }
         String addr = ontid.replace(Common.didont,"");
         byte[] did = (Common.didont + addr).getBytes();
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
+        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
         List list = new ArrayList<Object>();
         list.add("Revoke".getBytes());
         List tmp = new ArrayList<Object>();
@@ -87,7 +87,7 @@ public class ClaimRecordTx {
             throw new SDKException(ErrorCode.NullKeyOrValue);
         }
         String addr = ontid.replace(Common.didont,"");
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,sdk.keyType,sdk.curveParaSpec);
+        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
         List list = new ArrayList<Object>();
         list.add("GetStatus".getBytes());
         List tmp = new ArrayList<Object>();

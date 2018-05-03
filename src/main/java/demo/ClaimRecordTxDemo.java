@@ -1,5 +1,6 @@
 package demo;
 
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
@@ -11,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ClaimRecordTx {
+public class ClaimRecordTxDemo {
     public static void main(String[] args) {
 
         try {
@@ -42,20 +43,20 @@ public class ClaimRecordTx {
 
             ontSdk.setCodeAddress("804d601325908f3fa43c2b11d79a56ef835afb73");
 
-            String commitRes = ontSdk.getRecordTx().sendCommit(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"));
+            String commitRes = ontSdk.getClaimRecordTx().sendCommit(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"));
             System.out.println("commitRes:" + commitRes);
             Thread.sleep(6000);
 
-            String getstatusRes = ontSdk.getRecordTx().sendGetStatus(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"));
+            String getstatusRes = ontSdk.getClaimRecordTx().sendGetStatus(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"));
             byte[] getstatusResBytes = Helper.hexToBytes(getstatusRes);
             System.out.println("getstatusResBytes:" + new String(getstatusResBytes));
             Thread.sleep(6000);
 
-            String revokeRes = ontSdk.getRecordTx().sendRevoke(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"));
+            String revokeRes = ontSdk.getClaimRecordTx().sendRevoke(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"));
             System.out.println("revokeRes:" + revokeRes);
             Thread.sleep(6000);
 
-            String getstatusRes2 = ontSdk.getRecordTx().sendGetStatus(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"));
+            String getstatusRes2 = ontSdk.getClaimRecordTx().sendGetStatus(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"));
             byte[] getstatusResBytes2 = Helper.hexToBytes(getstatusRes2);
             System.out.println("getstatusResBytes2:" + new String(getstatusResBytes2));
 
@@ -84,8 +85,9 @@ public class ClaimRecordTx {
         wm.setRestful(restUrl);
         wm.setDefaultConnect(wm.getRestful());
 
-        wm.openWalletFile("ClaimRecordTx.json");
+        wm.openWalletFile("ClaimRecordTxDemo.json");
 
         return wm;
     }
 }
+

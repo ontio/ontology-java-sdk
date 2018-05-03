@@ -636,7 +636,7 @@ public class OntIdTx {
             System.arraycopy(pubkeysData, offset, data, 0, len);
             Map owner = new HashMap();
             owner.put("PublicKeyId", ontid + "#keys-" + String.valueOf(pubkeyId));
-            if(sdk.signatureScheme == SignatureScheme.SHA3_256WITHECDSA) {
+            if(sdk.signatureScheme == SignatureScheme.SHA256WITHECDSA) {
                 owner.put("Type", KeyType.ECDSA);
                 owner.put("Curve", new Object[]{"P-256"}[0]);
             }
@@ -734,7 +734,6 @@ public class OntIdTx {
         Fee[] fees = new Fee[0];
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress, null, params, VmType.NEOVM.value(), fees);
-        String aa = tx.toHexString();
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         if (obj == null || ((String) obj).length() == 0) {
             throw new SDKException(ErrorCode.ResultIsNull);

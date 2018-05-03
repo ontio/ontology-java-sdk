@@ -39,8 +39,10 @@ public class Signature {
                 throw new Exception(ErrorCode.InvalidSignatureData);
             }
             this.param = new SM2ParameterSpec(Arrays.copyOfRange(data, 1, i));
+            this.value = Arrays.copyOfRange(data, i + 1, data.length);
+        } else {
+            this.value = Arrays.copyOfRange(data, 1, data.length);
         }
-        this.value = Arrays.copyOfRange(data, 1, data.length);
     }
 
     // serialize to byte array

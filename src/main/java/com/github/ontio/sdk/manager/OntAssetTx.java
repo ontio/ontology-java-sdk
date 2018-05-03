@@ -59,6 +59,9 @@ public class OntAssetTx {
      * @throws Exception
      */
     public String sendTransfer(String assetName, String sendAddr, String password, String recvAddr, long amount) throws Exception {
+        if (amount <= 0) {
+            throw new SDKException("amount is less than or equal to zero");
+        }
         Transaction tx = makeTransfer(assetName, sendAddr, password, recvAddr, amount);
         sdk.signTx(tx, sendAddr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
@@ -68,6 +71,9 @@ public class OntAssetTx {
         return null;
     }
     public Transaction makeTransfer(String assetName, String sendAddr, String password, String recvAddr, long amount) throws Exception {
+        if (amount <= 0) {
+            throw new SDKException("amount is less than or equal to zero");
+        }
         String contractAddr = null;
         if (assetName.equals("ong")) {
             contractAddr = ongContract;
@@ -96,6 +102,11 @@ public class OntAssetTx {
      * @throws Exception
      */
     public String sendTransferToMany(String assetName, String sendAddr, String password, String[] recvAddr, long[] amount) throws Exception {
+        for (long amou : amount) {
+            if (amou <= 0) {
+                throw new SDKException("amount is less than or equal to zero");
+            }
+        }
         String contractAddr = null;
         if (assetName.equals("ong")) {
             contractAddr = ongContract;
@@ -137,6 +148,11 @@ public class OntAssetTx {
      * @throws Exception
      */
     public String sendTransferFromMany(String assetName, String[] sendAddr, String[] password, String recvAddr, long[] amount) throws Exception {
+        for (long amou : amount) {
+            if (amou <= 0) {
+                throw new SDKException("amount is less than or equal to zero");
+            }
+        }
         String contractAddr = null;
         if (assetName.equals("ong")) {
             contractAddr = ongContract;
@@ -182,6 +198,9 @@ public class OntAssetTx {
     }
 
     public String sendOngTransferFrom(String sendAddr, String password, String to, long amount) throws Exception {
+        if (amount <= 0) {
+            throw new SDKException("amount is less than or equal to zero");
+        }
         AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
         TransferFrom transferFrom = new TransferFrom(Address.addressFromPubKey(sender.pubkey),Address.parse(ontContract),Address.decodeBase58(to),new BigInteger(String.valueOf(amount)));
         Contract contract = new Contract((byte) 0,null, Address.parse(ongContract), "transferFrom", transferFrom.toArray());

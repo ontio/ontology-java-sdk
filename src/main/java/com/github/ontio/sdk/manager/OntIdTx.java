@@ -24,6 +24,7 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.*;
 import com.github.ontio.core.asset.Contract;
+import com.github.ontio.core.block.Block;
 import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.merkle.MerkleVerifier;
 import com.github.ontio.sdk.exception.SDKException;
@@ -943,27 +944,27 @@ public class OntIdTx {
     public boolean verifyMerkleProof(String claim) throws Exception {
         try {
             JSONObject obj = JSON.parseObject(claim);
-            Map prf = (Map) obj.getJSONObject("Proof");
-            String txhash = (String) prf.get("TxnHash");
-            int height = sdk.getConnectMgr().getBlockHeightByTxHash(txhash);
-            if (height != (int) prf.get("BlockHeight")) {
-                throw new SDKException("BlockHeight not match");
-            }
-            Map proof = (Map) sdk.getConnectMgr().getMerkleProof(txhash);
-            UInt256 txroot = UInt256.parse((String) proof.get("TransactionsRoot"));
+            Map proof = (Map) obj.getJSONObject("Proof");
+            String txhash = (String) proof.get("TxnHash");
             int blockHeight = (int) proof.get("BlockHeight");
-            UInt256 curBlockRoot = UInt256.parse((String) proof.get("CurBlockRoot"));
-            int curBlockHeight = (int) proof.get("CurBlockHeight");
-            List hashes = (List) proof.get("TargetHashes");
-            UInt256[] targetHashes = new UInt256[hashes.size()];
-            for (int i = 0; i < hashes.size(); i++) {
-                targetHashes[i] = UInt256.parse((String) hashes.get(i));
+            UInt256 merkleRoot = UInt256.parse((String) proof.get("MerkleRoot"));
+            Block block = sdk.getConnectMgr().getBlock(blockHeight);
+            if (block.height != blockHeight) {
+                throw new SDKException("blockHeight not match");
             }
-            List nodes = (List) prf.get("Nodes");
-            if (!nodes.equals(MerkleVerifier.getProof(txroot, blockHeight, targetHashes, curBlockHeight + 1))) {
-                throw new SDKException(ErrorCode.NodesNotMatch);
+            boolean containTx = false;
+            for (int i = 0; i < block.transactions.length; i++) {
+                if (block.transactions[i].hash().toHexString().equals(txhash)) {
+                    containTx = true;
+                }
             }
-            return MerkleVerifier.VerifyLeafHashInclusion(txroot, blockHeight, targetHashes, curBlockRoot, curBlockHeight + 1);
+            if(!containTx){
+                throw new SDKException(ErrorCode.OtherError("not contain this tx"));
+            }
+            UInt256 txsroot = block.transactionsRoot;
+
+            List nodes = (List) proof.get("Nodes");
+            return MerkleVerifier.Verify(txsroot,  nodes, merkleRoot);
         } catch (Exception e) {
             e.printStackTrace();
             throw new SDKException(e);

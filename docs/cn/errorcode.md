@@ -61,12 +61,13 @@
 |58013  |  DidError |OntAsset Error,Did error|
 |58014  |  NullPkId |OntAsset Error,null pkId|
 |58015  |  NullClaimId |OntAsset Error,null claimId|
-|58016  |  NullKeyOrValue |RecordTx Error,null key or value|
-|58017  |  NullKey |RecordTx Error,null  key|
-|58018  |  GetAccountByAddressErr |WalletManager Error,getAccountByAddress err|
-|58019  |  WebsocketNotInit |OntSdk Error,websocket not init|
-|58020  |  ConnRestfulNotInit |OntSdk Error,connRestful not init|
-|58021  |  SetParamsValueValueNumError |AbiFunction Error,setParamsValue value num error|
-|58022  |  InvalidUrl |Interfaces Error,Invalid url:|
-|58023  |  AESailed |ECIES Error,AES failed initialisation -|
+|58016  |  OntAsset Error,amount is less than or equal to zero|
+|58017  |  NullKeyOrValue |RecordTx Error,null key or value|
+|58018  |  NullKey |RecordTx Error,null  key|
+|58019  |  GetAccountByAddressErr |WalletManager Error,getAccountByAddress err|
+|58020  |  WebsocketNotInit |OntSdk Error,websocket not init|
+|58021  |  ConnRestfulNotInit |OntSdk Error,connRestful not init|
+|58022  |  SetParamsValueValueNumError |AbiFunction Error,setParamsValue value num error|
+|58023  |  InvalidUrl |Interfaces Error,Invalid url:|
+|58024  |  AESailed |ECIES Error,AES failed initialisation -|
 |59000  |  OtherError| other error|

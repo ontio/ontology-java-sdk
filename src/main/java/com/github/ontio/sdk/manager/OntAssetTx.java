@@ -75,9 +75,9 @@ public class OntAssetTx {
             throw new SDKException("amount is less than or equal to zero");
         }
         String contractAddr = null;
-        if (assetName.equals("ong")) {
+        if (assetName.toUpperCase().equals("ONG")) {
             contractAddr = ongContract;
-        } else if (assetName.equals("ont")) {
+        } else if (assetName.toUpperCase().equals("ONT")) {
             contractAddr = ontContract;
         } else {
             throw new SDKException("asset name error");
@@ -108,9 +108,9 @@ public class OntAssetTx {
             }
         }
         String contractAddr = null;
-        if (assetName.equals("ong")) {
+        if (assetName.toUpperCase().equals("ONG")) {
             contractAddr = ongContract;
-        } else if (assetName.equals("ont")) {
+        } else if (assetName.toUpperCase().equals("ONT")) {
             contractAddr = ontContract;
         } else {
             throw new SDKException("asset name error");
@@ -154,9 +154,9 @@ public class OntAssetTx {
             }
         }
         String contractAddr = null;
-        if (assetName.equals("ong")) {
+        if (assetName.toUpperCase().equals("ONG")) {
             contractAddr = ongContract;
-        } else if (assetName.equals("ont")) {
+        } else if (assetName.toUpperCase().equals("ONT")) {
             contractAddr = ontContract;
         } else {
             throw new SDKException("asset name error");

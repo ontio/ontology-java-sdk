@@ -4,7 +4,9 @@ import com.github.ontio.common.ErrorCode;
 
 public enum KeyType {
     ECDSA(0x12),
-    SM2(0x14);
+    SM2(0x13),
+    EDDSA(0x14);
+
 
     private int label;
 

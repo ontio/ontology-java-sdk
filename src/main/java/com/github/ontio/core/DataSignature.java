@@ -48,13 +48,20 @@ public class DataSignature implements Signable {
     }
     public byte[] signature() {
         try {
-            byte[] signData = this.sign(account,scheme);
+            byte[] signData = sign(account,scheme);
             return signData;
         } catch (Exception e) {
             throw new RuntimeException("Data signature error.");
         }
     }
-
+    @Override
+    public byte[] sign(Account account, SignatureScheme scheme) throws Exception {
+        return account.generateSignature(getHashData(), scheme,null);
+    }
+    @Override
+    public boolean verifySignature(Account account, byte[] data, byte[] signature) throws Exception {
+        return account.verifySignature(data, signature);
+    }
     @Override
     public Address[] getAddressU160ForVerifying() {
         HashSet<Address> hashes = new HashSet<Address>();

@@ -49,7 +49,9 @@ public class Claim {
         claim.put("Id", id);
         claim.put("Version", "v1.0");
         DataSignature sign = new DataSignature(scheme, acct, getClaim());
-        claim.put("Signature", new Sign("", "",publicKeyId, sign.signature()).getJson());
+        byte[] signature = sign.signature();
+        SignatureInfo info = new SignatureInfo("", "",publicKeyId, signature);
+        claim.put("Signature", info.getJson());
 
     }
 
@@ -62,14 +64,14 @@ public class Claim {
     }
 }
 
-class Sign {
+class SignatureInfo {
 
     private String Format = "pgp";
     private String Algorithm = "ECDSAwithSHA256";
     private byte[] Value;
     private String PublicKeyId;
 
-    public Sign(String format, String alg ,String publicKeyId,byte[] val) {
+    public SignatureInfo(String format, String alg ,String publicKeyId,byte[] val) {
         Value = val;
         PublicKeyId = publicKeyId;
     }

@@ -103,4 +103,27 @@ public class MerkleVerifier {
         }
         return nodes;
     }
+    public static boolean Verify(UInt256 leaf_hash,List targetHashes, UInt256 root_hash) throws Exception {
+        UInt256 calculated_hash = leaf_hash;
+        for(int i=0;i<targetHashes.size();i++){
+            String direction = (String)((Map)targetHashes.get(i)).get("Direction");
+            String tmp = (String)((Map)targetHashes.get(i)).get("TargetHash");
+            UInt256 targetHash = UInt256.parse(tmp);
+            if(direction.equals("Left")){
+                calculated_hash = hasher.hash_children(targetHash, calculated_hash);
+            }else if(direction.equals("Right")){
+                calculated_hash = hasher.hash_children(calculated_hash,targetHash);
+            }else{
+                throw new Exception("targetHashes error");
+            }
+        }
+        if (calculated_hash.equals(new UInt256())) {
+            return false;
+        }
+        if (!calculated_hash.equals(root_hash)) {
+            throw new Exception("Constructed root hash differs from provided root hash. Constructed: %x, Expected: " +
+                    calculated_hash + root_hash);
+        }
+        return true;
+    }
 }

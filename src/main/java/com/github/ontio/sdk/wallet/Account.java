@@ -20,6 +20,7 @@
 package com.github.ontio.sdk.wallet;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONField;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,11 +36,46 @@ public class Account {
     public String algorithm = "";
     public Map parameters = new HashMap() ;
     public String key = "";
+    @JSONField(name = "enc-alg")
+    public String encAlg = "aes-256-ctr";
+    public String hash = "sha256";
+    public String signatureScheme = "SHA256withECDSA";
+    public String passwordHash = "";
     public Object extra = null;
     public Account(){
-        this.algorithm = "ECDSA";
-        this.parameters.put("curve","secp256r1");
+
+    }
+    public Account(String alg,Object[] params,String encAlg,String scheme,String hash){
+        this.algorithm = alg;
+        this.parameters.put("curve",params[0]);
+        this.signatureScheme = scheme;
+        this.encAlg = encAlg;
+        this.hash = hash;
         this.extra = null;
+    }
+    public void setKey(String key){
+        this.key = key;
+    }
+    public String getKey(){
+        return key;
+    }
+//    public void setEncAlg(String encAlg){
+//        this.encAlg = encAlg;
+//    }
+//    public String getEncAlg(){
+//        return encAlg;
+//    }
+    public void setHash(String hash){
+        this.hash = hash;
+    }
+    public String getHash(){
+        return hash;
+    }
+    public void setPasswordHash(String passwordHash){
+        this.passwordHash = passwordHash;
+    }
+    public Object getPasswordHash(){
+        return passwordHash;
     }
     public void setExtra(Object extra){
         this.extra = extra;

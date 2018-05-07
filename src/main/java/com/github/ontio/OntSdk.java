@@ -40,13 +40,13 @@ public class OntSdk {
     private ConnectMgr connWebSocket;
     private ConnectMgr connDefault;
 
+    private Nep5Tx nep5Tx = null;
     private OntIdTx ontIdTx = null;
     private RecordTx recordTx = null;
     private SmartcodeTx smartcodeTx = null;
     private OntAssetTx ontAssetTx = null;
+    private ClaimRecordTx claimRecordTx = null;
     private static OntSdk instance = null;
-    public KeyType keyType = KeyType.ECDSA;
-    public Object[] curveParaSpec = new Object[]{"P-256"};
     public SignatureScheme signatureScheme = SignatureScheme.SHA256WITHECDSA;
 
     public static synchronized OntSdk getInstance(){
@@ -120,6 +120,14 @@ public class OntSdk {
         return recordTx;
     }
 
+    public ClaimRecordTx getClaimRecordTx(){
+        if (claimRecordTx == null){
+            getSmartcodeTx();
+            claimRecordTx = new ClaimRecordTx(getInstance());
+        }
+        return claimRecordTx;
+    }
+
     /**
      *  Smartcode Tx
      * @return instance
@@ -142,6 +150,13 @@ public class OntSdk {
         return ontAssetTx;
     }
 
+    public Nep5Tx getNep5Tx() {
+        if(nep5Tx == null){
+            nep5Tx = new Nep5Tx(getInstance());
+        }
+        return nep5Tx;
+    }
+
     /**
      * get Wallet Mgr
      * @return
@@ -159,6 +174,8 @@ public class OntSdk {
         getOntIdTx().setCodeAddress(codeAddress);
         getSmartcodeTx().setCodeAddress(codeAddress);
         getRecordTx().setCodeAddress(codeAddress);
+        getNep5Tx().setCodeAddress(codeAddress);
+        getClaimRecordTx().setCodeAddress(codeAddress);
     }
 
     /**
@@ -187,14 +204,14 @@ public class OntSdk {
      */
     public void openWalletFile(String path) {
 
-        this.walletMgr = new WalletMgr(path,keyType, curveParaSpec);
+        this.walletMgr = new WalletMgr(path,signatureScheme);
         setSignatureScheme(signatureScheme);
     }
 
 
     public Transaction signTx(Transaction tx, String address, String password) throws Exception{
         address = address.replace(Common.didont, "");
-        signTx(tx, new Account[][]{{getWalletMgr().getAccount(address, password,keyType, curveParaSpec)}});
+        signTx(tx, new Account[][]{{getWalletMgr().getAccount(address, password)}});
         return tx;
     }
     /**
@@ -211,7 +228,7 @@ public class OntSdk {
             sigs[i].sigData = new byte[accounts[i].length][];
             for (int j = 0; j < accounts[i].length; j++) {
                 sigs[i].M++;
-                byte[] signature = tx.sign(accounts[i][j], getWalletMgr().getSignatureScheme());
+                byte[] signature = tx.sign(accounts[i][j], signatureScheme);
                 sigs[i].pubKeys[j] = accounts[i][j].serializePublicKey();
                 sigs[i].sigData[j] = signature;
             }

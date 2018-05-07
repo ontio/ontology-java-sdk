@@ -42,14 +42,13 @@ public class Identity {
 }
 
 ```
-
 `algorithm` Encryption algorithm  
 `parameters` The parameters used in the encryption algorithm  
 `curve` Elliptic curve  
 `id` The single identifier of control  
 `key` NEP-2 private key
-
 ```
+
 public class Control {
     public String algorithm = "ECDSA";
     public Map parameters = new HashMap() ;
@@ -72,6 +71,7 @@ wm.setDefaultConnect(wm.getRestful());
 wm.openWalletFile("InvokeSmartCodeDemo.json");
 ontSdk.setCodeAddress("89ff0f39193ddaeeeab9de4873b549f71bbe809c");
 ```
+
 > Note: Ontid is implemented by a smart contract, so the ontid smart contract codeHash needs to be set.
 
 Digital identity creation refers to generation of a digital identity with identity data structure and writing it to wallet file. 
@@ -99,7 +99,7 @@ Upon successful registration, the corresponding DDO of the ONT ID will be stored
 
 Users who have already created a digital identity or account may import it into a wallet file from SDK.
 
-> **Note:** It is advised to check if an identity already exists on the blockchain before you import one. If DDO does not exist, it means that no such identity has been registered on the blockchain. Then you may need to use ontSdk.getOntIdTx().register(identity) for registration.
+> **Note:** It is advised to check if an identity already exists on the blockchain before you import one. If DDO does not exist, it means that no such identity has been registered on the blockchain. Then you may need to use ontSdk.getOntIdTx().sendRegister(identity,"passwordtest") for registration.
 
 ```
 Identity identity = ontSdk.getWalletMgr().importIdentity("6PYMpk8DjWzaEvneyaqxMBap9DuUPH72W6BsWWTtpWE4JJZkGq5ENtfYbT","passwordtest");
@@ -110,6 +110,7 @@ ontSdk.getWalletMgr().writeWallet();
 * 5 Query blockchain-based identity
 
 DDO of blockchain-based identity can be queried by entering ONT ID.
+
 ```
 //get DDO by entering ONT ID
 String ddo = ontSdk.getOntIdTx().sendGetDDO(ontid,"passwordtest",ontid);
@@ -123,14 +124,13 @@ String ddo = ontSdk.getOntIdTx().sendGetDDO(ontid,"passwordtest",ontid);
 			"Value": "\"value0\""
 		}
 	},
-	"Owners": [
-		{
-			"Type": "ECDSA",
-			"Value": "0392a4dbb2a44da81e0942cee1a62ff4298e04ed463b88911b97de19a1597fa83d"
-		}
-	]
+	"Owners": [{
+		"Type": "ECDSA",
+		"Curve": "P-256",
+		"Value": "120202535a446befcf7a68b6656307928f25aab847d04a7533dfc8affab73e01785dbe",
+		"PublicKeyId": "did:ont:TA9VPsYoQMHWBWCxyGNvrb5RK47mvbFBQ7#keys-1"
+	}]
 }
-
 ```
 
 * 6 Remove identity
@@ -154,6 +154,7 @@ ontSdk.getWalletMgr().getWallet().setDefaultIdentity(ontid);
 //update an attribute
 String sendUpdateAttribute(String ontid,String password,byte[] key,byte[] type,byte[] value)
 ```
+
 | Param   | Field   | Type  | Descriptions |      Remarks |
 | ----- | ------- | ------ | ------------- | ----------- |
 | input param | password| String | publisher's address | required, password to decrypt private key|
@@ -168,6 +169,7 @@ String sendUpdateAttribute(String ontid,String password,byte[] key,byte[] type,b
 ```
 String hash = ontSdk.getOntIdTx().sendRemoveAttribute(did.ontid, "passwordtest", "attri".getBytes());
 ```
+
 | Param        | Field   | Type   | Descriptions  |       Remarks       |
 | -----        | ------- | ------ | ------------- | ------------------- |
 | input param  | password| String | publisher's address | required, password to decrypt private key |

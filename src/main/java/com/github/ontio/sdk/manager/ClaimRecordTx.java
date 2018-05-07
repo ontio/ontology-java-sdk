@@ -1,6 +1,5 @@
 package com.github.ontio.sdk.manager;
 
-import com.alibaba.fastjson.JSON;
 import com.github.ontio.OntSdk;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Common;
@@ -9,20 +8,18 @@ import com.github.ontio.common.Helper;
 import com.github.ontio.core.VmType;
 import com.github.ontio.core.asset.Fee;
 import com.github.ontio.core.transaction.Transaction;
-import com.github.ontio.crypto.KeyType;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
-public class RecordTx {
+public class ClaimRecordTx {
     private OntSdk sdk;
     private String codeAddress = null;
 
 
-    public RecordTx(OntSdk sdk) {
+    public ClaimRecordTx(OntSdk sdk) {
         this.sdk = sdk;
     }
 
@@ -34,23 +31,21 @@ public class RecordTx {
         return codeAddress;
     }
 
-
-    public String sendPut(String addr,String password,String key,String value) throws Exception {
+    public String sendCommit(String ontid,String password,String claimId) throws Exception {
         if (codeAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        if (key == null || value == null || key == "" || value == ""){
+        if (claimId == null || claimId == ""){
             throw new SDKException(ErrorCode.NullKeyOrValue);
         }
-        addr = addr.replace(Common.didont,"");
+        String addr = ontid.replace(Common.didont,"");
         byte[] did = (Common.didont + addr).getBytes();
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
-        byte[] pk = Helper.hexToBytes(info.pubkey);
         List list = new ArrayList<Object>();
-        list.add("Put".getBytes());
+        list.add("Commit".getBytes());
         List tmp = new ArrayList<Object>();
-        tmp.add(key.getBytes());
-        tmp.add(JSON.toJSONString(constructRecord(value)).getBytes());
+        tmp.add(Helper.hexToBytes(claimId));
+        tmp.add(did);
         list.add(tmp);
         Transaction tx = makeInvokeTransaction(list,info);
         sdk.signTx(tx, addr, password);
@@ -60,47 +55,57 @@ public class RecordTx {
         }
         return null;
     }
-    public String sendGet(String addr,String password,String key) throws Exception {
+    public String sendRevoke(String ontid,String password,String claimId) throws Exception {
         if (codeAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        if (key == null || key == ""){
-            throw new SDKException(ErrorCode.NullKey);
+        if (claimId == null || claimId == ""){
+            throw new SDKException(ErrorCode.NullKeyOrValue);
         }
+        String addr = ontid.replace(Common.didont,"");
         byte[] did = (Common.didont + addr).getBytes();
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
-        byte[] pk = Helper.hexToBytes(info.pubkey);
         List list = new ArrayList<Object>();
-        list.add("Get".getBytes());
+        list.add("Revoke".getBytes());
         List tmp = new ArrayList<Object>();
-        tmp.add(key.getBytes());
+        tmp.add(Helper.hexToBytes(claimId));
+        tmp.add(did);
+        list.add(tmp);
+        Transaction tx = makeInvokeTransaction(list,info);
+        sdk.signTx(tx, addr, password);
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        if (b) {
+            return tx.hash().toString();
+        }
+        return null;
+    }
+    public String sendGetStatus(String ontid,String password,String claimId) throws Exception {
+        if (codeAddress == null) {
+            throw new SDKException(ErrorCode.NullCodeHash);
+        }
+        if (claimId == null || claimId == ""){
+            throw new SDKException(ErrorCode.NullKeyOrValue);
+        }
+        String addr = ontid.replace(Common.didont,"");
+        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
+        List list = new ArrayList<Object>();
+        list.add("GetStatus".getBytes());
+        List tmp = new ArrayList<Object>();
+        tmp.add(Helper.hexToBytes(claimId));
         list.add(tmp);
         Transaction tx = makeInvokeTransaction(list,info);
         sdk.signTx(tx, addr, password);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-        return new String(Helper.hexToBytes((String)obj));
+        if (obj != null ) {
+            return (String) obj;
+        }
+        return null;
     }
-
     public Transaction makeInvokeTransaction(List<Object> list,AccountInfo acctinfo) throws Exception {
         Fee[] fees = new Fee[1];
         fees[0] = new Fee(0, Address.addressFromPubKey(acctinfo.pubkey));
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), fees);
         return tx;
-    }
-
-    public LinkedHashMap<String, Object> constructRecord(String text) {
-        LinkedHashMap<String, Object> recordData = new LinkedHashMap<String, Object>();
-        LinkedHashMap<String, Object> data = new LinkedHashMap<String, Object>();
-        data.put("Algrithem", KeyType.SM2.name());
-        data.put("Hash", "");
-        data.put("Text", text);
-        data.put("Signature", "");
-
-        recordData.put("Data", data);
-        recordData.put("CAkey", "");
-        recordData.put("SeqNo", "");
-        recordData.put("Timestamp", 0);
-        return recordData;
     }
 }

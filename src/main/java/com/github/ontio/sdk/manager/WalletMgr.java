@@ -22,7 +22,7 @@ package com.github.ontio.sdk.manager;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.common.Address;
-import com.github.ontio.crypto.SignatureScheme;
+import com.github.ontio.crypto.*;
 import com.github.ontio.sdk.exception.*;
 import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.info.IdentityInfo;
@@ -30,9 +30,7 @@ import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Control;
 import com.github.ontio.sdk.wallet.Identity;
 import com.github.ontio.sdk.wallet.Wallet;
-import com.github.ontio.crypto.KeyType;
 import com.github.ontio.common.Common;
-import com.github.ontio.crypto.ECC;
 import com.github.ontio.core.DataSignature;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.util.IOUtils;
@@ -52,13 +50,10 @@ public class WalletMgr {
     private Wallet walletFile;
     private SignatureScheme scheme = null;
     private String filePath = null;
-    private KeyType keyType = null;
-    private Object[] curveParaSpec = null;
 
-    public WalletMgr(String path, KeyType type, Object[] curveParaSpec) {
+    public WalletMgr(String path, SignatureScheme scheme) {
         try {
-            this.keyType = type;
-            this.curveParaSpec = curveParaSpec;
+            this.scheme = scheme;
             this.filePath = path;
             File file = new File(filePath);
             if (!file.exists()) {
@@ -95,7 +90,7 @@ public class WalletMgr {
                 wallet.setCreateTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(new Date()));
                 walletFile = new Wallet();
                 file.createNewFile();
-                createIdentity(password, type, params);
+                createIdentity(password);
                 writeWallet();
             }
             InputStream inputStream = new FileInputStream(filePath);
@@ -109,13 +104,14 @@ public class WalletMgr {
                 wallet.setAccounts(new ArrayList<>());
             }
             if (getIdentitys().size() == 0) {
-                createIdentity(password, type, params);
+                createIdentity(password);
                 writeWallet();
                 return;
             }
             Identity identity = getDefaultIdentity();
             if (identity != null) {
-                String prikey = com.github.ontio.account.Account.getPrivateKey(identity.controls.get(0).key, password, walletFile.getScrypt().getN(), type, params);
+                String addr = identity.ontid.replace(Common.didont,"");
+                String prikey = com.github.ontio.account.Account.getCtrDecodedPrivateKey(identity.controls.get(0).key, password,addr, walletFile.getScrypt().getN(),scheme);
                 storePrivateKey(identityPriKeyMap, identity.ontid, password, prikey);
             }
         } catch (FileNotFoundException e) {
@@ -160,145 +156,106 @@ public class WalletMgr {
         map.put(key + "," + password, prikey);
     }
 
-    public Identity importIdentity(String encryptedPrikey, String password) throws Exception {
-        return importIdentity(encryptedPrikey, password, keyType, curveParaSpec);
-    }
-
-    public Identity importIdentity(String encryptedPrikey, String password, KeyType type, Object[] params) throws Exception {
-        String prikey = com.github.ontio.account.Account.getPrivateKey(encryptedPrikey, password, walletFile.getScrypt().getN(), type, params);
-        IdentityInfo info = createIdentity(password, Helper.hexToBytes(prikey), type, params);
+    public Identity importIdentity(String encryptedPrikey, String password,String address) throws Exception {
+        String prikey = com.github.ontio.account.Account.getCtrDecodedPrivateKey(encryptedPrikey, password,address, walletFile.getScrypt().getN(), scheme);
+        IdentityInfo info = createIdentity(password, Helper.hexToBytes(prikey));
         storePrivateKey(identityPriKeyMap, info.ontid, password, prikey);
         return getIdentity(info.ontid);
     }
 
-    public Identity createIdentity(String password) throws Exception {
-        return createIdentity(password, keyType, curveParaSpec);
-    }
 
     public Identity createIdentityFromPriKey(String password, String prikey) throws Exception {
-        IdentityInfo info = createIdentity(password, Helper.hexToBytes(prikey), keyType, curveParaSpec);
+        IdentityInfo info = createIdentity(password, Helper.hexToBytes(prikey));
         return getIdentity(info.ontid);
     }
 
-    public Identity createIdentity(String password, KeyType type, Object[] params) throws Exception {
-        IdentityInfo info = createIdentity(password, ECC.generateKey(), type, params);
+    public Identity createIdentity(String password) throws Exception {
+        IdentityInfo info = createIdentity(password, ECC.generateKey());
         return getIdentity(info.ontid);
     }
 
-    public IdentityInfo createIdentityInfo(String password, KeyType type, Object[] params) throws Exception {
-        IdentityInfo info = createIdentity(password, ECC.generateKey(), type, params);
+    public IdentityInfo createIdentityInfo(String password) throws Exception {
+        IdentityInfo info = createIdentity(password, ECC.generateKey());
         return info;
     }
 
-    public IdentityInfo getIdentityInfo(String ontid, String password) throws Exception {
-        return getIdentityInfo(ontid, password, keyType, curveParaSpec);
-    }
 
-    public IdentityInfo getIdentityInfo(String ontid, String password, KeyType type, Object[] params) throws Exception {
-        com.github.ontio.account.Account acct = getAccountByAddress(Address.decodeBase58(ontid.replace(Common.didont, "")), password, type, params);
+    public IdentityInfo getIdentityInfo(String ontid, String password) throws Exception {
+        com.github.ontio.account.Account acct = getAccountByAddress(Address.decodeBase58(ontid.replace(Common.didont, "")), password);
         IdentityInfo info = new IdentityInfo();
         info.ontid = Common.didont + Address.addressFromPubKey(acct.serializePublicKey()).toBase58();
         info.pubkey = Helper.toHexString(acct.serializePublicKey());
         info.setPrikey(Helper.toHexString(acct.serializePrivateKey()));
         info.setPriwif(acct.exportWif());
-        info.encryptedPrikey = acct.exportEncryptedPrikey(password, walletFile.getScrypt().getN());
+        info.encryptedPrikey = acct.exportCtrEncryptedPrikey(password, walletFile.getScrypt().getN());
         info.addressU160 = acct.getAddressU160().toString();
         return info;
     }
 
-    private IdentityInfo createIdentity(String password, byte[] prikey, KeyType type, Object[] params) throws Exception {
-        com.github.ontio.account.Account acct = createAccount(password, prikey, false, type, params);
+    private IdentityInfo createIdentity(String password, byte[] prikey) throws Exception {
+        com.github.ontio.account.Account acct = createAccount(password, prikey, false);
         IdentityInfo info = new IdentityInfo();
         info.ontid = Common.didont + Address.addressFromPubKey(acct.serializePublicKey()).toBase58();
         info.pubkey = Helper.toHexString(acct.serializePublicKey());
-        System.out.println(Helper.toHexString(prikey));
-        System.out.println(info.pubkey);
         info.setPrikey(Helper.toHexString(acct.serializePrivateKey()));
         info.setPriwif(acct.exportWif());
-        info.encryptedPrikey = acct.exportEncryptedPrikey(password, walletFile.getScrypt().getN());
+        info.encryptedPrikey = acct.exportCtrEncryptedPrikey(password, walletFile.getScrypt().getN());
         info.addressU160 = acct.getAddressU160().toHexString();
         storePrivateKey(identityPriKeyMap, info.ontid, password, Helper.toHexString(prikey));
         return info;
     }
 
-    public Account importAccount(String encryptedPrikey, String password) throws Exception {
-        return importAccount(encryptedPrikey, password, keyType, curveParaSpec);
-    }
 
-    public Account importAccount(String encryptedPrikey, String password, KeyType type, Object[] params) throws Exception {
-        String prikey = com.github.ontio.account.Account.getPrivateKey(encryptedPrikey, password, walletFile.getScrypt().getN(), type, params);
-        AccountInfo info = createAccount(password, Helper.hexToBytes(prikey), type, params);
+    public Account importAccount(String encryptedPrikey, String password,String address) throws Exception {
+        String prikey = com.github.ontio.account.Account.getCtrDecodedPrivateKey(encryptedPrikey, password, address,walletFile.getScrypt().getN(),scheme);
+        AccountInfo info = createAccount(password, Helper.hexToBytes(prikey));
         storePrivateKey(acctPriKeyMap, info.addressBase58, password, prikey);
         return getAccount(info.addressBase58);
     }
 
-    public Account createAccount(String password) throws Exception {
-        return createAccount(password, keyType, curveParaSpec);
-    }
 
-    public Account createAccount(String password, KeyType type, Object[] params) throws Exception {
-        AccountInfo info = createAccount(password, ECC.generateKey(), type, params);
+    public Account createAccount(String password) throws Exception {
+        AccountInfo info = createAccount(password, ECC.generateKey());
         return getAccount(info.addressBase58);
     }
 
     public Account createAccountFromPriKey(String password, String prikey) throws Exception {
-        return createAccountFromPriKey(password, prikey, keyType, curveParaSpec);
-    }
-
-    public Account createAccountFromPriKey(String password, String prikey, KeyType type, Object[] params) throws Exception {
-        AccountInfo info = createAccount(password, Helper.hexToBytes(prikey), type, params);
+        AccountInfo info = createAccount(password, Helper.hexToBytes(prikey));
         return getAccount(info.addressBase58);
     }
 
-    public AccountInfo createAccountInfo(String password, KeyType type, Object[] params) throws Exception {
-        AccountInfo info = createAccount(password, ECC.generateKey(), type, params);
+    public AccountInfo createAccountInfo(String password) throws Exception {
+        AccountInfo info = createAccount(password, ECC.generateKey());
         return info;
     }
 
-    private AccountInfo createAccount(String password, byte[] prikey, KeyType type, Object[] params) throws Exception {
-        com.github.ontio.account.Account acct = createAccount(password, prikey, true, type, params);
+    private AccountInfo createAccount(String password, byte[] prikey) throws Exception {
+        com.github.ontio.account.Account acct = createAccount(password, prikey, true);
         AccountInfo info = new AccountInfo();
         info.addressBase58 = Address.addressFromPubKey(acct.serializePublicKey()).toBase58();
         info.pubkey = Helper.toHexString(acct.serializePublicKey());
         info.setPrikey(Helper.toHexString(acct.serializePrivateKey()));
         info.setPriwif(acct.exportWif());
-        info.encryptedPrikey = acct.exportEncryptedPrikey(password, walletFile.getScrypt().getN());
+        info.encryptedPrikey = acct.exportCtrEncryptedPrikey(password, walletFile.getScrypt().getN());
         info.addressU160 = acct.getAddressU160().toHexString();
         storePrivateKey(acctPriKeyMap, info.addressBase58, password, Helper.toHexString(prikey));
         return info;
     }
 
-    public AccountInfo createAccountInfoFromPriKey(String password, String prikey) throws Exception {
-        return createAccountFromInfoPriKey(password, prikey, keyType, curveParaSpec);
-    }
 
-    public AccountInfo createAccountFromInfoPriKey(String password, String prikey, KeyType type, Object[] params) throws Exception {
-        return createAccount(password, Helper.hexToBytes(prikey), type, params);
+    public AccountInfo createAccountInfoFromPriKey(String password, String prikey) throws Exception {
+        return createAccount(password, Helper.hexToBytes(prikey));
     }
 
     public IdentityInfo createIdentityInfoFromPriKey(String password, String prikey) throws Exception {
-        return createIdentity(password, Helper.hexToBytes(prikey), keyType, curveParaSpec);
+        return createIdentity(password, Helper.hexToBytes(prikey));
     }
 
-    public IdentityInfo createIdentityInfoFromPriKey(String password, String prikey, KeyType type, Object[] params) throws Exception {
-        return createIdentity(password, Helper.hexToBytes(prikey), type, params);
-    }
-
-    public String privateKeyToWif(String privateKey, KeyType type, Object[] params) throws Exception {
-        com.github.ontio.account.Account act = new com.github.ontio.account.Account(Helper.hexToBytes(privateKey), type, params);
+    public String privateKeyToWif(String privateKey) throws Exception {
+        com.github.ontio.account.Account act = new com.github.ontio.account.Account(Helper.hexToBytes(privateKey), scheme);
         return act.exportWif();
     }
 
-//    public ECPoint getPubkey(String pubkeyHexStr) {
-//        ECPoint pubkey;
-//        byte[] pubkeyBys = Helper.hexToBytes(pubkeyHexStr);
-//        if (getAlgrithem().equals(KeyType.SM2.name())) {
-//            pubkey = SM2Utils.decodePoint(pubkeyBys);
-//        } else {
-//            pubkey = ECC.secp256r1.getCurve().decodePoint(pubkeyBys);
-//        }
-//        return pubkey;
-//    }
 
     public byte[] signatureData(com.github.ontio.account.Account acct, String str) throws SDKException {
         DataSignature sign = null;
@@ -320,17 +277,14 @@ public class WalletMgr {
         }
     }
 
+
     public com.github.ontio.account.Account getAccount(String address, String password) throws Exception {
-        return getAccount(address, password, keyType, curveParaSpec);
-    }
-
-    public com.github.ontio.account.Account getAccount(String address, String password, KeyType type, Object[] params) throws Exception {
         address = address.replace(Common.didont, "");
-        return getAccountByAddress(Address.decodeBase58(address), password, type, params);
+        return getAccountByAddress(Address.decodeBase58(address), password);
     }
 
-    private com.github.ontio.account.Account createAccount(String password, String prikey, KeyType type, Object[] params) throws Exception {
-        return createAccount(password, Helper.hexToBytes(prikey), true, type, params);
+    private com.github.ontio.account.Account createAccount(String password, String prikey) throws Exception {
+        return createAccount(password, Helper.hexToBytes(prikey), true);
     }
 
     private Identity addIdentity(String ontid) {
@@ -359,18 +313,16 @@ public class WalletMgr {
         return wallet.getAccounts();
     }
 
-    public AccountInfo getAccountInfo(String address, String password) throws Exception {
-        return getAccountInfo(address, password, keyType, curveParaSpec);
-    }
 
-    public AccountInfo getAccountInfo(String address, String password, KeyType type, Object[] params) throws Exception {
+    public AccountInfo getAccountInfo(String address, String password) throws Exception {
         address = address.replace(Common.didont, "");
         AccountInfo info = new AccountInfo();
-        com.github.ontio.account.Account acc = getAccountByAddress(Address.decodeBase58(address), password, type, params);
+        System.out.println(address);
+        com.github.ontio.account.Account acc = getAccountByAddress(Address.decodeBase58(address), password);
         info.addressBase58 = address;
         info.pubkey = Helper.toHexString(acc.serializePublicKey());
         info.setPrikey(Helper.toHexString(acc.serializePrivateKey()));
-        info.encryptedPrikey = acc.exportEncryptedPrikey(password, walletFile.getScrypt().getN());
+        info.encryptedPrikey = acc.exportCtrEncryptedPrikey(password, walletFile.getScrypt().getN());
         info.setPriwif(acc.exportWif());
         info.addressU160 = acc.getAddressU160().toString();
         return info;
@@ -422,57 +374,64 @@ public class WalletMgr {
         return identity;
     }
 
-    private com.github.ontio.account.Account createAccount(String password, byte[] privateKey, boolean saveAccountFlag, KeyType type, Object[] params) throws Exception {
-        com.github.ontio.account.Account account = new com.github.ontio.account.Account(privateKey, type, params);
-
-        Account at = new Account();
-        if (password != null) {
-            at.key = account.exportEncryptedPrikey(password, walletFile.getScrypt().getN());
-        } else {
-            at.key = Helper.toHexString(account.serializePrivateKey());
+    private com.github.ontio.account.Account createAccount(String password, byte[] privateKey, boolean saveAccountFlag) throws Exception {
+        com.github.ontio.account.Account account = new com.github.ontio.account.Account(privateKey, scheme);
+        Account acct;
+        switch (scheme) {
+            case SHA256WITHECDSA:
+                acct = new Account("ECDSA", new Object[]{Curve.P256.toString()}, "aes-256-ctr", "SHA256withECDSA", "sha256");
+                break;
+            default:
+                throw new SDKException(ErrorCode.OtherError("scheme type error"));
         }
-        at.address = Address.addressFromPubKey(account.serializePublicKey()).toBase58();
+        if (password != null) {
+            acct.key = account.exportCtrEncryptedPrikey(password, walletFile.getScrypt().getN());
+        } else {
+            acct.key = Helper.toHexString(account.serializePrivateKey());
+        }
+        acct.address = Address.addressFromPubKey(account.serializePublicKey()).toBase58();
         if (saveAccountFlag) {
             for (Account e : wallet.getAccounts()) {
-                if (e.address.equals(at.address)) {
+                if (e.address.equals(acct.address)) {
                     return account;
                 }
             }
             if (wallet.getAccounts().size() == 0) {
-                at.isDefault = true;
-                wallet.setDefaultAccountAddress(at.address);
+                acct.isDefault = true;
+                wallet.setDefaultAccountAddress(acct.address);
             }
-            wallet.getAccounts().add(at);
+            acct.passwordHash = Helper.toHexString(Digest.sha256(password.getBytes()));
+            wallet.getAccounts().add(acct);
         } else {
             for (Identity e : wallet.getIdentities()) {
-                if (e.ontid.equals(Common.didont + at.address)) {
+                if (e.ontid.equals(Common.didont + acct.address)) {
                     return account;
                 }
             }
             Identity idt = new Identity();
-            idt.ontid = Common.didont + at.address;
+            idt.ontid = Common.didont + acct.address;
             if (wallet.getIdentities().size() == 0) {
                 idt.isDefault = true;
                 wallet.setDefaultOntid(idt.ontid);
             }
             idt.controls = new ArrayList<Control>();
-            Control ctl = new Control(at.key, "");
+            Control ctl = new Control(acct.key, "");
             idt.controls.add(ctl);
             wallet.getIdentities().add(idt);
         }
         return account;
     }
 
-    private com.github.ontio.account.Account getAccountByAddress(Address address, String password, KeyType type, Object[] params) {
+    private com.github.ontio.account.Account getAccountByAddress(Address address, String password) {
         try {
             for (Account e : wallet.getAccounts()) {
                 if (e.address.equals(address.toBase58())) {
                     String prikey = (String) acctPriKeyMap.get(e.address + "," + password);
                     if (prikey == null) {
-                        prikey = com.github.ontio.account.Account.getPrivateKey(e.key, password, walletFile.getScrypt().getN(), type, params);
+                        prikey = com.github.ontio.account.Account.getCtrDecodedPrivateKey(e.key, password,e.address, walletFile.getScrypt().getN(), scheme);
                         storePrivateKey(acctPriKeyMap, e.address, password, prikey);
                     }
-                    return new com.github.ontio.account.Account(Helper.hexToBytes(prikey), type, params);
+                    return new com.github.ontio.account.Account(Helper.hexToBytes(prikey), scheme);
                 }
             }
 
@@ -480,10 +439,11 @@ public class WalletMgr {
                 if (e.ontid.equals(Common.didont + address.toBase58())) {
                     String prikey = (String) identityPriKeyMap.get(e.ontid + "," + password);
                     if (prikey == null) {
-                        prikey = com.github.ontio.account.Account.getPrivateKey(e.controls.get(0).key, password, walletFile.getScrypt().getN(), type, params);
+                        String addr = e.ontid.replace(Common.didont,"");
+                        prikey = com.github.ontio.account.Account.getCtrDecodedPrivateKey(e.controls.get(0).key, password,addr, walletFile.getScrypt().getN(), scheme);
                         storePrivateKey(identityPriKeyMap, e.ontid, password, prikey);
                     }
-                    return new com.github.ontio.account.Account(Helper.hexToBytes(prikey), type, params);
+                    return new com.github.ontio.account.Account(Helper.hexToBytes(prikey), scheme);
                 }
             }
         } catch (Exception e) {

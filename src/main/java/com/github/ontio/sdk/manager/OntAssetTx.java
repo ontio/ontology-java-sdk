@@ -59,6 +59,9 @@ public class OntAssetTx {
      * @throws Exception
      */
     public String sendTransfer(String assetName, String sendAddr, String password, String recvAddr, long amount) throws Exception {
+        if (amount <= 0) {
+            throw new SDKException("amount is less than or equal to zero");
+        }
         Transaction tx = makeTransfer(assetName, sendAddr, password, recvAddr, amount);
         sdk.signTx(tx, sendAddr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
@@ -68,16 +71,19 @@ public class OntAssetTx {
         return null;
     }
     public Transaction makeTransfer(String assetName, String sendAddr, String password, String recvAddr, long amount) throws Exception {
+        if (amount <= 0) {
+            throw new SDKException("amount is less than or equal to zero");
+        }
         String contractAddr = null;
-        if (assetName.equals("ong")) {
+        if (assetName.toUpperCase().equals("ONG")) {
             contractAddr = ongContract;
-        } else if (assetName.equals("ont")) {
+        } else if (assetName.toUpperCase().equals("ONT")) {
             contractAddr = ontContract;
         } else {
             throw new SDKException("asset name error");
         }
         amount = amount * precision;
-        AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password,sdk.keyType,sdk.curveParaSpec);
+        AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
         State state = new State(Address.addressFromPubKey(sender.pubkey), Address.decodeBase58(recvAddr), new BigInteger(String.valueOf(amount)));
         Transfers transfers = new Transfers(new State[]{state});
         Contract contract = new Contract((byte) 0,null, Address.parse(contractAddr), "transfer", transfers.toArray());
@@ -96,16 +102,21 @@ public class OntAssetTx {
      * @throws Exception
      */
     public String sendTransferToMany(String assetName, String sendAddr, String password, String[] recvAddr, long[] amount) throws Exception {
+        for (long amou : amount) {
+            if (amou <= 0) {
+                throw new SDKException("amount is less than or equal to zero");
+            }
+        }
         String contractAddr = null;
-        if (assetName.equals("ong")) {
+        if (assetName.toUpperCase().equals("ONG")) {
             contractAddr = ongContract;
-        } else if (assetName.equals("ont")) {
+        } else if (assetName.toUpperCase().equals("ONT")) {
             contractAddr = ontContract;
         } else {
             throw new SDKException("asset name error");
         }
 
-        AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password,sdk.keyType,sdk.curveParaSpec);
+        AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
         State[] states = new State[recvAddr.length];
         if (amount.length != recvAddr.length) {
             throw new Exception("");
@@ -119,7 +130,7 @@ public class OntAssetTx {
         Fee[] fees = new Fee[1];
         fees[0] = new Fee(0, Address.addressFromPubKey(sender.pubkey));
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,null,contract.toArray(), VmType.Native.value(), fees);
-        sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(sendAddr, password,sdk.keyType,sdk.curveParaSpec)}});
+        sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(sendAddr, password)}});
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -137,10 +148,15 @@ public class OntAssetTx {
      * @throws Exception
      */
     public String sendTransferFromMany(String assetName, String[] sendAddr, String[] password, String recvAddr, long[] amount) throws Exception {
+        for (long amou : amount) {
+            if (amou <= 0) {
+                throw new SDKException("amount is less than or equal to zero");
+            }
+        }
         String contractAddr = null;
-        if (assetName.equals("ong")) {
+        if (assetName.toUpperCase().equals("ONG")) {
             contractAddr = ongContract;
-        } else if (assetName.equals("ont")) {
+        } else if (assetName.toUpperCase().equals("ONT")) {
             contractAddr = ontContract;
         } else {
             throw new SDKException("asset name error");
@@ -151,7 +167,7 @@ public class OntAssetTx {
         State[] states = new State[sendAddr.length];
         Fee[] fees = new Fee[sendAddr.length];
         for (int i = 0; i < sendAddr.length; i++) {
-            AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr[i], password[i],sdk.keyType,sdk.curveParaSpec);
+            AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr[i], password[i]);
             amount[i] = amount[i] * precision;
             states[i] = new State(Address.addressFromPubKey(sender.pubkey), Address.decodeBase58(recvAddr), new BigInteger(String.valueOf(amount[i])));
             fees[i] = new Fee(0, Address.addressFromPubKey(sender.pubkey));
@@ -164,7 +180,7 @@ public class OntAssetTx {
             for (int i = 0; i < sendAddr.length; i++) {
                 if (sendAddr[i].equals(p)) {
                     try {
-                        return new Account[]{sdk.getWalletMgr().getAccount(p, password[i],sdk.keyType,sdk.curveParaSpec)};
+                        return new Account[]{sdk.getWalletMgr().getAccount(p, password[i])};
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -182,7 +198,10 @@ public class OntAssetTx {
     }
 
     public String sendOngTransferFrom(String sendAddr, String password, String to, long amount) throws Exception {
-        AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password,sdk.keyType,sdk.curveParaSpec);
+        if (amount <= 0) {
+            throw new SDKException("amount is less than or equal to zero");
+        }
+        AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
         TransferFrom transferFrom = new TransferFrom(Address.addressFromPubKey(sender.pubkey),Address.parse(ontContract),Address.decodeBase58(to),new BigInteger(String.valueOf(amount)));
         Contract contract = new Contract((byte) 0,null, Address.parse(ongContract), "transferFrom", transferFrom.toArray());
         Fee[] fees = new Fee[1];
@@ -196,8 +215,8 @@ public class OntAssetTx {
         return null;
     }
     private String voteTx(String addr, String password, ECPoint... pubKeys) throws Exception {
-        Vote tx = makeVoteTx(sdk.getWalletMgr().getAccount(addr, password,sdk.keyType,sdk.curveParaSpec).getAddressU160(), pubKeys);
-        sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(addr, password,sdk.keyType,sdk.curveParaSpec)}});
+        Vote tx = makeVoteTx(sdk.getWalletMgr().getAccount(addr, password).getAddressU160(), pubKeys);
+        sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();

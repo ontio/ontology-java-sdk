@@ -24,6 +24,8 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.*;
 import com.github.ontio.core.asset.Contract;
+import com.github.ontio.core.block.Block;
+import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.merkle.MerkleVerifier;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
@@ -79,7 +81,7 @@ public class OntIdTx {
     }
 
     public Identity sendRegister(Identity ident, String password, boolean preExec) throws Exception {
-        IdentityInfo info = sdk.getWalletMgr().getIdentityInfo(ident.ontid, password, sdk.keyType, sdk.curveParaSpec);
+        IdentityInfo info = sdk.getWalletMgr().getIdentityInfo(ident.ontid, password);
         String ontid = info.ontid;
 
         Transaction tx = makeRegister(info);
@@ -145,7 +147,7 @@ public class OntIdTx {
         if (contractAddress == null) {
             throw new SDKException("null codeHash");
         }
-        IdentityInfo info = sdk.getWalletMgr().createIdentityInfo(password, sdk.keyType, sdk.curveParaSpec);
+        IdentityInfo info = sdk.getWalletMgr().createIdentityInfo(password);
         String ontid = info.ontid;
         Transaction tx = makeRegister(info);
         sdk.signTx(tx, ontid, password);
@@ -181,7 +183,7 @@ public class OntIdTx {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        IdentityInfo info = sdk.getWalletMgr().createIdentityInfo(password, sdk.keyType, sdk.curveParaSpec);
+        IdentityInfo info = sdk.getWalletMgr().createIdentityInfo(password);
         String ontid = info.ontid;
         byte[] pk = Helper.hexToBytes(info.pubkey);
         List list = new ArrayList<Object>();
@@ -258,7 +260,7 @@ public class OntIdTx {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        IdentityInfo info = sdk.getWalletMgr().createIdentityInfo(password, sdk.keyType, sdk.curveParaSpec);
+        IdentityInfo info = sdk.getWalletMgr().createIdentityInfo(password);
         String ontid = info.ontid;
         byte[] guardianDid = (Common.didont + guardianAddr).getBytes();
         List li = new ArrayList<Object>();
@@ -289,7 +291,7 @@ public class OntIdTx {
         }
         String addr = ontid.replace(Common.didont, "");
         byte[] did = (Common.didont + addr).getBytes();
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password, sdk.keyType, sdk.curveParaSpec);
+        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
         byte[] pk = Helper.hexToBytes(info.pubkey);
         List list = new ArrayList<Object>();
         list.add("AddKey".getBytes());
@@ -322,7 +324,7 @@ public class OntIdTx {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         String addr = ontid.replace(Common.didont, "");
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password, sdk.keyType, sdk.curveParaSpec);
+        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
         byte[] did = (Common.didont + addr).getBytes();
         List list = new ArrayList<Object>();
         list.add("AddKey".getBytes());
@@ -390,7 +392,7 @@ public class OntIdTx {
         }
         String addr = ontid.replace(Common.didont, "");
         byte[] did = (Common.didont + addr).getBytes();
-        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password, sdk.keyType, sdk.curveParaSpec).pubkey);
+        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password).pubkey);
         List list = new ArrayList<Object>();
         list.add("RemoveKey".getBytes());
         List tmp = new ArrayList<Object>();
@@ -451,7 +453,7 @@ public class OntIdTx {
         }
         String addr = ontid.replace(Common.didont, "");
         byte[] did = (Common.didont + addr).getBytes();
-        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password, sdk.keyType, sdk.curveParaSpec).pubkey);
+        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password).pubkey);
         List list = new ArrayList<Object>();
         list.add("AddRecovery".getBytes());
         List tmp = new ArrayList<Object>();
@@ -484,7 +486,7 @@ public class OntIdTx {
         }
         String addr = ontid.replace(Common.didont, "");
         byte[] did = (Common.didont + addr).getBytes();
-        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password, sdk.keyType, sdk.curveParaSpec).pubkey);
+        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password).pubkey);
         List list = new ArrayList<Object>();
         list.add("ChangeRecovery".getBytes());
         List tmp = new ArrayList<Object>();
@@ -546,7 +548,7 @@ public class OntIdTx {
         }
         byte[] did = (ontid).getBytes();
         String addr = ontid.replace(Common.didont, "");
-        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password, sdk.keyType, sdk.curveParaSpec).pubkey);
+        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password).pubkey);
         List list = new ArrayList<Object>();
         list.add("AddAttribute".getBytes());
         List tmp = new ArrayList<Object>();
@@ -573,7 +575,7 @@ public class OntIdTx {
         }
         String addr = ontid.replace(Common.didont, "");
         byte[] did = (Common.didont + addr).getBytes();
-        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password, sdk.keyType, sdk.curveParaSpec).pubkey);
+        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password).pubkey);
         List list = new ArrayList<Object>();
         list.add("AddAttributeArray".getBytes());
         List tmp = new ArrayList<Object>();
@@ -635,8 +637,10 @@ public class OntIdTx {
             System.arraycopy(pubkeysData, offset, data, 0, len);
             Map owner = new HashMap();
             owner.put("PublicKeyId", ontid + "#keys-" + String.valueOf(pubkeyId));
-            owner.put("Type", sdk.keyType);
-            owner.put("Curve", sdk.curveParaSpec[0]);
+            if(sdk.signatureScheme == SignatureScheme.SHA256WITHECDSA) {
+                owner.put("Type", KeyType.ECDSA);
+                owner.put("Curve", new Object[]{"P-256"}[0]);
+            }
             owner.put("Value", Helper.toHexString(data));
             ownersList.add(owner);
             offset = offset + len;
@@ -648,6 +652,9 @@ public class OntIdTx {
         elen = parse4bytes(bys, offset);
         offset = offset + 4;
         int totalOffset = offset + elen;
+        if (elen == 0) {
+            map.put("Attributes", attriMap);
+        }
         if (elen != 0) {
             byte[] attrisData = new byte[elen];
             System.arraycopy(bys, offset, attrisData, 0, elen);
@@ -728,7 +735,6 @@ public class OntIdTx {
         Fee[] fees = new Fee[0];
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress, null, params, VmType.NEOVM.value(), fees);
-        String aa = tx.toHexString();
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         if (obj == null || ((String) obj).length() == 0) {
             throw new SDKException(ErrorCode.ResultIsNull);
@@ -762,7 +768,7 @@ public class OntIdTx {
         }
         byte[] did = (ontid).getBytes();
         String addr = ontid.replace(Common.didont, "");
-        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password, sdk.keyType, sdk.curveParaSpec).pubkey);
+        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password).pubkey);
         List list = new ArrayList<Object>();
         list.add("AddRecord".getBytes());
         List tmp = new ArrayList<Object>();
@@ -800,16 +806,16 @@ public class OntIdTx {
                 throw new SDKException(ErrorCode.DidNull);
             }
             String issuerDdo = sendGetDDO(sendDid);
-            System.out.println("DDO:" + issuerDdo);
             JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("Owners");
             if (owners == null) {
                 throw new SDKException(ErrorCode.NotExistCliamIssuer);
             }
             String pubkeyId = null;
-            com.github.ontio.account.Account acct = sdk.getWalletMgr().getAccount(signerOntid, password, sdk.keyType, sdk.curveParaSpec);
+            com.github.ontio.account.Account acct = sdk.getWalletMgr().getAccount(signerOntid, password);
+            String pk = Helper.toHexString(acct.serializePublicKey());
             for (int i = 0; i < owners.size(); i++) {
                 JSONObject obj = owners.getJSONObject(i);
-                if (obj.getString("Value").equals(Helper.toHexString(acct.serializePublicKey()))) {
+                if (obj.getString("Value").equals(pk)) {
                     pubkeyId = obj.getString("PublicKeyId");
                     break;
                 }
@@ -821,10 +827,11 @@ public class OntIdTx {
             if (receiverDidStr.length != 3) {
                 throw new SDKException(ErrorCode.DidError);
             }
-            claim = new Claim(sdk.getWalletMgr().getSignatureScheme(), acct, context, contentMap, sortMap(metaData), pubkeyId);
+            metaData = sortMap(metaData);
+            claim = new Claim(sdk.getWalletMgr().getSignatureScheme(), acct, context, contentMap, metaData, pubkeyId);
             return claim.getClaim();
         } catch (SDKException e) {
-            throw new SDKException(e);
+            throw new SDKException(ErrorCode.OtherError("createOntIdClaim error"));
         }
     }
 
@@ -881,7 +888,7 @@ public class OntIdTx {
             if (owners == null) {
                 throw new SDKException(ErrorCode.NotExistCliamIssuer);
             }
-            String signature = obj.getJSONObject("Signature").getString("Value");
+            String signatureValue = obj.getJSONObject("Signature").getString("Value");
             String publicKeyId = obj.getJSONObject("Signature").getString("PublicKeyId");
             boolean verify = false;
             for (int i = 0; i < owners.size(); i++) {
@@ -894,14 +901,14 @@ public class OntIdTx {
             if (!verify) {
                 throw new SDKException(ErrorCode.PublicKeyIdErr);
             }
-            String pubkeyStr = owners.getJSONObject(0).getString("Value");
+            String id = publicKeyId.split("#keys-")[1];
+            String pubkeyStr = owners.getJSONObject(Integer.parseInt(id) - 1).getString("Value");
             obj.remove("Signature");
             sign = new DataSignature();
             byte[] data = JSON.toJSONString(obj).getBytes();
-            return sign.verifySignature(new Account(false, Helper.hexToBytes(pubkeyStr)), data, Base64.getDecoder().decode(signature));
+            return sign.verifySignature(new Account(false, Helper.hexToBytes(pubkeyStr)), data, Base64.getDecoder().decode(signatureValue));
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new SDKException(e);
+            throw new SDKException(ErrorCode.OtherError("verifyOntIdClaim error"));
         }
     }
 
@@ -937,27 +944,27 @@ public class OntIdTx {
     public boolean verifyMerkleProof(String claim) throws Exception {
         try {
             JSONObject obj = JSON.parseObject(claim);
-            Map prf = (Map) obj.getJSONObject("Proof");
-            String txhash = (String) prf.get("TxnHash");
-            int height = sdk.getConnectMgr().getBlockHeightByTxHash(txhash);
-            if (height != (int) prf.get("BlockHeight")) {
-                throw new SDKException("BlockHeight not match");
-            }
-            Map proof = (Map) sdk.getConnectMgr().getMerkleProof(txhash);
-            UInt256 txroot = UInt256.parse((String) proof.get("TransactionsRoot"));
+            Map proof = (Map) obj.getJSONObject("Proof");
+            String txhash = (String) proof.get("TxnHash");
             int blockHeight = (int) proof.get("BlockHeight");
-            UInt256 curBlockRoot = UInt256.parse((String) proof.get("CurBlockRoot"));
-            int curBlockHeight = (int) proof.get("CurBlockHeight");
-            List hashes = (List) proof.get("TargetHashes");
-            UInt256[] targetHashes = new UInt256[hashes.size()];
-            for (int i = 0; i < hashes.size(); i++) {
-                targetHashes[i] = UInt256.parse((String) hashes.get(i));
+            UInt256 merkleRoot = UInt256.parse((String) proof.get("MerkleRoot"));
+            Block block = sdk.getConnectMgr().getBlock(blockHeight);
+            if (block.height != blockHeight) {
+                throw new SDKException("blockHeight not match");
             }
-            List nodes = (List) prf.get("Nodes");
-            if (!nodes.equals(MerkleVerifier.getProof(txroot, blockHeight, targetHashes, curBlockHeight + 1))) {
-                throw new SDKException(ErrorCode.NodesNotMatch);
+            boolean containTx = false;
+            for (int i = 0; i < block.transactions.length; i++) {
+                if (block.transactions[i].hash().toHexString().equals(txhash)) {
+                    containTx = true;
+                }
             }
-            return MerkleVerifier.VerifyLeafHashInclusion(txroot, blockHeight, targetHashes, curBlockRoot, curBlockHeight + 1);
+            if(!containTx){
+                throw new SDKException(ErrorCode.OtherError("not contain this tx"));
+            }
+            UInt256 txsroot = block.transactionsRoot;
+
+            List nodes = (List) proof.get("Nodes");
+            return MerkleVerifier.Verify(txsroot,  nodes, merkleRoot);
         } catch (Exception e) {
             e.printStackTrace();
             throw new SDKException(e);
@@ -1014,7 +1021,7 @@ public class OntIdTx {
         }
         byte[] did = (ontid).getBytes();
         String addr = ontid.replace(Common.didont, "");
-        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password, sdk.keyType, sdk.curveParaSpec).pubkey);
+        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password).pubkey);
         List list = new ArrayList<Object>();
         list.add("RemoveAttribute".getBytes());
         List tmp = new ArrayList<Object>();
@@ -1036,7 +1043,7 @@ public class OntIdTx {
 
     public Transaction makeInvokeTransaction(List<Object> list, String addr, String password) throws Exception {
         addr = addr.replace(Common.didont, "");
-        AccountInfo acctinfo = sdk.getWalletMgr().getAccountInfo(addr, password, sdk.keyType, sdk.curveParaSpec);
+        AccountInfo acctinfo = sdk.getWalletMgr().getAccountInfo(addr, password);
         Fee[] fees = new Fee[1];
         fees[0] = new Fee(0, Address.addressFromPubKey(acctinfo.pubkey));
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
@@ -1051,7 +1058,7 @@ public class OntIdTx {
         }
         byte[] did = (ontid).getBytes();
         String addr = ontid.replace(Common.didont, "");
-        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password, sdk.keyType, sdk.curveParaSpec).pubkey);
+        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password).pubkey);
         List list = new ArrayList<Object>();
         list.add("GetPublicKeyId".getBytes());
         List tmp = new ArrayList<Object>();

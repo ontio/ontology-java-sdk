@@ -38,7 +38,6 @@ public class Identity {
 	public boolean lock = false;
 	public List<Control> controls = new ArrayList<Control>();
 }
-
 ```
 
 `algorithm`是用来加密的算法名称。
@@ -68,6 +67,7 @@ wm.setDefaultConnect(wm.getRestful());
 wm.openWalletFile("InvokeSmartCodeDemo.json");
 ontSdk.setCodeAddress("89ff0f39193ddaeeeab9de4873b549f71bbe809c");
 ```
+
 > Note: ontid是由智能合约实现，所以需要设置ontid的智能合约codeAddress。
 
 创建数字身份指的是产生一个Identity数据结构的身份信息，并写入到到钱包文件中。
@@ -95,7 +95,7 @@ ontSdk.getOntIdTx().sendRegister("passwordtest");
 
 当用户已经拥有了一个数字身份或者数字账户，SDK支持将其导入到钱包文件中。
 
-> Note: 建议导入一个数字身份之前，建议查询链上身份，如果链上身份DDO不存在，表示此数字身份未在链上注册，请使用ontSdk.getOntIdTx().register(identity)把身份注册到链上。
+> Note: 建议导入一个数字身份之前，建议查询链上身份，如果链上身份DDO不存在，表示此数字身份未在链上注册，请使用ontSdk.getOntIdTx().sendRegister(identity,"passwordtest")把身份注册到链上。
 
 ```
 Identity identity = ontSdk.getWalletMgr().importIdentity("6PYMpk8DjWzaEvneyaqxMBap9DuUPH72W6BsWWTtpWE4JJZkGq5ENtfYbT","passwordtest");
@@ -108,6 +108,7 @@ ontSdk.getWalletMgr().writeWallet();
 链上身份DDO信息，可以通过ONT ID进行查询。
 
 ```
+
 //通过ONT ID获取DDO
 String ddo = ontSdk.getOntIdTx().sendGetDDO(ontid,"passwordtest",ontid);
 
@@ -120,11 +121,12 @@ String ddo = ontSdk.getOntIdTx().sendGetDDO(ontid,"passwordtest",ontid);
 			"Value": "\"value0\""
 		}
 	},
-	"Owners": [
-		{
-			"Value": "0392a4dbb2a44da81e0942cee1a62ff4298e04ed463b88911b97de19a1597fa83d"
-		}
-	]
+	"Owners": [{
+		"Type": "ECDSA",
+		"Curve": "P-256",
+		"Value": "120202535a446befcf7a68b6656307928f25aab847d04a7533dfc8affab73e01785dbe",
+		"PublicKeyId": "did:ont:TA9VPsYoQMHWBWCxyGNvrb5RK47mvbFBQ7#keys-1"
+	}]
 }
 
 ```
@@ -151,6 +153,7 @@ ontSdk.getWalletMgr().getWallet().setDefaultIdentity(ontid);
 //更新一个属性
 String sendUpdateAttribute(String ontid,String password,byte[] key,byte[] type,byte[] value)
 ```
+
 | 参数      | 字段   | 类型  | 描述 |             说明 |
 | ----- | ------- | ------ | ------------- | ----------- |
 | 输入参数 | password| String | 发行者地址 | 必选，私钥解密的密码 |
@@ -165,6 +168,7 @@ String sendUpdateAttribute(String ontid,String password,byte[] key,byte[] type,b
 ```
 String hash = ontSdk.getOntIdTx().sendRemoveAttribute(did.ontid, "passwordtest", "attri".getBytes());
 ```
+
 | 参数      | 字段   | 类型  | 描述 |             说明 |
 | ----- | ------- | ------ | ------------- | ----------- |
 | 输入参数 | password| String | 发行者地址 | 必选，私钥解密的密码 |
@@ -191,7 +195,6 @@ String hash = ontSdk.getOntIdTx().sendRemoveAttribute(did.ontid, "passwordtest",
 }
 
 ```
-
 `unsignedData` 是未被签名的声明对象的json格式字符串，声明对象包含Context, Id, Claim, Metadata这些字段。
 `signedData` 是声明对象被签名后的json格式字符串，该json包含声明对象和签名对象。
 `Context` 是声明模板的标识。
@@ -235,7 +238,12 @@ value 是计算后的签名值。
 
 ### 2 签发可信申明
 根据用户输入内容构造声明对象，该声明对象里包含了签名后的数据。
-
+创建claim：
+* 1.查询链上是否存在Issuer的DDO
+* 2.签名者的公钥必须在DDO的Owners中存在
+* 3.Id 是对claim中删除Signature、Id、Proof的数据转byte数组，做一次sha256，再转hexstring 
+* 4.对要签名的json数据转成Map对key做排序。
+* 5.Signature中Value值：claim 删除Signature、Proof后转byte数组, 做两次sha256得到的byte数组。
 ```
 Map<String, Object> map = new HashMap<String, Object>();
 map.put("Issuer", dids.get(0).ontid);
@@ -247,7 +255,11 @@ System.out.println(claim);
 > Note: Issuer可能有多把公钥，createOntIdClaim的参数ontid指定使用哪一把公钥。
 
 ### 3 验证可信申明
-
+验证cliam：
+* 1.查询链上是否存在Metadata中Issuer的DDO
+* 2.Owner是否存在SIgnature中的PublicKeyId
+* 3.对要验签的json数据转成Map对key做排序。
+* 4.删除Signature做验签（根据PublicKeyId的id值查找到公钥,签名是Signature中Value做base64解码）
 ```
 boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(claim);
 
@@ -274,6 +286,7 @@ String hash = ontSdk.getOntIdTx().sendUpdateAttribute(ontid,"passwordtest", attr
 > Note: 当不存在该属性时，调用sendUpdateAttribute方法，会增加相应的属性，当属性存在时，会更新相应属性，attri代表属性名称，"Json"是属性值得数据类型，recordMap表示属性的值。
 
 Claim签发和验证：
+
 ```
 Map<String, Object> map = new HashMap<String, Object>();
 map.put("Issuer", dids.get(0).ontid);

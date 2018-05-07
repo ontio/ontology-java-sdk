@@ -55,6 +55,7 @@ import java.security.Security;
 public class ECIES {
     public static KeyType keyType = KeyType.ECDSA;
     public static Object[] curveParaSpec = new Object[]{"P-256"};
+    public static SignatureScheme signatureScheme = SignatureScheme.SHA256WITHECDSA;
     public static Digest digest = new SHA1Digest();
     public ECIES(Digest dig){
         digest = dig;
@@ -71,6 +72,7 @@ public class ECIES {
         try {
             com.github.ontio.account.Account account = new com.github.ontio.account.Account(false, Helper.hexToBytes(pubkey));
 
+            Object[] curveParaSpec = new Object[]{"P-256"};
             ECNamedCurveParameterSpec spec = ECNamedCurveTable.getParameterSpec((String) curveParaSpec[0]);
             ECDomainParameters ecDomain = new ECDomainParameters(spec.getCurve(), spec.getG(), spec.getN());
             AsymmetricCipherKeyPair keys = new AsymmetricCipherKeyPair(
@@ -121,7 +123,7 @@ public class ECIES {
 
     public static byte[] Decrypt(byte[] prikey, byte[] IV, byte[] key_cxt, byte[] ciphertext, int keylen) {
         try {
-            com.github.ontio.account.Account account = new com.github.ontio.account.Account(prikey, keyType, curveParaSpec);
+            com.github.ontio.account.Account account = new com.github.ontio.account.Account(prikey, signatureScheme);
 
             ECNamedCurveParameterSpec spec = ECNamedCurveTable.getParameterSpec((String) curveParaSpec[0]);
             ECDomainParameters ecDomain = new ECDomainParameters(spec.getCurve(), spec.getG(), spec.getN());

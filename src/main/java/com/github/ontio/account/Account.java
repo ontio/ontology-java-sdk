@@ -382,6 +382,9 @@ public class Account {
         Cipher cipher = Cipher.getInstance("AES/CTR/NoPadding");
         cipher.init(Cipher.DECRYPT_MODE, skeySpec, new IvParameterSpec(iv));
         byte[] rawkey = cipher.doFinal(encryptedkey);
+        if (!new Account(rawkey, scheme).getAddressU160().toBase58().equals(address)) {
+            throw new SDKException(ErrorCode.OtherError("encryptedPriKey address password not match."));
+        }
         return Helper.toHexString(rawkey);
     }
 

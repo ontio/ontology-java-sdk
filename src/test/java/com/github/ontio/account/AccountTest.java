@@ -8,14 +8,6 @@ import static org.junit.Assert.*;
 
 public class AccountTest {
 
-    @Test
-    public void exportCtrEncryptedPrikey() {
-    }
-
-    @Test
-    public void getCtrDecodedPrivateKey() {
-
-    }
 
     @Test
     public void generateSignature() throws Exception {

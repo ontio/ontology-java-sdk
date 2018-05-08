@@ -1,5 +1,6 @@
 package com.github.ontio;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.account.Account;
 import com.github.ontio.network.exception.ConnectorException;
@@ -120,6 +121,68 @@ public class SmokeTest {
         int poorBalanceBack = poorBalanceObjBack.getIntValue("ont");
         assertEquals(richBalanceBack,richBalance);
         assertEquals(poorBalanceBack,poorBalance);
+
+    }
+
+    @Test
+    public void sendTransferFromManyAndBack() throws Exception {
+//        TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW---1/gEPy/Uz3Eyl/sjoZ8JDymGX6hU/gi1ufUIg6vDURM= rich
+//        TA4pSdTKm4hHtQJ8FbrCk9LZn7Uo96wrPC---Vz0CevSaI9/VNLx03XNEQ4Lrnnkkjo5aM5hdCuicsOE= poor1
+//        TA5F9QefsyKvn5cH37VnP5snSru5ZCYHHC---OGaD13Sn/q9gIZ8fmOtclMi4yy34qq963wzpidYDX5k= poor2
+        final int amount1 = 2;
+        final int amount2 = 1;
+        final String richAddr = "TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW";
+        final String poorAddr1 = "TA4pSdTKm4hHtQJ8FbrCk9LZn7Uo96wrPC";
+        final String poorAddr2 = "TA5F9QefsyKvn5cH37VnP5snSru5ZCYHHC";
+        final String richKey = "1/gEPy/Uz3Eyl/sjoZ8JDymGX6hU/gi1ufUIg6vDURM=";
+        final String poorKey1 = "Vz0CevSaI9/VNLx03XNEQ4Lrnnkkjo5aM5hdCuicsOE=";
+        final String poorKey2 = "OGaD13Sn/q9gIZ8fmOtclMi4yy34qq963wzpidYDX5k=";
+        JSONObject richOrigObj = (JSONObject) connectMgr.getBalance(richAddr);
+        JSONObject poorOrigObj1 = (JSONObject) connectMgr.getBalance(poorAddr1);
+        JSONObject poorOrigObj2 = (JSONObject) connectMgr.getBalance(poorAddr2);
+        int richOrig = richOrigObj.getIntValue("ont");
+        int poorOrig1 = poorOrigObj1.getIntValue("ont");
+        int poorOrig2 = poorOrigObj2.getIntValue("ont");
+        assertTrue(richOrig > 0);
+        assertTrue(poorOrig1 > 0);
+        assertTrue(poorOrig2 >= 0);
+
+        com.github.ontio.sdk.wallet.Account accountRich = walletMgr.importAccount(richKey,"123456",richAddr);
+        com.github.ontio.sdk.wallet.Account accountPoor1 = walletMgr.importAccount(poorKey1,"123456",poorAddr1);
+        com.github.ontio.sdk.wallet.Account accountPoor2 = walletMgr.importAccount(poorKey2,"123456",poorAddr2);
+
+        String txnId =ontAssetTx.sendTransferFromMany("ont",new String[]{richAddr,poorAddr1},new String[]{"123456","123456"},poorAddr2,new long[]{amount1,amount2});
+        assertNotNull(txnId);
+        assertNotEquals(txnId,"");
+
+        Thread.sleep(6000);
+
+        JSONObject richAfterObj = (JSONObject) connectMgr.getBalance(richAddr);
+        JSONObject poorAfterObj1 = (JSONObject) connectMgr.getBalance(poorAddr1);
+        JSONObject poorAfterObj2 = (JSONObject) connectMgr.getBalance(poorAddr2);
+        int richAfter = richAfterObj.getIntValue("ont");
+        int poorAfter1 = poorAfterObj1.getIntValue("ont");
+        int poorAfter2 = poorAfterObj2.getIntValue("ont");
+        assertTrue(richAfter == richOrig - amount1);
+        assertTrue(poorAfter1 == poorOrig1 - amount2);
+        assertTrue(poorAfter2 == poorOrig2 + amount1 + amount2);
+
+        String txnIdback = ontAssetTx.sendTransferToMany("ont",poorAddr2,"123456",new String[]{richAddr,poorAddr1},new long[]{amount1,amount2});
+        assertNotNull(txnIdback);
+        assertNotEquals(txnIdback,"");
+
+        Thread.sleep(6000);
+
+        JSONObject richBackObj = (JSONObject) connectMgr.getBalance(richAddr);
+        JSONObject poorBackObj1 = (JSONObject) connectMgr.getBalance(poorAddr1);
+        JSONObject poorBackObj2 = (JSONObject) connectMgr.getBalance(poorAddr2);
+        int richBack = richBackObj.getIntValue("ont");
+        int poorBack1 = poorBackObj1.getIntValue("ont");
+        int poorBack2 = poorBackObj2.getIntValue("ont");
+        assertTrue(richBack == richOrig);
+        assertTrue(poorBack1 == poorOrig1);
+        assertTrue(poorBack2 == poorOrig2);
+
 
     }
 }

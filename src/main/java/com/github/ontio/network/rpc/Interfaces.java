@@ -20,6 +20,7 @@
 package com.github.ontio.network.rpc;
 
 import com.alibaba.fastjson.JSON;
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.network.exception.RpcException;
 
 import java.io.IOException;
@@ -50,7 +51,7 @@ class Interfaces {
         Map req = makeRequest(method, params);
         Map response = (Map) send(req);
         if (response == null) {
-            throw new RpcException(0, "response is null. maybe is connect error");
+            throw new RpcException(0,ErrorCode.InvalidUrl(  url + "response is null. maybe is connect error"));
         } else if ((int) response.get("error") == 0) {
             return response.get("result");
         } else {

@@ -22,6 +22,7 @@ package com.github.ontio.sdk.manager;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.core.transaction.Attribute;
 import com.github.ontio.core.transaction.AttributeUsage;
@@ -60,7 +61,7 @@ public class OntAssetTx {
      */
     public String sendTransfer(String assetName, String sendAddr, String password, String recvAddr, long amount) throws Exception {
         if (amount <= 0) {
-            throw new SDKException("amount is less than or equal to zero");
+            throw new SDKException(ErrorCode.AmountError);
         }
         Transaction tx = makeTransfer(assetName, sendAddr, password, recvAddr, amount);
         sdk.signTx(tx, sendAddr, password);
@@ -72,7 +73,7 @@ public class OntAssetTx {
     }
     public Transaction makeTransfer(String assetName, String sendAddr, String password, String recvAddr, long amount) throws Exception {
         if (amount <= 0) {
-            throw new SDKException("amount is less than or equal to zero");
+            throw new SDKException(ErrorCode.AmountError);
         }
         String contractAddr = null;
         if (assetName.toUpperCase().equals("ONG")) {
@@ -80,7 +81,7 @@ public class OntAssetTx {
         } else if (assetName.toUpperCase().equals("ONT")) {
             contractAddr = ontContract;
         } else {
-            throw new SDKException("asset name error");
+            throw new SDKException(ErrorCode.AssetNameError);
         }
         amount = amount * precision;
         AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
@@ -104,7 +105,7 @@ public class OntAssetTx {
     public String sendTransferToMany(String assetName, String sendAddr, String password, String[] recvAddr, long[] amount) throws Exception {
         for (long amou : amount) {
             if (amou <= 0) {
-                throw new SDKException("amount is less than or equal to zero");
+                throw new SDKException(ErrorCode.AmountError);
             }
         }
         String contractAddr = null;
@@ -113,13 +114,13 @@ public class OntAssetTx {
         } else if (assetName.toUpperCase().equals("ONT")) {
             contractAddr = ontContract;
         } else {
-            throw new SDKException("asset name error");
+            throw new SDKException(ErrorCode.AssetNameError);
         }
 
         AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
         State[] states = new State[recvAddr.length];
         if (amount.length != recvAddr.length) {
-            throw new Exception("");
+            throw new Exception(ErrorCode.ParamError);
         }
         for (int i = 0; i < recvAddr.length; i++) {
             amount[i] = amount[i] * precision;
@@ -150,7 +151,7 @@ public class OntAssetTx {
     public String sendTransferFromMany(String assetName, String[] sendAddr, String[] password, String recvAddr, long[] amount) throws Exception {
         for (long amou : amount) {
             if (amou <= 0) {
-                throw new SDKException("amount is less than or equal to zero");
+                throw new SDKException(ErrorCode.AmountError);
             }
         }
         String contractAddr = null;
@@ -159,10 +160,10 @@ public class OntAssetTx {
         } else if (assetName.toUpperCase().equals("ONT")) {
             contractAddr = ontContract;
         } else {
-            throw new SDKException("asset name error");
+            throw new SDKException(ErrorCode.AssetNameError);
         }
         if (sendAddr == null || sendAddr.length != password.length) {
-            throw new Exception("");
+            throw new Exception(ErrorCode.ParamError);
         }
         State[] states = new State[sendAddr.length];
         Fee[] fees = new Fee[sendAddr.length];
@@ -199,7 +200,7 @@ public class OntAssetTx {
 
     public String sendOngTransferFrom(String sendAddr, String password, String to, long amount) throws Exception {
         if (amount <= 0) {
-            throw new SDKException("amount is less than or equal to zero");
+            throw new SDKException(ErrorCode.AmountError);
         }
         AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
         TransferFrom transferFrom = new TransferFrom(Address.addressFromPubKey(sender.pubkey),Address.parse(ontContract),Address.decodeBase58(to),new BigInteger(String.valueOf(amount)));

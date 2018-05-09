@@ -2,6 +2,7 @@ package com.github.ontio.io;
 
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
+import com.github.ontio.sdk.exception.SDKException;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -39,7 +40,7 @@ public class BinaryWriterTest {
     }
 
     @Test
-    public void writeSerializable() throws IOException {
+    public void writeSerializable() throws IOException, SDKException {
         ByteArrayOutputStream ms = new ByteArrayOutputStream();
         BinaryWriter binaryWriter = new BinaryWriter(ms);
         Address address = Address.decodeBase58("TA6nRD9DqGkE8xRJaB37bW2KQEz59ovKRH");

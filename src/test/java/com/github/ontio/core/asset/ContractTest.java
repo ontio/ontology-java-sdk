@@ -3,6 +3,7 @@ package com.github.ontio.core.asset;
 import com.github.ontio.common.Address;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
+import com.github.ontio.sdk.exception.SDKException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,7 +19,7 @@ public class ContractTest {
     Address address;
 
     @Before
-    public void setUp() {
+    public void setUp() throws SDKException {
         address = Address.decodeBase58("TA6nRD9DqGkE8xRJaB37bW2KQEz59ovKRH");
     }
 

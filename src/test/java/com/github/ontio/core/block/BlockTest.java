@@ -6,6 +6,7 @@ import com.github.ontio.common.UInt256;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
+import com.github.ontio.sdk.exception.SDKException;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -22,7 +23,7 @@ public class BlockTest {
 
 
     @Test
-    public void serialize() throws IOException {
+    public void serialize() throws IOException, SDKException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         BinaryWriter binaryWriter = new BinaryWriter(byteArrayOutputStream);
         Block block = new Block();

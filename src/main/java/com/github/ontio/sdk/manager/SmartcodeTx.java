@@ -131,7 +131,7 @@ public class SmartcodeTx {
      */
     public Transaction invokeTransaction(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
         if (contractAddress == null) {
-            throw new SDKException("null codeHash");
+            throw new SDKException(ErrorCode.NullCodeHash);
         }
 
         List list = new ArrayList<Object>();
@@ -153,7 +153,7 @@ public class SmartcodeTx {
             } else if ("Void".equals(obj.getType())) {
 
             } else {
-                throw new SDKException("type error");
+                throw new SDKException(ErrorCode.TypeError);
             }
         }
         if(list.size()>0) {
@@ -192,7 +192,7 @@ public class SmartcodeTx {
         System.out.println(txHex);
         boolean b = sdk.getConnectMgr().sendRawTransaction(txHex);
         if (!b) {
-            throw new SDKException("sendRawTransaction error");
+            throw new SDKException(ErrorCode.SendRawTxError);
         }
         return tx.hash().toString();
     }

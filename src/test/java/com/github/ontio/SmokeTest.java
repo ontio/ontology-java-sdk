@@ -4,6 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.account.Account;
 import com.github.ontio.network.exception.ConnectorException;
+import com.github.ontio.network.exception.RestfulException;
+import com.github.ontio.sdk.exception.SDKException;
+import com.github.ontio.sdk.exception.SDKRuntimeException;
 import com.github.ontio.sdk.manager.ConnectMgr;
 import com.github.ontio.sdk.manager.OntAssetTx;
 import com.github.ontio.sdk.manager.OntIdTx;
@@ -70,7 +73,7 @@ public class SmokeTest {
 //        TA4pSdTKm4hHtQJ8FbrCk9LZn7Uo96wrPC---Vz0CevSaI9/VNLx03XNEQ4Lrnnkkjo5aM5hdCuicsOE= poor1
 //        TA5F9QefsyKvn5cH37VnP5snSru5ZCYHHC---OGaD13Sn/q9gIZ8fmOtclMi4yy34qq963wzpidYDX5k= poor2
 
-        JSONObject balanceObj = (JSONObject) connectMgr.getBalance("TA5F9QefsyKvn5cH37VnP5snSru5ZCYHHC");
+        JSONObject balanceObj = (JSONObject) connectMgr.getBalance("TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW");
         assertNotNull(balanceObj);
         int ontBalance = balanceObj.getIntValue("ont");
         assertTrue(ontBalance >= 0);
@@ -89,6 +92,7 @@ public class SmokeTest {
         JSONObject richBalanceObj = (JSONObject) connectMgr.getBalance(richAddr);
         JSONObject poorBalanceObj = (JSONObject) connectMgr.getBalance(poorAddr);
         int richBalance = richBalanceObj.getIntValue("ont");
+        int richOng = richBalanceObj.getIntValue("ong");
         int poorBalance = poorBalanceObj.getIntValue("ont");
         assertTrue(richBalance > 0);
         assertTrue(poorBalance >= 0);
@@ -182,6 +186,264 @@ public class SmokeTest {
         assertTrue(richBack == richOrig);
         assertTrue(poorBack1 == poorOrig1);
         assertTrue(poorBack2 == poorOrig2);
+
+
+    }
+
+    @Test
+    public void sendOngTransferFromToSelf() throws Exception {
+//        TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW---1/gEPy/Uz3Eyl/sjoZ8JDymGX6hU/gi1ufUIg6vDURM= rich
+        final int amount = 1;
+        final String richAddr = "TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW";
+        final String richKey = "1/gEPy/Uz3Eyl/sjoZ8JDymGX6hU/gi1ufUIg6vDURM=";
+        JSONObject richBalanceObj = (JSONObject) connectMgr.getBalance(richAddr);
+        int richOngApprove = richBalanceObj.getIntValue("ong_appove");
+        int richOng = richBalanceObj.getIntValue("ong");
+        assertTrue(richOngApprove > 0);
+        assertTrue(richOng >= 0);
+
+        com.github.ontio.sdk.wallet.Account accountRich = walletMgr.importAccount(richKey,"123456",richAddr);
+
+        String txnId = ontAssetTx.sendOngTransferFrom(richAddr,"123456",richAddr,amount);
+        assertNotNull(txnId);
+        assertNotEquals(txnId,"");
+
+        Thread.sleep(6000);
+
+        JSONObject richBalanceAfterObj = (JSONObject) connectMgr.getBalance(richAddr);
+        int richOngApproveAfter = richBalanceAfterObj.getIntValue("ong_appove");
+        int richOngAfter = richBalanceAfterObj.getIntValue("ong");
+        assertTrue(richOngApproveAfter == richOngApprove - amount);
+        assertTrue(richOngAfter == richOng + amount);
+
+    }
+
+    @Test
+    public void sendOngTransferFromToOther() throws Exception {
+//        TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW---1/gEPy/Uz3Eyl/sjoZ8JDymGX6hU/gi1ufUIg6vDURM= rich
+//        TA4pSdTKm4hHtQJ8FbrCk9LZn7Uo96wrPC---Vz0CevSaI9/VNLx03XNEQ4Lrnnkkjo5aM5hdCuicsOE= poor1
+        final int amount = 1;
+        final String richAddr = "TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW";
+        final String richKey = "1/gEPy/Uz3Eyl/sjoZ8JDymGX6hU/gi1ufUIg6vDURM=";
+        final String poorAddr = "TA4pSdTKm4hHtQJ8FbrCk9LZn7Uo96wrPC";
+
+        JSONObject richBalanceObj = (JSONObject) connectMgr.getBalance(richAddr);
+        JSONObject poorBalanceObj = (JSONObject) connectMgr.getBalance(poorAddr);
+        long richOngApprove = richBalanceObj.getLongValue("ong_appove");
+        int poorOng = poorBalanceObj.getIntValue("ong");
+        assertTrue(richOngApprove > 0);
+        assertTrue(poorOng >= 0);
+
+        com.github.ontio.sdk.wallet.Account account = walletMgr.importAccount(richKey,"123456",richAddr);
+
+        String txnId = ontAssetTx.sendOngTransferFrom(richAddr,"123456",poorAddr,amount);
+        assertNotNull(txnId);
+        assertNotEquals(txnId,"");
+
+        Thread.sleep(6000);
+
+        JSONObject richBalanceAfterObj = (JSONObject) connectMgr.getBalance(richAddr);
+        JSONObject poorBalanceAfterObj = (JSONObject) connectMgr.getBalance(poorAddr);
+        long richOngApproveAfter = richBalanceAfterObj.getLongValue("ong_appove");
+        int poorOngAfter = poorBalanceAfterObj.getIntValue("ong");
+        assertTrue(richOngApproveAfter == richOngApprove - amount);
+        assertTrue(poorOngAfter == poorOng + amount);
+
+    }
+
+    @Test
+    public void sendTransfer58012AssertNameError() throws Exception {
+//        TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW---1/gEPy/Uz3Eyl/sjoZ8JDymGX6hU/gi1ufUIg6vDURM= rich
+//        TA4pSdTKm4hHtQJ8FbrCk9LZn7Uo96wrPC---Vz0CevSaI9/VNLx03XNEQ4Lrnnkkjo5aM5hdCuicsOE= poor1
+        final String richAddr = "TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW";
+        final String poorAddr= "TA4pSdTKm4hHtQJ8FbrCk9LZn7Uo96wrPC";
+        final String richKey = "1/gEPy/Uz3Eyl/sjoZ8JDymGX6hU/gi1ufUIg6vDURM=";
+        com.github.ontio.sdk.wallet.Account account = walletMgr.importAccount(richKey,"123456",richAddr);
+
+        try {
+            ontAssetTx.sendTransfer("aaa",richAddr,"123456",poorAddr,1);
+        } catch (SDKException e) {
+            assertTrue(e.getMessage().contains("58012"));
+        }
+    }
+
+    @Test
+    public void sendTransfer58016OntassetError() throws Exception {
+        final String richAddr = "TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW";
+        final String poorAddr= "TA4pSdTKm4hHtQJ8FbrCk9LZn7Uo96wrPC";
+        final String richKey = "1/gEPy/Uz3Eyl/sjoZ8JDymGX6hU/gi1ufUIg6vDURM=";
+        com.github.ontio.sdk.wallet.Account account = walletMgr.importAccount(richKey,"123456",richAddr);
+
+        try {
+            ontAssetTx.sendTransfer("ont",richAddr,"123456",poorAddr,0);
+        } catch (SDKException e) {
+            assertTrue(e.getMessage().contains("58016"));
+        }
+        try {
+            ontAssetTx.sendTransfer("ont",richAddr,"123456",poorAddr,1);
+        } catch (SDKException e) {
+            assertTrue(e.getMessage().contains("58016"));
+        }
+    }
+
+    @Test
+    public void sendTransferTooAmount() throws Exception {
+        final String richAddr = "TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW";
+        final String poorAddr= "TA4pSdTKm4hHtQJ8FbrCk9LZn7Uo96wrPC";
+        final String richKey = "1/gEPy/Uz3Eyl/sjoZ8JDymGX6hU/gi1ufUIg6vDURM=";
+        com.github.ontio.sdk.wallet.Account account = walletMgr.importAccount(richKey,"123456",richAddr);
+
+        try {
+            ontAssetTx.sendTransfer("ont",richAddr,"123456",poorAddr,1234567890123456789L);
+        } catch (SDKException e) {
+            //todo
+        }
+    }
+
+    @Test
+    public void sendTransfer58004ParamError() throws Exception {
+        final String richAddr = "TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW";
+        final String poorAddr= "TA4pSdTKm4hHtQJ8FbrCk9LZn7Uo96wrPC";
+        final String richKey = "1/gEPy/Uz3Eyl/sjoZ8JDymGX6hU/gi1ufUIg6vDURM=";
+        com.github.ontio.sdk.wallet.Account account = walletMgr.importAccount(richKey,"123456",richAddr);
+
+        try {
+            ontAssetTx.sendTransfer("ont","","123456",poorAddr,1);
+        } catch (SDKException e) {
+            assertTrue(e.getMessage().contains("58004"));
+        }
+
+        try {
+            ontAssetTx.sendTransfer("ont",richAddr,"123456","",1);
+        } catch (SDKException e) {
+            assertTrue(e.getMessage().contains("58004"));
+        }
+    }
+
+    @Test
+    public void sendTransferWhenPasswordError() throws Exception {
+        final String richAddr = "TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW";
+        final String poorAddr= "TA4pSdTKm4hHtQJ8FbrCk9LZn7Uo96wrPC";
+        final String richKey = "1/gEPy/Uz3Eyl/sjoZ8JDymGX6hU/gi1ufUIg6vDURM=";
+        com.github.ontio.sdk.wallet.Account account = walletMgr.importAccount(richKey,"123456",richAddr);
+
+        try {
+            ontAssetTx.sendTransfer("ont",richAddr,"",poorAddr,1);
+        } catch (SDKException e) {
+            assertTrue(e.getMessage().contains("59000"));
+        }
+    }
+
+    @Test
+    public void sendTransfer58023InvalidUrl() throws Exception {
+
+        final String richAddr = "TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW";
+        final String poorAddr= "TA4pSdTKm4hHtQJ8FbrCk9LZn7Uo96wrPC";
+        final String richKey = "1/gEPy/Uz3Eyl/sjoZ8JDymGX6hU/gi1ufUIg6vDURM=";
+        walletMgr.importAccount(richKey,"123456",richAddr);
+        ontSdk.setRestful("");
+
+        try {
+            ontAssetTx.sendTransfer("ont",richAddr,"123456",poorAddr,1);
+        } catch (RestfulException e) {
+            assertTrue(e.getMessage().contains("58023"));
+        }
+
+    }
+
+    @Test
+    public void sendTransferFromToManyError() throws Exception {
+//        TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW---1/gEPy/Uz3Eyl/sjoZ8JDymGX6hU/gi1ufUIg6vDURM= rich
+//        TA4pSdTKm4hHtQJ8FbrCk9LZn7Uo96wrPC---Vz0CevSaI9/VNLx03XNEQ4Lrnnkkjo5aM5hdCuicsOE= poor1
+//        TA5F9QefsyKvn5cH37VnP5snSru5ZCYHHC---OGaD13Sn/q9gIZ8fmOtclMi4yy34qq963wzpidYDX5k= poor2
+        final String richAddr = "TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW";
+        final String poor1Addr = "TA4pSdTKm4hHtQJ8FbrCk9LZn7Uo96wrPC";
+        final String poor2Addr = "TA5F9QefsyKvn5cH37VnP5snSru5ZCYHHC";
+        final String richKey  = "1/gEPy/Uz3Eyl/sjoZ8JDymGX6hU/gi1ufUIg6vDURM=";
+        final String poor1Key = "Vz0CevSaI9/VNLx03XNEQ4Lrnnkkjo5aM5hdCuicsOE=";
+        walletMgr.importAccount(richKey,"123456",richAddr);
+        walletMgr.importAccount(poor1Key,"123456",poor1Addr);
+
+        try {
+            ontAssetTx.sendTransferFromMany("aaa",new String[]{richAddr,poor1Addr},new String[]{"123456","123456"},poor2Addr,new long[]{1,1});
+        }catch (SDKException e){
+            assertTrue(e.getMessage().contains("58012"));
+        }
+
+        try {
+            ontAssetTx.sendTransferFromMany("aaa",new String[]{richAddr,poor1Addr},new String[]{"123456","123456"},poor2Addr,new long[]{-1,1});
+        }catch (SDKException e){
+            assertTrue(e.getMessage().contains("58016"));
+        }
+
+        try {
+            ontAssetTx.sendTransferFromMany("ont",new String[]{"",poor1Addr},new String[]{"123456","123456"},poor2Addr,new long[]{1,1});
+        }catch (SDKException e){
+            assertTrue(e.getMessage().contains("58004"));
+        }
+
+        try {
+            ontAssetTx.sendTransferFromMany("ont",new String[]{richAddr,poor1Addr},new String[]{"","123456"},poor2Addr,new long[]{1,1});
+        }catch (SDKException e){
+            assertTrue(e.getMessage().contains("59000"));
+        }
+
+        try {
+            ontSdk.setRestful("");
+            ontAssetTx.sendTransferFromMany("ont",new String[]{richAddr,poor1Addr},new String[]{"123456","123456"},poor2Addr,new long[]{1,1});
+        }catch (RestfulException e){
+            assertTrue(e.getMessage().contains("58023"));
+
+        }
+
+    }
+
+    @Test
+    public void sendTransferToManyError() throws Exception {
+        final String richAddr = "TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW";
+        final String poor1Addr = "TA4pSdTKm4hHtQJ8FbrCk9LZn7Uo96wrPC";
+        final String poor2Addr = "TA5F9QefsyKvn5cH37VnP5snSru5ZCYHHC";
+        final String richKey  = "1/gEPy/Uz3Eyl/sjoZ8JDymGX6hU/gi1ufUIg6vDURM=";
+        walletMgr.importAccount(richKey,"123456",richAddr);
+
+        try {
+            ontAssetTx.sendTransferToMany("aaa",richAddr,"123456",new String[]{poor1Addr,poor2Addr},new long[]{1,1});
+        }catch (SDKException e){
+            assertTrue(e.getMessage().contains("58012"));
+        }
+
+        try {
+            ontAssetTx.sendTransferToMany("ont",richAddr,"123456",new String[]{poor1Addr,poor2Addr},new long[]{-1,1});
+        }catch (SDKException e){
+            assertTrue(e.getMessage().contains("58016"));
+        }
+
+        try {
+            ontAssetTx.sendTransferToMany("ont","","123456",new String[]{poor1Addr,poor2Addr},new long[]{1,1});
+        }catch (SDKException e){
+            assertTrue(e.getMessage().contains("58004"));
+        }
+
+        try {
+            ontAssetTx.sendTransferToMany("ont",richAddr,"123456",new String[]{"",poor2Addr},new long[]{1,1});
+        }catch (SDKException e){
+            assertTrue(e.getMessage().contains("58004"));
+        }
+
+        try {
+            ontAssetTx.sendTransferToMany("ont",richAddr,"",new String[]{poor1Addr,poor2Addr},new long[]{1,1});
+        }catch (SDKException e){
+            assertTrue(e.getMessage().contains("59000"));
+        }
+
+        try {
+            ontSdk.setRestful("");
+            ontAssetTx.sendTransferToMany("ont",richAddr,"123456",new String[]{poor1Addr,poor2Addr},new long[]{1,1});
+        }catch (RestfulException e){
+            assertTrue(e.getMessage().contains("58023"));
+        }
+
+
 
 
     }

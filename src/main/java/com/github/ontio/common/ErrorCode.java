@@ -73,7 +73,7 @@ public class ErrorCode {
     public static String TypeError = getError(58002,"SmartCodeTx Error,type error");
 
     public static String NullCodeHash = getError(58003,"OntIdTx Error,null codeHash");
-    public static String ParamError = getError(58004,"OntIdTx Error,param error");
+    public static String ParamError = getError(58004,"param error");
     public static String DidNull  = getError(58005,"OntIdTx Error,SendDid or receiverDid is null in metaData");
     public static String NotExistCliamIssuer = getError(58006,"OntIdTx Error,Not exist cliam issuer");
     public static String NotFoundPublicKeyId = getError(58007,"OntIdTx Error,not found PublicKeyId");
@@ -102,6 +102,10 @@ public class ErrorCode {
         return getError(58023, "Invalid url:" + msg);
     }
     public static String AESailed = getError(58024,"ECIES Error,AES failed initialisation -");
+
+    public static String UnSupportOperation = getError(58025,"UnsupportedOperationException");
+    public static String EncriptPrivateKeyError = getError(58026,"encript privatekey error,");
+
 
 
     public static String OtherError(String msg) {

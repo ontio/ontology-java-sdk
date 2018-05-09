@@ -2,6 +2,7 @@ package com.github.ontio.common;
 
 import com.github.ontio.account.Account;
 import com.github.ontio.crypto.SignatureScheme;
+import com.github.ontio.sdk.exception.SDKException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,7 +48,7 @@ public class AddressTest {
     }
 
     @Test
-    public void toBase58() {
+    public void toBase58() throws SDKException {
         String res = account.getAddressU160().toBase58();
         Address addr = Address.decodeBase58(res);
         assertEquals(addr,account.getAddressU160());

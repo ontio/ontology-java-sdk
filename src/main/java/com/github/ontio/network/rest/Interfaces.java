@@ -55,7 +55,7 @@ class Interfaces {
         try {
             return http.post(url + UrlConsts.Url_send_transaction, params, body);
         } catch (Exception e) {
-            throw new RestfulException(ErrorCode.InvalidUrl + url + "," + e.getMessage(), e);
+            throw new RestfulException(ErrorCode.InvalidUrl(url), e);
         }
     }
 

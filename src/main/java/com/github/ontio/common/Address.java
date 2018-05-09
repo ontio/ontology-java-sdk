@@ -88,19 +88,15 @@ public class Address extends UIntBase implements Comparable<Address> {
     }
 
     public static Address addressFromPubKey(byte[] publicKey) {
-        try {
-            byte[] bys = Digest.hash160(publicKey);
-            bys[0] = 0x01;
-            Address u160 = new Address(bys);
-            return u160;
-        } catch (Exception e) {
-            throw new UnsupportedOperationException(e);
-        }
+        byte[] bys = Digest.hash160(publicKey);
+        bys[0] = 0x01;
+        Address u160 = new Address(bys);
+        return u160;
     }
 
     public static Address addressFromMultiPubKeys(int m, byte[]... publicKeys) throws Exception {
         if (m <= 0 || m > publicKeys.length || publicKeys.length > 24) {
-            throw new IllegalArgumentException();
+            throw new SDKException(ErrorCode.ParamError);
         }
         try (ByteArrayOutputStream ms = new ByteArrayOutputStream()) {
             try (BinaryWriter writer = new BinaryWriter(ms)) {
@@ -119,7 +115,7 @@ public class Address extends UIntBase implements Comparable<Address> {
                 return u160;
             }
         } catch (IOException ex) {
-            throw new UnsupportedOperationException(ex);
+            throw new SDKException(ErrorCode.UnSupportOperation);
         }
     }
 

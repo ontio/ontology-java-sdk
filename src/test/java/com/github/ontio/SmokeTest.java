@@ -1,12 +1,19 @@
 package com.github.ontio;
 
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.account.Account;
+import com.github.ontio.common.Address;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.network.exception.RestfulException;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.exception.SDKRuntimeException;
+
+import com.alibaba.fastjson.JSONObject;
+import com.github.ontio.account.Account;
+import com.github.ontio.network.exception.ConnectorException;
+
 import com.github.ontio.sdk.manager.ConnectMgr;
 import com.github.ontio.sdk.manager.OntAssetTx;
 import com.github.ontio.sdk.manager.OntIdTx;
@@ -73,10 +80,12 @@ public class SmokeTest {
 //        TA4pSdTKm4hHtQJ8FbrCk9LZn7Uo96wrPC---Vz0CevSaI9/VNLx03XNEQ4Lrnnkkjo5aM5hdCuicsOE= poor1
 //        TA5F9QefsyKvn5cH37VnP5snSru5ZCYHHC---OGaD13Sn/q9gIZ8fmOtclMi4yy34qq963wzpidYDX5k= poor2
 
+
         JSONObject balanceObj = (JSONObject) connectMgr.getBalance("TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW");
         assertNotNull(balanceObj);
         int ontBalance = balanceObj.getIntValue("ont");
         assertTrue(ontBalance >= 0);
+        String richHexAddr = Address.decodeBase58("TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW").toHexString();
 
     }
 
@@ -92,7 +101,6 @@ public class SmokeTest {
         JSONObject richBalanceObj = (JSONObject) connectMgr.getBalance(richAddr);
         JSONObject poorBalanceObj = (JSONObject) connectMgr.getBalance(poorAddr);
         int richBalance = richBalanceObj.getIntValue("ont");
-        int richOng = richBalanceObj.getIntValue("ong");
         int poorBalance = poorBalanceObj.getIntValue("ont");
         assertTrue(richBalance > 0);
         assertTrue(poorBalance >= 0);

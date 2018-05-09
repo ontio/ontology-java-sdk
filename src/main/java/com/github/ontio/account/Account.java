@@ -318,7 +318,7 @@ public class Account {
         return null;
     }
 
-    public String exportCtrEncryptedPrikey(String passphrase, int n) {
+    public String exportCtrEncryptedPrikey(String passphrase, int n) throws SDKException {
         int N = n;
         int r = 8;
         int p = 8;
@@ -341,9 +341,8 @@ public class Account {
             byte[] encryptedkey = cipher.doFinal(serializePrivateKey());
             return new String(Base64.getEncoder().encode(encryptedkey));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new SDKException(ErrorCode.EncriptPrivateKeyError + e.getMessage());
         }
-        return null;
     }
 
     /**

@@ -87,10 +87,9 @@ public class OntAssetTx {
         AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
         State state = new State(Address.addressFromPubKey(sender.pubkey), Address.decodeBase58(recvAddr), new BigInteger(String.valueOf(amount)));
         Transfers transfers = new Transfers(new State[]{state});
-        Contract contract = new Contract((byte) 0,null, Address.parse(contractAddr), "transfer", transfers.toArray());
         Fee[] fees = new Fee[1];
         fees[0] = new Fee(0, Address.addressFromPubKey(sender.pubkey));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,null,contract.toArray(), VmType.Native.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,"transfer",transfers.toArray(), VmType.Native.value(), fees);
         return tx;
     }
     /**
@@ -127,10 +126,9 @@ public class OntAssetTx {
             states[i] = new State(Address.addressFromPubKey(sender.pubkey), Address.decodeBase58(recvAddr[i]), new BigInteger(String.valueOf(amount[i])));
         }
         Transfers transfers = new Transfers(states);
-        Contract contract = new Contract((byte) 0, null,Address.parse(contractAddr), "transfer", transfers.toArray());
         Fee[] fees = new Fee[1];
         fees[0] = new Fee(0, Address.addressFromPubKey(sender.pubkey));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,null,contract.toArray(), VmType.Native.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,"transfer",transfers.toArray(), VmType.Native.value(), fees);
         sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(sendAddr, password)}});
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -175,8 +173,7 @@ public class OntAssetTx {
         }
 
         Transfers transfers = new Transfers(states);
-        Contract contract = new Contract((byte) 0,null, Address.parse(contractAddr), "transfer", transfers.toArray());
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,null,contract.toArray(), VmType.Native.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,"transfer",transfers.toArray(), VmType.Native.value(), fees);
         Account[][] acct = Arrays.stream(sendAddr).map(p -> {
             for (int i = 0; i < sendAddr.length; i++) {
                 if (sendAddr[i].equals(p)) {
@@ -204,36 +201,14 @@ public class OntAssetTx {
         }
         AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
         TransferFrom transferFrom = new TransferFrom(Address.addressFromPubKey(sender.pubkey),Address.parse(ontContract),Address.decodeBase58(to),new BigInteger(String.valueOf(amount)));
-        Contract contract = new Contract((byte) 0,null, Address.parse(ongContract), "transferFrom", transferFrom.toArray());
         Fee[] fees = new Fee[1];
         fees[0] = new Fee(0, Address.addressFromPubKey(sender.pubkey));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(ontContract,null,contract.toArray(), VmType.Native.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(ongContract,"transferFrom",transferFrom.toArray(), VmType.Native.value(), fees);
         sdk.signTx(tx, sendAddr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
         return null;
-    }
-    private String voteTx(String addr, String password, ECPoint... pubKeys) throws Exception {
-        Vote tx = makeVoteTx(sdk.getWalletMgr().getAccount(addr, password).getAddressU160(), pubKeys);
-        sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(addr, password)}});
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
-        if (b) {
-            return tx.hash().toString();
-        }
-        return null;
-    }
-
-    private Vote makeVoteTx(Address account, ECPoint... pubKeys) {
-        Vote tx = new Vote();
-        tx.pubKeys = pubKeys;
-        tx.account = account;
-
-        tx.attributes = new Attribute[1];
-        tx.attributes[0] = new Attribute();
-        tx.attributes[0].usage = AttributeUsage.Description;
-        tx.attributes[0].data = UUID.randomUUID().toString().getBytes();
-        return tx;
     }
 }

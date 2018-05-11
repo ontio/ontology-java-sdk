@@ -376,10 +376,11 @@ public class SmartcodeTx {
         if(vmtype == VmType.NEOVM.value()) {
             Contract contract = new Contract((byte) 0, null, Address.parse(codeAddr), "", params);
             params = Helper.addBytes(new byte[]{0x67}, contract.toArray());
-//            params = Helper.addBytes(params, new byte[]{0x69});
-//            params = Helper.addBytes(params, Helper.hexToBytes(codeAddress));
         }else if(vmtype == VmType.WASMVM.value()) {
             Contract contract = new Contract((byte) 1, null, Address.parse(codeAddr), method, params);
+            params = contract.toArray();
+        } else if(vmtype == VmType.Native.value()) {
+            Contract contract = new Contract((byte) 0, null, Address.parse(codeAddr), method, params);
             params = contract.toArray();
         }
         InvokeCode tx = new InvokeCode();

@@ -106,12 +106,6 @@ public class Block extends Inventory {
         for (int i = 0; i < transactions.length; i++) {
             transactions[i] = Transaction.deserializeFrom(reader);
         }
-        if (transactions.length > 0) {
-            if ((height !=0 && transactions[0].txType != TransactionType.Bookkeeping)
-                    || Arrays.stream(transactions).skip(1).anyMatch(p -> p.txType == TransactionType.Bookkeeping)) {
-                throw new IOException();
-            }
-        }
     }
 
     @Override

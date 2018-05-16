@@ -105,7 +105,6 @@ public class Address extends UIntBase implements Comparable<Address> {
 
                 Arrays.sort(publicKeys, (a, b) -> Helper.toHexString(a).compareTo(Helper.toHexString(b)));
                 for (int i = 0; i < publicKeys.length; i++) {
-                    System.out.println(Helper.toHexString(publicKeys[i]));
                     writer.writeVarBytes(publicKeys[i]);
                 }
                 writer.flush();

@@ -20,6 +20,7 @@
 package com.github.ontio.crypto;
 
 import com.github.ontio.common.ErrorCode;
+import com.github.ontio.sdk.exception.SDKException;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -96,7 +97,7 @@ public class Base58 {
         byte[] checksum = Arrays.copyOfRange(decoded, decoded.length - 4, decoded.length);
         byte[] actualChecksum = Arrays.copyOfRange(Digest.sha256(Digest.sha256(data)), 0, 4);
         if (!Arrays.equals(checksum, actualChecksum)) {
-            throw new Exception(ErrorCode.ChecksumNotValidate);
+            throw new SDKException(ErrorCode.ChecksumNotValidate);
         }
         return decoded;
     }

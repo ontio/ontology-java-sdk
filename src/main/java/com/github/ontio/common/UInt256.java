@@ -59,7 +59,7 @@ public class UInt256 extends UIntBase implements Comparable<UInt256> {
             s = s.substring(2);
         }
         if (s.length() != 64) {
-            throw new IllegalArgumentException(ErrorCode.InputError);
+            throw new IllegalArgumentException(ErrorCode.ParamLengthErr);
         }
         byte[] v = Helper.hexToBytes(s);
         return new UInt256(v);

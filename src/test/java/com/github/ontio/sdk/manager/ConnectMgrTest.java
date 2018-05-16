@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.IOUtils;
 import com.github.ontio.OntSdk;
 import com.github.ontio.common.Address;
+import com.github.ontio.common.Common;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.VmType;
 import com.github.ontio.core.asset.Fee;
@@ -37,6 +38,8 @@ public class ConnectMgrTest {
     String blockHash;
     String address;
     String deloyTx;
+    String password = "111111";
+    Identity identity;
 
     @Before
     public void setUp() throws Exception {
@@ -50,7 +53,13 @@ public class ConnectMgrTest {
         ontSdk.setDefaultConnect(ontSdk.getRestful());
         ontSdk.openWalletFile("ConnectMgrTest.json");
 
-        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
+        if(ontSdk.getWalletMgr().getIdentitys().size() < 1){
+            identity = ontSdk.getWalletMgr().createIdentity(password);
+        }else{
+            identity = ontSdk.getWalletMgr().getIdentitys().get(0);
+        }
+
+        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(identity.ontid.replace(Common.didont,""),codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
         txHash = tx.hash().toString();
         deloyTx = txHash;
         String txHex = Helper.toHexString(tx.toArray());
@@ -61,7 +70,7 @@ public class ConnectMgrTest {
 
     @Test
     public void sendRawTransaction() throws ConnectorException, IOException, SDKException {
-        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
+        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(identity.ontid.replace(Common.didont,""),codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
         String txHex = Helper.toHexString(tx.toArray());
         boolean b = ontSdk.getConnectMgr().sendRawTransaction(txHex);
         Assert.assertEquals(true,b);
@@ -69,7 +78,7 @@ public class ConnectMgrTest {
 
     @Test
     public void sendRawTransactionByTx() throws Exception {
-        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
+        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(identity.ontid.replace(Common.didont,""),codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
         boolean b = ontSdk.getConnectMgr().sendRawTransaction(tx);
         Assert.assertEquals(true,b);
     }

@@ -83,7 +83,7 @@ public class MakeTxWithoutWalletDemo {
                 System.out.println("recvAddr:" + recvAddr.toBase58());
                 int amount = 1000;
 
-                State state = new State(acct0.getAddressU160(), recvAddr, new BigInteger(String.valueOf(amount)));
+                State state = new State(acct0.getAddressU160(), recvAddr, amount);
                 Transfers transfers = new Transfers(new State[]{state});
                 Contract contract = new Contract((byte) 0, null, Address.parse(ontContractAddr), "transfer", transfers.toArray());
                 Fee[] fees = new Fee[1];
@@ -105,7 +105,7 @@ public class MakeTxWithoutWalletDemo {
                 System.out.println("recvAddr:" + recvAddr.toBase58());
                 int amount = 10;
 
-                State state = new State(multiAddr, recvAddr, new BigInteger(String.valueOf(amount)));
+                State state = new State(multiAddr, recvAddr, amount);
                 Transfers transfers = new Transfers(new State[]{state});
                 Contract contract = new Contract((byte) 0, null, Address.parse(ontContractAddr), "transfer", transfers.toArray());
                 Fee[] fees = new Fee[1];
@@ -130,8 +130,8 @@ public class MakeTxWithoutWalletDemo {
 
                 int amount = 10;
                 int amount2 = 20;
-                State state = new State(sender1, recvAddr, new BigInteger(String.valueOf(amount)));
-                State state2 = new State(sender2, recvAddr, new BigInteger(String.valueOf(amount2)));
+                State state = new State(sender1, recvAddr, amount);
+                State state2 = new State(sender2, recvAddr, amount2);
 
                 Transfers transfers = new Transfers(new State[]{state, state2});
                 Contract contract = new Contract((byte) 0, null, Address.parse(ontContractAddr), "transfer", transfers.toArray());

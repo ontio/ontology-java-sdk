@@ -19,6 +19,7 @@
 
 package com.github.ontio.sdk.claim;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.DataSignature;
@@ -26,7 +27,11 @@ import com.github.ontio.crypto.Digest;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.crypto.SignatureScheme;
+import com.github.ontio.sdk.wallet.Identity;
+import org.junit.runners.Parameterized;
+import sun.misc.BASE64Encoder;
 
+import java.security.spec.AlgorithmParameterSpec;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -37,6 +42,7 @@ public class Claim {
     private String context = "";
     private String id = UUID.randomUUID().toString();
     private Map<String, Object> claim = new HashMap<String, Object>();
+    String ClaimStr = "";
 
     public Claim(SignatureScheme scheme, Account acct, String ctx, Map claimMap, Map metadata,String publicKeyId) {
         context = ctx;
@@ -55,6 +61,37 @@ public class Claim {
 
     }
 
+    /**
+     *
+     * @param scheme
+     * @param acct
+     * @param ctx
+     * @param clmMap
+     * @param metadata
+     * @param publicKeyId
+     * @param expireTime
+     * @throws Exception
+     */
+    public Claim(SignatureScheme scheme, Account acct, String ctx, Map clmMap, Map<String,String> metadata,Map clmRevMap,String publicKeyId,long expireTime) throws Exception {
+        String iss = metadata.get("Issuer");
+        String sub = metadata.get("Subject");
+        Header header = new Header("","",publicKeyId);
+        Payload payload = new Payload("v1.0",iss,sub,System.currentTimeMillis(),expireTime,ctx,clmMap,clmRevMap);
+        String headerStr = JSONObject.toJSONString(header.getJson());
+        String payloadStr = JSONObject.toJSONString(payload.getJson());
+        byte[] headerBytes = Base64.getEncoder().encode(headerStr.getBytes());
+        byte[] payloadBytes = Base64.getEncoder().encode(payloadStr.getBytes());
+        DataSignature sign = new DataSignature(scheme, acct, new String(headerBytes) + "." + new String(payloadBytes));
+        byte[] signature = sign.signature();
+        SignatureInfo info = new SignatureInfo("", "",publicKeyId, signature);
+
+        ClaimStr += new String(headerBytes) + "." + new String(payloadBytes) + "." + new String(Base64.getEncoder().encode(JSONObject.toJSONString(info.getJson()).getBytes()));
+    }
+
+    public String getClaimStr() {
+        return ClaimStr;
+    }
+
     public String getClaim() {
         Map tmp = new HashMap<String, Object>();
         for (Map.Entry<String, Object> e : claim.entrySet()) {
@@ -64,6 +101,60 @@ public class Claim {
     }
 }
 
+class Header {
+    public String Alg = "ONT-ES256";
+    public String Typ = "JWT-X";
+    public String Kid;
+    public Header(String alg,String typ, String kid) {
+//        Alg = alg;
+//        Typ = typ;
+        Kid = kid;
+    }
+    public Object getJson() {
+        Map<String, Object> header = new HashMap<String, Object>();
+        header.put("Alg", Alg);
+        header.put("Typ", Typ);
+        header.put("kid", Kid);
+        return header;
+    }
+}
+class Payload {
+    public String Ver;
+    public String Iss;
+    public String Sub;
+    public long Iat;
+    public long Exp;
+    public String Jti;
+    @JSONField(name = "@context")
+    public String Context;
+    public Map<String, Object> ClmMap = new HashMap<String, Object>();
+    public Map<String, Object> ClmRevMap = new HashMap<String, Object>();
+
+    public Payload(String ver,String iss,String sub,long iat,long exp,String ctx,Map clmMap,Map clmRevMap) {
+        Ver = ver;
+        Iss = iss;
+        Sub = sub;
+        Iat = iat;
+        Exp = exp;
+        Context = ctx;
+        ClmMap = clmMap;
+        ClmRevMap = clmRevMap;
+        Jti = Helper.toHexString(Digest.sha256(JSON.toJSONString(getJson()).getBytes()));
+    }
+
+    public Object getJson() {
+        Map<String, Object> payload = new HashMap<String, Object>();
+        payload.put("Ver", Ver);
+        payload.put("Iss", Iss);
+        payload.put("Sub", Sub);
+        payload.put("Iat", Iat);
+        payload.put("Exp", Exp);
+        payload.put("Context", Context);
+        payload.put("Clm",ClmMap);
+        payload.put("ClmRev",ClmRevMap);
+        return payload;
+    }
+}
 class SignatureInfo {
 
     private String Format = "pgp";

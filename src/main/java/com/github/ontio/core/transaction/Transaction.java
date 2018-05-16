@@ -160,8 +160,6 @@ public abstract class Transaction extends Inventory {
 
     @Override
     public Address[] getAddressU160ForVerifying() {
-//        HashSet<Address> hashes = new HashSet<Address>(Arrays.stream(this.fee).map(p -> p.payer).collect(Collectors.toList()));
-//        return hashes.stream().sorted().toArray(Address[]::new);
         return null;
     }
 
@@ -177,7 +175,7 @@ public abstract class Transaction extends Inventory {
         json.put("Nonce", nonce& (Integer.MAX_VALUE*2-1));
         json.put("TxType", txType.value() & (Byte.MAX_VALUE*2-1));
         json.put("GasPrice",gasPrice);
-        json.put("Gas",gasLimit);
+        json.put("GasLimit",gasLimit);
         json.put("Payer",payer.toBase58());
         json.put("Attributes", Arrays.stream(attributes).map(p -> p.json()).toArray(Object[]::new));
 

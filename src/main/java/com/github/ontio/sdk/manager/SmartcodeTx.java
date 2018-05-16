@@ -29,7 +29,6 @@ import com.github.ontio.core.transaction.Attribute;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.core.transaction.AttributeUsage;
 import com.github.ontio.common.Helper;
-import com.github.ontio.core.asset.Fee;
 import com.github.ontio.core.payload.DeployCode;
 import com.github.ontio.core.payload.InvokeCode;
 import com.github.ontio.core.scripts.ScriptBuilder;
@@ -68,17 +67,17 @@ public class SmartcodeTx {
      * @return
      * @throws Exception
      */
-    public String sendInvokeSmartCodeWithNoSign(AbiFunction abiFunction, byte vmtype) throws Exception {
-        Transaction tx = invokeTransaction(null, null, abiFunction, vmtype);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
-        if (!b) {
-            throw new SDKException(ErrorCode.SendRawTxError);
-        }
-        return tx.hash().toString();
-    }
+//    public String sendInvokeSmartCodeWithNoSign(AbiFunction abiFunction, byte vmtype,long gas) throws Exception {
+//        Transaction tx = invokeTransaction(null, null, abiFunction, vmtype,gas);
+//        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+//        if (!b) {
+//            throw new SDKException(ErrorCode.SendRawTxError);
+//        }
+//        return tx.hash().toString();
+//    }
 
     public String sendInvokeSmartCodeWithNoSignPreExec(AbiFunction abiFunction, byte vmtype) throws Exception {
-        Transaction tx = invokeTransaction(null, null, abiFunction, vmtype);
+        Transaction tx = invokeTransaction(null, null, abiFunction, vmtype,0);
         String result = (String)sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         return result;
     }
@@ -91,8 +90,8 @@ public class SmartcodeTx {
      * @return
      * @throws Exception
      */
-    public String sendInvokeSmartCodeWithSign(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
-        Transaction tx = invokeTransaction( ontid, password, abiFunction, vmtype);
+    public String sendInvokeSmartCodeWithSign(String ontid, String password, AbiFunction abiFunction, byte vmtype,long gas) throws Exception {
+        Transaction tx = invokeTransaction( ontid, password, abiFunction, vmtype,gas);
         sdk.signTx(tx,ontid,password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (!b) {
@@ -102,7 +101,7 @@ public class SmartcodeTx {
     }
 
     public String sendInvokeSmartCodeWithSignPreExec(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
-        Transaction tx = invokeTransaction( ontid, password, abiFunction, vmtype);
+        Transaction tx = invokeTransaction( ontid, password, abiFunction, vmtype,0);
         sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(ontid, password)}});
         String result = (String)sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         return result;
@@ -115,12 +114,12 @@ public class SmartcodeTx {
      * @return
      * @throws Exception
      */
-    public Object sendInvokeTransactionPreExec(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
-        Transaction tx = invokeTransaction( ontid, password, abiFunction, vmtype);
+    public Object sendInvokeTransactionPreExec(String ontid, String password, AbiFunction abiFunction, byte vmtype,long gas) throws Exception {
+        Transaction tx = invokeTransaction( ontid, password, abiFunction, vmtype,gas);
         return sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
     }
-    public Transaction invokeTransactionNoSign(AbiFunction abiFunction, byte vmtype) throws Exception {
-        return invokeTransaction(null,null,abiFunction,vmtype);
+    public Transaction invokeTransactionNoSign(AbiFunction abiFunction, byte vmtype,long gas) throws Exception {
+        return invokeTransaction(null,null,abiFunction,vmtype,gas);
     }
     /**
      * @param ontid
@@ -130,7 +129,7 @@ public class SmartcodeTx {
      * @return
      * @throws Exception
      */
-    public Transaction invokeTransaction(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
+    public Transaction invokeTransaction(String ontid, String password, AbiFunction abiFunction, byte vmtype,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -164,40 +163,14 @@ public class SmartcodeTx {
 
         Transaction tx = null;
         if (ontid == null && password == null) {
-            Fee[] fees = new Fee[0];
-            tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress,null,params, vmtype, fees);
+            tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress,null,params, vmtype, ontid,gas);
         } else {
-            Fee[] fees = new Fee[1];
-            AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid, password);
-            fees[0] = new Fee(0, Address.addressFromPubKey(info.pubkey));
-            tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress,null,params, vmtype, fees);
+            tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress,null,params, vmtype, ontid,gas);
         }
         return tx;
     }
 
-    /**
-     * @param codeHexStr
-     * @param needStorage
-     * @param name
-     * @param codeVersion
-     * @param author
-     * @param email
-     * @param desp
-     * @param vmtype
-     * @return
-     * @throws Exception
-     */
-    public String DeployCodeTransaction(String codeHexStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp, byte vmtype) throws Exception {
-//        Transaction tx = makeDeployCodeTransaction(codeHexStr, needStorage, name, codeVersion, author, email, desp, vmtype);
-//        String txHex = tx.toHexString();
-//        System.out.println(txHex);
-//        boolean b = sdk.getConnectMgr().sendRawTransaction(txHex);
-//        if (!b) {
-//            throw new SDKException(ErrorCode.SendRawTxError);
-//        }
-//        return tx.hash().toString();
-        return null;
-    }
+
     public static byte[] Int2Bytes_LittleEndian(int iValue){
         byte[] rst = new byte[4];
         rst[0] = (byte)(iValue & 0xFF);
@@ -370,15 +343,7 @@ public class SmartcodeTx {
         return tx;
     }
 
-    /**
-     * @param codeAddr
-     * @param params
-     * @param vmtype
-     * @param fees
-     * @return
-     * @throws SDKException
-     */
-    public InvokeCode makeInvokeCodeTransaction(String codeAddr,String method,byte[] params, byte vmtype, Fee[] fees) throws SDKException {
+    public InvokeCode makeInvokeCodeTransaction(String codeAddr,String method,byte[] params, byte vmtype, String payer,long gas) throws SDKException {
         if(vmtype == VmType.NEOVM.value()) {
             Contract contract = new Contract((byte) 0, null, Address.parse(codeAddr), "", params);
             params = Helper.addBytes(new byte[]{0x67}, contract.toArray());
@@ -395,30 +360,16 @@ public class SmartcodeTx {
         tx.attributes[0].usage = AttributeUsage.Nonce;
         tx.attributes[0].data = UUID.randomUUID().toString().getBytes();
         tx.code = params;
-        tx.gasLimit = 0;
-        tx.vmType = vmtype;
-//        tx.fee = fees;
-        return tx;
-    }
-
-
-    public InvokeCode makeInvokeCodeTransaction(String codeAddr,String method,byte[] params, byte vmtype, String payer) throws SDKException {
-        if(vmtype == VmType.NEOVM.value()) {
-            Contract contract = new Contract((byte) 0, null, Address.parse(codeAddr), "", params);
-            params = Helper.addBytes(new byte[]{0x67}, contract.toArray());
-        }else if(vmtype == VmType.WASMVM.value()) {
-            Contract contract = new Contract((byte) 1, null, Address.parse(codeAddr), method, params);
-            params = contract.toArray();
+        tx.gasLimit = sdk.DEFAULT_GAS_LIMIT;
+        if(sdk.DEFAULT_GAS_LIMIT == 0){
+            tx.gasPrice = 0;
+        }else {
+            tx.gasPrice = gas / sdk.DEFAULT_GAS_LIMIT;
         }
-        InvokeCode tx = new InvokeCode();
-        tx.attributes = new Attribute[1];
-        tx.attributes[0] = new Attribute();
-        tx.attributes[0].usage = AttributeUsage.Nonce;
-        tx.attributes[0].data = UUID.randomUUID().toString().getBytes();
-        tx.code = params;
-        tx.gasLimit = 0;
-        tx.gasPrice = 0;
-        tx.payer = Address.decodeBase58(payer);
+        if(payer != null){
+            tx.payer = Address.decodeBase58(payer.replace(Common.didont,""));
+        }
+
         tx.vmType = vmtype;
         return tx;
     }

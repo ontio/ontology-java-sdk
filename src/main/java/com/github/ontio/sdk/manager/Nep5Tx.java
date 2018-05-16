@@ -70,15 +70,15 @@ public class Nep5Tx {
         return contractAddr;
     }
 
-    public String sendInit() throws Exception {
-        return sendInit(false);
+    public String sendInit(String payer,String password,long gas) throws Exception {
+        return sendInit(payer,password,gas,false);
     }
 
     public String sendInitPreExec() throws Exception {
-        return sendInit(true);
+        return sendInit(null,null,0,true);
     }
 
-    public String sendInit(boolean preExec) throws Exception {
+    public String sendInit(String payer,String password,long gas,boolean preExec) throws Exception {
         if (contractAddr == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -92,7 +92,7 @@ public class Nep5Tx {
             }
             return result;
         } else {
-            return sdk.getSmartcodeTx().sendInvokeSmartCodeWithNoSign(func, VmType.NEOVM.value());
+            return sdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(payer,password,func, VmType.NEOVM.value(),gas);
         }
     }
 
@@ -105,15 +105,15 @@ public class Nep5Tx {
      * @return
      * @throws Exception
      */
-    public String sendTransfer(String sendAddr, String password, String recvAddr, int amount) throws Exception {
-        return sendTransfer(sendAddr, password, recvAddr, amount, false);
+    public String sendTransfer(String sendAddr, String password, String recvAddr, int amount,long gas) throws Exception {
+        return sendTransfer(sendAddr, password, recvAddr, amount,gas, false);
     }
 
-    public String sendTransferPreExec(String sendAddr, String password, String recvAddr, int amount) throws Exception {
-        return sendTransfer(sendAddr, password, recvAddr, amount, true);
+    public String sendTransferPreExec(String sendAddr, String password, String recvAddr, int amount,long gas) throws Exception {
+        return sendTransfer(sendAddr, password, recvAddr, amount,gas, true);
     }
 
-    public String sendTransfer(String sendAddr, String password, String recvAddr, int amount, boolean preExec) throws Exception {
+    public String sendTransfer(String sendAddr, String password, String recvAddr, int amount, long gas,boolean preExec) throws Exception {
         if (contractAddr == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -129,7 +129,7 @@ public class Nep5Tx {
             }
             return result;
         } else {
-            return sdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(sendAddr, password, func, VmType.NEOVM.value());
+            return sdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(sendAddr, password, func, VmType.NEOVM.value(),gas);
         }
     }
 

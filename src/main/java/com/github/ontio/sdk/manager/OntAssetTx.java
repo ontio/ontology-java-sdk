@@ -63,11 +63,11 @@ public class OntAssetTx {
      * @return
      * @throws Exception
      */
-    public String sendTransfer(String assetName, String sendAddr, String password, String recvAddr, long amount) throws Exception {
+    public String sendTransfer(String assetName, String sendAddr, String password, String recvAddr, long amount,long gas) throws Exception {
         if (amount <= 0) {
             throw new SDKException(ErrorCode.AmountError);
         }
-        Transaction tx = makeTransfer(assetName, sendAddr, password, recvAddr, amount);
+        Transaction tx = makeTransfer(assetName, sendAddr, password, recvAddr, amount,gas);
         sdk.signTx(tx, sendAddr, password);
         System.out.println(tx.toHexString());
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
@@ -76,7 +76,7 @@ public class OntAssetTx {
         }
         return null;
     }
-    public Transaction makeTransfer(String assetName, String sendAddr, String password, String recvAddr, long amount) throws Exception {
+    public Transaction makeTransfer(String assetName, String sendAddr, String password, String recvAddr, long amount,long gas) throws Exception {
         if (amount <= 0) {
             throw new SDKException(ErrorCode.AmountError);
         }
@@ -92,8 +92,7 @@ public class OntAssetTx {
         AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
         State state = new State(Address.addressFromPubKey(sender.pubkey), Address.decodeBase58(recvAddr), amount);
         Transfers transfers = new Transfers(new State[]{state});
-        Contract contract = new Contract((byte) 0,null, Address.parse(contractAddr), "transfer", transfers.toArray());
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,"transfer",contract.toArray(), VmType.Native.value(), sendAddr);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,"transfer",transfers.toArray(), VmType.Native.value(), sendAddr,gas);
         return tx;
     }
 
@@ -114,8 +113,7 @@ public class OntAssetTx {
             throw new SDKException(ErrorCode.AssetNameError);
         }
         byte[] parabytes = buildParams(Address.decodeBase58(address).toArray());
-        Contract contract = new Contract((byte) 0,null, Address.parse(contractAddr), "balanceOf", parabytes);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,null,contract.toArray(), VmType.Native.value(), address);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,"balanceOf", parabytes, VmType.Native.value(), null,0);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         String aa = (String)obj;
         if (aa == "" || ("").equals(aa)) {
@@ -135,7 +133,7 @@ public class OntAssetTx {
      * @return
      * @throws Exception
      */
-    public String sendApprove(String assetName ,String sendAddr, String password, String recvAddr, long amount) throws Exception {
+    public String sendApprove(String assetName ,String sendAddr, String password, String recvAddr, long amount,long gas) throws Exception {
         String contractAddr;
         if (assetName.toUpperCase().equals("ONG")) {
             contractAddr = ongContract;
@@ -149,8 +147,7 @@ public class OntAssetTx {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         BinaryWriter binaryWriter = new BinaryWriter(byteArrayOutputStream);
         state.serialize(binaryWriter);
-        Contract contract = new Contract((byte) 0,null, Address.parse(contractAddr), "approve", byteArrayOutputStream.toByteArray());
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,null,contract.toArray(), VmType.Native.value(), sendAddr);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,"approve", byteArrayOutputStream.toByteArray(), VmType.Native.value(), sendAddr,gas);
         sdk.signTx(tx,sendAddr,password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if(b){
@@ -170,7 +167,7 @@ public class OntAssetTx {
      * @return
      * @throws Exception
      */
-    public String sendTransferFrom(String assetName ,String sendAddr, String password, String fromAddr, String toAddr, long amount) throws Exception {
+    public String sendTransferFrom(String assetName ,String sendAddr, String password, String fromAddr, String toAddr, long amount,long gas) throws Exception {
         String contractAddr;
         if (assetName.toUpperCase().equals("ONG")) {
             contractAddr = ongContract;
@@ -184,8 +181,7 @@ public class OntAssetTx {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         BinaryWriter binaryWriter = new BinaryWriter(byteArrayOutputStream);
         transferFrom.serialize(binaryWriter);
-        Contract contract = new Contract((byte) 0,null, Address.parse(contractAddr), "transferFrom", byteArrayOutputStream.toByteArray());
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,null,contract.toArray(), VmType.Native.value(), sendAddr);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,"transferFrom", byteArrayOutputStream.toByteArray(), VmType.Native.value(), sendAddr,gas);
         sdk.signTx(tx,sendAddr,password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if(b){
@@ -197,11 +193,10 @@ public class OntAssetTx {
     /**
      *
      * @param assetName
-     * @param sendAddr
      * @return
      * @throws Exception
      */
-    public String queryName(String assetName, String sendAddr) throws Exception {
+    public String queryName(String assetName) throws Exception {
         String contractAddr;
         if (assetName.toUpperCase().equals("ONG")) {
             contractAddr = ongContract;
@@ -210,8 +205,7 @@ public class OntAssetTx {
         } else {
             throw new SDKException(ErrorCode.AssetNameError);
         }
-        Contract contract = new Contract((byte) 0,null, Address.parse(contractAddr), "name", "".getBytes());
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,null,contract.toArray(), VmType.Native.value(), sendAddr);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,"name", "".getBytes(), VmType.Native.value(), null,0);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         return new String(Helper.hexToBytes((String) obj));
     }
@@ -219,11 +213,10 @@ public class OntAssetTx {
     /**
      *
      * @param assetName
-     * @param sendAddr
      * @return
      * @throws Exception
      */
-    public String querySymbol(String assetName, String sendAddr) throws Exception {
+    public String querySymbol(String assetName) throws Exception {
         String contractAddr;
         if (assetName.toUpperCase().equals("ONG")) {
             contractAddr = ongContract;
@@ -232,8 +225,7 @@ public class OntAssetTx {
         } else {
             throw new SDKException(ErrorCode.AssetNameError);
         }
-        Contract contract = new Contract((byte) 0,null, Address.parse(contractAddr), "symbol", "".getBytes());
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,null,contract.toArray(), VmType.Native.value(), sendAddr);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,"symbol", "".getBytes(), VmType.Native.value(), null,0);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         return new String(Helper.hexToBytes((String) obj));
     }
@@ -241,11 +233,10 @@ public class OntAssetTx {
     /**
      *
      * @param assetName
-     * @param sendAddr
      * @return
      * @throws Exception
      */
-    public long queryDecimals(String assetName, String sendAddr) throws Exception {
+    public long queryDecimals(String assetName) throws Exception {
         String contractAddr;
         if (assetName.toUpperCase().equals("ONG")) {
             contractAddr = ongContract;
@@ -254,8 +245,7 @@ public class OntAssetTx {
         } else {
             throw new SDKException(ErrorCode.AssetNameError);
         }
-        Contract contract = new Contract((byte) 0,null, Address.parse(contractAddr), "decimals", "".getBytes());
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,null,contract.toArray(), VmType.Native.value(), sendAddr);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,"decimals", "".getBytes(), VmType.Native.value(), null,0);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         String aa = (String)obj;
         if (aa == "" || ("").equals(aa)) {
@@ -268,11 +258,10 @@ public class OntAssetTx {
     /**
      *
      * @param assetName
-     * @param sendAddr
      * @return
      * @throws Exception
      */
-    public long queryTotalSupply(String assetName, String sendAddr) throws Exception {
+    public long queryTotalSupply(String assetName) throws Exception {
         String contractAddr;
         if (assetName.toUpperCase().equals("ONG")) {
             contractAddr = ongContract;
@@ -281,8 +270,7 @@ public class OntAssetTx {
         } else {
             throw new SDKException(ErrorCode.AssetNameError);
         }
-        Contract contract = new Contract((byte) 0,null, Address.parse(contractAddr), "totalSupply", "".getBytes());
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,null,contract.toArray(), VmType.Native.value(), sendAddr);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,"totalSupply", "".getBytes(), VmType.Native.value(), null,0);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         String aa = (String)obj;
         if (aa == "" || ("").equals(aa)) {
@@ -314,7 +302,7 @@ public class OntAssetTx {
      * @return
      * @throws Exception
      */
-    public String sendTransferToMany(String assetName, String sendAddr, String password, String[] recvAddr, long[] amount) throws Exception {
+    public String sendTransferToMany(String assetName, String sendAddr, String password, String[] recvAddr, long[] amount,long gas) throws Exception {
         for (long amou : amount) {
             if (amou <= 0) {
                 throw new SDKException(ErrorCode.AmountError);
@@ -338,9 +326,7 @@ public class OntAssetTx {
             states[i] = new State(Address.addressFromPubKey(sender.pubkey), Address.decodeBase58(recvAddr[i]), amount[i]);
         }
         Transfers transfers = new Transfers(states);
-        Fee[] fees = new Fee[1];
-        fees[0] = new Fee(0, Address.addressFromPubKey(sender.pubkey));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,"transfer",transfers.toArray(), VmType.Native.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,"transfer",transfers.toArray(), VmType.Native.value(), sender.addressBase58,gas);
         sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(sendAddr, password)}});
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -358,7 +344,7 @@ public class OntAssetTx {
      * @return
      * @throws Exception
      */
-    public String sendTransferFromMany(String assetName, String[] sendAddr, String[] password, String recvAddr, long[] amount) throws Exception {
+    public String sendTransferFromMany(String assetName, String[] sendAddr, String[] password, String recvAddr, long[] amount,long gas) throws Exception {
         for (long amou : amount) {
             if (amou <= 0) {
                 throw new SDKException(ErrorCode.AmountError);
@@ -383,8 +369,7 @@ public class OntAssetTx {
         }
 
         Transfers transfers = new Transfers(states);
-        Contract contract = new Contract((byte) 0,null, Address.parse(contractAddr), "transfer", transfers.toArray());
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,null,contract.toArray(), VmType.Native.value(), sendAddr[0]);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,"transfer", transfers.toArray(), VmType.Native.value(), sendAddr[0],gas);
         Account[][] acct = Arrays.stream(sendAddr).map(p -> {
             for (int i = 0; i < sendAddr.length; i++) {
                 if (sendAddr[i].equals(p)) {
@@ -405,14 +390,13 @@ public class OntAssetTx {
         return null;
     }
 
-    public String sendOngTransferFrom(String sendAddr, String password, String to, long amount) throws Exception {
+    public String sendOngTransferFrom(String sendAddr, String password, String to, long amount,long gas) throws Exception {
         if (amount <= 0) {
             throw new SDKException(ErrorCode.AmountError);
         }
         AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
         TransferFrom transferFrom = new TransferFrom(Address.addressFromPubKey(sender.pubkey),Address.parse(ontContract),Address.decodeBase58(to),amount);
-        Contract contract = new Contract((byte) 0,null, Address.parse(ongContract), "transferFrom", transferFrom.toArray());
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(ontContract,null,contract.toArray(), VmType.Native.value(), sendAddr);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(ontContract,"transferFrom", transferFrom.toArray(), VmType.Native.value(), sendAddr,gas);
         sdk.signTx(tx, sendAddr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {

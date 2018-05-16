@@ -55,7 +55,7 @@ public class SmokeTest {
 
     @Test
     public void sendUpdateAttribute() throws Exception {
-        Identity identity = ontIdTx.sendRegister("123456");
+        Identity identity = ontIdTx.sendRegister("123456","payer",0);
         Account account = walletMgr.getAccount(identity.ontid,"123456");
         String prikey = account.exportCtrEncryptedPrikey("123456", 16384);
         Thread.sleep(6000);
@@ -65,7 +65,7 @@ public class SmokeTest {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("Context", "claimlalala");
         jsonObject.put("Issuer", "issuerlalala");
-        String txnId = ontIdTx.sendUpdateAttribute(identity.ontid,"123456",prikey.getBytes(),"Json".getBytes(), jsonObject.toJSONString().getBytes());
+        String txnId = ontIdTx.sendUpdateAttribute(identity.ontid,"123456",prikey.getBytes(),"Json".getBytes(), jsonObject.toJSONString().getBytes(),0);
         assertNotNull(txnId);
         assertNotEquals(txnId,"");
         Thread.sleep(6000);
@@ -108,7 +108,7 @@ public class SmokeTest {
         com.github.ontio.sdk.wallet.Account accountRich = walletMgr.importAccount(richKey,"123456",richAddr);
         com.github.ontio.sdk.wallet.Account accountPoor = walletMgr.importAccount(poorKey,"123456",poorAddr);
 
-        String txnId = ontAssetTx.sendTransfer("ont",richAddr,"123456",poorAddr,amount);
+        String txnId = ontAssetTx.sendTransfer("ont",richAddr,"123456",poorAddr,amount,0);
         assertNotNull(txnId);
         assertNotEquals(txnId,"");
 
@@ -122,7 +122,7 @@ public class SmokeTest {
         assertTrue(richBalanceAfter == richBalance -amount);
         assertTrue(poorBalanceAfter == poorBalance +amount);
 
-        String txnIdback = ontAssetTx.sendTransfer("ont",poorAddr,"123456",richAddr,amount);
+        String txnIdback = ontAssetTx.sendTransfer("ont",poorAddr,"123456",richAddr,amount,0);
         assertNotNull(txnIdback);
         assertNotEquals(txnIdback,"");
 
@@ -163,7 +163,7 @@ public class SmokeTest {
         com.github.ontio.sdk.wallet.Account accountPoor1 = walletMgr.importAccount(poorKey1,"123456",poorAddr1);
         com.github.ontio.sdk.wallet.Account accountPoor2 = walletMgr.importAccount(poorKey2,"123456",poorAddr2);
 
-        String txnId =ontAssetTx.sendTransferFromMany("ont",new String[]{richAddr,poorAddr1},new String[]{"123456","123456"},poorAddr2,new long[]{amount1,amount2});
+        String txnId =ontAssetTx.sendTransferFromMany("ont",new String[]{richAddr,poorAddr1},new String[]{"123456","123456"},poorAddr2,new long[]{amount1,amount2},0);
         assertNotNull(txnId);
         assertNotEquals(txnId,"");
 
@@ -179,7 +179,7 @@ public class SmokeTest {
         assertTrue(poorAfter1 == poorOrig1 - amount2);
         assertTrue(poorAfter2 == poorOrig2 + amount1 + amount2);
 
-        String txnIdback = ontAssetTx.sendTransferToMany("ont",poorAddr2,"123456",new String[]{richAddr,poorAddr1},new long[]{amount1,amount2});
+        String txnIdback = ontAssetTx.sendTransferToMany("ont",poorAddr2,"123456",new String[]{richAddr,poorAddr1},new long[]{amount1,amount2},0);
         assertNotNull(txnIdback);
         assertNotEquals(txnIdback,"");
 
@@ -212,7 +212,7 @@ public class SmokeTest {
 
         com.github.ontio.sdk.wallet.Account accountRich = walletMgr.importAccount(richKey,"123456",richAddr);
 
-        String txnId = ontAssetTx.sendOngTransferFrom(richAddr,"123456",richAddr,amount);
+        String txnId = ontAssetTx.sendOngTransferFrom(richAddr,"123456",richAddr,amount,0);
         assertNotNull(txnId);
         assertNotEquals(txnId,"");
 
@@ -244,7 +244,7 @@ public class SmokeTest {
 
         com.github.ontio.sdk.wallet.Account account = walletMgr.importAccount(richKey,"123456",richAddr);
 
-        String txnId = ontAssetTx.sendOngTransferFrom(richAddr,"123456",poorAddr,amount);
+        String txnId = ontAssetTx.sendOngTransferFrom(richAddr,"123456",poorAddr,amount,0);
         assertNotNull(txnId);
         assertNotEquals(txnId,"");
 
@@ -269,7 +269,7 @@ public class SmokeTest {
         com.github.ontio.sdk.wallet.Account account = walletMgr.importAccount(richKey,"123456",richAddr);
 
         try {
-            ontAssetTx.sendTransfer("aaa",richAddr,"123456",poorAddr,1);
+            ontAssetTx.sendTransfer("aaa",richAddr,"123456",poorAddr,1,0);
         } catch (SDKException e) {
             assertTrue(e.getMessage().contains("58012"));
         }
@@ -283,12 +283,12 @@ public class SmokeTest {
         com.github.ontio.sdk.wallet.Account account = walletMgr.importAccount(richKey,"123456",richAddr);
 
         try {
-            ontAssetTx.sendTransfer("ont",richAddr,"123456",poorAddr,0);
+            ontAssetTx.sendTransfer("ont",richAddr,"123456",poorAddr,0,0);
         } catch (SDKException e) {
             assertTrue(e.getMessage().contains("58016"));
         }
         try {
-            ontAssetTx.sendTransfer("ont",richAddr,"123456",poorAddr,1);
+            ontAssetTx.sendTransfer("ont",richAddr,"123456",poorAddr,1,0);
         } catch (SDKException e) {
             assertTrue(e.getMessage().contains("58016"));
         }
@@ -302,7 +302,7 @@ public class SmokeTest {
         com.github.ontio.sdk.wallet.Account account = walletMgr.importAccount(richKey,"123456",richAddr);
 
         try {
-            ontAssetTx.sendTransfer("ont",richAddr,"123456",poorAddr,1234567890123456789L);
+            ontAssetTx.sendTransfer("ont",richAddr,"123456",poorAddr,1234567890123456789L,0);
         } catch (SDKException e) {
             //todo
         }
@@ -316,13 +316,13 @@ public class SmokeTest {
         com.github.ontio.sdk.wallet.Account account = walletMgr.importAccount(richKey,"123456",richAddr);
 
         try {
-            ontAssetTx.sendTransfer("ont","","123456",poorAddr,1);
+            ontAssetTx.sendTransfer("ont","","123456",poorAddr,1,0);
         } catch (SDKException e) {
             assertTrue(e.getMessage().contains("58004"));
         }
 
         try {
-            ontAssetTx.sendTransfer("ont",richAddr,"123456","",1);
+            ontAssetTx.sendTransfer("ont",richAddr,"123456","",1,0);
         } catch (SDKException e) {
             assertTrue(e.getMessage().contains("58004"));
         }
@@ -336,7 +336,7 @@ public class SmokeTest {
         com.github.ontio.sdk.wallet.Account account = walletMgr.importAccount(richKey,"123456",richAddr);
 
         try {
-            ontAssetTx.sendTransfer("ont",richAddr,"",poorAddr,1);
+            ontAssetTx.sendTransfer("ont",richAddr,"",poorAddr,1,0);
         } catch (SDKException e) {
             assertTrue(e.getMessage().contains("59000"));
         }
@@ -352,7 +352,7 @@ public class SmokeTest {
         ontSdk.setRestful("");
 
         try {
-            ontAssetTx.sendTransfer("ont",richAddr,"123456",poorAddr,1);
+            ontAssetTx.sendTransfer("ont",richAddr,"123456",poorAddr,1,0);
         } catch (RestfulException e) {
             assertTrue(e.getMessage().contains("58023"));
         }
@@ -373,32 +373,32 @@ public class SmokeTest {
         walletMgr.importAccount(poor1Key,"123456",poor1Addr);
 
         try {
-            ontAssetTx.sendTransferFromMany("aaa",new String[]{richAddr,poor1Addr},new String[]{"123456","123456"},poor2Addr,new long[]{1,1});
+            ontAssetTx.sendTransferFromMany("aaa",new String[]{richAddr,poor1Addr},new String[]{"123456","123456"},poor2Addr,new long[]{1,1},0);
         }catch (SDKException e){
             assertTrue(e.getMessage().contains("58012"));
         }
 
         try {
-            ontAssetTx.sendTransferFromMany("aaa",new String[]{richAddr,poor1Addr},new String[]{"123456","123456"},poor2Addr,new long[]{-1,1});
+            ontAssetTx.sendTransferFromMany("aaa",new String[]{richAddr,poor1Addr},new String[]{"123456","123456"},poor2Addr,new long[]{-1,1},0);
         }catch (SDKException e){
             assertTrue(e.getMessage().contains("58016"));
         }
 
         try {
-            ontAssetTx.sendTransferFromMany("ont",new String[]{"",poor1Addr},new String[]{"123456","123456"},poor2Addr,new long[]{1,1});
+            ontAssetTx.sendTransferFromMany("ont",new String[]{"",poor1Addr},new String[]{"123456","123456"},poor2Addr,new long[]{1,1},0);
         }catch (SDKException e){
             assertTrue(e.getMessage().contains("58004"));
         }
 
         try {
-            ontAssetTx.sendTransferFromMany("ont",new String[]{richAddr,poor1Addr},new String[]{"","123456"},poor2Addr,new long[]{1,1});
+            ontAssetTx.sendTransferFromMany("ont",new String[]{richAddr,poor1Addr},new String[]{"","123456"},poor2Addr,new long[]{1,1},0);
         }catch (SDKException e){
             assertTrue(e.getMessage().contains("59000"));
         }
 
         try {
             ontSdk.setRestful("");
-            ontAssetTx.sendTransferFromMany("ont",new String[]{richAddr,poor1Addr},new String[]{"123456","123456"},poor2Addr,new long[]{1,1});
+            ontAssetTx.sendTransferFromMany("ont",new String[]{richAddr,poor1Addr},new String[]{"123456","123456"},poor2Addr,new long[]{1,1},0);
         }catch (RestfulException e){
             assertTrue(e.getMessage().contains("58023"));
 
@@ -415,38 +415,38 @@ public class SmokeTest {
         walletMgr.importAccount(richKey,"123456",richAddr);
 
         try {
-            ontAssetTx.sendTransferToMany("aaa",richAddr,"123456",new String[]{poor1Addr,poor2Addr},new long[]{1,1});
+            ontAssetTx.sendTransferToMany("aaa",richAddr,"123456",new String[]{poor1Addr,poor2Addr},new long[]{1,1},0);
         }catch (SDKException e){
             assertTrue(e.getMessage().contains("58012"));
         }
 
         try {
-            ontAssetTx.sendTransferToMany("ont",richAddr,"123456",new String[]{poor1Addr,poor2Addr},new long[]{-1,1});
+            ontAssetTx.sendTransferToMany("ont",richAddr,"123456",new String[]{poor1Addr,poor2Addr},new long[]{-1,1},0);
         }catch (SDKException e){
             assertTrue(e.getMessage().contains("58016"));
         }
 
         try {
-            ontAssetTx.sendTransferToMany("ont","","123456",new String[]{poor1Addr,poor2Addr},new long[]{1,1});
+            ontAssetTx.sendTransferToMany("ont","","123456",new String[]{poor1Addr,poor2Addr},new long[]{1,1},0);
         }catch (SDKException e){
             assertTrue(e.getMessage().contains("58004"));
         }
 
         try {
-            ontAssetTx.sendTransferToMany("ont",richAddr,"123456",new String[]{"",poor2Addr},new long[]{1,1});
+            ontAssetTx.sendTransferToMany("ont",richAddr,"123456",new String[]{"",poor2Addr},new long[]{1,1},0);
         }catch (SDKException e){
             assertTrue(e.getMessage().contains("58004"));
         }
 
         try {
-            ontAssetTx.sendTransferToMany("ont",richAddr,"",new String[]{poor1Addr,poor2Addr},new long[]{1,1});
+            ontAssetTx.sendTransferToMany("ont",richAddr,"",new String[]{poor1Addr,poor2Addr},new long[]{1,1},0);
         }catch (SDKException e){
             assertTrue(e.getMessage().contains("59000"));
         }
 
         try {
             ontSdk.setRestful("");
-            ontAssetTx.sendTransferToMany("ont",richAddr,"123456",new String[]{poor1Addr,poor2Addr},new long[]{1,1});
+            ontAssetTx.sendTransferToMany("ont",richAddr,"123456",new String[]{poor1Addr,poor2Addr},new long[]{1,1},0);
         }catch (RestfulException e){
             assertTrue(e.getMessage().contains("58023"));
         }

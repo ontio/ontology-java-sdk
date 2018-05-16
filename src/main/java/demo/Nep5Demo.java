@@ -53,11 +53,11 @@ public class Nep5Demo {
             ontSdk.getWalletMgr().writeWallet();
             System.out.println("recv:"+acct.address);
             if(false) {
-                String result = ontSdk.getNep5Tx().sendInit();
+                String result = ontSdk.getNep5Tx().sendInit("payer","password",0);
                 System.out.println(result);
                 System.exit(0);
             }
-            String txhash = ontSdk.getNep5Tx().sendTransfer(acct.address,"passwordtest",acct1.getAddressU160().toBase58(),10);
+            String txhash = ontSdk.getNep5Tx().sendTransfer(acct.address,"passwordtest",acct1.getAddressU160().toBase58(),10,0);
             System.out.println(txhash);
 
             String balance = ontSdk.getNep5Tx().sendBalanceOf(acct.address);

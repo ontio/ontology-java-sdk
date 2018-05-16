@@ -7,7 +7,6 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.VmType;
-import com.github.ontio.core.asset.Fee;
 import com.github.ontio.core.payload.InvokeCode;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.network.exception.ConnectorException;
@@ -68,7 +67,7 @@ public class SmartcodeTxTest {
 
 
         if (ontSdk.getWalletMgr().getIdentitys().size() < 1) {
-            Identity did = ontSdk.getOntIdTx().sendRegister("passwordtest");
+            Identity did = ontSdk.getOntIdTx().sendRegister("passwordtest","payer",0);
             Thread.sleep(6000);
         }
         did = ontSdk.getWalletMgr().getIdentitys().get(0);
@@ -93,7 +92,7 @@ public class SmartcodeTxTest {
     @Test
     public void sendInvokeSmartCode() throws Exception {
 
-        String res = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithNoSign(abiFunction2,(byte) VmType.NEOVM.value());
+        String res = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign("","",abiFunction2,(byte) VmType.NEOVM.value(),0);
         Assert.assertNotNull(res);
 
     }
@@ -103,7 +102,7 @@ public class SmartcodeTxTest {
     @Test
     public void sendInvokeSmartCodeWithSign() throws Exception {
 
-        String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", abiFunction, (byte) VmType.NEOVM.value());
+        String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", abiFunction, (byte) VmType.NEOVM.value(),0);
         Assert.assertNotNull(hash);
 
     }
@@ -111,7 +110,7 @@ public class SmartcodeTxTest {
     @Test
     public void sendInvokeSmartCodeWithSignError(){
         try {
-            ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "",abiFunction,(byte)VmType.NEOVM.value());
+            ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "",abiFunction,(byte)VmType.NEOVM.value(),0);
         } catch (SDKException e) {
             assertTrue(e.getMessage().contains("59000"));
         }catch (Exception e){
@@ -119,7 +118,7 @@ public class SmartcodeTxTest {
         }
 
         try {
-            ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign("", "passwordtest",abiFunction,(byte)VmType.NEOVM.value());
+            ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign("", "passwordtest",abiFunction,(byte)VmType.NEOVM.value(),0);
         } catch (SDKException e) {
             assertTrue(e.getMessage().contains("58004"));
         }catch (Exception e){
@@ -130,7 +129,7 @@ public class SmartcodeTxTest {
     @Test
     public void invokeTransactionPreExec() throws Exception {
 
-        Object obj = ontSdk.getSmartcodeTx().sendInvokeTransactionPreExec(did.ontid, "passwordtest", abiFunction2, (byte) VmType.NEOVM.value());
+        Object obj = ontSdk.getSmartcodeTx().sendInvokeTransactionPreExec(did.ontid, "passwordtest", abiFunction2, (byte) VmType.NEOVM.value(),0);
         Assert.assertNotNull(obj);
 
     }
@@ -138,13 +137,13 @@ public class SmartcodeTxTest {
     @Test
     public void invokeTransactionPreExecError(){
         try {
-            ontSdk.getSmartcodeTx().sendInvokeTransactionPreExec(did.ontid, "", abiFunction2, (byte) VmType.NEOVM.value());
+            ontSdk.getSmartcodeTx().sendInvokeTransactionPreExec(did.ontid, "", abiFunction2, (byte) VmType.NEOVM.value(),0);
         }catch (SDKException e){
             assertTrue(e.getMessage().contains("59000"));
         }catch (Exception e){}
 
         try {
-            ontSdk.getSmartcodeTx().sendInvokeTransactionPreExec("", "passwordtest", abiFunction2, (byte) VmType.NEOVM.value());
+            ontSdk.getSmartcodeTx().sendInvokeTransactionPreExec("", "passwordtest", abiFunction2, (byte) VmType.NEOVM.value(),0);
         }catch (SDKException e){
             assertTrue(e.getMessage().contains("58004"));
         }catch (Exception e){}
@@ -153,13 +152,13 @@ public class SmartcodeTxTest {
     @Test
     public void invokeTransactionError(){
         try {
-            ontSdk.getSmartcodeTx().invokeTransaction(did.ontid,"",abiFunction2,(byte) VmType.NEOVM.value());
+            ontSdk.getSmartcodeTx().invokeTransaction(did.ontid,"",abiFunction2,(byte) VmType.NEOVM.value(),0);
         }catch (SDKException e){
             assertTrue(e.getMessage().contains("59000"));
         }catch (Exception e){}
 
         try {
-            ontSdk.getSmartcodeTx().invokeTransaction("","passwordtest",abiFunction2,(byte) VmType.NEOVM.value());
+            ontSdk.getSmartcodeTx().invokeTransaction("","passwordtest",abiFunction2,(byte) VmType.NEOVM.value(),0);
         }catch (SDKException e){
             assertTrue(e.getMessage().contains("58004"));
         }catch (Exception e){}
@@ -204,8 +203,7 @@ public class SmartcodeTxTest {
         List list = new ArrayList<Object>();
         list.add("test");
         byte[] params = ontSdk.getSmartcodeTx().createCodeParamsScript(list);
-        Fee[] fees = new Fee[0];
-        InvokeCode res = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), fees);
+        InvokeCode res = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), "payer",0);
         Assert.assertNotNull(res);
     }
 }

@@ -54,15 +54,15 @@ public class OntAssetDemo {
             info3 = ontSdk.getWalletMgr().getAccounts().get(2);
 
 
-//            System.out.println(ontSdk.getOntAssetTx().queryName("ont",info1.address));
-//            System.out.println(ontSdk.getOntAssetTx().querySymbol("ont",info1.address));
-//            System.out.println(ontSdk.getOntAssetTx().queryDecimals("ont",info1.address));
-//            System.out.println(ontSdk.getOntAssetTx().queryTotalSupply("ont",info1.address));
+            System.out.println(ontSdk.getOntAssetTx().queryName("ont"));
+            System.out.println(ontSdk.getOntAssetTx().querySymbol("ont"));
+            System.out.println(ontSdk.getOntAssetTx().queryDecimals("ont"));
+            System.out.println(ontSdk.getOntAssetTx().queryTotalSupply("ont"));
 //
-//            System.out.println(ontSdk.getOntAssetTx().queryName("ong",info1.address));
-//            System.out.println(ontSdk.getOntAssetTx().querySymbol("ong",info1.address));
-//            System.out.println(ontSdk.getOntAssetTx().queryDecimals("ong",info1.address));
-//            System.out.println(ontSdk.getOntAssetTx().queryTotalSupply("ong",info1.address));
+            System.out.println(ontSdk.getOntAssetTx().queryName("ong"));
+            System.out.println(ontSdk.getOntAssetTx().querySymbol("ong"));
+            System.out.println(ontSdk.getOntAssetTx().queryDecimals("ong"));
+            System.out.println(ontSdk.getOntAssetTx().queryTotalSupply("ong"));
 
 //            String hh = Address.addressFromMultiPubKeys(1,ontSdk.getWalletMgr().getAccount(info2.address,"passwordtest").publicKey,ontSdk.getWalletMgr().getAccount(info1.address,"passwordtest").publicKey).toBase58();
 //            System.out.println(ontSdk.getWalletMgr().getAccountInfo(info1.address,"passwordtest").pubkey);
@@ -94,8 +94,8 @@ public class OntAssetDemo {
 
     public static OntSdk getOntSdk() throws Exception {
 
-        String ip = "http://127.0.0.1";
-//        String ip = "http://54.222.182.88;
+//        String ip = "http://127.0.0.1";
+        String ip = "http://139.219.130.42";
 //        String ip = "http://101.132.193.149";
         String restUrl = ip + ":" + "20334";
         String rpcUrl = ip + ":" + "20386";

@@ -8,7 +8,6 @@ import com.github.ontio.common.Address;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.VmType;
-import com.github.ontio.core.asset.Fee;
 import com.github.ontio.core.block.Block;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.network.exception.ConnectorException;
@@ -86,7 +85,7 @@ public class ConnectMgrTest {
     @Test
     public void sendRawTransactionPreExec() throws Exception {
         ontSdk.setCodeAddress(codeAddress);
-        Identity did = ontSdk.getOntIdTx().sendRegister("111111");
+        Identity did = ontSdk.getOntIdTx().sendRegister("111111","payer",0);
         Thread.sleep(6000);
         List list = new ArrayList<Object>();
         list.add("GetDDO".getBytes());
@@ -94,9 +93,8 @@ public class ConnectMgrTest {
         tmp.add(did.ontid.getBytes());
         tmp.add(UUID.randomUUID().toString().getBytes());
         list.add(tmp);
-        Fee[] fees = new Fee[0];
         byte[] params = ontSdk.getSmartcodeTx().createCodeParamsScript(list);
-        Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), fees);
+        Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), "payer",0);
         Object obj = ontSdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         Assert.assertNotEquals(null,obj);
     }

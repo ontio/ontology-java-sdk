@@ -1,10 +1,10 @@
 package demo;
 
 import com.github.ontio.OntSdk;
+import com.github.ontio.account.Account;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.VmType;
-import com.github.ontio.core.asset.Fee;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.wallet.Identity;
 
@@ -49,7 +49,8 @@ public class WasmDemo {
 //            System.exit(0);
             String params = ontSdk.getSmartcodeTx().buildWasmContractJsonParam(new Object[]{20,30});
             System.out.println(params);
-            Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(ontSdk.getSmartcodeTx().getCodeAddress(),"add",params.getBytes(),VmType.WASMVM.value(),new Fee[0]);
+            Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(ontSdk.getSmartcodeTx().getCodeAddress(),"add",params.getBytes(),VmType.WASMVM.value(),"addr",0);
+            ontSdk.signTx(tx,new Account[][]{{}});
             ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
 
         } catch (Exception e) {

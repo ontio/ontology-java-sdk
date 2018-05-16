@@ -72,7 +72,7 @@ public class WalletMgrTest {
     @Test
     public void sendRegisterPreExec() throws Exception {
         Identity identity = walletMgr.createIdentity("123456");
-        Identity identity1 = ontIdTx.sendRegisterPreExec(identity,"123456");
+        Identity identity1 = ontIdTx.sendRegisterPreExec(identity,"123456",0);
         assertNotNull(identity1);
         assertEquals(identity.ontid,identity1.ontid);
     }
@@ -80,7 +80,7 @@ public class WalletMgrTest {
     @Test
     public void sendRegister() throws Exception {
         Identity identity = walletMgr.createIdentity("123456");
-        Identity identity1 = ontIdTx.sendRegister(identity,"123456");
+        Identity identity1 = ontIdTx.sendRegister(identity,"123456",0);
         Thread.sleep(6000);
         String string = ontIdTx.sendGetDDO(identity1.ontid);
         assertTrue(string.contains(identity1.ontid));

@@ -73,7 +73,7 @@ public class WebsocketDemo {
             //System.out.println("================register=================");
             Identity ident = null;
             if (ontSdk.getWalletMgr().getIdentitys().size() == 0) {
-                ident = ontSdk.getOntIdTx().sendRegister("passwordtest");
+                ident = ontSdk.getOntIdTx().sendRegister("passwordtest","payer",0);
             } else {
                 ident = ontSdk.getWalletMgr().getIdentitys().get(0);
             }
@@ -102,7 +102,7 @@ public class WebsocketDemo {
                     }
                     info1 = ontSdk.getWalletMgr().getAccounts().get(0);
                     info2 = ontSdk.getWalletMgr().getAccounts().get(1);
-                    Transaction tx = ontSdk.getOntAssetTx().makeTransfer("ont", info1.address, "passwordtest", info2.address, 100L);
+                    Transaction tx = ontSdk.getOntAssetTx().makeTransfer("ont", info1.address, "passwordtest", info2.address, 100L,0);
                     ontSdk.signTx(tx, info1.address, password);
                     System.out.println(tx.toHexString());
                     ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
@@ -116,7 +116,7 @@ public class WebsocketDemo {
                     recordMap.put("keyNum", 1234589);
                     recordMap.put("key2", false);
                     ontSdk.setCodeAddress("80e7d2fc22c24c466f44c7688569cc6e6d6c6f92");
-                    Transaction tx = ontSdk.getOntIdTx().makeUpdateAttribute(ontid, "passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
+                    Transaction tx = ontSdk.getOntIdTx().makeUpdateAttribute(ontid, "passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes(),0);
                     ontSdk.signTx(tx, ontid, password);
                     ontSdk.getWebSocket().sendRawTransaction(tx.toHexString());
                 }
@@ -149,7 +149,7 @@ public class WebsocketDemo {
                     AbiFunction func0 = abiinfo.getFunction("Put");
                     Identity did0 = ontSdk.getWalletMgr().getIdentitys().get(0);
                     func0.setParamsValue("key".getBytes(), "value".getBytes());
-                    String hash0 = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did0.ontid, "passwordtest", func0, (byte) VmType.NEOVM.value());
+                    String hash0 = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did0.ontid, "passwordtest", func0, (byte) VmType.NEOVM.value(),0);
 
                     System.out.println(hash0);
                 }

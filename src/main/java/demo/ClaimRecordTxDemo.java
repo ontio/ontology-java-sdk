@@ -22,8 +22,8 @@ public class ClaimRecordTxDemo {
 
             List<Identity> dids = ontSdk.getWalletMgr().getIdentitys();
             if (dids.size() < 2) {
-                ontSdk.getOntIdTx().sendRegister("passwordtest");
-                ontSdk.getOntIdTx().sendRegister("passwordtest");
+                ontSdk.getOntIdTx().sendRegister("passwordtest","payer",0);
+                ontSdk.getOntIdTx().sendRegister("passwordtest","payer",0);
                 dids = ontSdk.getWalletMgr().getIdentitys();
                 Thread.sleep(6000);
             }
@@ -43,7 +43,7 @@ public class ClaimRecordTxDemo {
 
             ontSdk.setCodeAddress("804d601325908f3fa43c2b11d79a56ef835afb73");
 
-            String commitRes = ontSdk.getClaimRecordTx().sendCommit(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"));
+            String commitRes = ontSdk.getClaimRecordTx().sendCommit(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"),0);
             System.out.println("commitRes:" + commitRes);
             Thread.sleep(6000);
 
@@ -52,7 +52,7 @@ public class ClaimRecordTxDemo {
             System.out.println("getstatusResBytes:" + new String(getstatusResBytes));
             Thread.sleep(6000);
 
-            String revokeRes = ontSdk.getClaimRecordTx().sendRevoke(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"));
+            String revokeRes = ontSdk.getClaimRecordTx().sendRevoke(dids.get(1).ontid,"passwordtest",jsonObject.getString("Id"),0);
             System.out.println("revokeRes:" + revokeRes);
             Thread.sleep(6000);
 

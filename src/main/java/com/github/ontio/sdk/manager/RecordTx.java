@@ -7,7 +7,6 @@ import com.github.ontio.common.Common;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.VmType;
-import com.github.ontio.core.asset.Fee;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.KeyType;
 import com.github.ontio.sdk.exception.SDKException;
@@ -35,7 +34,7 @@ public class RecordTx {
     }
 
 
-    public String sendPut(String addr,String password,String key,String value) throws Exception {
+    public String sendPut(String addr,String password,String key,String value,long gas) throws Exception {
         if (codeAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -52,7 +51,7 @@ public class RecordTx {
         tmp.add(key.getBytes());
         tmp.add(JSON.toJSONString(constructRecord(value)).getBytes());
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list,info);
+        Transaction tx = makeInvokeTransaction(list,info.addressBase58,gas);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -75,17 +74,15 @@ public class RecordTx {
         List tmp = new ArrayList<Object>();
         tmp.add(key.getBytes());
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list,info);
+        Transaction tx = makeInvokeTransaction(list,null,0);
         sdk.signTx(tx, addr, password);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         return new String(Helper.hexToBytes((String)obj));
     }
 
-    public Transaction makeInvokeTransaction(List<Object> list,AccountInfo acctinfo) throws Exception {
-        Fee[] fees = new Fee[1];
-        fees[0] = new Fee(0, Address.addressFromPubKey(acctinfo.pubkey));
+    public Transaction makeInvokeTransaction(List<Object> list,String addr,long gas) throws Exception {
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), addr,gas);
         return tx;
     }
 

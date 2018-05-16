@@ -33,7 +33,6 @@ import com.github.ontio.sdk.info.IdentityInfo;
 import com.github.ontio.sdk.wallet.Identity;
 import com.github.ontio.crypto.KeyType;
 import com.github.ontio.core.VmType;
-import com.github.ontio.core.asset.Fee;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.claim.Claim;
 import com.github.ontio.core.DataSignature;
@@ -72,19 +71,19 @@ public class OntIdTx {
      * @return
      * @throws Exception
      */
-    public Identity sendRegister(Identity ident, String password) throws Exception {
-        return sendRegister(ident, password, false);
+    public Identity sendRegister(Identity ident, String password,long gas) throws Exception {
+        return sendRegister(ident, password,gas, false);
     }
 
-    public Identity sendRegisterPreExec(Identity ident, String password) throws Exception {
-        return sendRegister(ident, password, true);
+    public Identity sendRegisterPreExec(Identity ident, String password,long gas) throws Exception {
+        return sendRegister(ident, password,gas, true);
     }
 
-    public Identity sendRegister(Identity ident, String password, boolean preExec) throws Exception {
+    public Identity sendRegister(Identity ident, String password, long gas,boolean preExec) throws Exception {
         IdentityInfo info = sdk.getWalletMgr().getIdentityInfo(ident.ontid, password);
         String ontid = info.ontid;
 
-        Transaction tx = makeRegister(info);
+        Transaction tx = makeRegister(info,gas);
         sdk.signTx(tx, ontid, password);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.ontid);
         sdk.getWalletMgr().writeWallet();
@@ -106,7 +105,7 @@ public class OntIdTx {
      * @return
      * @throws Exception
      */
-    public Transaction makeRegister(IdentityInfo info) throws Exception {
+    public Transaction makeRegister(IdentityInfo info,long gas) throws Exception {
 
         String ontid = info.ontid;
         byte[] pk = Helper.hexToBytes(info.pubkey);
@@ -116,7 +115,7 @@ public class OntIdTx {
         tmp.add(ontid.getBytes());
         tmp.add(pk);
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list, info);
+        Transaction tx = makeInvokeTransaction(list, info,gas);
         return tx;
     }
 
@@ -127,29 +126,29 @@ public class OntIdTx {
      * @return
      * @throws Exception
      */
-    public Identity sendRegister(String password) throws Exception {
-        return sendRegister("", password);
+    public Identity sendRegister(String password,String payer,long gas) throws Exception {
+        return sendRegister("", password,payer,gas);
     }
 
-    public Identity sendRegisterPreExec(String password) throws Exception {
-        return sendRegister("", password, true);
+    public Identity sendRegisterPreExec(String password,String payer) throws Exception {
+        return sendRegister("", password,payer,0, true);
     }
 
-    public Identity sendRegister(String label, String password) throws Exception {
-        return sendRegister(label, password, false);
+    public Identity sendRegister(String label, String password,String payer,long gas) throws Exception {
+        return sendRegister(label, password,payer,gas, false);
     }
 
-    public Identity sendRegisterPreExec(String label, String password) throws Exception {
-        return sendRegister(label, password, true);
+    public Identity sendRegisterPreExec(String label, String password,String payer) throws Exception {
+        return sendRegister(label, password,payer,0, true);
     }
 
-    private Identity sendRegister(String label, String password, boolean preExec) throws Exception {
+    private Identity sendRegister(String label, String password,String payer,long gas, boolean preExec) throws Exception {
         if (contractAddress == null) {
             throw new SDKException("null codeHash");
         }
         IdentityInfo info = sdk.getWalletMgr().createIdentityInfo(password);
         String ontid = info.ontid;
-        Transaction tx = makeRegister(info);
+        Transaction tx = makeRegister(info,gas);
         sdk.signTx(tx, ontid, password);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.ontid);
         identity.label = label;
@@ -179,7 +178,7 @@ public class OntIdTx {
      * @return
      * @throws Exception
      */
-    public Identity sendRegister(String password, Map<String, Object> attrsMap) throws Exception {
+    public Identity sendRegister(String password, Map<String, Object> attrsMap,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -239,7 +238,7 @@ public class OntIdTx {
 
         tmp.add(Helper.addBytes(new byte[]{attriNum}, allAttrsBys));
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list, info);
+        Transaction tx = makeInvokeTransaction(list, info,gas);
         sdk.signTx(tx, ontid, password);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.ontid);
         sdk.getWalletMgr().writeWallet();
@@ -256,7 +255,7 @@ public class OntIdTx {
      * @return
      * @throws Exception
      */
-    public String sendRegisterByGuardian(String guardianAddr, String password) throws Exception {
+    public String sendRegisterByGuardian(String guardianAddr, String password,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -267,7 +266,7 @@ public class OntIdTx {
         li.add("CreateIdentityByGuardian".getBytes());
         li.add(ontid.getBytes());
         li.add(guardianDid);
-        Transaction tx = makeInvokeTransaction(li, ontid, password);
+        Transaction tx = makeInvokeTransaction(li, ontid, password,gas);
         sdk.signTx(tx, ontid, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -285,7 +284,7 @@ public class OntIdTx {
      * @return
      * @throws Exception
      */
-    public String sendAddPubKey(String ontid, String password, String newpubkey) throws Exception {
+    public String sendAddPubKey(String ontid, String password, String newpubkey,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -300,7 +299,7 @@ public class OntIdTx {
         tmp.add(Helper.hexToBytes(newpubkey));
         tmp.add(pk);
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list, addr, password);
+        Transaction tx = makeInvokeTransaction(list, addr, password,gas);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -319,7 +318,7 @@ public class OntIdTx {
      * @return
      * @throws Exception
      */
-    public String sendAddPubKey(String password, String ontid, String newpubkey, String recoveryScriptHash) throws Exception {
+    public String sendAddPubKey(String password, String ontid, String newpubkey, String recoveryScriptHash,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -334,7 +333,7 @@ public class OntIdTx {
         tmp.add(Helper.hexToBytes(recoveryScriptHash));
         tmp.add(new byte[]{1});
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list, addr, password);
+        Transaction tx = makeInvokeTransaction(list, addr, password,gas);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -353,7 +352,7 @@ public class OntIdTx {
      * @return
      * @throws Exception
      */
-    public String sendAddPubKeyByGuardian(String addr, String password, String newpubkey, String guardianAddr) throws Exception {
+    public String sendAddPubKeyByGuardian(String addr, String password, String newpubkey, String guardianAddr,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -367,7 +366,7 @@ public class OntIdTx {
         tmp.add(Helper.hexToBytes(newpubkey));
         tmp.add(guardianDid);
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list, addr, password);
+        Transaction tx = makeInvokeTransaction(list, addr, password,gas);
         //String txHex = sdk.getWalletMgr().signatureData(password, tx);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
@@ -386,7 +385,7 @@ public class OntIdTx {
      * @return
      * @throws Exception
      */
-    public String sendRemovePubKey(String ontid, String password, String removepk) throws Exception {
+    public String sendRemovePubKey(String ontid, String password, String removepk,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -400,7 +399,7 @@ public class OntIdTx {
         tmp.add(Helper.hexToBytes(removepk));
         tmp.add(pk);
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list, addr, password);
+        Transaction tx = makeInvokeTransaction(list, addr, password,gas);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -417,7 +416,7 @@ public class OntIdTx {
      * @return
      * @throws Exception
      */
-    public String sendRemovePubKey(String ontid, String password, byte[] key, String recoveryScriptHash) throws Exception {
+    public String sendRemovePubKey(String ontid, String password, byte[] key, String recoveryScriptHash,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -431,7 +430,7 @@ public class OntIdTx {
         tmp.add(Helper.hexToBytes(recoveryScriptHash));
         tmp.add(1);
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list, addr, password);
+        Transaction tx = makeInvokeTransaction(list, addr, password,gas);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -447,7 +446,7 @@ public class OntIdTx {
      * @return
      * @throws Exception
      */
-    public String sendAddRecovery(String ontid, String password, String recoveryScriptHash) throws Exception {
+    public String sendAddRecovery(String ontid, String password, String recoveryScriptHash,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -461,7 +460,7 @@ public class OntIdTx {
         tmp.add(Helper.hexToBytes(recoveryScriptHash));
         tmp.add(pk);
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list, addr, password);
+        Transaction tx = makeInvokeTransaction(list, addr, password,gas);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -480,7 +479,7 @@ public class OntIdTx {
      * @return
      * @throws Exception
      */
-    public String sendChangeRecovery(String ontid, String password, String newRecoveryScriptHash, String oldRecoveryScriptHash) throws Exception {
+    public String sendChangeRecovery(String ontid, String password, String newRecoveryScriptHash, String oldRecoveryScriptHash,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -494,7 +493,7 @@ public class OntIdTx {
         tmp.add(Helper.hexToBytes(newRecoveryScriptHash));
         tmp.add(pk);
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list, addr, password);
+        Transaction tx = makeInvokeTransaction(list, addr, password,gas);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -512,16 +511,16 @@ public class OntIdTx {
      * @return
      * @throws Exception
      */
-    public String sendUpdateAttribute(String ontid, String password, byte[] path, byte[] type, byte[] value) throws Exception {
-        return sendUpdateAttribute(ontid, password, path, type, value, false);
+    public String sendUpdateAttribute(String ontid, String password, byte[] path, byte[] type, byte[] value,long gas) throws Exception {
+        return sendUpdateAttribute(ontid, password, path, type, value,gas, false);
     }
 
-    public String sendUpdateAttributePreExec(String ontid, String password, byte[] path, byte[] type, byte[] value) throws Exception {
-        return sendUpdateAttribute(ontid, password, path, type, value, true);
+    public String sendUpdateAttributePreExec(String ontid, String password, byte[] path, byte[] type, byte[] value,long gas) throws Exception {
+        return sendUpdateAttribute(ontid, password, path, type, value,gas, true);
     }
 
-    private String sendUpdateAttribute(String ontid, String password, byte[] path, byte[] type, byte[] value, boolean preExec) throws Exception {
-        Transaction tx = makeUpdateAttribute(ontid, password, path, type, value);
+    private String sendUpdateAttribute(String ontid, String password, byte[] path, byte[] type, byte[] value, long gas,boolean preExec) throws Exception {
+        Transaction tx = makeUpdateAttribute(ontid, password, path, type, value,gas);
         sdk.signTx(tx, ontid, password);
         boolean b = false;
         if (preExec) {
@@ -539,7 +538,7 @@ public class OntIdTx {
         return null;
     }
 
-    public Transaction makeUpdateAttribute(String ontid, String password, byte[] path, byte[] type, byte[] value) throws Exception {
+    public Transaction makeUpdateAttribute(String ontid, String password, byte[] path, byte[] type, byte[] value,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -558,7 +557,7 @@ public class OntIdTx {
         tmp.add(value);
         tmp.add(pk);
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list, addr, password);
+        Transaction tx = makeInvokeTransaction(list, addr, password,gas);
         return tx;
     }
 
@@ -569,7 +568,7 @@ public class OntIdTx {
      * @return
      * @throws Exception
      */
-    public String sendUpdateAttributeArray(String ontid, String password, List<Object> attriList) throws Exception {
+    public String sendUpdateAttributeArray(String ontid, String password, List<Object> attriList,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -583,7 +582,7 @@ public class OntIdTx {
         tmp.add(pk);
         tmp.add(attriList);
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list, addr, password);
+        Transaction tx = makeInvokeTransaction(list, addr, password,gas);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -732,9 +731,8 @@ public class OntIdTx {
         tmp.add(ontid.getBytes());
         tmp.add(UUID.randomUUID().toString().getBytes());
         list.add(tmp);
-        Fee[] fees = new Fee[0];
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress, null, params, VmType.NEOVM.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress, null, params, VmType.NEOVM.value(), null,0);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         if (obj == null || ((String) obj).length() == 0) {
             throw new SDKException(ErrorCode.ResultIsNull);
@@ -750,40 +748,6 @@ public class OntIdTx {
         return new String[]{};
     }
 
-
-    /**
-     * @param ontid
-     * @param password
-     * @param key
-     * @param value
-     * @return
-     * @throws Exception
-     */
-    private String sendAddRecord(String ontid, String password, byte[] key, byte[] value) throws Exception {
-        if (contractAddress == null) {
-            throw new SDKException(ErrorCode.NullCodeHash);
-        }
-        if (key.length >= 255) {
-            throw new SDKException("param error");
-        }
-        byte[] did = (ontid).getBytes();
-        String addr = ontid.replace(Common.didont, "");
-        byte[] pk = Helper.hexToBytes(sdk.getWalletMgr().getAccountInfo(addr, password).pubkey);
-        List list = new ArrayList<Object>();
-        list.add("AddRecord".getBytes());
-        List tmp = new ArrayList<Object>();
-        tmp.add(did);
-        tmp.add(key);
-        tmp.add(value);
-        list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list, addr, password);
-        sdk.signTx(tx, addr, password);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
-        if (b) {
-            return tx.hash().toString();
-        }
-        return null;
-    }
 
     /**
      * create OntId Claim
@@ -1060,8 +1024,8 @@ public class OntIdTx {
      * @return
      * @throws Exception
      */
-    public String sendRemoveAttribute(String ontid, String password, byte[] path) throws Exception {
-        Transaction tx = makeRemoveAttribute(ontid, password, path);
+    public String sendRemoveAttribute(String ontid, String password, byte[] path,long gas) throws Exception {
+        Transaction tx = makeRemoveAttribute(ontid, password, path,gas);
         sdk.signTx(tx, ontid, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -1070,7 +1034,7 @@ public class OntIdTx {
         return null;
     }
 
-    public Transaction makeRemoveAttribute(String ontid, String password, byte[] path) throws Exception {
+    public Transaction makeRemoveAttribute(String ontid, String password, byte[] path,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -1087,25 +1051,22 @@ public class OntIdTx {
         tmp.add(path);
         tmp.add(pk);
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list, addr, password);
+        Transaction tx = makeInvokeTransaction(list, addr, password,gas);
         return tx;
     }
 
-    public Transaction makeInvokeTransaction(List<Object> list, IdentityInfo acctinfo) throws Exception {
-        Fee[] fees = new Fee[1];
-        fees[0] = new Fee(0, Address.addressFromPubKey(acctinfo.pubkey));
+    public Transaction makeInvokeTransaction(List<Object> list, IdentityInfo acctinfo,long gas) throws Exception {
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress, null, params, VmType.NEOVM.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress, null, params, VmType.NEOVM.value(), acctinfo.addressU160,gas);
         return tx;
     }
 
-    public Transaction makeInvokeTransaction(List<Object> list, String addr, String password) throws Exception {
-        addr = addr.replace(Common.didont, "");
-        AccountInfo acctinfo = sdk.getWalletMgr().getAccountInfo(addr, password);
-        Fee[] fees = new Fee[1];
-        fees[0] = new Fee(0, Address.addressFromPubKey(acctinfo.pubkey));
+    public Transaction makeInvokeTransaction(List<Object> list, String addr, String password,long gas) throws Exception {
+        if(addr != null) {
+            addr = addr.replace(Common.didont, "");
+        }
         byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress, null, params, VmType.NEOVM.value(), fees);
+        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress, null, params, VmType.NEOVM.value(), addr,gas);
         return tx;
     }
 
@@ -1123,7 +1084,7 @@ public class OntIdTx {
         tmp.add(did);
         tmp.add(pk);
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list, addr, password);
+        Transaction tx = makeInvokeTransaction(list, addr, password,0);
         sdk.signTx(tx, addr, password);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         return (String) obj;
@@ -1144,7 +1105,7 @@ public class OntIdTx {
         tmp.add(did);
         tmp.add(pkId);
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list, addr, password);
+        Transaction tx = makeInvokeTransaction(list, null, password,0);
         sdk.signTx(tx, addr, password);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         return (String) obj;

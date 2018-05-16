@@ -57,7 +57,7 @@ public class InvokeCodeDemo {
             if (ontSdk.getWalletMgr().getIdentitys().size() == 0) {
                 Map map = new HashMap<>();
                 map.put("test", "value00");
-                Identity did = ontSdk.getOntIdTx().sendRegister("passwordtest");
+                Identity did = ontSdk.getOntIdTx().sendRegister("passwordtest","",0);
             }
             Identity did = ontSdk.getWalletMgr().getIdentitys().get(0);
             System.out.println(did.ontid);
@@ -74,7 +74,7 @@ public class InvokeCodeDemo {
             String value = "{\"Context\":\"claim:context\",\"Content\":{\"Issuer\":\"did:ont:TA8WyMDTP7BXFK6pVZ55Wn9gvAjCvsMfTm\",\"Subject\":\"did:ont:TA7idxkVHWXQgk2fd4dPZRyp7V2G7qTBzd\"},\"Signature\":{\"Format\":\"pgp\",\"Value\":\"AXLttwbJT8PV3L8P721PEDSFrMZ+wf4tYEcQMfsBiDH9Wi3DUvUnLdeBkarH2ZcvqB3YICFBcJy8aA46VLjFkFA=\",\"Algorithm\":\"ECDSAwithSHA256\"},\"Metadata\":{\"Issuer\":\"did:ont:TA8WyMDTP7BXFK6pVZ55Wn9gvAjCvsMfTm\",\"CreateTime\":\"2018-03-29T16:45:09Z\",\"Subject\":\"did:ont:TA7idxkVHWXQgk2fd4dPZRyp7V2G7qTBzd\"},\"Id\":\"3903a2f8158d71b976936ab60656fc0b615be40715d9235e4992c15e530b8ed3\"}";
             func.setParamsValue(did.ontid.getBytes(), "key".getBytes(), "bytes".getBytes(), value.getBytes(), Helper.hexToBytes(info.pubkey));
 
-            String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", func, (byte) VmType.NEOVM.value());
+            String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", func, (byte) VmType.NEOVM.value(),0);
 
             System.out.println("invokeTransaction hash:" + hash);
 

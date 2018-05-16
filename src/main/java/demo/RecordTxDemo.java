@@ -19,7 +19,7 @@ public class RecordTxDemo {
 
             Identity id = ontSdk.getWalletMgr().getIdentitys().get(0);
 
-            String hash = ontSdk.getRecordTx().sendPut(id.ontid,"passwordtest","key","value-test");
+            String hash = ontSdk.getRecordTx().sendPut(id.ontid,"passwordtest","key","value-test",0);
             System.out.println(hash);
             Thread.sleep(6000);
             String res = ontSdk.getRecordTx().sendGet(id.ontid,"passwordtest","key");

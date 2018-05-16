@@ -25,7 +25,6 @@ import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.VmType;
 import com.github.ontio.core.asset.Contract;
-import com.github.ontio.core.asset.Fee;
 import com.github.ontio.core.asset.State;
 import com.github.ontio.core.asset.Transfers;
 import com.github.ontio.core.transaction.Transaction;
@@ -86,9 +85,8 @@ public class MakeTxWithoutWalletDemo {
                 State state = new State(acct0.getAddressU160(), recvAddr, amount);
                 Transfers transfers = new Transfers(new State[]{state});
                 Contract contract = new Contract((byte) 0, null, Address.parse(ontContractAddr), "transfer", transfers.toArray());
-                Fee[] fees = new Fee[1];
-                fees[0] = new Fee(0, sender);
-                Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), fees);
+
+                Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), sender.toBase58(),0);
                 System.out.println(tx.json());
                 ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct0}});
 
@@ -108,9 +106,8 @@ public class MakeTxWithoutWalletDemo {
                 State state = new State(multiAddr, recvAddr, amount);
                 Transfers transfers = new Transfers(new State[]{state});
                 Contract contract = new Contract((byte) 0, null, Address.parse(ontContractAddr), "transfer", transfers.toArray());
-                Fee[] fees = new Fee[1];
-                fees[0] = new Fee(0, multiAddr);
-                Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), fees);
+
+                Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), multiAddr.toBase58(),0);
                 System.out.println(tx.json());
                 ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct1, acct2}});
 
@@ -135,10 +132,8 @@ public class MakeTxWithoutWalletDemo {
 
                 Transfers transfers = new Transfers(new State[]{state, state2});
                 Contract contract = new Contract((byte) 0, null, Address.parse(ontContractAddr), "transfer", transfers.toArray());
-                Fee[] fees = new Fee[2];
-                fees[0] = new Fee(0, sender1);
-                fees[1] = new Fee(0, sender2);
-                Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), fees);
+
+                Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), sender1.toBase58(),0);
                 System.out.println(tx.json());
                 ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct0}, {acct1, acct2}});
 

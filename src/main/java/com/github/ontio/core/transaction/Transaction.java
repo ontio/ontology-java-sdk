@@ -27,7 +27,6 @@ import com.alibaba.fastjson.JSON;
 import com.github.ontio.common.*;
 import com.github.ontio.core.Inventory;
 import com.github.ontio.core.InventoryType;
-import com.github.ontio.core.asset.Fee;
 import com.github.ontio.core.asset.Sig;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
@@ -37,13 +36,12 @@ import com.github.ontio.io.BinaryWriter;
  */
 public abstract class Transaction extends Inventory {
 
-
     public byte version = 0;
     public final TransactionType txType;
     public int nonce = new Random().nextInt();
     public long gasPrice = 0;
     public long gasLimit = 0;
-    public Address payer;
+    public Address payer = new Address();
     public Attribute[] attributes;
     public Sig[] sigs = new Sig[0];
     protected Transaction(TransactionType type) {

@@ -396,7 +396,7 @@ public class Account {
         cipher.init(Cipher.DECRYPT_MODE, skeySpec, new IvParameterSpec(iv));
         byte[] rawkey = cipher.doFinal(encryptedkey);
         if (!new Account(rawkey, scheme).getAddressU160().toBase58().equals(address)) {
-            throw new SDKException(ErrorCode.OtherError(ErrorCode.encryptedPriKeyAddressPasswordErr));
+            throw new SDKException(ErrorCode.encryptedPriKeyAddressPasswordErr);
         }
         return Helper.toHexString(rawkey);
     }

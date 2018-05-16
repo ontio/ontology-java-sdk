@@ -41,11 +41,11 @@ public abstract class Transaction extends Inventory {
     public byte version = 0;
     public final TransactionType txType;
     public int nonce = new Random().nextInt();
+    public long gasPrice = 0;
+    public long gasLimit = 0;
+    public Address payer;
     public Attribute[] attributes;
-    public Fee[] fee = new Fee[0];
-    public long networkFee;
     public Sig[] sigs = new Sig[0];
-
     protected Transaction(TransactionType type) {
         this.txType = type;
     }
@@ -66,6 +66,8 @@ public abstract class Transaction extends Inventory {
         if (txType.value() != reader.readByte()) {
             throw new IOException();
         }
+        gasPrice = reader.readLong();
+        gasLimit = reader.readLong();
         deserializeUnsignedWithoutType(reader);
     }
 
@@ -74,11 +76,7 @@ public abstract class Transaction extends Inventory {
             deserializeExclusiveData(reader);
             attributes = reader.readSerializableArray(Attribute.class);
             int len = (int) reader.readVarInt();
-            fee = new Fee[len];
-            for (int i = 0; i < len; i++) {
-                fee[i] = new Fee(reader.readLong(), reader.readSerializable(Address.class));
-            }
-            networkFee = reader.readLong();
+
         } catch (InstantiationException | IllegalAccessException ex) {
             throw new IOException(ex);
         }
@@ -98,10 +96,11 @@ public abstract class Transaction extends Inventory {
         writer.writeByte(version);
         writer.writeByte(txType.value());
         writer.writeInt(nonce);
+        writer.writeLong(gasPrice);
+        writer.writeLong(gasLimit);
+        writer.writeSerializable(payer);
         serializeExclusiveData(writer);
         writer.writeSerializableArray(attributes);
-        writer.writeSerializableArray(fee);
-        writer.writeLong(networkFee);
     }
 
     protected void serializeExclusiveData(BinaryWriter writer) throws IOException {
@@ -161,8 +160,9 @@ public abstract class Transaction extends Inventory {
 
     @Override
     public Address[] getAddressU160ForVerifying() {
-        HashSet<Address> hashes = new HashSet<Address>(Arrays.stream(this.fee).map(p -> p.payer).collect(Collectors.toList()));
-        return hashes.stream().sorted().toArray(Address[]::new);
+//        HashSet<Address> hashes = new HashSet<Address>(Arrays.stream(this.fee).map(p -> p.payer).collect(Collectors.toList()));
+//        return hashes.stream().sorted().toArray(Address[]::new);
+        return null;
     }
 
     @Override
@@ -176,8 +176,11 @@ public abstract class Transaction extends Inventory {
         json.put("Version", (int) version);
         json.put("Nonce", nonce& (Integer.MAX_VALUE*2-1));
         json.put("TxType", txType.value() & (Byte.MAX_VALUE*2-1));
+        json.put("GasPrice",gasPrice);
+        json.put("Gas",gasLimit);
+        json.put("Payer",payer.toBase58());
         json.put("Attributes", Arrays.stream(attributes).map(p -> p.json()).toArray(Object[]::new));
-        json.put("Fee", Arrays.stream(fee).map(p -> p.json()).toArray(Object[]::new));
+
         json.put("Sigs", Arrays.stream(sigs).map(p -> p.json()).toArray(Object[]::new));
         return json;
     }

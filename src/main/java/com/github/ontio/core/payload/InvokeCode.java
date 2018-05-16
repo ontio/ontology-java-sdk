@@ -34,7 +34,6 @@ import java.util.HashSet;
 import java.util.Map;
 
 public class InvokeCode extends Transaction {
-	public long gasLimit;
 	public byte vmType;
 	public byte[] code;
 
@@ -45,7 +44,6 @@ public class InvokeCode extends Transaction {
 	@Override
 	protected void deserializeExclusiveData(BinaryReader reader) throws IOException {
 		try {
-			gasLimit = reader.readLong();
 			vmType = reader.readByte();
 			code = reader.readVarBytes();
 		} catch (Exception e) {
@@ -54,8 +52,8 @@ public class InvokeCode extends Transaction {
 	}
 	@Override
 	protected void serializeExclusiveData(BinaryWriter writer) throws IOException {
-		writer.writeLong(gasLimit);
-		writer.writeByte(vmType);
+		byte[] temp = new byte[]{vmType};
+		writer.write(temp);
 		writer.writeVarBytes(code);
 	}
 	@Override
@@ -68,7 +66,6 @@ public class InvokeCode extends Transaction {
 		Map obj = (Map)super.json();
 		Map payload = new HashMap();
 		payload.put("Code", Helper.toHexString(code));
-		payload.put("GasLimit",gasLimit);
 		payload.put("VmType",vmType& Byte.MAX_VALUE);
 		obj.put("Payload",payload);
 		return obj;

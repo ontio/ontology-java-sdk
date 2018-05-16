@@ -37,11 +37,13 @@
  */
 package demo;
 
+import com.github.ontio.common.Common;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.payload.DeployCode;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.core.VmType;
 import com.github.ontio.OntSdk;
+import com.github.ontio.sdk.wallet.Identity;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -60,6 +62,14 @@ public class DeployCodeDemo {
             is.read(bys);
             is.close();
 
+            String password = "111111";
+            Identity identity;
+            if(ontSdk.getWalletMgr().getIdentitys().size() < 1){
+                identity = ontSdk.getWalletMgr().createIdentity(password);
+            }else{
+                identity = ontSdk.getWalletMgr().getIdentitys().get(0);
+            }
+
             //code
             String code = "";
             code = Helper.toHexString(bys);
@@ -68,7 +78,7 @@ public class DeployCodeDemo {
 
             ontSdk.setCodeAddress(Helper.getCodeAddress(code, VmType.NEOVM.value()));
 
-            Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(code, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
+            Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(identity.ontid.replace(Common.didont,""),code, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
             String txHex = Helper.toHexString(tx.toArray());
             System.out.println(txHex);
             ontSdk.getConnectMgr().sendRawTransaction(txHex);

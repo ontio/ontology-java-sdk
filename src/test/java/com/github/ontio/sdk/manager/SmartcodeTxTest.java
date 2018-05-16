@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.IOUtils;
 import com.github.ontio.OntSdk;
+import com.github.ontio.common.Common;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.VmType;
 import com.github.ontio.core.asset.Fee;
@@ -36,6 +37,8 @@ public class SmartcodeTxTest {
     AbiFunction abiFunction;
     AbiFunction abiFunction2;
     String codeHex;
+    String password = "111111";
+    Identity identity;
 
     @Before
     public void setUp() throws Exception {
@@ -50,6 +53,12 @@ public class SmartcodeTxTest {
         ontSdk.setDefaultConnect(ontSdk.getRestful());
         ontSdk.openWalletFile("SmartcodeTxTest.json");
 
+
+        if(ontSdk.getWalletMgr().getIdentitys().size() < 1){
+            identity = ontSdk.getWalletMgr().createIdentity(password);
+        }else{
+            identity = ontSdk.getWalletMgr().getIdentitys().get(0);
+        }
 
         ontSdk.setCodeAddress(codeAddress);
 
@@ -74,7 +83,7 @@ public class SmartcodeTxTest {
         abiFunction2 = JSON.parseObject(funcStr2,AbiFunction.class);
         abiFunction2.setParamsValue(did.ontid.getBytes(),UUID.randomUUID().toString().getBytes());
 
-        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
+        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(identity.ontid.replace(Common.didont,""),codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
 
         String txHex = Helper.toHexString(tx.toArray());
         boolean b = ontSdk.getConnectMgr().sendRawTransaction(txHex);
@@ -163,7 +172,7 @@ public class SmartcodeTxTest {
     public void deployCodeTransaction() throws IOException, SDKException, ConnectorException {
         ontSdk.setCodeAddress(Helper.getCodeAddress(codeHex, VmType.NEOVM.value()));
 
-        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
+        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(identity.ontid.replace(Common.didont,""),codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
         String txHex = Helper.toHexString(tx.toArray());
         System.out.println(txHex);
         boolean b = ontSdk.getConnectMgr().sendRawTransaction(txHex);
@@ -184,7 +193,7 @@ public class SmartcodeTxTest {
     @Test
     public void makeDeployCodeTransaction() throws SDKException {
 
-        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
+        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(identity.ontid.replace(Common.didont,""),codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
     Assert.assertNotNull(tx);
 
     }

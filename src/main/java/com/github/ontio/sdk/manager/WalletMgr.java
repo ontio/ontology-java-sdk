@@ -381,6 +381,9 @@ public class WalletMgr {
             case SHA256WITHECDSA:
                 acct = new Account("ECDSA", new Object[]{Curve.P256.toString()}, "aes-256-ctr", "SHA256withECDSA", "sha256");
                 break;
+            case SM3WITHSM2:
+                acct = new Account("SM2", new Object[]{Curve.SM2P256V1.toString()}, "aes-256-ctr", "SM3withSM2", "sha256");
+                break;
             default:
                 throw new SDKException(ErrorCode.OtherError("scheme type error"));
         }

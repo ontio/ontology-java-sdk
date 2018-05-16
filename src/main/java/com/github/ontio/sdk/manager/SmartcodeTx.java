@@ -21,6 +21,7 @@ package com.github.ontio.sdk.manager;
 
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
+import com.github.ontio.common.Common;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.core.VmType;
 import com.github.ontio.core.asset.Contract;
@@ -187,14 +188,15 @@ public class SmartcodeTx {
      * @throws Exception
      */
     public String DeployCodeTransaction(String codeHexStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp, byte vmtype) throws Exception {
-        Transaction tx = makeDeployCodeTransaction(codeHexStr, needStorage, name, codeVersion, author, email, desp, vmtype);
-        String txHex = tx.toHexString();
-        System.out.println(txHex);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(txHex);
-        if (!b) {
-            throw new SDKException(ErrorCode.SendRawTxError);
-        }
-        return tx.hash().toString();
+//        Transaction tx = makeDeployCodeTransaction(codeHexStr, needStorage, name, codeVersion, author, email, desp, vmtype);
+//        String txHex = tx.toHexString();
+//        System.out.println(txHex);
+//        boolean b = sdk.getConnectMgr().sendRawTransaction(txHex);
+//        if (!b) {
+//            throw new SDKException(ErrorCode.SendRawTxError);
+//        }
+//        return tx.hash().toString();
+        return null;
     }
     public static byte[] Int2Bytes_LittleEndian(int iValue){
         byte[] rst = new byte[4];
@@ -347,8 +349,12 @@ public class SmartcodeTx {
      * @return
      * @throws SDKException
      */
-    public DeployCode makeDeployCodeTransaction(String codeStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp, byte vmtype) throws SDKException {
+    public DeployCode makeDeployCodeTransaction(String address,String codeStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp, byte vmtype) throws SDKException {
+        if (("").equals(address)){
+            throw new SDKException(ErrorCode.ParamError);
+        }
         DeployCode tx = new DeployCode();
+        tx.payer = Address.decodeBase58(address.replace(Common.didont,""));
         tx.attributes = new Attribute[1];
         tx.attributes[0] = new Attribute();
         tx.attributes[0].usage = AttributeUsage.Nonce;
@@ -391,7 +397,29 @@ public class SmartcodeTx {
         tx.code = params;
         tx.gasLimit = 0;
         tx.vmType = vmtype;
-        tx.fee = fees;
+//        tx.fee = fees;
+        return tx;
+    }
+
+
+    public InvokeCode makeInvokeCodeTransaction(String codeAddr,String method,byte[] params, byte vmtype, String payer) throws SDKException {
+        if(vmtype == VmType.NEOVM.value()) {
+            Contract contract = new Contract((byte) 0, null, Address.parse(codeAddr), "", params);
+            params = Helper.addBytes(new byte[]{0x67}, contract.toArray());
+        }else if(vmtype == VmType.WASMVM.value()) {
+            Contract contract = new Contract((byte) 1, null, Address.parse(codeAddr), method, params);
+            params = contract.toArray();
+        }
+        InvokeCode tx = new InvokeCode();
+        tx.attributes = new Attribute[1];
+        tx.attributes[0] = new Attribute();
+        tx.attributes[0].usage = AttributeUsage.Nonce;
+        tx.attributes[0].data = UUID.randomUUID().toString().getBytes();
+        tx.code = params;
+        tx.gasLimit = 0;
+        tx.gasPrice = 0;
+        tx.payer = Address.decodeBase58(payer);
+        tx.vmType = vmtype;
         return tx;
     }
 }

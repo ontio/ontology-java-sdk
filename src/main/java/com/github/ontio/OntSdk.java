@@ -46,6 +46,7 @@ public class OntSdk {
     private SmartcodeTx smartcodeTx = null;
     private OntAssetTx ontAssetTx = null;
     private ClaimRecordTx claimRecordTx = null;
+    private NativeOntIdTx nativeOntIdTx = null;
     private static OntSdk instance = null;
     public SignatureScheme signatureScheme = SignatureScheme.SHA256WITHECDSA;
 
@@ -128,6 +129,14 @@ public class OntSdk {
         return claimRecordTx;
     }
 
+    public NativeOntIdTx getNativeOntIdTx(){
+        if (nativeOntIdTx == null){
+            getSmartcodeTx();
+            nativeOntIdTx = new NativeOntIdTx(getInstance());
+        }
+        return nativeOntIdTx;
+    }
+
     /**
      *  Smartcode Tx
      * @return instance
@@ -176,6 +185,7 @@ public class OntSdk {
         getRecordTx().setCodeAddress(codeAddress);
         getNep5Tx().setCodeAddress(codeAddress);
         getClaimRecordTx().setCodeAddress(codeAddress);
+        getNativeOntIdTx().setCodeAddress(codeAddress);
     }
 
     /**
@@ -183,6 +193,7 @@ public class OntSdk {
      * @param scheme
      */
     public void setSignatureScheme(SignatureScheme scheme) {
+        signatureScheme = scheme;
         walletMgr.setSignatureScheme(scheme);
     }
 

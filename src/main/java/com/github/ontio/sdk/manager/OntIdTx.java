@@ -831,7 +831,57 @@ public class OntIdTx {
             claim = new Claim(sdk.getWalletMgr().getSignatureScheme(), acct, context, contentMap, metaData, pubkeyId);
             return claim.getClaim();
         } catch (SDKException e) {
-            throw new SDKException(ErrorCode.OtherError("createOntIdClaim error"));
+            throw new SDKException(ErrorCode.CreateOntIdClaimErr);
+        }
+    }
+
+    /**
+     *
+     * @param signerOntid
+     * @param password
+     * @param context
+     * @param claimMap
+     * @param metaData
+     * @return
+     * @throws Exception
+     */
+    public String createOntIdClaim(String signerOntid, String password, String context, Map<String, Object> claimMap, Map metaData,Map clmRevMap,long expire) throws Exception {
+        Claim claim = null;
+        Map contentMap = sortMap(claimMap);
+
+        try {
+            String sendDid = (String) metaData.get("Issuer");
+            String receiverDid = (String) metaData.get("Subject");
+            if (sendDid == null || receiverDid == null) {
+                throw new SDKException(ErrorCode.DidNull);
+            }
+            String issuerDdo = sendGetDDO(sendDid);
+            JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("Owners");
+            if (owners == null) {
+                throw new SDKException(ErrorCode.NotExistCliamIssuer);
+            }
+            String pubkeyId = null;
+            com.github.ontio.account.Account acct = sdk.getWalletMgr().getAccount(signerOntid, password);
+            String pk = Helper.toHexString(acct.serializePublicKey());
+            for (int i = 0; i < owners.size(); i++) {
+                JSONObject obj = owners.getJSONObject(i);
+                if (obj.getString("Value").equals(pk)) {
+                    pubkeyId = obj.getString("PublicKeyId");
+                    break;
+                }
+            }
+            if (pubkeyId == null) {
+                throw new SDKException(ErrorCode.NotFoundPublicKeyId);
+            }
+            String[] receiverDidStr = receiverDid.split(":");
+            if (receiverDidStr.length != 3) {
+                throw new SDKException(ErrorCode.DidError);
+            }
+            metaData = sortMap(metaData);
+            claim = new Claim(sdk.getWalletMgr().getSignatureScheme(), acct, context, claimMap, metaData,clmRevMap,pubkeyId,expire);
+            return claim.getClaimStr();
+        } catch (SDKException e) {
+            throw new SDKException(ErrorCode.CreateOntIdClaimErr);
         }
     }
 
@@ -877,8 +927,14 @@ public class OntIdTx {
     public boolean verifyOntIdClaim(String claim) throws Exception {
         DataSignature sign = null;
         try {
-            JSONObject obj = JSON.parseObject(claim);
-            String issuerDid = obj.getJSONObject("Metadata").getString("Issuer");
+
+            String[] obj = claim.split("\\.");
+            if (obj.length != 3) {
+                throw new SDKException(ErrorCode.ParamError);
+            }
+            byte[] payloadBytes = Base64.getDecoder().decode(obj[1].getBytes());
+            JSONObject payloadObj = JSON.parseObject(new String(payloadBytes));
+            String issuerDid = payloadObj.getString("Iss");
             String[] str = issuerDid.split(":");
             if (str.length != 3) {
                 throw new SDKException(ErrorCode.DidError);
@@ -888,8 +944,11 @@ public class OntIdTx {
             if (owners == null) {
                 throw new SDKException(ErrorCode.NotExistCliamIssuer);
             }
-            String signatureValue = obj.getJSONObject("Signature").getString("Value");
-            String publicKeyId = obj.getJSONObject("Signature").getString("PublicKeyId");
+            byte[] signatureBytes = Base64.getDecoder().decode(obj[2]);
+            JSONObject signatureObj = JSON.parseObject(new String(signatureBytes));
+
+            String signatureValue = signatureObj.getString("Value");
+            String publicKeyId = signatureObj.getString("PublicKeyId");
             boolean verify = false;
             for (int i = 0; i < owners.size(); i++) {
                 JSONObject o = owners.getJSONObject(i);
@@ -903,12 +962,11 @@ public class OntIdTx {
             }
             String id = publicKeyId.split("#keys-")[1];
             String pubkeyStr = owners.getJSONObject(Integer.parseInt(id) - 1).getString("Value");
-            obj.remove("Signature");
             sign = new DataSignature();
-            byte[] data = JSON.toJSONString(obj).getBytes();
+            byte[] data = (obj[0] + "." + obj[1]).getBytes();
             return sign.verifySignature(new Account(false, Helper.hexToBytes(pubkeyStr)), data, Base64.getDecoder().decode(signatureValue));
         } catch (Exception e) {
-            throw new SDKException(ErrorCode.OtherError("verifyOntIdClaim error"));
+            throw new SDKException(ErrorCode.VerifyOntIdClaimErr);
         }
     }
 

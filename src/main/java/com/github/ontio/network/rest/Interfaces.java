@@ -56,6 +56,7 @@ class Interfaces {
             return http.post(url + UrlConsts.Url_send_transaction, params, body);
         } catch (Exception e) {
             throw new RestfulException(ErrorCode.InvalidUrl(url), e);
+
         }
     }
 
@@ -67,7 +68,7 @@ class Interfaces {
         try {
             return http.get(url + UrlConsts.Url_get_transaction + txhash, params);
         } catch (Exception e) {
-            throw new RestfulException(ErrorCode.InvalidUrl + url + "," + e.getMessage(), e);
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
 
@@ -76,7 +77,7 @@ class Interfaces {
         try {
             return http.get(url + UrlConsts.Url_get_generate_block_time, params);
         } catch (Exception e) {
-            throw new RestfulException(ErrorCode.InvalidUrl + url + "," + e.getMessage(), e);
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
 
@@ -85,7 +86,7 @@ class Interfaces {
         try {
             return http.get(url + UrlConsts.Url_get_node_count, params);
         } catch (Exception e) {
-            throw new RestfulException(ErrorCode.InvalidUrl + url + "," + e.getMessage(), e);
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
 
@@ -94,7 +95,7 @@ class Interfaces {
         try {
             return http.get(url + UrlConsts.Url_get_block_height, params);
         } catch (Exception e) {
-            throw new RestfulException(ErrorCode.InvalidUrl + url + "," + e.getMessage(), e);
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
 
@@ -104,7 +105,7 @@ class Interfaces {
         try {
             return http.get(url + UrlConsts.Url_get_block_by_height + height, params);
         } catch (Exception e) {
-            throw new RestfulException(ErrorCode.InvalidUrl + url + "," + e.getMessage(), e);
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
 
@@ -114,7 +115,7 @@ class Interfaces {
         try {
             return http.get(url + UrlConsts.Url_get_block_by_hash + hash, params);
         } catch (Exception e) {
-            throw new RestfulException(ErrorCode.InvalidUrl + url + "," + e.getMessage(), e);
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
 
@@ -124,7 +125,7 @@ class Interfaces {
         try {
             return http.get(url + UrlConsts.Url_get_contract_state + hash, params);
         } catch (Exception e) {
-            throw new RestfulException(ErrorCode.InvalidUrl + url + "," + e.getMessage(), e);
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
 
@@ -133,7 +134,7 @@ class Interfaces {
         try {
             return http.get(url + UrlConsts.Url_get_contract_state + hash, params);
         } catch (Exception e) {
-            throw new RestfulException(ErrorCode.InvalidUrl + url + "," + e.getMessage(), e);
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
 
@@ -142,7 +143,7 @@ class Interfaces {
         try {
             return http.get(url + UrlConsts.Url_get_smartcodeevent_txs_by_height + height, params);
         } catch (Exception e) {
-            throw new RestfulException(ErrorCode.InvalidUrl + url + "," + e.getMessage(), e);
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
 
@@ -151,7 +152,7 @@ class Interfaces {
         try {
             return http.get(url + UrlConsts.Url_get_smartcodeevent_by_txhash + hash, params);
         } catch (Exception e) {
-            throw new RestfulException(ErrorCode.InvalidUrl + url + "," + e.getMessage(), e);
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
 
@@ -160,7 +161,7 @@ class Interfaces {
         try {
             return http.get(url + UrlConsts.Url_get_block_height_by_txhash + hash, params);
         } catch (Exception e) {
-            throw new RestfulException(ErrorCode.InvalidUrl + url + "," + e.getMessage(), e);
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
 
@@ -169,7 +170,7 @@ class Interfaces {
         try {
             return http.get(url + UrlConsts.Url_get_storage + codehash+"/"+key, params);
         } catch (Exception e) {
-            throw new RestfulException(ErrorCode.InvalidUrl + url + "," + e.getMessage(), e);
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
     public String getMerkleProof(String hash) throws RestfulException {
@@ -177,7 +178,7 @@ class Interfaces {
         try {
             return http.get(url + UrlConsts.Url_get_merkleproof + hash, params);
         } catch (Exception e) {
-            throw new RestfulException(ErrorCode.InvalidUrl + url + "," + e.getMessage(), e);
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
     public String getBalance(String address) throws RestfulException {
@@ -185,7 +186,7 @@ class Interfaces {
         try {
             return http.get(url + UrlConsts.Url_get_account_balance + address, params);
         } catch (Exception e) {
-            throw new RestfulException(ErrorCode.InvalidUrl + url + "," + e.getMessage(), e);
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
 
@@ -194,7 +195,7 @@ class Interfaces {
         try {
             return http.get(url + UrlConsts.Url_get_transaction + txhash, params);
         } catch (Exception e) {
-            throw new RestfulException(ErrorCode.InvalidUrl + url + "," + e.getMessage(), e);
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
 
@@ -203,7 +204,7 @@ class Interfaces {
         try {
             return http.get(url + UrlConsts.Url_get_block_by_height + height, params);
         } catch (Exception e) {
-            throw new RestfulException(ErrorCode.InvalidUrl + url + "," + e.getMessage(), e);
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
 
@@ -212,7 +213,7 @@ class Interfaces {
         try {
             return http.get(url + UrlConsts.Url_get_block_by_hash + hash, params);
         } catch (Exception e) {
-            throw new RestfulException(ErrorCode.InvalidUrl + url + "," + e.getMessage(), e);
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
 }

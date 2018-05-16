@@ -19,8 +19,11 @@
 
 package com.github.ontio.merkle;
 
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.UInt256;
+import com.github.ontio.sdk.exception.SDKException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +41,7 @@ public class MerkleVerifier {
                                                   int leaf_index, UInt256[] proof, UInt256 root_hash, int tree_size) throws Exception {
 
         if (tree_size <= leaf_index) {
-            throw new Exception("Wrong params: the tree size is smaller than the leaf index");
+            throw new SDKException(ErrorCode.MerkleVerifierErr);
         }
         UInt256 calculated_root_hash = calculate_root_hash_from_audit_path(leaf_hash,
                 leaf_index, proof, tree_size);
@@ -103,7 +106,7 @@ public class MerkleVerifier {
         }
         return nodes;
     }
-    public static boolean Verify(UInt256 leaf_hash,List targetHashes, UInt256 root_hash) throws Exception {
+    public static boolean Verify(UInt256 leaf_hash,List targetHashes, UInt256 root_hash) throws SDKException {
         UInt256 calculated_hash = leaf_hash;
         for(int i=0;i<targetHashes.size();i++){
             String direction = (String)((Map)targetHashes.get(i)).get("Direction");
@@ -114,15 +117,15 @@ public class MerkleVerifier {
             }else if(direction.equals("Right")){
                 calculated_hash = hasher.hash_children(calculated_hash,targetHash);
             }else{
-                throw new Exception("targetHashes error");
+                throw new SDKException(ErrorCode.TargetHashesErr);
             }
         }
         if (calculated_hash.equals(new UInt256())) {
             return false;
         }
         if (!calculated_hash.equals(root_hash)) {
-            throw new Exception("Constructed root hash differs from provided root hash. Constructed: %x, Expected: " +
-                    calculated_hash + root_hash);
+            throw new SDKException(ErrorCode.ConstructedRootHashErr("Constructed root hash differs from provided root hash. Constructed: %x, Expected: " +
+                    calculated_hash + root_hash));
         }
         return true;
     }

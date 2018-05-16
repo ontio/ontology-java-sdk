@@ -21,9 +21,11 @@ package com.github.ontio.core;
 
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
+import com.github.ontio.sdk.exception.SDKException;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -51,7 +53,7 @@ public class DataSignature implements Signable {
             byte[] signData = sign(account,scheme);
             return signData;
         } catch (Exception e) {
-            throw new RuntimeException("Data signature error.");
+            throw new RuntimeException(ErrorCode.DataSignatureErr);
         }
     }
     @Override

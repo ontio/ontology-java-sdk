@@ -19,10 +19,13 @@
 
 package com.github.ontio.merkle;
 
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.common.UInt256;
 import com.github.ontio.crypto.Digest;
+import com.github.ontio.sdk.exception.SDKException;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -57,7 +60,7 @@ public class TreeHasher {
         Obj obj = _hash_full(leaves, 0, length);
 
         if(obj.hashes.length != countBit(length) ){
-            throw new Exception("assert failed in hash full tree");
+            throw new SDKException(ErrorCode.AsserFailedHashFullTree);
         }
         return obj.root_hash;
     }
@@ -70,7 +73,7 @@ public class TreeHasher {
         Obj obj = _hash_full(leafhashes, 0, length);
 
         if (obj.hashes.length != countBit(length)) {
-            throw new Exception("assert failed in hash full tree");
+            throw new Exception(ErrorCode.AsserFailedHashFullTree);
         }
         return obj.root_hash;
     }
@@ -86,7 +89,7 @@ public class TreeHasher {
             int split_width = 1 << (countBit(width-1) - 1);
             Obj lObj = _hash_full(leaves, l_idx, l_idx+split_width);
             if (lObj.hashes.length != 1 ){
-                throw new Exception("left tree always full");
+                throw new Exception(ErrorCode.LeftTreeFull);
             }
             Obj rObj = _hash_full(leaves, l_idx+split_width, r_idx);
             UInt256 root_hash = hash_children(lObj.root_hash, rObj.root_hash);

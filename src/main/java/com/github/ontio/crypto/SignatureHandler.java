@@ -2,6 +2,7 @@ package com.github.ontio.crypto;
 
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
+import com.github.ontio.sdk.exception.SDKException;
 import org.bouncycastle.asn1.*;
 
 import java.awt.*;
@@ -36,12 +37,12 @@ public class SignatureHandler {
                 break;
             case SM2:
                 if (scheme.compareTo(SignatureScheme.SM3WITHSM2) != 0) {
-                    throw new Exception(ErrorCode.UnsupportedSignatureScheme+ scheme.toString());
+                    throw new SDKException(ErrorCode.UnsupportedSignatureScheme);
                 }
                 ctx = java.security.Signature.getInstance(scheme.toString(), "BC");
                 break;
             default:
-                throw new Exception(ErrorCode.UnknownKeyType);
+                throw new SDKException(ErrorCode.UnknownKeyType);
         }
 
     }

@@ -23,6 +23,7 @@ import java.io.*;
 import java.lang.reflect.Array;
 import java.nio.*;
 
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.core.scripts.ScriptOp;
 import org.bouncycastle.math.ec.ECPoint;
 
@@ -121,7 +122,7 @@ public class BinaryReader implements AutoCloseable {
 			reader.readFully(encoded, 1, 64);
 			break;
 		default:
-			throw new IOException();
+			throw new IOException(ErrorCode.ParamError);
 		}
 		return ECC.secp256r1.getCurve().decodePoint(encoded);
 	}
@@ -196,7 +197,7 @@ public class BinaryReader implements AutoCloseable {
 			value = fb;
         }
         if (Long.compareUnsigned(value, max) > 0) {
-        	throw new IOException();
+        	throw new IOException(ErrorCode.ParamError);
         }
         return value;
 	}
@@ -213,7 +214,7 @@ public class BinaryReader implements AutoCloseable {
 			value = fb;
 		}
 		if (Long.compareUnsigned(value, max) > 0) {
-			throw new IOException();
+			throw new IOException(ErrorCode.ParamError);
 		}
 		return value;
 	}

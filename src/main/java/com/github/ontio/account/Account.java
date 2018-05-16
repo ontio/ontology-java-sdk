@@ -149,22 +149,22 @@ public class Account {
             throw new Exception(ErrorCode.InvalidMessage);
         }
         if (this.privateKey == null) {
-            throw new Exception("account without private key cannot generate signature");
+            throw new Exception(ErrorCode.WithoutPrivate);
         }
 
-        SignatureHandler ctx = new SignatureHandler(keyType, scheme);
+        SignatureHandler ctx = new SignatureHandler(keyType, signatureScheme);
         AlgorithmParameterSpec paramSpec = null;
-        if (scheme == SignatureScheme.SM3WITHSM2) {
+        if (signatureScheme == SignatureScheme.SM3WITHSM2) {
             if (param instanceof String) {
                 paramSpec = new SM2ParameterSpec(Strings.toByteArray((String) param));
             } else if (param == null) {
                 paramSpec = new SM2ParameterSpec("1234567812345678".getBytes());
             } else {
-                throw new Exception("invalid SM2 signature parameter, ID (String) excepted");
+                throw new Exception(ErrorCode.InvalidSM2Signature);
             }
         }
         byte[] signature = new Signature(
-                scheme,
+                signatureScheme,
                 paramSpec,
                 ctx.generateSignature(privateKey, msg, paramSpec)
         ).toBytes();
@@ -173,7 +173,7 @@ public class Account {
 
     public boolean verifySignature(byte[] msg, byte[] signature) throws Exception {
         if (msg == null || signature == null || msg.length == 0 || signature.length == 0) {
-            throw new Exception("invalid input");
+            throw new Exception(ErrorCode.AccountInvalidInput);
         }
         if (this.publicKey == null) {
             throw new Exception(ErrorCode.AccountWithoutPublicKey);
@@ -282,7 +282,7 @@ public class Account {
         return wif;
     }
 
-    public String exportEcbEncryptedPrikey(String passphrase, int n) {
+    public String exportEcbEncryptedPrikey(String passphrase, int n) throws SDKException {
         int N = n;
         int r = 8;
         int p = 8;
@@ -318,7 +318,7 @@ public class Account {
         return null;
     }
 
-    public String exportCtrEncryptedPrikey(String passphrase, int n) throws SDKException {
+    public String exportCtrEncryptedPrikey(String passphrase, int n) throws Exception {
         int N = n;
         int r = 8;
         int p = 8;
@@ -341,7 +341,7 @@ public class Account {
             byte[] encryptedkey = cipher.doFinal(serializePrivateKey());
             return new String(Base64.getEncoder().encode(encryptedkey));
         } catch (Exception e) {
-            throw new SDKException(ErrorCode.EncriptPrivateKeyError + e.getMessage());
+            throw new SDKException(ErrorCode.EncriptPrivateKeyError);
         }
     }
 
@@ -373,7 +373,7 @@ public class Account {
 
     public static String getCtrDecodedPrivateKey(String encryptedPriKey, String passphrase, String address, int n, SignatureScheme scheme) throws Exception {
         if (encryptedPriKey == null) {
-            throw new NullPointerException();
+            throw new SDKException(ErrorCode.EncryptedPriKeyError);
         }
         byte[] encryptedkey = Base64.getDecoder().decode(encryptedPriKey);
 
@@ -396,7 +396,7 @@ public class Account {
         cipher.init(Cipher.DECRYPT_MODE, skeySpec, new IvParameterSpec(iv));
         byte[] rawkey = cipher.doFinal(encryptedkey);
         if (!new Account(rawkey, scheme).getAddressU160().toBase58().equals(address)) {
-            throw new SDKException(ErrorCode.OtherError("encryptedPriKey address password not match."));
+            throw new SDKException(ErrorCode.OtherError(ErrorCode.encryptedPriKeyAddressPasswordErr));
         }
         return Helper.toHexString(rawkey);
     }

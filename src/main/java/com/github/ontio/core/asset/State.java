@@ -35,9 +35,9 @@ public class State implements Serializable {
     public byte version;
     public Address from;
     public Address to;
-    public BigInteger value;
+    public long value;
 
-    public State(Address from, Address to, BigInteger amount){
+    public State(Address from, Address to, long amount){
         this.from = from;
         this.to = to;
         this.value = amount;
@@ -48,7 +48,7 @@ public class State implements Serializable {
             version = reader.readByte();
             from = reader.readSerializable(Address.class);
             to = reader.readSerializable(Address.class);
-            value = new BigInteger(reader.readVarBytes());
+            value = reader.readLong();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -61,7 +61,7 @@ public class State implements Serializable {
         writer.writeByte((byte)0);
         writer.writeSerializable(from);
         writer.writeSerializable(to);
-        writer.writeVarBytes(value.toByteArray());
+        writer.writeLong(value);
 
     }
 
@@ -70,7 +70,7 @@ public class State implements Serializable {
         Map json = new HashMap<>();
         json.put("from", from.toHexString());
         json.put("to", to.toHexString());
-        json.put("value", value.longValue());
+        json.put("value", value);
         return json;
     }
 

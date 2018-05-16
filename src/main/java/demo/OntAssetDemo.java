@@ -35,36 +35,57 @@ public class OntAssetDemo {
 
         try {
             OntSdk ontSdk = getOntSdk();
-
             Account info1 = null;
             Account info2 = null;
             Account info3 = null;
+            //1202015225b1d934deb6c3f2ebe4b9b50aa434bfb1b7cb6596b992b67c94c4cbcd1b027b12afda773ed5489aa4f8426ed78043ba61602cf38f8588c6faf01f4652f27c
+            //1202027b12afda773ed5489aa4f8426ed78043ba61602cf38f8588c6faf01f4652f27c
             if (ontSdk.getWalletMgr().getAccounts().size() < 3) {
-                info1 = ontSdk.getWalletMgr().createAccountFromPriKey("passwordtest", "70789d4ac31576c61c5d12e38a66de605b18faf2c8d60a2c1952a6286b67318f");
+                info1 = ontSdk.getWalletMgr().createAccountFromPriKey("111111", "015225b1d934deb6c3f2ebe4b9b50aa434bfb1b7cb6596b992b67c94c4cbcd1b");
                 info2 = ontSdk.getWalletMgr().createAccount("passwordtest");
                 info3 = ontSdk.getWalletMgr().createAccount("passwordtest");
                 ontSdk.getWalletMgr().writeWallet();
             }
-            System.out.println(ontSdk.getConnectMgr().getBalance("TA5k9pH3HopmscvgQYx8ptfCAPuj9u2HxG"));
+            System.out.println(ontSdk.getConnectMgr().getBalance("TA6mgRHJC4MoTHgQE3dG4FkuYVVjrtjmAC"));
+
             //System.exit(0);
             info1 = ontSdk.getWalletMgr().getAccounts().get(0);
             info2 = ontSdk.getWalletMgr().getAccounts().get(1);
             info3 = ontSdk.getWalletMgr().getAccounts().get(2);
+
+
+//            System.out.println(ontSdk.getOntAssetTx().queryName("ont",info1.address));
+//            System.out.println(ontSdk.getOntAssetTx().querySymbol("ont",info1.address));
+//            System.out.println(ontSdk.getOntAssetTx().queryDecimals("ont",info1.address));
+//            System.out.println(ontSdk.getOntAssetTx().queryTotalSupply("ont",info1.address));
+//
+//            System.out.println(ontSdk.getOntAssetTx().queryName("ong",info1.address));
+//            System.out.println(ontSdk.getOntAssetTx().querySymbol("ong",info1.address));
+//            System.out.println(ontSdk.getOntAssetTx().queryDecimals("ong",info1.address));
+//            System.out.println(ontSdk.getOntAssetTx().queryTotalSupply("ong",info1.address));
+
 //            String hh = Address.addressFromMultiPubKeys(1,ontSdk.getWalletMgr().getAccount(info2.address,"passwordtest").publicKey,ontSdk.getWalletMgr().getAccount(info1.address,"passwordtest").publicKey).toBase58();
 //            System.out.println(ontSdk.getWalletMgr().getAccountInfo(info1.address,"passwordtest").pubkey);
 //            System.out.println(ontSdk.getWalletMgr().getAccountInfo(info2.address,"passwordtest").pubkey);
 //            System.out.println(hh);
 //            System.out.println(Helper.getCodeHash("aa", VmType.NEOVM.value()));
 //            System.exit(0);
-            System.out.println(info1.address + " " + Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info1.address, "passwordtest").serializePublicKey()));
+            System.out.println("address address address");
+            System.out.println(info1.address + " " + Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info1.address, "111111").serializePublicKey()));
             System.out.println(info2.address + " " + Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info2.address, "passwordtest").serializePublicKey()));
             System.out.println(info3.address + " " + Address.addressFromPubKey(ontSdk.getWalletMgr().getAccount(info3.address, "passwordtest").serializePublicKey()));
+            System.out.println("balance balance balance balance");
+            System.out.println("info1 : ong :" + ontSdk.getOntAssetTx().sendBalanceOf("ong",info1.address));
+            System.out.println("info2 : ong :" + ontSdk.getOntAssetTx().sendBalanceOf("ong",info2.address));
+            System.out.println("info3 : ong :" + ontSdk.getOntAssetTx().sendBalanceOf("ong",info3.address));
 
-//            String hash = ontSdk.getOntAssetTx().sendOngTransferFrom(info1.address,"passwordtest",info2.address,1);
-            String hash = ontSdk.getOntAssetTx().sendTransfer("ont",info1.address,"passwordtest",info2.address,100L);
+//            String hash = ontSdk.getOntAssetTx().sendOngTransferFrom(info1.address,"111111","TA6qWdLo14aEve5azrYWWvMoGPrpczFfeW",1000);
+//            String hash = ontSdk.getOntAssetTx().sendTransfer("ont",info1.address,"111111",info3.address,10L);
 //            String hash1 = ontSdk.getOntAssetTx().sendTransferToMany("ont",info1.address,"passwordtest",new String[]{info2.address,info3.address},new long[]{100L,200L});
 //            String hash2 = ontSdk.getOntAssetTx().sendTransferFromMany("ont", new String[]{info1.address, info2.address}, new String[]{"passwordtest", "passwordtest"}, info3.address, new long[]{1L, 2L});
-            System.out.println(hash);
+//              ontSdk.getOntAssetTx().sendApprove("ont",info1.address,"111111",info2.address,10);
+//            ontSdk.getOntAssetTx().sendTransferFrom("ont",info2.address,"passwordtest",info1.address,info2.address,10);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -84,7 +105,6 @@ public class OntAssetDemo {
         wm.setRpc(rpcUrl);
         wm.setRestful(restUrl);
         wm.setDefaultConnect(wm.getRestful());
-
         wm.openWalletFile("OntAssetDemo.json");
         return wm;
     }

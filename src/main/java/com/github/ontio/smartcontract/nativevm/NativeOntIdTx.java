@@ -20,19 +20,23 @@
 package com.github.ontio.smartcontract.nativevm;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
-import com.github.ontio.common.Address;
-import com.github.ontio.common.Common;
-import com.github.ontio.common.ErrorCode;
-import com.github.ontio.common.Helper;
+import com.github.ontio.account.Account;
+import com.github.ontio.common.*;
+import com.github.ontio.core.DataSignature;
 import com.github.ontio.core.VmType;
+import com.github.ontio.core.block.Block;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.Curve;
 import com.github.ontio.crypto.KeyType;
 import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
+import com.github.ontio.merkle.MerkleVerifier;
 import com.github.ontio.network.exception.ConnectorException;
+import com.github.ontio.sdk.claim.Claim;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.info.IdentityInfo;
@@ -219,17 +223,20 @@ public class NativeOntIdTx {
 
         ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes((String)obj));
         BinaryReader br = new BinaryReader(bais);
-        Map attributeMap = new HashMap();
+        List attrsList = new ArrayList();
         while (true){
             try{
-                attributeMap.put("key", new String(br.readVarBytes()));
-                attributeMap.put("type",new String(br.readVarBytes()));
-                attributeMap.put("value",new String(br.readVarBytes()));
+                Map attributeMap = new HashMap();
+                attributeMap.put("Key", new String(br.readVarBytes()));
+                attributeMap.put("Type",new String(br.readVarBytes()));
+                attributeMap.put("Value",new String(br.readVarBytes()));
+                attrsList.add(attributeMap);
             }catch (Exception e){
                 break;
             }
         }
-        return JSON.toJSONString(attributeMap);
+
+        return JSON.toJSONString(attrsList);
     }
 
 
@@ -380,6 +387,163 @@ public class NativeOntIdTx {
         }
         return null;
     }
+
+    /**
+     *
+     * @param txhash
+     * @return
+     * @throws Exception
+     */
+    public Object getMerkleProof(String txhash) throws Exception {
+        Map proof = new HashMap();
+        Map map = new HashMap();
+        int height = sdk.getConnectMgr().getBlockHeightByTxHash(txhash);
+        map.put("Type", "MerkleProof");
+        map.put("TxnHash", txhash);
+        map.put("BlockHeight", height);
+
+        Map tmpProof = (Map) sdk.getConnectMgr().getMerkleProof(txhash);
+        UInt256 txroot = UInt256.parse((String) tmpProof.get("TransactionsRoot"));
+        int blockHeight = (int) tmpProof.get("BlockHeight");
+        UInt256 curBlockRoot = UInt256.parse((String) tmpProof.get("CurBlockRoot"));
+        int curBlockHeight = (int) tmpProof.get("CurBlockHeight");
+        List hashes = (List) tmpProof.get("TargetHashes");
+        UInt256[] targetHashes = new UInt256[hashes.size()];
+        for (int i = 0; i < hashes.size(); i++) {
+            targetHashes[i] = UInt256.parse((String) hashes.get(i));
+        }
+        map.put("MerkleRoot", curBlockRoot.toHexString());
+        map.put("Nodes", MerkleVerifier.getProof(txroot, blockHeight, targetHashes, curBlockHeight + 1));
+        proof.put("Proof", map);
+        return proof;
+    }
+
+    /**
+     *
+     * @param claim
+     * @return
+     * @throws Exception
+     */
+    public boolean verifyMerkleProof(String claim) throws Exception {
+        try {
+            JSONObject obj = JSON.parseObject(claim);
+            Map proof = (Map) obj.getJSONObject("Proof");
+            String txhash = (String) proof.get("TxnHash");
+            int blockHeight = (int) proof.get("BlockHeight");
+            UInt256 merkleRoot = UInt256.parse((String) proof.get("MerkleRoot"));
+            Block block = sdk.getConnectMgr().getBlock(blockHeight);
+            if (block.height != blockHeight) {
+                throw new SDKException("blockHeight not match");
+            }
+            boolean containTx = false;
+            for (int i = 0; i < block.transactions.length; i++) {
+                if (block.transactions[i].hash().toHexString().equals(txhash)) {
+                    containTx = true;
+                }
+            }
+            if(!containTx){
+                throw new SDKException(ErrorCode.OtherError("not contain this tx"));
+            }
+            UInt256 txsroot = block.transactionsRoot;
+
+            List nodes = (List) proof.get("Nodes");
+            return MerkleVerifier.Verify(txsroot,  nodes, merkleRoot);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SDKException(e);
+        }
+    }
+
+    /**
+     *
+     * @param signerOntid
+     * @param password
+     * @param context
+     * @param claimMap
+     * @param metaData
+     * @param clmRevMap
+     * @param expire
+     * @return
+     * @throws Exception
+     */
+    public String createOntIdClaim(String signerOntid, String password, String context, Map<String, Object> claimMap, Map metaData,Map clmRevMap,long expire) throws Exception {
+        Claim claim = null;
+
+        try {
+            String sendDid = (String) metaData.get("Issuer");
+            String receiverDid = (String) metaData.get("Subject");
+            if (sendDid == null || receiverDid == null) {
+                throw new SDKException(ErrorCode.DidNull);
+            }
+            String issuerDdo = sendGetDDO(sendDid);
+            JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("Owners");
+            if (owners == null) {
+                throw new SDKException(ErrorCode.NotExistCliamIssuer);
+            }
+            String pubkeyId = null;
+            com.github.ontio.account.Account acct = sdk.getWalletMgr().getAccount(signerOntid, password);
+            String pk = Helper.toHexString(acct.serializePublicKey());
+            for (int i = 0; i < owners.size(); i++) {
+                JSONObject obj = owners.getJSONObject(i);
+                if (obj.getString("Value").equals(pk)) {
+                    pubkeyId = obj.getString("PubKeyId");
+                    break;
+                }
+            }
+            if (pubkeyId == null) {
+                throw new SDKException(ErrorCode.NotFoundPublicKeyId);
+            }
+            String[] receiverDidStr = receiverDid.split(":");
+            if (receiverDidStr.length != 3) {
+                throw new SDKException(ErrorCode.DidError);
+            }
+            claim = new Claim(sdk.getWalletMgr().getSignatureScheme(), acct, context, claimMap, metaData,clmRevMap,pubkeyId,expire);
+            return claim.getClaimStr();
+        } catch (SDKException e) {
+            throw new SDKException(ErrorCode.CreateOntIdClaimErr);
+        }
+    }
+
+    /**
+     *
+     * @param claim
+     * @return
+     * @throws Exception
+     */
+    public boolean verifyOntIdClaim(String claim) throws Exception {
+        DataSignature sign = null;
+        try {
+
+            String[] obj = claim.split("\\.");
+            if (obj.length != 3) {
+                throw new SDKException(ErrorCode.ParamError);
+            }
+            byte[] payloadBytes = Base64.getDecoder().decode(obj[1].getBytes());
+            JSONObject payloadObj = JSON.parseObject(new String(payloadBytes));
+            String issuerDid = payloadObj.getString("iss");
+            String[] str = issuerDid.split(":");
+            if (str.length != 3) {
+                throw new SDKException(ErrorCode.DidError);
+            }
+            String issuerDdo = sendGetDDO(issuerDid);
+            JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("Owners");
+            if (owners == null) {
+                throw new SDKException(ErrorCode.NotExistCliamIssuer);
+            }
+            byte[] signatureBytes = Base64.getDecoder().decode(obj[2]);
+            byte[] headerBytes = Base64.getDecoder().decode(obj[0].getBytes());
+            JSONObject header = JSON.parseObject(new String(headerBytes));
+            String kid = header.getString("kid");
+            String id = kid.split("#keys-")[1];
+            String pubkeyStr = owners.getJSONObject(Integer.parseInt(id) - 1).getString("Value");
+            sign = new DataSignature();
+            byte[] data = (obj[0] + "." + obj[1]).getBytes();
+            return sign.verifySignature(new Account(false, Helper.hexToBytes(pubkeyStr)), data, signatureBytes);
+        } catch (Exception e) {
+            throw new SDKException(ErrorCode.VerifyOntIdClaimErr);
+        }
+    }
+
 
     /**
      *

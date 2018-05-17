@@ -24,18 +24,17 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
-import com.github.ontio.common.Address;
-import com.github.ontio.common.Common;
-import com.github.ontio.common.ErrorCode;
-import com.github.ontio.common.Helper;
+import com.github.ontio.common.*;
 import com.github.ontio.core.DataSignature;
 import com.github.ontio.core.VmType;
+import com.github.ontio.core.block.Block;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.Curve;
 import com.github.ontio.crypto.KeyType;
 import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
+import com.github.ontio.merkle.MerkleVerifier;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.claim.Claim;
 import com.github.ontio.sdk.exception.SDKException;
@@ -391,6 +390,72 @@ public class NativeOntIdTx {
 
     /**
      *
+     * @param txhash
+     * @return
+     * @throws Exception
+     */
+    public Object getMerkleProof(String txhash) throws Exception {
+        Map proof = new HashMap();
+        Map map = new HashMap();
+        int height = sdk.getConnectMgr().getBlockHeightByTxHash(txhash);
+        map.put("Type", "MerkleProof");
+        map.put("TxnHash", txhash);
+        map.put("BlockHeight", height);
+
+        Map tmpProof = (Map) sdk.getConnectMgr().getMerkleProof(txhash);
+        UInt256 txroot = UInt256.parse((String) tmpProof.get("TransactionsRoot"));
+        int blockHeight = (int) tmpProof.get("BlockHeight");
+        UInt256 curBlockRoot = UInt256.parse((String) tmpProof.get("CurBlockRoot"));
+        int curBlockHeight = (int) tmpProof.get("CurBlockHeight");
+        List hashes = (List) tmpProof.get("TargetHashes");
+        UInt256[] targetHashes = new UInt256[hashes.size()];
+        for (int i = 0; i < hashes.size(); i++) {
+            targetHashes[i] = UInt256.parse((String) hashes.get(i));
+        }
+        map.put("MerkleRoot", curBlockRoot.toHexString());
+        map.put("Nodes", MerkleVerifier.getProof(txroot, blockHeight, targetHashes, curBlockHeight + 1));
+        proof.put("Proof", map);
+        return proof;
+    }
+
+    /**
+     *
+     * @param claim
+     * @return
+     * @throws Exception
+     */
+    public boolean verifyMerkleProof(String claim) throws Exception {
+        try {
+            JSONObject obj = JSON.parseObject(claim);
+            Map proof = (Map) obj.getJSONObject("Proof");
+            String txhash = (String) proof.get("TxnHash");
+            int blockHeight = (int) proof.get("BlockHeight");
+            UInt256 merkleRoot = UInt256.parse((String) proof.get("MerkleRoot"));
+            Block block = sdk.getConnectMgr().getBlock(blockHeight);
+            if (block.height != blockHeight) {
+                throw new SDKException("blockHeight not match");
+            }
+            boolean containTx = false;
+            for (int i = 0; i < block.transactions.length; i++) {
+                if (block.transactions[i].hash().toHexString().equals(txhash)) {
+                    containTx = true;
+                }
+            }
+            if(!containTx){
+                throw new SDKException(ErrorCode.OtherError("not contain this tx"));
+            }
+            UInt256 txsroot = block.transactionsRoot;
+
+            List nodes = (List) proof.get("Nodes");
+            return MerkleVerifier.Verify(txsroot,  nodes, merkleRoot);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SDKException(e);
+        }
+    }
+
+    /**
+     *
      * @param signerOntid
      * @param password
      * @param context
@@ -441,6 +506,12 @@ public class NativeOntIdTx {
         }
     }
 
+    /**
+     *
+     * @param claim
+     * @return
+     * @throws Exception
+     */
     public boolean verifyOntIdClaim(String claim) throws Exception {
         DataSignature sign = null;
         try {

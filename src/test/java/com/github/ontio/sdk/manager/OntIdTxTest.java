@@ -213,7 +213,7 @@ public class OntIdTxTest {
         map.put("Subject", id2.ontid);
         String claim = ontSdk.neovm().ontId().createOntIdClaim(id1.ontid,"passwordtest", "claim:context", map, map);
 
-        boolean b = ontSdk.neovm().ontId().verifyOntIdClaim(claim);
+        boolean b = ontSdk.nativevm().ontId().verifyOntIdClaim(claim);
         Assert.assertTrue(b);
     }
 
@@ -266,7 +266,7 @@ public class OntIdTxTest {
         IdentityInfo acctinfo = ontSdk.getWalletMgr().getIdentityInfo(did.get(1).ontid,"passwordtest");
         txhash = ontSdk.neovm().ontId().sendAddPubKey(did.get(0).ontid.replace(Common.didont,""),"passwordtest",acctinfo.pubkey,0);
         Thread.sleep(6000);
-        Object obj = ontSdk.neovm().ontId().getProof(txhash);
+        Object obj = ontSdk.nativevm().ontId().getMerkleProof(txhash);
         Assert.assertNotNull(obj);
     }
 
@@ -275,8 +275,8 @@ public class OntIdTxTest {
         IdentityInfo acctinfo = ontSdk.getWalletMgr().getIdentityInfo(did.get(1).ontid,"passwordtest");
         txhash = ontSdk.neovm().ontId().sendAddPubKey(did.get(0).ontid.replace(Common.didont,""),"passwordtest",acctinfo.pubkey,0);
         Thread.sleep(6000);
-        Object obj = ontSdk.neovm().ontId().getProof(txhash);
-        boolean b = ontSdk.neovm().ontId().verifyMerkleProof(JSON.toJSONString(obj));
+        Object obj = ontSdk.nativevm().ontId().getMerkleProof(txhash);
+        boolean b = ontSdk.nativevm().ontId().verifyMerkleProof(JSON.toJSONString(obj));
         Assert.assertTrue(b);
     }
 

@@ -831,66 +831,6 @@ public class OntIdTx {
         return mNew;
     }
 
-
-    public Object getProof(String txhash) throws Exception {
-        Map proof = new HashMap();
-        Map map = new HashMap();
-        int height = sdk.getConnectMgr().getBlockHeightByTxHash(txhash);
-        map.put("Type", "MerkleProof");
-        map.put("TxnHash", txhash);
-        map.put("BlockHeight", height);
-
-        Map tmpProof = (Map) sdk.getConnectMgr().getMerkleProof(txhash);
-        UInt256 txroot = UInt256.parse((String) tmpProof.get("TransactionsRoot"));
-        int blockHeight = (int) tmpProof.get("BlockHeight");
-        UInt256 curBlockRoot = UInt256.parse((String) tmpProof.get("CurBlockRoot"));
-        int curBlockHeight = (int) tmpProof.get("CurBlockHeight");
-        List hashes = (List) tmpProof.get("TargetHashes");
-        UInt256[] targetHashes = new UInt256[hashes.size()];
-        for (int i = 0; i < hashes.size(); i++) {
-            targetHashes[i] = UInt256.parse((String) hashes.get(i));
-        }
-        map.put("MerkleRoot", curBlockRoot.toHexString());
-        map.put("Nodes", MerkleVerifier.getProof(txroot, blockHeight, targetHashes, curBlockHeight + 1));
-        proof.put("Proof", map);
-        return proof;
-    }
-
-    /**
-     * @param claim
-     * @return
-     * @throws Exception
-     */
-    public boolean verifyMerkleProof(String claim) throws Exception {
-        try {
-            JSONObject obj = JSON.parseObject(claim);
-            Map proof = (Map) obj.getJSONObject("Proof");
-            String txhash = (String) proof.get("TxnHash");
-            int blockHeight = (int) proof.get("BlockHeight");
-            UInt256 merkleRoot = UInt256.parse((String) proof.get("MerkleRoot"));
-            Block block = sdk.getConnectMgr().getBlock(blockHeight);
-            if (block.height != blockHeight) {
-                throw new SDKException("blockHeight not match");
-            }
-            boolean containTx = false;
-            for (int i = 0; i < block.transactions.length; i++) {
-                if (block.transactions[i].hash().toHexString().equals(txhash)) {
-                    containTx = true;
-                }
-            }
-            if(!containTx){
-                throw new SDKException(ErrorCode.OtherError("not contain this tx"));
-            }
-            UInt256 txsroot = block.transactionsRoot;
-
-            List nodes = (List) proof.get("Nodes");
-            return MerkleVerifier.Verify(txsroot,  nodes, merkleRoot);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new SDKException(e);
-        }
-    }
-
     /**
      * verify Signature
      *

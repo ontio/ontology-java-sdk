@@ -57,9 +57,9 @@ public class Demo {
             Block block = ontSdk.getConnectMgr().getBlock(ontSdk.getConnectMgr().getBlockHeight());
             String hash = block.transactions[0].hash().toHexString();
             System.out.println(ontSdk.getConnectMgr().getMerkleProof(hash));
-            Object proof = ontSdk.neovm().ontId().getProof(hash);
+            Object proof = ontSdk.nativevm().ontId().getMerkleProof(hash);
             System.out.println(proof);
-            System.out.println(ontSdk.neovm().ontId().verifyMerkleProof(JSON.toJSONString(proof)));
+            System.out.println(ontSdk.nativevm().ontId().verifyMerkleProof(JSON.toJSONString(proof)));
             System.exit(0);
             List list = (List) ontSdk.getConnectMgr().getSmartCodeEvent("a12117c319aa6906efd8869ba65c221f4e2ee44a8a2766fd326c8d7125beffbf");
 

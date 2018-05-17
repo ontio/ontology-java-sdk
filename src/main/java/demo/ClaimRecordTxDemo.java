@@ -38,7 +38,7 @@ public class ClaimRecordTxDemo {
             Map clmRevMap = new HashMap();
             clmRevMap.put("typ","AttestContract");
             clmRevMap.put("addr",dids.get(1).ontid.replace(Common.didont,""));
-            String claim = ontSdk.neovm().ontId().createOntIdClaim(dids.get(0).ontid,"passwordtest", "claim:context", map, map,clmRevMap,0);
+            String claim = ontSdk.nativevm().ontId().createOntIdClaim(dids.get(0).ontid,"passwordtest", "claim:context", map, map,clmRevMap,0);
             System.out.println(claim);
 
             JSONObject jsonObject = JSON.parseObject(claim);

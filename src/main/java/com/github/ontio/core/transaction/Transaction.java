@@ -66,6 +66,13 @@ public abstract class Transaction extends Inventory {
         }
         gasPrice = reader.readLong();
         gasLimit = reader.readLong();
+        try {
+            payer = reader.readSerializable(Address.class);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
         deserializeUnsignedWithoutType(reader);
     }
 
@@ -73,8 +80,6 @@ public abstract class Transaction extends Inventory {
         try {
             deserializeExclusiveData(reader);
             attributes = reader.readSerializableArray(Attribute.class);
-            int len = (int) reader.readVarInt();
-
         } catch (InstantiationException | IllegalAccessException ex) {
             throw new IOException(ex);
         }
@@ -145,6 +150,9 @@ public abstract class Transaction extends Inventory {
             Transaction transaction = (Transaction) Class.forName(typeName).newInstance();
             transaction.nonce = reader.readInt();
             transaction.version = ver;
+            transaction.gasPrice = reader.readLong();
+            transaction.gasLimit = reader.readLong();
+            transaction.payer = reader.readSerializable(Address.class);
             transaction.deserializeUnsignedWithoutType(reader);
             transaction.sigs = new Sig[(int) reader.readVarInt()];
             for (int i = 0; i < transaction.sigs.length; i++) {

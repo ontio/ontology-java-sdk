@@ -115,12 +115,11 @@ public class OntAssetTx {
         byte[] parabytes = buildParams(Address.decodeBase58(address).toArray());
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,"balanceOf", parabytes, VmType.Native.value(), null,0);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-        String aa = (String)obj;
-        if (aa == "" || ("").equals(aa)) {
+        String res = (String)obj;
+        if (("").equals(res)) {
             return 0;
         }
-        long bb = Long.valueOf(aa,16);
-        return bb;
+        return Long.valueOf(res,16);
     }
 
     /**
@@ -247,12 +246,11 @@ public class OntAssetTx {
         }
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,"decimals", "".getBytes(), VmType.Native.value(), null,0);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-        String aa = (String)obj;
-        if (aa == "" || ("").equals(aa)) {
+        String res = (String)obj;
+        if (("").equals(res)) {
             return 0;
         }
-        long bb = Long.valueOf(aa,16);
-        return bb;
+        return Long.valueOf(res,16);
     }
 
     /**
@@ -272,12 +270,11 @@ public class OntAssetTx {
         }
         Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddr,"totalSupply", "".getBytes(), VmType.Native.value(), null,0);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-        String aa = (String)obj;
-        if (aa == "" || ("").equals(aa)) {
+        String res = (String)obj;
+        if (("").equals(res)) {
             return 0;
         }
-        long bb = Long.valueOf(aa,16);
-        return bb;
+        return Long.valueOf(res,16);
     }
 
     public byte[] buildParams(byte[] ...params) throws SDKException {

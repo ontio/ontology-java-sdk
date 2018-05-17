@@ -196,7 +196,7 @@ public class OntIdTxTest {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("Issuer", id1.ontid);
         map.put("Subject", id2.ontid);
-        String claim = ontSdk.neovm().ontId().createOntIdClaim(id1.ontid,"passwordtest", "claim:context", map, map);
+        String claim = ontSdk.nativevm().ontId().createOntIdClaim(id1.ontid,"passwordtest", "claim:context", map, map,map,0);
         Assert.assertNotNull(claim);
     }
 
@@ -211,7 +211,7 @@ public class OntIdTxTest {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("Issuer", id1.ontid);
         map.put("Subject", id2.ontid);
-        String claim = ontSdk.neovm().ontId().createOntIdClaim(id1.ontid,"passwordtest", "claim:context", map, map);
+        String claim = ontSdk.nativevm().ontId().createOntIdClaim(id1.ontid,"passwordtest", "claim:context", map, map,map,0);
 
         boolean b = ontSdk.nativevm().ontId().verifyOntIdClaim(claim);
         Assert.assertTrue(b);

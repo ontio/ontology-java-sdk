@@ -468,7 +468,6 @@ public class NativeOntIdTx {
      */
     public String createOntIdClaim(String signerOntid, String password, String context, Map<String, Object> claimMap, Map metaData,Map clmRevMap,long expire) throws Exception {
         Claim claim = null;
-        Map contentMap = sortMap(claimMap);
 
         try {
             String sendDid = (String) metaData.get("Issuer");
@@ -498,7 +497,6 @@ public class NativeOntIdTx {
             if (receiverDidStr.length != 3) {
                 throw new SDKException(ErrorCode.DidError);
             }
-            metaData = sortMap(metaData);
             claim = new Claim(sdk.getWalletMgr().getSignatureScheme(), acct, context, claimMap, metaData,clmRevMap,pubkeyId,expire);
             return claim.getClaimStr();
         } catch (SDKException e) {
@@ -546,37 +544,6 @@ public class NativeOntIdTx {
         }
     }
 
-    public Map sortMap(Map<String, Object> claimMap) {
-        Map<String, Object> contentMap = new HashMap();
-        for (Map.Entry<String, Object> e : claimMap.entrySet()) {
-            contentMap.put(e.getKey(), e.getValue());
-        }
-        for (Map.Entry<String, Object> e : contentMap.entrySet()) {
-            if (e.getValue() instanceof Map) {
-                Map m = (Map) e.getValue();
-                e.setValue(sort(m));
-            } else if (e.getValue() instanceof List) {
-                List list = (List) e.getValue();
-                for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i) instanceof Map) {
-                        list.set(i, sort((Map) list.get(i)));
-                    }
-                }
-                e.setValue(list);
-            }
-        }
-        return contentMap;
-    }
-
-    public Map sort(Map m) {
-        Map mNew = new HashMap(16);
-        Object[] key = m.keySet().toArray();
-        Arrays.sort(key);
-        for (int i = 0; i < key.length; i++) {
-            mNew.put((String) key[i], (Object) m.get(key[i]));
-        }
-        return mNew;
-    }
 
     /**
      *

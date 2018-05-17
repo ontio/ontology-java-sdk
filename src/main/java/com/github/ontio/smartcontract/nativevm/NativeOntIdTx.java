@@ -50,7 +50,7 @@ import java.util.*;
 
 public class NativeOntIdTx {
     private OntSdk sdk;
-    private String contractAddress = null;
+    private String contractAddress = "ff00000000000000000000000000000000000003";
 
 
     public NativeOntIdTx(OntSdk sdk) {
@@ -467,8 +467,10 @@ public class NativeOntIdTx {
      * @throws Exception
      */
     public String createOntIdClaim(String signerOntid, String password, String context, Map<String, Object> claimMap, Map metaData,Map clmRevMap,long expire) throws Exception {
+        if(expire < System.currentTimeMillis()/1000){
+            throw new SDKException(ErrorCode.ExpireErr);
+        }
         Claim claim = null;
-
         try {
             String sendDid = (String) metaData.get("Issuer");
             String receiverDid = (String) metaData.get("Subject");

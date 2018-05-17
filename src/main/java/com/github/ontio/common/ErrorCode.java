@@ -106,6 +106,8 @@ public class ErrorCode {
     public static String WriteVarBytesError = getError(58015,"OntIdTx Error, writeVarBytes error");
     public static String SendRawTransactionPreExec = getError(58016,"OntIdTx Error, sendRawTransaction PreExec error");
     public static String SenderAmtNotEqPasswordAmt = getError(58017,"OntIdTx Error, senders amount is not equal password amount");
+    public static String ExpireErr = getError(58017,"OntIdTx Error, expire is wrong");
+
 
     //OntAsset Error
     public static String AssetNameError = getError(58101,"OntAsset Error,asset name error");

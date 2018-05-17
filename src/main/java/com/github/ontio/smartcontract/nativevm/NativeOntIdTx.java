@@ -219,17 +219,20 @@ public class NativeOntIdTx {
 
         ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes((String)obj));
         BinaryReader br = new BinaryReader(bais);
-        Map attributeMap = new HashMap();
+        List attrsList = new ArrayList();
         while (true){
             try{
-                attributeMap.put("key", new String(br.readVarBytes()));
-                attributeMap.put("type",new String(br.readVarBytes()));
-                attributeMap.put("value",new String(br.readVarBytes()));
+                Map attributeMap = new HashMap();
+                attributeMap.put("Key", new String(br.readVarBytes()));
+                attributeMap.put("Type",new String(br.readVarBytes()));
+                attributeMap.put("Value",new String(br.readVarBytes()));
+                attrsList.add(attributeMap);
             }catch (Exception e){
                 break;
             }
         }
-        return JSON.toJSONString(attributeMap);
+
+        return JSON.toJSONString(attrsList);
     }
 
 

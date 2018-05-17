@@ -897,7 +897,7 @@ public class OntIdTx {
             }
             byte[] payloadBytes = Base64.getDecoder().decode(obj[1].getBytes());
             JSONObject payloadObj = JSON.parseObject(new String(payloadBytes));
-            String issuerDid = payloadObj.getString("Iss");
+            String issuerDid = payloadObj.getString("iss");
             String[] str = issuerDid.split(":");
             if (str.length != 3) {
                 throw new SDKException(ErrorCode.DidError);
@@ -908,26 +908,14 @@ public class OntIdTx {
                 throw new SDKException(ErrorCode.NotExistCliamIssuer);
             }
             byte[] signatureBytes = Base64.getDecoder().decode(obj[2]);
-            JSONObject signatureObj = JSON.parseObject(new String(signatureBytes));
-
-            String signatureValue = signatureObj.getString("Value");
-            String publicKeyId = signatureObj.getString("PublicKeyId");
-            boolean verify = false;
-            for (int i = 0; i < owners.size(); i++) {
-                JSONObject o = owners.getJSONObject(i);
-                if (o.getString("PublicKeyId").equals(publicKeyId)) {
-                    verify = true;
-                    break;
-                }
-            }
-            if (!verify) {
-                throw new SDKException(ErrorCode.PublicKeyIdErr);
-            }
-            String id = publicKeyId.split("#keys-")[1];
+            byte[] headerBytes = Base64.getDecoder().decode(obj[0].getBytes());
+            JSONObject header = JSON.parseObject(new String(headerBytes));
+            String kid = header.getString("kid");
+            String id = kid.split("#keys-")[1];
             String pubkeyStr = owners.getJSONObject(Integer.parseInt(id) - 1).getString("Value");
             sign = new DataSignature();
             byte[] data = (obj[0] + "." + obj[1]).getBytes();
-            return sign.verifySignature(new Account(false, Helper.hexToBytes(pubkeyStr)), data, Base64.getDecoder().decode(signatureValue));
+            return sign.verifySignature(new Account(false, Helper.hexToBytes(pubkeyStr)), data, signatureBytes);
         } catch (Exception e) {
             throw new SDKException(ErrorCode.VerifyOntIdClaimErr);
         }

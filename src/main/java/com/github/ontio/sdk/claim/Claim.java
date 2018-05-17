@@ -147,6 +147,7 @@ class Payload {
         payload.put("sub", Sub);
         payload.put("iat", Iat);
         payload.put("exp", Exp);
+        payload.put("jti", Jti);
         payload.put("@context", Context);
         payload.put("clm",ClmMap);
         payload.put("clm-rev",ClmRevMap);

@@ -20,11 +20,15 @@
 package com.github.ontio.smartcontract.nativevm;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
+import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
+import com.github.ontio.core.DataSignature;
 import com.github.ontio.core.VmType;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.Curve;
@@ -33,6 +37,7 @@ import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.network.exception.ConnectorException;
+import com.github.ontio.sdk.claim.Claim;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.info.IdentityInfo;
@@ -382,6 +387,124 @@ public class NativeOntIdTx {
             return tx.hash().toString();
         }
         return null;
+    }
+
+    /**
+     *
+     * @param signerOntid
+     * @param password
+     * @param context
+     * @param claimMap
+     * @param metaData
+     * @param clmRevMap
+     * @param expire
+     * @return
+     * @throws Exception
+     */
+    public String createOntIdClaim(String signerOntid, String password, String context, Map<String, Object> claimMap, Map metaData,Map clmRevMap,long expire) throws Exception {
+        Claim claim = null;
+        Map contentMap = sortMap(claimMap);
+
+        try {
+            String sendDid = (String) metaData.get("Issuer");
+            String receiverDid = (String) metaData.get("Subject");
+            if (sendDid == null || receiverDid == null) {
+                throw new SDKException(ErrorCode.DidNull);
+            }
+            String issuerDdo = sendGetDDO(sendDid);
+            JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("Owners");
+            if (owners == null) {
+                throw new SDKException(ErrorCode.NotExistCliamIssuer);
+            }
+            String pubkeyId = null;
+            com.github.ontio.account.Account acct = sdk.getWalletMgr().getAccount(signerOntid, password);
+            String pk = Helper.toHexString(acct.serializePublicKey());
+            for (int i = 0; i < owners.size(); i++) {
+                JSONObject obj = owners.getJSONObject(i);
+                if (obj.getString("Value").equals(pk)) {
+                    pubkeyId = obj.getString("PubKeyId");
+                    break;
+                }
+            }
+            if (pubkeyId == null) {
+                throw new SDKException(ErrorCode.NotFoundPublicKeyId);
+            }
+            String[] receiverDidStr = receiverDid.split(":");
+            if (receiverDidStr.length != 3) {
+                throw new SDKException(ErrorCode.DidError);
+            }
+            metaData = sortMap(metaData);
+            claim = new Claim(sdk.getWalletMgr().getSignatureScheme(), acct, context, claimMap, metaData,clmRevMap,pubkeyId,expire);
+            return claim.getClaimStr();
+        } catch (SDKException e) {
+            throw new SDKException(ErrorCode.CreateOntIdClaimErr);
+        }
+    }
+
+    public boolean verifyOntIdClaim(String claim) throws Exception {
+        DataSignature sign = null;
+        try {
+
+            String[] obj = claim.split("\\.");
+            if (obj.length != 3) {
+                throw new SDKException(ErrorCode.ParamError);
+            }
+            byte[] payloadBytes = Base64.getDecoder().decode(obj[1].getBytes());
+            JSONObject payloadObj = JSON.parseObject(new String(payloadBytes));
+            String issuerDid = payloadObj.getString("iss");
+            String[] str = issuerDid.split(":");
+            if (str.length != 3) {
+                throw new SDKException(ErrorCode.DidError);
+            }
+            String issuerDdo = sendGetDDO(issuerDid);
+            JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("Owners");
+            if (owners == null) {
+                throw new SDKException(ErrorCode.NotExistCliamIssuer);
+            }
+            byte[] signatureBytes = Base64.getDecoder().decode(obj[2]);
+            byte[] headerBytes = Base64.getDecoder().decode(obj[0].getBytes());
+            JSONObject header = JSON.parseObject(new String(headerBytes));
+            String kid = header.getString("kid");
+            String id = kid.split("#keys-")[1];
+            String pubkeyStr = owners.getJSONObject(Integer.parseInt(id) - 1).getString("Value");
+            sign = new DataSignature();
+            byte[] data = (obj[0] + "." + obj[1]).getBytes();
+            return sign.verifySignature(new Account(false, Helper.hexToBytes(pubkeyStr)), data, signatureBytes);
+        } catch (Exception e) {
+            throw new SDKException(ErrorCode.VerifyOntIdClaimErr);
+        }
+    }
+
+    public Map sortMap(Map<String, Object> claimMap) {
+        Map<String, Object> contentMap = new HashMap();
+        for (Map.Entry<String, Object> e : claimMap.entrySet()) {
+            contentMap.put(e.getKey(), e.getValue());
+        }
+        for (Map.Entry<String, Object> e : contentMap.entrySet()) {
+            if (e.getValue() instanceof Map) {
+                Map m = (Map) e.getValue();
+                e.setValue(sort(m));
+            } else if (e.getValue() instanceof List) {
+                List list = (List) e.getValue();
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i) instanceof Map) {
+                        list.set(i, sort((Map) list.get(i)));
+                    }
+                }
+                e.setValue(list);
+            }
+        }
+        return contentMap;
+    }
+
+    public Map sort(Map m) {
+        Map mNew = new HashMap(16);
+        Object[] key = m.keySet().toArray();
+        Arrays.sort(key);
+        for (int i = 0; i < key.length; i++) {
+            mNew.put((String) key[i], (Object) m.get(key[i]));
+        }
+        return mNew;
     }
 
     /**

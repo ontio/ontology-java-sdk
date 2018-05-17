@@ -322,12 +322,12 @@ public class SmartcodeTx {
      * @return
      * @throws SDKException
      */
-    public DeployCode makeDeployCodeTransaction(String address,String codeStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp, byte vmtype) throws SDKException {
-        if (("").equals(address)){
+    public DeployCode makeDeployCodeTransaction(String codeStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp, byte vmtype,String payer,long gas) throws SDKException {
+        if (("").equals(payer)){
             throw new SDKException(ErrorCode.ParamError);
         }
         DeployCode tx = new DeployCode();
-        tx.payer = Address.decodeBase58(address.replace(Common.didont,""));
+        tx.payer = Address.decodeBase58(payer.replace(Common.didont,""));
         tx.attributes = new Attribute[1];
         tx.attributes[0] = new Attribute();
         tx.attributes[0].usage = AttributeUsage.Nonce;
@@ -339,6 +339,8 @@ public class SmartcodeTx {
         tx.name = name;
         tx.author = author;
         tx.email = email;
+        tx.gasPrice = 0;
+        tx.gasLimit = 0;
         tx.description = desp;
         return tx;
     }

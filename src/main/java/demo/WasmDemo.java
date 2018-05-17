@@ -41,7 +41,7 @@ public class WasmDemo {
             ontSdk.getSmartcodeTx().setCodeAddress(Helper.getCodeAddress(code, VmType.WASMVM.value()));
 
             if(false) {
-                Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(identity.ontid.replace(Common.didont,""),code, true, "name", "1.0", "1", "1", "1", VmType.WASMVM.value());
+                Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(code, true, "name", "1.0", "1", "1", "1", VmType.WASMVM.value(),identity.ontid,0);
                 String txHex = Helper.toHexString(tx.toArray());
                 System.out.println(txHex);
                 ontSdk.getConnectMgr().sendRawTransaction(txHex);

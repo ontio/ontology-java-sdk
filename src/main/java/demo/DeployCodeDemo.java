@@ -57,7 +57,7 @@ public class DeployCodeDemo {
         try {
             OntSdk ontSdk = getOntSdk();
 
-            InputStream is = new FileInputStream("C:\\ZX\\IdContract.avm");//IdContract
+            InputStream is = new FileInputStream("/Users/sss/dev/ontologytest/IdContract/IdContract.avm");//IdContract
             byte[] bys = new byte[is.available()];
             is.read(bys);
             is.close();
@@ -79,7 +79,8 @@ public class DeployCodeDemo {
 
             ontSdk.setCodeAddress(Helper.getCodeAddress(code, VmType.NEOVM.value()));
 
-            Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(identity.ontid.replace(Common.didont,""),code, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
+            Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(code, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0);
+            ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
             String txHex = Helper.toHexString(tx.toArray());
             System.out.println(txHex);
             ontSdk.getConnectMgr().sendRawTransaction(txHex);

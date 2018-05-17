@@ -82,7 +82,7 @@ public class SmartcodeTxTest {
         abiFunction2 = JSON.parseObject(funcStr2,AbiFunction.class);
         abiFunction2.setParamsValue(did.ontid.getBytes(),UUID.randomUUID().toString().getBytes());
 
-        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(identity.ontid.replace(Common.didont,""),codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
+        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0);
 
         String txHex = Helper.toHexString(tx.toArray());
         boolean b = ontSdk.getConnectMgr().sendRawTransaction(txHex);
@@ -171,7 +171,7 @@ public class SmartcodeTxTest {
     public void deployCodeTransaction() throws IOException, SDKException, ConnectorException {
         ontSdk.setCodeAddress(Helper.getCodeAddress(codeHex, VmType.NEOVM.value()));
 
-        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(identity.ontid.replace(Common.didont,""),codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
+        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0);
         String txHex = Helper.toHexString(tx.toArray());
         System.out.println(txHex);
         boolean b = ontSdk.getConnectMgr().sendRawTransaction(txHex);
@@ -192,7 +192,7 @@ public class SmartcodeTxTest {
     @Test
     public void makeDeployCodeTransaction() throws SDKException {
 
-        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(identity.ontid.replace(Common.didont,""),codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
+        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0);
     Assert.assertNotNull(tx);
 
     }

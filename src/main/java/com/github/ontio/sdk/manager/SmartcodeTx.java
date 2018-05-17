@@ -322,7 +322,7 @@ public class SmartcodeTx {
      * @return
      * @throws SDKException
      */
-    public DeployCode makeDeployCodeTransaction(String payer,String codeStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp, byte vmtype) throws SDKException {
+    public DeployCode makeDeployCodeTransaction(String codeStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp, byte vmtype,String payer,long gas) throws SDKException {
         if (("").equals(payer)){
             throw new SDKException(ErrorCode.ParamError);
         }

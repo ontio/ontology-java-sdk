@@ -17,7 +17,7 @@
  *
  */
 
-package com.github.ontio.sdk.manager;
+package com.github.ontio.smartcontract;
 
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
@@ -47,7 +47,7 @@ import java.util.*;
 /**
  *
  */
-public class SmartcodeTx {
+public class Vm {
     private OntSdk sdk;
     private String contractAddress = null;
     public String getCodeAddress() {
@@ -57,7 +57,7 @@ public class SmartcodeTx {
         this.contractAddress = codeHash.replace("0x", "");
     }
 
-    public SmartcodeTx(OntSdk sdk) {
+    public Vm(OntSdk sdk) {
         this.sdk = sdk;
     }
 
@@ -159,13 +159,13 @@ public class SmartcodeTx {
         if(list.size()>0) {
             list.add(tmp);
         }
-        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
+        byte[] params = createCodeParamsScript(list);
 
         Transaction tx = null;
         if (ontid == null && password == null) {
-            tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress,null,params, vmtype, ontid,gas);
+            tx = makeInvokeCodeTransaction(contractAddress,null,params, vmtype, ontid,gas);
         } else {
-            tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress,null,params, vmtype, ontid,gas);
+            tx = makeInvokeCodeTransaction(contractAddress,null,params, vmtype, ontid,gas);
         }
         return tx;
     }

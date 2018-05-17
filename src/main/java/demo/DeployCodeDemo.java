@@ -77,9 +77,9 @@ public class DeployCodeDemo {
             System.out.println("Code:" + Helper.toHexString(bys));
             System.out.println("CodeAddress:" + Helper.getCodeAddress(code, VmType.NEOVM.value()));
 
-            ontSdk.setCodeAddress(Helper.getCodeAddress(code, VmType.NEOVM.value()));
+            ontSdk.vm().setCodeAddress(Helper.getCodeAddress(code, VmType.NEOVM.value()));
 
-            Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(code, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0);
+            Transaction tx = ontSdk.vm().makeDeployCodeTransaction(code, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0);
             ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
             String txHex = Helper.toHexString(tx.toArray());
             System.out.println(txHex);

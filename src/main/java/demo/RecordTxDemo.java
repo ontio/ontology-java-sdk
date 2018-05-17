@@ -19,10 +19,10 @@ public class RecordTxDemo {
 
             Identity id = ontSdk.getWalletMgr().getIdentitys().get(0);
 
-            String hash = ontSdk.getRecordTx().sendPut(id.ontid,"passwordtest","key","value-test",0);
+            String hash = ontSdk.neovm().record().sendPut(id.ontid,"passwordtest","key","value-test",0);
             System.out.println(hash);
             Thread.sleep(6000);
-            String res = ontSdk.getRecordTx().sendGet(id.ontid,"passwordtest","key");
+            String res = ontSdk.neovm().record().sendGet(id.ontid,"passwordtest","key");
             System.out.println("result:"+res);
 
             //System.out.println(ontSdk.getConnectMgr().getSmartCodeEvent(hash));
@@ -50,7 +50,7 @@ public class RecordTxDemo {
 
         wm.openWalletFile("RecordTxDemo.json");
 
-        wm.setCodeAddress("80f6bff7645a84298a1a52aa3745f84dba6615cf");
+        wm.neovm().record().setCodeAddress("80f6bff7645a84298a1a52aa3745f84dba6615cf");
         return wm;
     }
 }

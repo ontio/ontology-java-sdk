@@ -24,11 +24,12 @@ import com.github.ontio.common.Common;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.core.asset.Sig;
-import com.github.ontio.crypto.KeyType;
 import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.manager.*;
-import com.github.ontio.network.websocket.WebsocketClient;
+import com.github.ontio.smartcontract.NativeVm;
+import com.github.ontio.smartcontract.NeoVm;
+import com.github.ontio.smartcontract.Vm;
 
 /**
  * Ont Sdk
@@ -40,13 +41,11 @@ public class OntSdk {
     private ConnectMgr connWebSocket;
     private ConnectMgr connDefault;
 
-    private Nep5Tx nep5Tx = null;
-    private OntIdTx ontIdTx = null;
-    private RecordTx recordTx = null;
-    private SmartcodeTx smartcodeTx = null;
-    private OntAssetTx ontAssetTx = null;
-    private ClaimRecordTx claimRecordTx = null;
-    private NativeOntIdTx nativeOntIdTx = null;
+    private Vm smartcodeTx = null;
+    private NativeVm nativevm = null;
+    private NeoVm neovm = null;
+
+
     private static OntSdk instance = null;
     public SignatureScheme signatureScheme = SignatureScheme.SHA256WITHECDSA;
     public long DEFAULT_GAS_LIMIT = 0;
@@ -59,6 +58,30 @@ public class OntSdk {
     private OntSdk(){
     }
 
+    public NativeVm nativevm() throws SDKException{
+        if(nativevm == null){
+            vm();
+            nativevm = new NativeVm(getInstance());
+        }
+        return nativevm;
+    }
+    public NeoVm neovm() {
+        if(neovm == null){
+            vm();
+            neovm = new NeoVm(getInstance());
+        }
+        return neovm;
+    }
+    /**
+     *  Smartcode Tx
+     * @return instance
+     */
+    public Vm vm() {
+        if(smartcodeTx == null){
+            smartcodeTx = new Vm(getInstance());
+        }
+        return smartcodeTx;
+    }
     public ConnectMgr getRpc() throws SDKException{
         if(connRpc == null){
             throw new SDKException(ErrorCode.ConnRestfulNotInit);
@@ -97,74 +120,6 @@ public class OntSdk {
         return connWebSocket;
     }
 
-    /**
-     * OntId
-     * @return instance
-     */
-    public OntIdTx getOntIdTx() {
-        if(ontIdTx == null){
-            getSmartcodeTx();
-            ontIdTx = new OntIdTx(getInstance());
-        }
-        return ontIdTx;
-    }
-
-    /**
-     * RecordTx
-     * @return instance
-     */
-    public RecordTx getRecordTx() {
-        if(recordTx == null){
-            getSmartcodeTx();
-            recordTx = new RecordTx(getInstance());
-        }
-        return recordTx;
-    }
-
-    public ClaimRecordTx getClaimRecordTx(){
-        if (claimRecordTx == null){
-            getSmartcodeTx();
-            claimRecordTx = new ClaimRecordTx(getInstance());
-        }
-        return claimRecordTx;
-    }
-
-    public NativeOntIdTx getNativeOntIdTx(){
-        if (nativeOntIdTx == null){
-            getSmartcodeTx();
-            nativeOntIdTx = new NativeOntIdTx(getInstance());
-        }
-        return nativeOntIdTx;
-    }
-
-    /**
-     *  Smartcode Tx
-     * @return instance
-     */
-    public SmartcodeTx getSmartcodeTx() {
-        if(smartcodeTx == null){
-            smartcodeTx = new SmartcodeTx(getInstance());
-        }
-        return smartcodeTx;
-    }
-
-    /**
-     *  get OntAsset Tx
-     * @return instance
-     */
-    public OntAssetTx getOntAssetTx() {
-        if(ontAssetTx == null){
-            ontAssetTx = new OntAssetTx(getInstance());
-        }
-        return ontAssetTx;
-    }
-
-    public Nep5Tx getNep5Tx() {
-        if(nep5Tx == null){
-            nep5Tx = new Nep5Tx(getInstance());
-        }
-        return nep5Tx;
-    }
 
     /**
      * get Wallet Mgr
@@ -174,19 +129,6 @@ public class OntSdk {
         return walletMgr;
     }
 
-
-    /**
-     *
-     * @param codeAddress
-     */
-    public void setCodeAddress(String codeAddress){
-        getOntIdTx().setCodeAddress(codeAddress);
-        getSmartcodeTx().setCodeAddress(codeAddress);
-        getRecordTx().setCodeAddress(codeAddress);
-        getNep5Tx().setCodeAddress(codeAddress);
-        getClaimRecordTx().setCodeAddress(codeAddress);
-        getNativeOntIdTx().setCodeAddress(codeAddress);
-    }
 
     /**
      *

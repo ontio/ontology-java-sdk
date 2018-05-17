@@ -58,7 +58,7 @@ public class ConnectMgrTest {
             identity = ontSdk.getWalletMgr().getIdentitys().get(0);
         }
 
-        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0);
+        Transaction tx = ontSdk.vm().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0);
         txHash = tx.hash().toString();
         deloyTx = txHash;
         String txHex = Helper.toHexString(tx.toArray());
@@ -69,7 +69,7 @@ public class ConnectMgrTest {
 
     @Test
     public void sendRawTransaction() throws ConnectorException, IOException, SDKException {
-        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0);
+        Transaction tx = ontSdk.vm().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0);
         String txHex = Helper.toHexString(tx.toArray());
         boolean b = ontSdk.getConnectMgr().sendRawTransaction(txHex);
         Assert.assertEquals(true,b);
@@ -77,15 +77,15 @@ public class ConnectMgrTest {
 
     @Test
     public void sendRawTransactionByTx() throws Exception {
-        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0);
+        Transaction tx = ontSdk.vm().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0);
         boolean b = ontSdk.getConnectMgr().sendRawTransaction(tx);
         Assert.assertEquals(true,b);
     }
 
     @Test
     public void sendRawTransactionPreExec() throws Exception {
-        ontSdk.setCodeAddress(codeAddress);
-        Identity did = ontSdk.getOntIdTx().sendRegister("111111","payer",0);
+        ontSdk.neovm().ontId().setCodeAddress(codeAddress);
+        Identity did = ontSdk.neovm().ontId().sendRegister("111111","payer",0);
         Thread.sleep(6000);
         List list = new ArrayList<Object>();
         list.add("GetDDO".getBytes());
@@ -93,8 +93,8 @@ public class ConnectMgrTest {
         tmp.add(did.ontid.getBytes());
         tmp.add(UUID.randomUUID().toString().getBytes());
         list.add(tmp);
-        byte[] params = ontSdk.getSmartcodeTx().createCodeParamsScript(list);
-        Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), "payer",0);
+        byte[] params = ontSdk.vm().createCodeParamsScript(list);
+        Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), "payer",0);
         Object obj = ontSdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         Assert.assertNotEquals(null,obj);
     }

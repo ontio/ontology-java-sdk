@@ -1,7 +1,25 @@
-package com.github.ontio.sdk.manager;
+/*
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
+ *
+ *  The ontology is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The ontology is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+package com.github.ontio.smartcontract.neovm;
 
 import com.github.ontio.OntSdk;
-import com.github.ontio.common.Address;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
@@ -101,8 +119,8 @@ public class ClaimRecordTx {
         return null;
     }
     public Transaction makeInvokeTransaction(List<Object> list,String addr,long gas) throws Exception {
-        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), addr,gas);
+        byte[] params = sdk.vm().createCodeParamsScript(list);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), addr,gas);
         return tx;
     }
 }

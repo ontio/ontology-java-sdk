@@ -17,28 +17,16 @@
  *
  */
 
-package com.github.ontio.sdk.manager;
+package com.github.ontio.smartcontract.neovm;
 
 import com.alibaba.fastjson.JSON;
 import com.github.ontio.OntSdk;
-import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.core.VmType;
-import com.github.ontio.core.asset.*;
-import com.github.ontio.core.payload.Vote;
-import com.github.ontio.core.transaction.Attribute;
-import com.github.ontio.core.transaction.AttributeUsage;
-import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.abi.AbiFunction;
 import com.github.ontio.sdk.abi.AbiInfo;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.sdk.info.AccountInfo;
-import org.bouncycastle.math.ec.ECPoint;
-
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.UUID;
 
 
 /**
@@ -86,13 +74,13 @@ public class Nep5Tx {
         AbiFunction func = abiinfo.getFunction("Init");
         func.name = "init";
         if (preExec) {
-            String result = (String) sdk.getSmartcodeTx().sendInvokeSmartCodeWithNoSignPreExec(func, VmType.NEOVM.value());
+            String result = (String) sdk.vm().sendInvokeSmartCodeWithNoSignPreExec(func, VmType.NEOVM.value());
             if (Integer.parseInt(result) > 0) {
                 throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
             }
             return result;
         } else {
-            return sdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(payer,password,func, VmType.NEOVM.value(),gas);
+            return sdk.vm().sendInvokeSmartCodeWithSign(payer,password,func, VmType.NEOVM.value(),gas);
         }
     }
 
@@ -123,13 +111,13 @@ public class Nep5Tx {
         func.setParamsValue(Address.decodeBase58(sendAddr).toArray(), Address.decodeBase58(recvAddr).toArray(), amount);
 
         if (preExec) {
-            String result = (String) sdk.getSmartcodeTx().sendInvokeSmartCodeWithSignPreExec(sendAddr, password, func, VmType.NEOVM.value());
+            String result = (String) sdk.vm().sendInvokeSmartCodeWithSignPreExec(sendAddr, password, func, VmType.NEOVM.value());
             if (Integer.parseInt(result) > 0) {
                 throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
             }
             return result;
         } else {
-            return sdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(sendAddr, password, func, VmType.NEOVM.value(),gas);
+            return sdk.vm().sendInvokeSmartCodeWithSign(sendAddr, password, func, VmType.NEOVM.value(),gas);
         }
     }
 
@@ -141,7 +129,7 @@ public class Nep5Tx {
         AbiFunction func = abiinfo.getFunction("BalanceOf");
         func.name = "balanceOf";
         func.setParamsValue(Address.decodeBase58(addr).toArray());
-        String result = (String) sdk.getSmartcodeTx().sendInvokeSmartCodeWithNoSignPreExec(func, VmType.NEOVM.value());
+        String result = (String) sdk.vm().sendInvokeSmartCodeWithNoSignPreExec(func, VmType.NEOVM.value());
         return result;
     }
 
@@ -153,7 +141,7 @@ public class Nep5Tx {
         AbiFunction func = abiinfo.getFunction("TotalSupply");
         func.name = "totalSupply";
         func.setParamsValue();
-        String result = (String) sdk.getSmartcodeTx().sendInvokeSmartCodeWithNoSignPreExec(func, VmType.NEOVM.value());
+        String result = (String) sdk.vm().sendInvokeSmartCodeWithNoSignPreExec(func, VmType.NEOVM.value());
         return result;
     }
 
@@ -165,7 +153,7 @@ public class Nep5Tx {
         AbiFunction func = abiinfo.getFunction("Name");
         func.name = "name";
         func.setParamsValue();
-        String result = (String) sdk.getSmartcodeTx().sendInvokeSmartCodeWithNoSignPreExec(func, VmType.NEOVM.value());
+        String result = (String) sdk.vm().sendInvokeSmartCodeWithNoSignPreExec(func, VmType.NEOVM.value());
         return result;
     }
 
@@ -177,7 +165,7 @@ public class Nep5Tx {
         AbiFunction func = abiinfo.getFunction("Decimals");
         func.name = "decimals";
         func.setParamsValue();
-        String result = (String) sdk.getSmartcodeTx().sendInvokeSmartCodeWithNoSignPreExec(func, VmType.NEOVM.value());
+        String result = (String) sdk.vm().sendInvokeSmartCodeWithNoSignPreExec(func, VmType.NEOVM.value());
         return result;
     }
 
@@ -189,7 +177,7 @@ public class Nep5Tx {
         AbiFunction func = abiinfo.getFunction("Symbol");
         func.name = "symbol";
         func.setParamsValue();
-        String result = (String) sdk.getSmartcodeTx().sendInvokeSmartCodeWithNoSignPreExec(func, VmType.NEOVM.value());
+        String result = (String) sdk.vm().sendInvokeSmartCodeWithNoSignPreExec(func, VmType.NEOVM.value());
         return result;
     }
 

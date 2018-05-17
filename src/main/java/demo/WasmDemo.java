@@ -38,18 +38,18 @@ public class WasmDemo {
             System.out.println("Code:" + Helper.toHexString(bys));
             System.out.println("CodeAddress:" + Helper.getCodeAddress(code, VmType.WASMVM.value()));
 
-            ontSdk.getSmartcodeTx().setCodeAddress(Helper.getCodeAddress(code, VmType.WASMVM.value()));
+            ontSdk.vm().setCodeAddress(Helper.getCodeAddress(code, VmType.WASMVM.value()));
 
             if(false) {
-                Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(code, true, "name", "1.0", "1", "1", "1", VmType.WASMVM.value(),identity.ontid,0);
+                Transaction tx = ontSdk.vm().makeDeployCodeTransaction(code, true, "name", "1.0", "1", "1", "1", VmType.WASMVM.value(),identity.ontid,0);
                 String txHex = Helper.toHexString(tx.toArray());
                 System.out.println(txHex);
                 ontSdk.getConnectMgr().sendRawTransaction(txHex);
             }
 //            System.exit(0);
-            String params = ontSdk.getSmartcodeTx().buildWasmContractJsonParam(new Object[]{20,30});
+            String params = ontSdk.vm().buildWasmContractJsonParam(new Object[]{20,30});
             System.out.println(params);
-            Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(ontSdk.getSmartcodeTx().getCodeAddress(),"add",params.getBytes(),VmType.WASMVM.value(),"addr",0);
+            Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontSdk.vm().getCodeAddress(),"add",params.getBytes(),VmType.WASMVM.value(),"addr",0);
             ontSdk.signTx(tx,new Account[][]{{}});
             ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
 
@@ -76,7 +76,7 @@ public class WasmDemo {
 
         wm.openWalletFile("RecordTxDemo.json");
 
-        wm.setCodeAddress("80f6bff7645a84298a1a52aa3745f84dba6615cf");
+        wm.vm().setCodeAddress("80f6bff7645a84298a1a52aa3745f84dba6615cf");
         return wm;
     }
 }

@@ -57,14 +57,14 @@ public class InvokeCodeDemo {
             if (ontSdk.getWalletMgr().getIdentitys().size() == 0) {
                 Map map = new HashMap<>();
                 map.put("test", "value00");
-                Identity did = ontSdk.getOntIdTx().sendRegister("passwordtest","",0);
+                Identity did = ontSdk.neovm().ontId().sendRegister("passwordtest","",0);
             }
             Identity did = ontSdk.getWalletMgr().getIdentitys().get(0);
             System.out.println(did.ontid);
             System.out.println("did hex:" + Helper.toHexString(did.ontid.getBytes()) + "  " + Helper.toHexString(did.ontid.getBytes()).length());
             System.out.println();
 
-            String ddo = ontSdk.getOntIdTx().sendGetDDO(did.ontid);
+            String ddo = ontSdk.neovm().ontId().sendGetDDO(did.ontid);
             System.out.println("Ddo:" + ddo);
             System.exit(0);
 
@@ -74,7 +74,7 @@ public class InvokeCodeDemo {
             String value = "{\"Context\":\"claim:context\",\"Content\":{\"Issuer\":\"did:ont:TA8WyMDTP7BXFK6pVZ55Wn9gvAjCvsMfTm\",\"Subject\":\"did:ont:TA7idxkVHWXQgk2fd4dPZRyp7V2G7qTBzd\"},\"Signature\":{\"Format\":\"pgp\",\"Value\":\"AXLttwbJT8PV3L8P721PEDSFrMZ+wf4tYEcQMfsBiDH9Wi3DUvUnLdeBkarH2ZcvqB3YICFBcJy8aA46VLjFkFA=\",\"Algorithm\":\"ECDSAwithSHA256\"},\"Metadata\":{\"Issuer\":\"did:ont:TA8WyMDTP7BXFK6pVZ55Wn9gvAjCvsMfTm\",\"CreateTime\":\"2018-03-29T16:45:09Z\",\"Subject\":\"did:ont:TA7idxkVHWXQgk2fd4dPZRyp7V2G7qTBzd\"},\"Id\":\"3903a2f8158d71b976936ab60656fc0b615be40715d9235e4992c15e530b8ed3\"}";
             func.setParamsValue(did.ontid.getBytes(), "key".getBytes(), "bytes".getBytes(), value.getBytes(), Helper.hexToBytes(info.pubkey));
 
-            String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", func, (byte) VmType.NEOVM.value(),0);
+            String hash = ontSdk.vm().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", func, (byte) VmType.NEOVM.value(),0);
 
             System.out.println("invokeTransaction hash:" + hash);
 
@@ -99,7 +99,7 @@ public class InvokeCodeDemo {
         wm.setDefaultConnect(wm.getRestful());
 
         wm.openWalletFile("InvokeSmartCodeDemo.json");//803ca638069742da4b6871fe3d7f78718eeee78a
-        wm.setCodeAddress("803ca638069742da4b6871fe3d7f78718eeee78a");//80e7d2fc22c24c466f44c7688569cc6e6d6c6f92
+        wm.neovm().ontId().setCodeAddress("803ca638069742da4b6871fe3d7f78718eeee78a");//80e7d2fc22c24c466f44c7688569cc6e6d6c6f92
         return wm;
     }
 }

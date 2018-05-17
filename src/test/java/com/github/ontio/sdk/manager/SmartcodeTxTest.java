@@ -59,7 +59,7 @@ public class SmartcodeTxTest {
             identity = ontSdk.getWalletMgr().getIdentitys().get(0);
         }
 
-        ontSdk.setCodeAddress(codeAddress);
+        ontSdk.neovm().ontId().setCodeAddress(codeAddress);
 
         String funStr = "{\"name\": \"AddAttribute\",\"parameters\": [{\"name\": \"ontId\",\"type\": \"ByteArray\"},{\"name\": \"path\",\"type\": \"ByteArray\"},{\"name\": \"type\",\"type\": \"ByteArray\"},{\"name\": \"value\",\"type\": \"ByteArray\"},{\"name\": \"publicKey\",\"type\": \"ByteArray\"}],\"returntype\": \"Boolean\"}";
 
@@ -67,7 +67,7 @@ public class SmartcodeTxTest {
 
 
         if (ontSdk.getWalletMgr().getIdentitys().size() < 1) {
-            Identity did = ontSdk.getOntIdTx().sendRegister("passwordtest","payer",0);
+            Identity did = ontSdk.neovm().ontId().sendRegister("passwordtest","payer",0);
             Thread.sleep(6000);
         }
         did = ontSdk.getWalletMgr().getIdentitys().get(0);
@@ -82,7 +82,7 @@ public class SmartcodeTxTest {
         abiFunction2 = JSON.parseObject(funcStr2,AbiFunction.class);
         abiFunction2.setParamsValue(did.ontid.getBytes(),UUID.randomUUID().toString().getBytes());
 
-        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0);
+        Transaction tx = ontSdk.vm().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0);
 
         String txHex = Helper.toHexString(tx.toArray());
         boolean b = ontSdk.getConnectMgr().sendRawTransaction(txHex);
@@ -92,7 +92,7 @@ public class SmartcodeTxTest {
     @Test
     public void sendInvokeSmartCode() throws Exception {
 
-        String res = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign("","",abiFunction2,(byte) VmType.NEOVM.value(),0);
+        String res = ontSdk.vm().sendInvokeSmartCodeWithSign("","",abiFunction2,(byte) VmType.NEOVM.value(),0);
         Assert.assertNotNull(res);
 
     }
@@ -102,7 +102,7 @@ public class SmartcodeTxTest {
     @Test
     public void sendInvokeSmartCodeWithSign() throws Exception {
 
-        String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", abiFunction, (byte) VmType.NEOVM.value(),0);
+        String hash = ontSdk.vm().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", abiFunction, (byte) VmType.NEOVM.value(),0);
         Assert.assertNotNull(hash);
 
     }
@@ -110,7 +110,7 @@ public class SmartcodeTxTest {
     @Test
     public void sendInvokeSmartCodeWithSignError(){
         try {
-            ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "",abiFunction,(byte)VmType.NEOVM.value(),0);
+            ontSdk.vm().sendInvokeSmartCodeWithSign(did.ontid, "",abiFunction,(byte)VmType.NEOVM.value(),0);
         } catch (SDKException e) {
             assertTrue(e.getMessage().contains("59000"));
         }catch (Exception e){
@@ -118,7 +118,7 @@ public class SmartcodeTxTest {
         }
 
         try {
-            ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign("", "passwordtest",abiFunction,(byte)VmType.NEOVM.value(),0);
+            ontSdk.vm().sendInvokeSmartCodeWithSign("", "passwordtest",abiFunction,(byte)VmType.NEOVM.value(),0);
         } catch (SDKException e) {
             assertTrue(e.getMessage().contains("58004"));
         }catch (Exception e){
@@ -129,7 +129,7 @@ public class SmartcodeTxTest {
     @Test
     public void invokeTransactionPreExec() throws Exception {
 
-        Object obj = ontSdk.getSmartcodeTx().sendInvokeTransactionPreExec(did.ontid, "passwordtest", abiFunction2, (byte) VmType.NEOVM.value(),0);
+        Object obj = ontSdk.vm().sendInvokeTransactionPreExec(did.ontid, "passwordtest", abiFunction2, (byte) VmType.NEOVM.value(),0);
         Assert.assertNotNull(obj);
 
     }
@@ -137,13 +137,13 @@ public class SmartcodeTxTest {
     @Test
     public void invokeTransactionPreExecError(){
         try {
-            ontSdk.getSmartcodeTx().sendInvokeTransactionPreExec(did.ontid, "", abiFunction2, (byte) VmType.NEOVM.value(),0);
+            ontSdk.vm().sendInvokeTransactionPreExec(did.ontid, "", abiFunction2, (byte) VmType.NEOVM.value(),0);
         }catch (SDKException e){
             assertTrue(e.getMessage().contains("59000"));
         }catch (Exception e){}
 
         try {
-            ontSdk.getSmartcodeTx().sendInvokeTransactionPreExec("", "passwordtest", abiFunction2, (byte) VmType.NEOVM.value(),0);
+            ontSdk.vm().sendInvokeTransactionPreExec("", "passwordtest", abiFunction2, (byte) VmType.NEOVM.value(),0);
         }catch (SDKException e){
             assertTrue(e.getMessage().contains("58004"));
         }catch (Exception e){}
@@ -152,13 +152,13 @@ public class SmartcodeTxTest {
     @Test
     public void invokeTransactionError(){
         try {
-            ontSdk.getSmartcodeTx().invokeTransaction(did.ontid,"",abiFunction2,(byte) VmType.NEOVM.value(),0);
+            ontSdk.vm().invokeTransaction(did.ontid,"",abiFunction2,(byte) VmType.NEOVM.value(),0);
         }catch (SDKException e){
             assertTrue(e.getMessage().contains("59000"));
         }catch (Exception e){}
 
         try {
-            ontSdk.getSmartcodeTx().invokeTransaction("","passwordtest",abiFunction2,(byte) VmType.NEOVM.value(),0);
+            ontSdk.vm().invokeTransaction("","passwordtest",abiFunction2,(byte) VmType.NEOVM.value(),0);
         }catch (SDKException e){
             assertTrue(e.getMessage().contains("58004"));
         }catch (Exception e){}
@@ -169,9 +169,9 @@ public class SmartcodeTxTest {
 
     @Test
     public void deployCodeTransaction() throws IOException, SDKException, ConnectorException {
-        ontSdk.setCodeAddress(Helper.getCodeAddress(codeHex, VmType.NEOVM.value()));
+        ontSdk.vm().setCodeAddress(Helper.getCodeAddress(codeHex, VmType.NEOVM.value()));
 
-        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0);
+        Transaction tx = ontSdk.vm().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0);
         String txHex = Helper.toHexString(tx.toArray());
         System.out.println(txHex);
         boolean b = ontSdk.getConnectMgr().sendRawTransaction(txHex);
@@ -185,14 +185,14 @@ public class SmartcodeTxTest {
         List list = new ArrayList<Object>();
         list.add("123".getBytes());
 
-        byte[] res = ontSdk.getSmartcodeTx().createCodeParamsScript(list);
+        byte[] res = ontSdk.vm().createCodeParamsScript(list);
         Assert.assertNotNull(res);
     }
 
     @Test
     public void makeDeployCodeTransaction() throws SDKException {
 
-        Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0);
+        Transaction tx = ontSdk.vm().makeDeployCodeTransaction(codeHex, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0);
     Assert.assertNotNull(tx);
 
     }
@@ -202,8 +202,8 @@ public class SmartcodeTxTest {
 
         List list = new ArrayList<Object>();
         list.add("test");
-        byte[] params = ontSdk.getSmartcodeTx().createCodeParamsScript(list);
-        InvokeCode res = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), "payer",0);
+        byte[] params = ontSdk.vm().createCodeParamsScript(list);
+        InvokeCode res = ontSdk.vm().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), "payer",0);
         Assert.assertNotNull(res);
     }
 }

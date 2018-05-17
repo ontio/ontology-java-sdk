@@ -1,30 +1,21 @@
 package com.github.ontio;
 
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
-import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.network.exception.RestfulException;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.sdk.exception.SDKRuntimeException;
-
-import com.alibaba.fastjson.JSONObject;
-import com.github.ontio.account.Account;
-import com.github.ontio.network.exception.ConnectorException;
 
 import com.github.ontio.sdk.manager.ConnectMgr;
-import com.github.ontio.sdk.manager.OntAssetTx;
-import com.github.ontio.sdk.manager.OntIdTx;
+import com.github.ontio.smartcontract.nativevm.OntAssetTx;
+import com.github.ontio.smartcontract.neovm.OntIdTx;
 import com.github.ontio.sdk.manager.WalletMgr;
 import com.github.ontio.sdk.wallet.Identity;
 import com.github.ontio.sdk.wallet.Wallet;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.IOException;
 
 import static org.junit.Assert.*;
 
@@ -41,12 +32,12 @@ public class SmokeTest {
         ontSdk = OntSdk.getInstance();
         ontSdk.setRestful("http://polaris1.ont.io:20334");
         ontSdk.openWalletFile("wallet.json");
-        ontSdk.setCodeAddress("80b0cc71bda8653599c5666cae084bff587e2de1");
+        ontSdk.neovm().ontId().setCodeAddress("80b0cc71bda8653599c5666cae084bff587e2de1");
         walletMgr = ontSdk.getWalletMgr();
         wallet = walletMgr.getWallet();
-        ontIdTx = ontSdk.getOntIdTx();
+        ontIdTx = ontSdk.neovm().ontId();
         connectMgr = ontSdk.getConnectMgr();
-        ontAssetTx = ontSdk.getOntAssetTx();
+        ontAssetTx = ontSdk.nativevm().ont();
     }
 
     @After

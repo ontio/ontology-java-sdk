@@ -53,25 +53,28 @@ public class Nep5Demo {
             ontSdk.getWalletMgr().writeWallet();
             System.out.println("recv:"+acct.address);
             if(false) {
-                String result = ontSdk.getNep5Tx().sendInit("payer","password",0);
+                String result = ontSdk.neovm().nep5().sendInit("payer","password",0);
                 System.out.println(result);
                 System.exit(0);
             }
-            String txhash = ontSdk.getNep5Tx().sendTransfer(acct.address,"passwordtest",acct1.getAddressU160().toBase58(),10,0);
+            System.out.println(Helper.toHexString("transfer".getBytes()));
+            String txhash = ontSdk.neovm().nep5().sendTransfer(acct.address,"passwordtest",acct1.getAddressU160().toBase58(),10,0);
             System.out.println(txhash);
 
-            String balance = ontSdk.getNep5Tx().sendBalanceOf(acct.address);
+            System.exit(0);
+
+            String balance = ontSdk.neovm().nep5().sendBalanceOf(acct.address);
             System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(balance))).longValue());
 
-            String totalSupply = ontSdk.getNep5Tx().sendTotalSupply();
+            String totalSupply = ontSdk.neovm().nep5().sendTotalSupply();
             System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(totalSupply))).longValue());
 
-            String decimals = ontSdk.getNep5Tx().sendDecimals();
+            String decimals = ontSdk.neovm().nep5().sendDecimals();
             System.out.println(decimals);
 
-            String name = ontSdk.getNep5Tx().sendName();
+            String name = ontSdk.neovm().nep5().sendName();
             System.out.println(new String(Helper.hexToBytes(name)));
-            String symbol = ontSdk.getNep5Tx().sendSymbol();
+            String symbol = ontSdk.neovm().nep5().sendSymbol();
             System.out.println(new String(Helper.hexToBytes(symbol)));
 
             System.out.println(Address.decodeBase58(acct.address).toHexString());
@@ -95,7 +98,7 @@ public class Nep5Demo {
         wm.setRpc(rpcUrl);
         wm.setRestful(restUrl);
         wm.setDefaultConnect(wm.getRestful());
-        wm.setCodeAddress("809071dac173b27f467d0e062bfdb24ff43ac74d");
+        wm.neovm().nep5().setCodeAddress("809071dac173b27f467d0e062bfdb24ff43ac74d");
         wm.openWalletFile("nep5.json");
 
 

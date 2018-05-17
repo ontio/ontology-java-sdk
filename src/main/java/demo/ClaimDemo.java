@@ -41,12 +41,12 @@ public class ClaimDemo {
         try {
             OntSdk ontSdk = getOntSdk();
 
-            ontSdk.setCodeAddress("80b0cc71bda8653599c5666cae084bff587e2de1");
+            ontSdk.neovm().ontId().setCodeAddress("80b0cc71bda8653599c5666cae084bff587e2de1");
 
             List<Identity> dids = ontSdk.getWalletMgr().getIdentitys();
             if (dids.size() < 2) {
-                ontSdk.getOntIdTx().sendRegister("passwordtest","payer",0);
-                ontSdk.getOntIdTx().sendRegister("passwordtest","payer",0);
+                ontSdk.neovm().ontId().sendRegister("passwordtest","payer",0);
+                ontSdk.neovm().ontId().sendRegister("passwordtest","payer",0);
                 dids = ontSdk.getWalletMgr().getIdentitys();
                 Thread.sleep(6000);
             }
@@ -56,9 +56,9 @@ public class ClaimDemo {
             map.put("Subject", dids.get(1).ontid);
 
 
-            String claim = ontSdk.getOntIdTx().createOntIdClaim(dids.get(0).ontid,"passwordtest", "claim:context", map, map);
+            String claim = ontSdk.neovm().ontId().createOntIdClaim(dids.get(0).ontid,"passwordtest", "claim:context", map, map);
             System.out.println(claim);
-            boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(claim);
+            boolean b = ontSdk.neovm().ontId().verifyOntIdClaim(claim);
             System.out.println(b);
 
         } catch (Exception e) {

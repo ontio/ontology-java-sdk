@@ -52,7 +52,7 @@ public class OntIdDemoTest {
                 System.out.println();
                 System.out.println("================register=================");
                 //registry ontid
-                Identity ident = ontSdk.getOntIdTx().sendRegister("passwordtest","payer",0);
+                Identity ident = ontSdk.neovm().ontId().sendRegister("passwordtest","payer",0);
                 Thread.sleep(6000);
                 ontid = ident.ontid;
 
@@ -70,7 +70,7 @@ public class OntIdDemoTest {
 
                 System.out.println(JSON.toJSONString(recordMap));
                 System.out.println(ontid);
-                String hash = ontSdk.getOntIdTx().sendUpdateAttribute(ontid, "passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes(),0);
+                String hash = ontSdk.neovm().ontId().sendUpdateAttribute(ontid, "passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes(),0);
                 System.out.println("hash:" + hash);
 
 
@@ -84,10 +84,10 @@ public class OntIdDemoTest {
             ontid = "did:ont:TA71v7vbtAJeBAaRZYCcYWBjmtd9GCT3yo";
             IdentityInfo info = ontSdk.getWalletMgr().getIdentityInfo(ontSdk.getWalletMgr().getIdentitys().get(0).ontid,"passwordtest");
             System.out.println(ontSdk.getWalletMgr().getIdentitys().get(0).ontid);
-            ontSdk.getOntIdTx().sendAddPubKey(ontid,"passwordtest",info.pubkey,0);
+            ontSdk.neovm().ontId().sendAddPubKey(ontid,"passwordtest",info.pubkey,0);
             Thread.sleep(6000);
 
-            String ddo = ontSdk.getOntIdTx().sendGetDDO(ontid);
+            String ddo = ontSdk.neovm().ontId().sendGetDDO(ontid);
             System.out.println("Ddo:" + ddo);
 
             System.out.println();
@@ -117,7 +117,7 @@ public class OntIdDemoTest {
 
         wm.openWalletFile("OntIdDemo.json");
 
-        wm.setCodeAddress("80b0cc71bda8653599c5666cae084bff587e2de1");
+        wm.neovm().ontId().setCodeAddress("80b0cc71bda8653599c5666cae084bff587e2de1");
         return wm;
     }
 }

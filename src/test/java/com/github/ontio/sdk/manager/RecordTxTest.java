@@ -31,7 +31,7 @@ public class RecordTxTest {
         ontSdk.setRestful(restUrl);
         ontSdk.setDefaultConnect(ontSdk.getRestful());
         ontSdk.openWalletFile("RecordTxTest.json");
-        ontSdk.setCodeAddress("803ca638069742da4b6871fe3d7f78718eeee78a");
+        ontSdk.neovm().record().setCodeAddress("803ca638069742da4b6871fe3d7f78718eeee78a");
 
 
         if(ontSdk.getWalletMgr().getIdentitys().size() < 1) {

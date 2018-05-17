@@ -4,6 +4,7 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Identity;
 import com.github.ontio.sdk.wallet.Wallet;
+import com.github.ontio.smartcontract.neovm.OntIdTx;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,10 +25,10 @@ public class WalletMgrTest {
         ontSdk = OntSdk.getInstance();
         ontSdk.setRestful("http://polaris1.ont.io:20334");
         ontSdk.openWalletFile("wallet.json");
-        ontSdk.setCodeAddress("80b0cc71bda8653599c5666cae084bff587e2de1");
+        ontSdk.vm().setCodeAddress("80b0cc71bda8653599c5666cae084bff587e2de1");
         walletMgr = ontSdk.getWalletMgr();
         wallet = walletMgr.getWallet();
-        ontIdTx = ontSdk.getOntIdTx();
+        ontIdTx = ontSdk.neovm().ontId();
 
     }
 

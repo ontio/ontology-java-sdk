@@ -46,12 +46,12 @@ public class OntIdTxTest {
         codeAddress = "80b0cc71bda8653599c5666cae084bff587e2de1";
         ontSdk.openWalletFile("OntIdTxTest.json");
 
-        ontSdk.setCodeAddress(codeAddress);
+        ontSdk.neovm().ontId().setCodeAddress(codeAddress);
 
         did = ontSdk.getWalletMgr().getIdentitys();
         if(did.size() < 2){
-            ontSdk.getOntIdTx().sendRegister("passwordtest","payer",0);
-            ontSdk.getOntIdTx().sendRegister("passwordtest","payer",0);
+            ontSdk.neovm().ontId().sendRegister("passwordtest","payer",0);
+            ontSdk.neovm().ontId().sendRegister("passwordtest","payer",0);
             Thread.sleep(6000);
         }
     }
@@ -59,19 +59,19 @@ public class OntIdTxTest {
     @Test
     public void setCodeAddress() {
 
-        ontSdk.getOntIdTx().setCodeAddress(codeAddress);
-        Assert.assertEquals(codeAddress,ontSdk.getOntIdTx().getCodeAddress());
+        ontSdk.neovm().ontId().setCodeAddress(codeAddress);
+        Assert.assertEquals(codeAddress,ontSdk.neovm().ontId().getCodeAddress());
     }
 
     @Test
     public void getCodeAddress() {
-        String codeAddress2 = ontSdk.getOntIdTx().getCodeAddress();
+        String codeAddress2 = ontSdk.neovm().ontId().getCodeAddress();
         Assert.assertEquals(codeAddress,codeAddress2);
     }
 
     @Test
     public void sendRegister() throws Exception {
-        Identity id = ontSdk.getOntIdTx().sendRegister("passwordtest","payer",0);
+        Identity id = ontSdk.neovm().ontId().sendRegister("passwordtest","payer",0);
         Assert.assertNotNull(id);
 
     }
@@ -80,7 +80,7 @@ public class OntIdTxTest {
     public void makeRegister() throws Exception {
 
         IdentityInfo acctinfo = ontSdk.getWalletMgr().createIdentityInfo("passwordtest");
-        Transaction tx = ontSdk.getOntIdTx().makeRegister(acctinfo,0);
+        Transaction tx = ontSdk.neovm().ontId().makeRegister(acctinfo,0);
         Assert.assertNotNull(tx);
     }
 
@@ -93,7 +93,7 @@ public class OntIdTxTest {
         //recordMap.put("key1", i);
         recordMap.put("keyNum", 1234589);
         recordMap.put("key2", false);
-        Identity id = ontSdk.getOntIdTx().sendRegister("passwordtest",recordMap,0);
+        Identity id = ontSdk.neovm().ontId().sendRegister("passwordtest",recordMap,0);
         Assert.assertNotNull(id);
     }
 
@@ -102,7 +102,7 @@ public class OntIdTxTest {
 
         Identity id = ontSdk.getWalletMgr().createIdentity("passwordtest");
 
-        Identity did = ontSdk.getOntIdTx().sendRegister(id,"passwordtest",0);
+        Identity did = ontSdk.neovm().ontId().sendRegister(id,"passwordtest",0);
         Assert.assertNotNull(did);
     }
 
@@ -114,7 +114,7 @@ public class OntIdTxTest {
     public void sendAddPubKey() throws Exception {
 
         IdentityInfo acctinfo = ontSdk.getWalletMgr().getIdentityInfo(did.get(1).ontid,"passwordtest");
-        txhash = ontSdk.getOntIdTx().sendAddPubKey(did.get(0).ontid.replace(Common.didont,""),"passwordtest",acctinfo.pubkey,0);
+        txhash = ontSdk.neovm().ontId().sendAddPubKey(did.get(0).ontid.replace(Common.didont,""),"passwordtest",acctinfo.pubkey,0);
         Assert.assertNotNull(txhash);
 
     }
@@ -122,28 +122,28 @@ public class OntIdTxTest {
     @Test
     public void sendAddPubKeyWithRecovery() throws Exception {
         IdentityInfo acctinfo = ontSdk.getWalletMgr().getIdentityInfo(did.get(1).ontid,"passwordtest");
-        String res = ontSdk.getOntIdTx().sendAddPubKey("passwordtest",did.get(0).ontid.replace(Common.didont,""),acctinfo.pubkey,acctinfo.addressU160,0);
+        String res = ontSdk.neovm().ontId().sendAddPubKey("passwordtest",did.get(0).ontid.replace(Common.didont,""),acctinfo.pubkey,acctinfo.addressU160,0);
         Assert.assertNotNull(res);
     }
 
     @Test
     public void sendRemovePubKey() throws Exception {
         IdentityInfo acctinfo = ontSdk.getWalletMgr().getIdentityInfo(did.get(1).ontid,"passwordtest");
-        String res = ontSdk.getOntIdTx().sendRemovePubKey(did.get(0).ontid.replace(Common.didont,""),"passwordtest",acctinfo.pubkey,0);
+        String res = ontSdk.neovm().ontId().sendRemovePubKey(did.get(0).ontid.replace(Common.didont,""),"passwordtest",acctinfo.pubkey,0);
         Assert.assertNotNull(res);
     }
 
     @Test
     public void sendRemovePubKeyWithRecovery() throws Exception {
         IdentityInfo acctinfo = ontSdk.getWalletMgr().getIdentityInfo(did.get(1).ontid,"passwordtest");
-        String res = ontSdk.getOntIdTx().sendRemovePubKey(did.get(0).ontid.replace(Common.didont,""),"passwordtest","".getBytes(),acctinfo.addressU160,0);
+        String res = ontSdk.neovm().ontId().sendRemovePubKey(did.get(0).ontid.replace(Common.didont,""),"passwordtest","".getBytes(),acctinfo.addressU160,0);
         Assert.assertNotNull(res);
     }
 
     @Test
     public void sendAddRecovery() throws Exception {
         IdentityInfo acctinfo = ontSdk.getWalletMgr().getIdentityInfo(did.get(1).ontid,"passwordtest");
-        String res = ontSdk.getOntIdTx().sendAddRecovery(did.get(0).ontid.replace(Common.didont,""),"passwordtest",acctinfo.addressU160,0);
+        String res = ontSdk.neovm().ontId().sendAddRecovery(did.get(0).ontid.replace(Common.didont,""),"passwordtest",acctinfo.addressU160,0);
         Assert.assertNotNull(res);
     }
 
@@ -152,20 +152,20 @@ public class OntIdTxTest {
 
         IdentityInfo acctinfo = ontSdk.getWalletMgr().getIdentityInfo(did.get(1).ontid,"passwordtest");
         IdentityInfo acctinfo2 = ontSdk.getWalletMgr().createIdentityInfo("passwordtest");
-        String res = ontSdk.getOntIdTx().sendChangeRecovery(did.get(0).ontid.replace(Common.didont,""),"passwordtest",acctinfo2.addressU160,acctinfo.addressU160,0);
+        String res = ontSdk.neovm().ontId().sendChangeRecovery(did.get(0).ontid.replace(Common.didont,""),"passwordtest",acctinfo2.addressU160,acctinfo.addressU160,0);
         Assert.assertNotNull(res);
     }
 
     @Test
     public void sendUpdateAttribute() throws Exception {
-        String res = ontSdk.getOntIdTx().sendUpdateAttribute(did.get(0).ontid,"passwordtest","key".getBytes(),"byte".getBytes(),"value".getBytes(),0);
+        String res = ontSdk.neovm().ontId().sendUpdateAttribute(did.get(0).ontid,"passwordtest","key".getBytes(),"byte".getBytes(),"value".getBytes(),0);
         Assert.assertNotNull(res);
     }
 
     @Test
     public void makeUpdateAttribute() throws Exception {
 
-        Transaction tx = ontSdk.getOntIdTx().makeUpdateAttribute(did.get(0).ontid,"passwordtest","key".getBytes(),"byte".getBytes(),"value".getBytes(),0);
+        Transaction tx = ontSdk.neovm().ontId().makeUpdateAttribute(did.get(0).ontid,"passwordtest","key".getBytes(),"byte".getBytes(),"value".getBytes(),0);
         Assert.assertNotNull(tx);
     }
 
@@ -175,45 +175,45 @@ public class OntIdTxTest {
 
     @Test
     public void sendGetDDO() throws Exception {
-        String res = ontSdk.getOntIdTx().sendGetDDO(did.get(0).ontid);
+        String res = ontSdk.neovm().ontId().sendGetDDO(did.get(0).ontid);
         Assert.assertNotNull(res);
     }
 
     @Test
     public void getPubKeys() throws Exception {
-        ontSdk.getOntIdTx().getPubKeys(did.get(0).ontid);
+        ontSdk.neovm().ontId().getPubKeys(did.get(0).ontid);
     }
 
     @Test
     public void createOntIdClaim() throws Exception {
 
 
-        Identity id1 = ontSdk.getOntIdTx().sendRegister("passwordtest","payer",0);
-        Identity id2 = ontSdk.getOntIdTx().sendRegister("passwordtest","payer",0);
+        Identity id1 = ontSdk.neovm().ontId().sendRegister("passwordtest","payer",0);
+        Identity id2 = ontSdk.neovm().ontId().sendRegister("passwordtest","payer",0);
         Thread.sleep(6000);
 
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("Issuer", id1.ontid);
         map.put("Subject", id2.ontid);
-        String claim = ontSdk.getOntIdTx().createOntIdClaim(id1.ontid,"passwordtest", "claim:context", map, map);
+        String claim = ontSdk.neovm().ontId().createOntIdClaim(id1.ontid,"passwordtest", "claim:context", map, map);
         Assert.assertNotNull(claim);
     }
 
     @Test
     public void verifyOntIdClaim() throws Exception {
 
-        Identity id1 = ontSdk.getOntIdTx().sendRegister("passwordtest","payer",0);
-        Identity id2 = ontSdk.getOntIdTx().sendRegister("passwordtest","payer",0);
+        Identity id1 = ontSdk.neovm().ontId().sendRegister("passwordtest","payer",0);
+        Identity id2 = ontSdk.neovm().ontId().sendRegister("passwordtest","payer",0);
         Thread.sleep(6000);
 
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("Issuer", id1.ontid);
         map.put("Subject", id2.ontid);
-        String claim = ontSdk.getOntIdTx().createOntIdClaim(id1.ontid,"passwordtest", "claim:context", map, map);
+        String claim = ontSdk.neovm().ontId().createOntIdClaim(id1.ontid,"passwordtest", "claim:context", map, map);
 
-        boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(claim);
+        boolean b = ontSdk.neovm().ontId().verifyOntIdClaim(claim);
         Assert.assertTrue(b);
     }
 
@@ -221,13 +221,13 @@ public class OntIdTxTest {
     @Test
     public void sendRemoveAttribute() throws Exception {
 
-        String res = ontSdk.getOntIdTx().sendRemoveAttribute(did.get(0).ontid,"passwordtest","key".getBytes(),0);
+        String res = ontSdk.neovm().ontId().sendRemoveAttribute(did.get(0).ontid,"passwordtest","key".getBytes(),0);
         Assert.assertNotNull(res);
     }
 
     @Test
     public void makeRemoveAttribute() throws Exception {
-        Transaction tx = ontSdk.getOntIdTx().makeRemoveAttribute(did.get(0).ontid,"passwordtest","key".getBytes(),0);
+        Transaction tx = ontSdk.neovm().ontId().makeRemoveAttribute(did.get(0).ontid,"passwordtest","key".getBytes(),0);
         Assert.assertNotNull(tx);
     }
 
@@ -236,7 +236,7 @@ public class OntIdTxTest {
         List list = new ArrayList();
         list.add("test");
         IdentityInfo acctinfo = ontSdk.getWalletMgr().createIdentityInfo("passwordtest");
-        Transaction tx = ontSdk.getOntIdTx().makeInvokeTransaction(list,acctinfo,0);
+        Transaction tx = ontSdk.neovm().ontId().makeInvokeTransaction(list,acctinfo,0);
         Assert.assertNotNull(tx);
     }
 
@@ -244,39 +244,39 @@ public class OntIdTxTest {
     public void makeInvokeTransactionWithAddr() throws Exception {
         List list = new ArrayList();
         list.add("test");
-        Transaction tx = ontSdk.getOntIdTx().makeInvokeTransaction(list,did.get(0).ontid,"passwordtest",0);
+        Transaction tx = ontSdk.neovm().ontId().makeInvokeTransaction(list,did.get(0).ontid,"passwordtest",0);
         Assert.assertNotNull(tx);
     }
 
     @Test
     public void sendGetPublicKeyId() throws Exception {
-        String res = ontSdk.getOntIdTx().sendGetPublicKeyId(did.get(0).ontid,"passwordtest");
+        String res = ontSdk.neovm().ontId().sendGetPublicKeyId(did.get(0).ontid,"passwordtest");
         Assert.assertNotNull(res);
     }
 
     @Test
     public void sendGetPublicKeyStatus() throws Exception {
         AccountInfo accountInfo = ontSdk.getWalletMgr().getAccountInfo(did.get(0).ontid.replace(Common.didont,""),"passwordtest");
-        String res = ontSdk.getOntIdTx().sendGetPublicKeyStatus(did.get(0).ontid,"passwordtest", Helper.hexToBytes("01"));
+        String res = ontSdk.neovm().ontId().sendGetPublicKeyStatus(did.get(0).ontid,"passwordtest", Helper.hexToBytes("01"));
         Assert.assertNotNull(res);
     }
 
     @Test
     public void getProof() throws Exception {
         IdentityInfo acctinfo = ontSdk.getWalletMgr().getIdentityInfo(did.get(1).ontid,"passwordtest");
-        txhash = ontSdk.getOntIdTx().sendAddPubKey(did.get(0).ontid.replace(Common.didont,""),"passwordtest",acctinfo.pubkey,0);
+        txhash = ontSdk.neovm().ontId().sendAddPubKey(did.get(0).ontid.replace(Common.didont,""),"passwordtest",acctinfo.pubkey,0);
         Thread.sleep(6000);
-        Object obj = ontSdk.getOntIdTx().getProof(txhash);
+        Object obj = ontSdk.neovm().ontId().getProof(txhash);
         Assert.assertNotNull(obj);
     }
 
     @Test
     public void verifyMerkleProof() throws Exception {
         IdentityInfo acctinfo = ontSdk.getWalletMgr().getIdentityInfo(did.get(1).ontid,"passwordtest");
-        txhash = ontSdk.getOntIdTx().sendAddPubKey(did.get(0).ontid.replace(Common.didont,""),"passwordtest",acctinfo.pubkey,0);
+        txhash = ontSdk.neovm().ontId().sendAddPubKey(did.get(0).ontid.replace(Common.didont,""),"passwordtest",acctinfo.pubkey,0);
         Thread.sleep(6000);
-        Object obj = ontSdk.getOntIdTx().getProof(txhash);
-        boolean b = ontSdk.getOntIdTx().verifyMerkleProof(JSON.toJSONString(obj));
+        Object obj = ontSdk.neovm().ontId().getProof(txhash);
+        boolean b = ontSdk.neovm().ontId().verifyMerkleProof(JSON.toJSONString(obj));
         Assert.assertTrue(b);
     }
 

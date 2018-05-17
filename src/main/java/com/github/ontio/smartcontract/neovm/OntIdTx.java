@@ -17,13 +17,12 @@
  *
  */
 
-package com.github.ontio.sdk.manager;
+package com.github.ontio.smartcontract.neovm;
 
 import com.alibaba.fastjson.JSONArray;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.*;
-import com.github.ontio.core.asset.Contract;
 import com.github.ontio.core.block.Block;
 import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.merkle.MerkleVerifier;
@@ -731,8 +730,8 @@ public class OntIdTx {
         tmp.add(ontid.getBytes());
         tmp.add(UUID.randomUUID().toString().getBytes());
         list.add(tmp);
-        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress, null, params, VmType.NEOVM.value(), null,0);
+        byte[] params = sdk.vm().createCodeParamsScript(list);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, null, params, VmType.NEOVM.value(), null,0);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         if (obj == null || ((String) obj).length() == 0) {
             throw new SDKException(ErrorCode.ResultIsNull);
@@ -819,7 +818,7 @@ public class OntIdTx {
             if (sendDid == null || receiverDid == null) {
                 throw new SDKException(ErrorCode.DidNull);
             }
-            String issuerDdo = sendGetDDO(sendDid);
+            String issuerDdo = sdk.nativevm().ontId().sendGetDDO(sendDid);
             JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("Owners");
             if (owners == null) {
                 throw new SDKException(ErrorCode.NotExistCliamIssuer);
@@ -830,7 +829,7 @@ public class OntIdTx {
             for (int i = 0; i < owners.size(); i++) {
                 JSONObject obj = owners.getJSONObject(i);
                 if (obj.getString("Value").equals(pk)) {
-                    pubkeyId = obj.getString("PublicKeyId");
+                    pubkeyId = obj.getString("PubKeyId");
                     break;
                 }
             }
@@ -903,7 +902,7 @@ public class OntIdTx {
             if (str.length != 3) {
                 throw new SDKException(ErrorCode.DidError);
             }
-            String issuerDdo = sendGetDDO(issuerDid);
+            String issuerDdo = sdk.nativevm().ontId().sendGetDDO(issuerDid);
             JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("Owners");
             if (owners == null) {
                 throw new SDKException(ErrorCode.NotExistCliamIssuer);
@@ -1056,8 +1055,8 @@ public class OntIdTx {
     }
 
     public Transaction makeInvokeTransaction(List<Object> list, IdentityInfo acctinfo,long gas) throws Exception {
-        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress, null, params, VmType.NEOVM.value(), acctinfo.addressU160,gas);
+        byte[] params = sdk.vm().createCodeParamsScript(list);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, null, params, VmType.NEOVM.value(), acctinfo.addressU160,gas);
         return tx;
     }
 
@@ -1065,8 +1064,8 @@ public class OntIdTx {
         if(addr != null) {
             addr = addr.replace(Common.didont, "");
         }
-        byte[] params = sdk.getSmartcodeTx().createCodeParamsScript(list);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress, null, params, VmType.NEOVM.value(), addr,gas);
+        byte[] params = sdk.vm().createCodeParamsScript(list);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, null, params, VmType.NEOVM.value(), addr,gas);
         return tx;
     }
 

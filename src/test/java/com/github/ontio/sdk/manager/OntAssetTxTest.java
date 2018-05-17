@@ -49,34 +49,34 @@ public class OntAssetTxTest {
     @Test
     public void sendTransfer() throws Exception {
 
-        String res= ontSdk.getOntAssetTx().sendTransfer("ont",info1.address,"passwordtest",info2.address,100L,0);
+        String res= ontSdk.nativevm().ont().sendTransfer("ont",info1.address,"passwordtest",info2.address,100L,0);
         Assert.assertNotNull(res);
     }
 
     @Test
     public void makeTransfer() throws Exception {
 
-        Transaction tx = ontSdk.getOntAssetTx().makeTransfer("ont",info1.address,"passwordtest",info2.address,100L,0);
+        Transaction tx = ontSdk.nativevm().ont().makeTransfer("ont",info1.address,"passwordtest",info2.address,100L,0);
         Assert.assertNotNull(tx);
     }
 
     @Test
     public void sendTransferToMany() throws Exception {
-        String hash1 = ontSdk.getOntAssetTx().sendTransferToMany("ont",info1.address,"passwordtest",new String[]{info2.address,info3.address},new long[]{100L,200L},0);
+        String hash1 = ontSdk.nativevm().ont().sendTransferToMany("ont",info1.address,"passwordtest",new String[]{info2.address,info3.address},new long[]{100L,200L},0);
         Assert.assertNotNull(hash1);
     }
 
     @Test
     public void sendTransferFromMany() throws Exception {
 
-        String hash2 = ontSdk.getOntAssetTx().sendTransferFromMany("ont", new String[]{info1.address, info2.address}, new String[]{"passwordtest", "passwordtest"}, info3.address, new long[]{1L, 2L},0);
+        String hash2 = ontSdk.nativevm().ont().sendTransferFromMany("ont", new String[]{info1.address, info2.address}, new String[]{"passwordtest", "passwordtest"}, info3.address, new long[]{1L, 2L},0);
         Assert.assertNotNull(hash2);
     }
 
     @Test
     public void sendOngTransferFrom() throws Exception {
 
-        String res = ontSdk.getOntAssetTx().sendOngTransferFrom(info1.address,"passwordtest",info2.address,10L,0);
+        String res = ontSdk.nativevm().ont().sendOngTransferFrom(info1.address,"passwordtest",info2.address,10L,0);
         Assert.assertNotNull(res);
     }
 

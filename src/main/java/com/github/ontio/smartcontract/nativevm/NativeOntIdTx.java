@@ -1,4 +1,23 @@
-package com.github.ontio.sdk.manager;
+/*
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
+ *
+ *  The ontology is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The ontology is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+package com.github.ontio.smartcontract.nativevm;
 
 import com.alibaba.fastjson.JSON;
 import com.github.ontio.OntSdk;
@@ -7,8 +26,8 @@ import com.github.ontio.common.Common;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.VmType;
-import com.github.ontio.core.asset.Contract;
 import com.github.ontio.core.transaction.Transaction;
+import com.github.ontio.crypto.Curve;
 import com.github.ontio.crypto.KeyType;
 import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.io.BinaryReader;
@@ -17,14 +36,12 @@ import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.info.IdentityInfo;
-import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Identity;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.ByteOrder;
 import java.util.*;
 
 public class NativeOntIdTx {
@@ -59,7 +76,7 @@ public class NativeOntIdTx {
         String ontid = info.ontid;
         byte[] pk = Helper.hexToBytes(info.pubkey);
         byte[] parabytes = buildParams(ontid.getBytes(),pk);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress,"regIDWithPublicKey",parabytes, VmType.Native.value(), ident.ontid.replace(Common.didont,""),gas);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"regIDWithPublicKey",parabytes, VmType.Native.value(), ident.ontid.replace(Common.didont,""),gas);
         sdk.signTx(tx, ontid, password);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.ontid);
         sdk.getWalletMgr().writeWallet();
@@ -84,7 +101,7 @@ public class NativeOntIdTx {
         String ontid = info.ontid;
         byte[] pk = Helper.hexToBytes(info.pubkey);
         byte[] parabytes = buildParams(ontid.getBytes(), pk, serializeAttributes(attrsMap));
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress,"regIDWithAttributes",parabytes, VmType.Native.value(), ident.ontid.replace(Common.didont,""),gas);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"regIDWithAttributes",parabytes, VmType.Native.value(), ident.ontid.replace(Common.didont,""),gas);
         sdk.signTx(tx, ontid, password);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.ontid);
         sdk.getWalletMgr().writeWallet();
@@ -142,23 +159,28 @@ public class NativeOntIdTx {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         byte[] parabytes = buildParams(ontid.getBytes());
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress, "getPublicKeys", parabytes, VmType.Native.value(), null,0);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "getPublicKeys", parabytes, VmType.Native.value(), null,0);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         if (obj == null || ((String) obj).length() == 0) {
             throw new SDKException(ErrorCode.ResultIsNull);
         }
         ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes((String)obj));
         BinaryReader br = new BinaryReader(bais);
-        Map publicKeyMap = new HashMap();
+        List pubKeyList = new ArrayList();
         while (true){
             try{
-                publicKeyMap.put("index", br.readInt());
-                publicKeyMap.put("publicKey",Helper.toHexString(br.readVarBytes()));
+                Map publicKeyMap = new HashMap();
+                publicKeyMap.put("PubKeyId",ontid + "#keys-" + String.valueOf(br.readInt()));
+                byte[] pubKey = br.readVarBytes();
+                publicKeyMap.put("Type",KeyType.fromLabel(pubKey[0]));
+                publicKeyMap.put("Curve", Curve.fromLabel(pubKey[1]));
+                publicKeyMap.put("Value",Helper.toHexString(pubKey));
+                pubKeyList.add(publicKeyMap);
             }catch (Exception e){
                 break;
             }
         }
-        return JSON.toJSONString(publicKeyMap);
+        return JSON.toJSONString(pubKeyList);
     }
 
     /**
@@ -174,7 +196,7 @@ public class NativeOntIdTx {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         byte[] parabytes = buildParams(ontid.getBytes(),index);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress, "getKeyState", parabytes, VmType.Native.value(), null,0);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "getKeyState", parabytes, VmType.Native.value(), null,0);
         System.out.println(tx.toHexString());
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         if (obj == null || ((String) obj).length() == 0) {
@@ -189,7 +211,7 @@ public class NativeOntIdTx {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         byte[] parabytes = buildParams(ontid.getBytes());
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress, "getAttributes", parabytes, VmType.Native.value(), null,0);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "getAttributes", parabytes, VmType.Native.value(), null,0);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         if (obj == null || ((String) obj).length() == 0) {
             throw new SDKException(ErrorCode.ResultIsNull);
@@ -227,7 +249,7 @@ public class NativeOntIdTx {
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
         byte[] pk = Helper.hexToBytes(info.pubkey);
         byte[] parabytes = buildParams(ontid.getBytes(),Helper.hexToBytes(newpubkey),pk);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress,"addKey",parabytes, VmType.Native.value(), addr,gas);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"addKey",parabytes, VmType.Native.value(), addr,gas);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -252,7 +274,7 @@ public class NativeOntIdTx {
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
         byte[] pk = Helper.hexToBytes(info.pubkey);
         byte[] parabytes = buildParams(ontid.getBytes(),Helper.hexToBytes(removePubkey),pk);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress,"removeKey",parabytes, VmType.Native.value(), addr,gas);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"removeKey",parabytes, VmType.Native.value(), addr,gas);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -277,7 +299,7 @@ public class NativeOntIdTx {
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
         byte[] pk = Helper.hexToBytes(info.pubkey);
         byte[] parabytes = buildParams(ontid.getBytes(),Address.decodeBase58(recovery).toArray(),pk);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress,"addRecovery",parabytes, VmType.Native.value(), addr,gas);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"addRecovery",parabytes, VmType.Native.value(), addr,gas);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -301,7 +323,7 @@ public class NativeOntIdTx {
         }
         String addr = ontid.replace(Common.didont, "");
         byte[] parabytes = buildParams(ontid.getBytes(),Address.decodeBase58(newRecovery).toArray(),Address.decodeBase58(oldRecovery).toArray());
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress,"changeRecovery",parabytes, VmType.Native.value(), oldRecovery,gas);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"changeRecovery",parabytes, VmType.Native.value(), oldRecovery,gas);
         sdk.signTx(tx, oldRecovery, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -333,35 +355,8 @@ public class NativeOntIdTx {
         }
         String addr = ontid.replace(Common.didont, "");
         byte[] parabytes = buildParams(ontid.getBytes(),Address.decodeBase58(newRecovery).toArray(),Address.decodeBase58(oldRecovery).toArray());
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress,"changeRecovery",parabytes, VmType.Native.value(), oldRecovery,gas);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"changeRecovery",parabytes, VmType.Native.value(), oldRecovery,gas);
         sdk.signTx(tx, new com.github.ontio.account.Account[][]{accounts});
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
-        if (b) {
-            return tx.hash().toString();
-        }
-        return null;
-    }
-
-    /**
-     *
-     * @param ontid
-     * @param password
-     * @param path
-     * @param type
-     * @param value
-     * @return
-     * @throws Exception
-     */
-    public String sendAddAttribute(String ontid, String password, byte[] path,byte[] type, byte[] value,long gas) throws Exception {
-        if (contractAddress == null) {
-            throw new SDKException(ErrorCode.NullCodeHash);
-        }
-        String addr = ontid.replace(Common.didont, "");
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
-        byte[] pk = Helper.hexToBytes(info.pubkey);
-        byte[] parabytes = buildParams(ontid.getBytes(),path,type,value,pk);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress,"addAttribute",parabytes, VmType.Native.value(), addr,gas);
-        sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -377,7 +372,7 @@ public class NativeOntIdTx {
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
         byte[] pk = Helper.hexToBytes(info.pubkey);
         byte[] parabytes = buildParams(ontid.getBytes(),serializeAttributes(attrsMap),pk);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress,"addAttributes",parabytes, VmType.Native.value(), addr,gas);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"addAttributes",parabytes, VmType.Native.value(), addr,gas);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -399,7 +394,7 @@ public class NativeOntIdTx {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         byte[] parabytes = buildParams(ontid.getBytes());
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress, "getDDO", parabytes, VmType.Native.value(), null,0);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "getDDO", parabytes, VmType.Native.value(), null,0);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         if (obj == null || ((String) obj).length() == 0) {
             throw new SDKException(ErrorCode.ResultIsNull);
@@ -433,28 +428,35 @@ public class NativeOntIdTx {
         }catch (Exception e){
             recoveryBytes = new byte[]{};
         }
-        Map publicKeyMap = new HashMap();
+        List pubKeyList = new ArrayList();
         if(publickeyBytes.length != 0){
             ByteArrayInputStream bais1 = new ByteArrayInputStream(publickeyBytes);
             BinaryReader br1 = new BinaryReader(bais1);
             while (true) {
                 try {
-                    publicKeyMap.put("index",br1.readInt());
-                    publicKeyMap.put("publicKey",Helper.toHexString(br1.readVarBytes()));
+                    Map publicKeyMap = new HashMap();
+                    publicKeyMap.put("PubKeyId",ontid + "#keys-" + String.valueOf(br1.readInt()));
+                    byte[] pubKey = br1.readVarBytes();
+                    publicKeyMap.put("Type",KeyType.fromLabel(pubKey[0]));
+                    publicKeyMap.put("Curve",Curve.fromLabel(pubKey[1]));
+                    publicKeyMap.put("Value",Helper.toHexString(pubKey));
+                    pubKeyList.add(publicKeyMap);
                 } catch (Exception e) {
                     break;
                 }
             }
         }
-        Map<String, Object> attributeMap = new HashMap();
+        List attrsList = new ArrayList();
         if(attributeBytes.length != 0){
             ByteArrayInputStream bais2 = new ByteArrayInputStream(attributeBytes);
             BinaryReader br2 = new BinaryReader(bais2);
             while (true) {
                 try {
-                    attributeMap.put("key",new String(br2.readVarBytes()));
-                    attributeMap.put("type",new String(br2.readVarBytes()));
-                    attributeMap.put("value",new String(br2.readVarBytes()));
+                    Map<String, Object> attributeMap = new HashMap();
+                    attributeMap.put("Key",new String(br2.readVarBytes()));
+                    attributeMap.put("Type",new String(br2.readVarBytes()));
+                    attributeMap.put("Value",new String(br2.readVarBytes()));
+                    attrsList.add(attributeMap);
                 } catch (Exception e) {
                     break;
                 }
@@ -462,9 +464,10 @@ public class NativeOntIdTx {
         }
 
         Map map = new HashMap();
-        map.put("publicKey",publicKeyMap);
-        map.put("attributes",attributeMap);
-        map.put("recovery", Helper.toHexString(recoveryBytes));
+        map.put("Owners",pubKeyList);
+        map.put("Attributes",attrsList);
+        map.put("Recovery", Helper.toHexString(recoveryBytes));
+        map.put("OntId",ontid);
         return map;
     }
     private Map parseDdoData(String ontid, String obj) {

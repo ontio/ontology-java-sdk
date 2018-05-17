@@ -76,7 +76,7 @@ public class Claim {
         String iss = metadata.get("Issuer");
         String sub = metadata.get("Subject");
         Header header = new Header("","",publicKeyId);
-        Payload payload = new Payload("v1.0",iss,sub,System.currentTimeMillis(),expireTime,ctx,clmMap,clmRevMap);
+        Payload payload = new Payload("v1.0",iss,sub,System.currentTimeMillis()%1000,expireTime,ctx,clmMap,clmRevMap);
         String headerStr = JSONObject.toJSONString(header.getJson());
         String payloadStr = JSONObject.toJSONString(payload.getJson());
         byte[] headerBytes = Base64.getEncoder().encode(headerStr.getBytes());

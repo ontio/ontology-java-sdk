@@ -1,6 +1,6 @@
 
 <h1 align="center">JAVA SDK For Ontology  </h1>
-<h4 align="center">Version 0.6.0 </h4>
+<h4 align="center">Version 0.8.0 </h4>
 
 ## Overview
 

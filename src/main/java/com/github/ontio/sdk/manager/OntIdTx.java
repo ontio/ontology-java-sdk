@@ -819,7 +819,7 @@ public class OntIdTx {
             if (sendDid == null || receiverDid == null) {
                 throw new SDKException(ErrorCode.DidNull);
             }
-            String issuerDdo = sendGetDDO(sendDid);
+            String issuerDdo = sdk.getNativeOntIdTx().sendGetDDO(sendDid);
             JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("Owners");
             if (owners == null) {
                 throw new SDKException(ErrorCode.NotExistCliamIssuer);
@@ -830,7 +830,7 @@ public class OntIdTx {
             for (int i = 0; i < owners.size(); i++) {
                 JSONObject obj = owners.getJSONObject(i);
                 if (obj.getString("Value").equals(pk)) {
-                    pubkeyId = obj.getString("PublicKeyId");
+                    pubkeyId = obj.getString("PubKeyId");
                     break;
                 }
             }
@@ -903,7 +903,7 @@ public class OntIdTx {
             if (str.length != 3) {
                 throw new SDKException(ErrorCode.DidError);
             }
-            String issuerDdo = sendGetDDO(issuerDid);
+            String issuerDdo = sdk.getNativeOntIdTx().sendGetDDO(issuerDid);
             JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("Owners");
             if (owners == null) {
                 throw new SDKException(ErrorCode.NotExistCliamIssuer);

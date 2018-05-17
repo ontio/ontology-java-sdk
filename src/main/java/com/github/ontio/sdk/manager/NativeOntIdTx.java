@@ -9,6 +9,7 @@ import com.github.ontio.common.Helper;
 import com.github.ontio.core.VmType;
 import com.github.ontio.core.asset.Contract;
 import com.github.ontio.core.transaction.Transaction;
+import com.github.ontio.crypto.Curve;
 import com.github.ontio.crypto.KeyType;
 import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.io.BinaryReader;
@@ -25,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteOrder;
+import java.security.Key;
 import java.util.*;
 
 public class NativeOntIdTx {
@@ -149,16 +151,21 @@ public class NativeOntIdTx {
         }
         ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes((String)obj));
         BinaryReader br = new BinaryReader(bais);
-        Map publicKeyMap = new HashMap();
+        List pubKeyList = new ArrayList();
         while (true){
             try{
-                publicKeyMap.put("index", br.readInt());
-                publicKeyMap.put("publicKey",Helper.toHexString(br.readVarBytes()));
+                Map publicKeyMap = new HashMap();
+                publicKeyMap.put("PubKeyId",ontid + "#keys-" + String.valueOf(br.readInt()));
+                byte[] pubKey = br.readVarBytes();
+                publicKeyMap.put("Type",KeyType.fromLabel(pubKey[0]));
+                publicKeyMap.put("Curve",Curve.fromLabel(pubKey[1]));
+                publicKeyMap.put("Value",Helper.toHexString(pubKey));
+                pubKeyList.add(publicKeyMap);
             }catch (Exception e){
                 break;
             }
         }
-        return JSON.toJSONString(publicKeyMap);
+        return JSON.toJSONString(pubKeyList);
     }
 
     /**
@@ -197,17 +204,20 @@ public class NativeOntIdTx {
 
         ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes((String)obj));
         BinaryReader br = new BinaryReader(bais);
-        Map attributeMap = new HashMap();
+        List attrsList = new ArrayList();
         while (true){
             try{
-                attributeMap.put("key", new String(br.readVarBytes()));
-                attributeMap.put("type",new String(br.readVarBytes()));
-                attributeMap.put("value",new String(br.readVarBytes()));
+                Map attributeMap = new HashMap();
+                attributeMap.put("Key", new String(br.readVarBytes()));
+                attributeMap.put("Type",new String(br.readVarBytes()));
+                attributeMap.put("Value",new String(br.readVarBytes()));
+                attrsList.add(attributeMap);
             }catch (Exception e){
                 break;
             }
         }
-        return JSON.toJSONString(attributeMap);
+
+        return JSON.toJSONString(attrsList);
     }
 
 
@@ -342,32 +352,22 @@ public class NativeOntIdTx {
         return null;
     }
 
-    /**
-     *
-     * @param ontid
-     * @param password
-     * @param path
-     * @param type
-     * @param value
-     * @return
-     * @throws Exception
-     */
-    public String sendAddAttribute(String ontid, String password, byte[] path,byte[] type, byte[] value,long gas) throws Exception {
-        if (contractAddress == null) {
-            throw new SDKException(ErrorCode.NullCodeHash);
-        }
-        String addr = ontid.replace(Common.didont, "");
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
-        byte[] pk = Helper.hexToBytes(info.pubkey);
-        byte[] parabytes = buildParams(ontid.getBytes(),path,type,value,pk);
-        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress,"addAttribute",parabytes, VmType.Native.value(), addr,gas);
-        sdk.signTx(tx, addr, password);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
-        if (b) {
-            return tx.hash().toString();
-        }
-        return null;
-    }
+//    public String sendAddAttribute(String ontid, String password, byte[] path,byte[] type, byte[] value,long gas) throws Exception {
+//        if (contractAddress == null) {
+//            throw new SDKException(ErrorCode.NullCodeHash);
+//        }
+//        String addr = ontid.replace(Common.didont, "");
+//        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
+//        byte[] pk = Helper.hexToBytes(info.pubkey);
+//        byte[] parabytes = buildParams(ontid.getBytes(),path,type,value,pk);
+//        Transaction tx = sdk.getSmartcodeTx().makeInvokeCodeTransaction(contractAddress,"addAttribute",parabytes, VmType.Native.value(), addr,gas);
+//        sdk.signTx(tx, addr, password);
+//        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+//        if (b) {
+//            return tx.hash().toString();
+//        }
+//        return null;
+//    }
 
     public String sendAddAttributes(String ontid, String password, Map<String, Object> attrsMap,long gas) throws Exception {
         if (contractAddress == null) {
@@ -433,28 +433,35 @@ public class NativeOntIdTx {
         }catch (Exception e){
             recoveryBytes = new byte[]{};
         }
-        Map publicKeyMap = new HashMap();
+        List pubKeyList = new ArrayList();
         if(publickeyBytes.length != 0){
             ByteArrayInputStream bais1 = new ByteArrayInputStream(publickeyBytes);
             BinaryReader br1 = new BinaryReader(bais1);
             while (true) {
                 try {
-                    publicKeyMap.put("index",br1.readInt());
-                    publicKeyMap.put("publicKey",Helper.toHexString(br1.readVarBytes()));
+                    Map publicKeyMap = new HashMap();
+                    publicKeyMap.put("PubKeyId",ontid + "#keys-" + String.valueOf(br1.readInt()));
+                    byte[] pubKey = br1.readVarBytes();
+                    publicKeyMap.put("Type",KeyType.fromLabel(pubKey[0]));
+                    publicKeyMap.put("Curve",Curve.fromLabel(pubKey[1]));
+                    publicKeyMap.put("Value",Helper.toHexString(pubKey));
+                    pubKeyList.add(publicKeyMap);
                 } catch (Exception e) {
                     break;
                 }
             }
         }
-        Map<String, Object> attributeMap = new HashMap();
+        List attrsList = new ArrayList();
         if(attributeBytes.length != 0){
             ByteArrayInputStream bais2 = new ByteArrayInputStream(attributeBytes);
             BinaryReader br2 = new BinaryReader(bais2);
             while (true) {
                 try {
-                    attributeMap.put("key",new String(br2.readVarBytes()));
-                    attributeMap.put("type",new String(br2.readVarBytes()));
-                    attributeMap.put("value",new String(br2.readVarBytes()));
+                    Map<String, Object> attributeMap = new HashMap();
+                    attributeMap.put("Key",new String(br2.readVarBytes()));
+                    attributeMap.put("Type",new String(br2.readVarBytes()));
+                    attributeMap.put("Value",new String(br2.readVarBytes()));
+                    attrsList.add(attributeMap);
                 } catch (Exception e) {
                     break;
                 }
@@ -462,9 +469,10 @@ public class NativeOntIdTx {
         }
 
         Map map = new HashMap();
-        map.put("publicKey",publicKeyMap);
-        map.put("attributes",attributeMap);
-        map.put("recovery", Helper.toHexString(recoveryBytes));
+        map.put("Owners",pubKeyList);
+        map.put("Attributes",attrsList);
+        map.put("Recovery", Helper.toHexString(recoveryBytes));
+        map.put("OntId",ontid);
         return map;
     }
     private Map parseDdoData(String ontid, String obj) {

@@ -85,7 +85,6 @@ public class NativeOntIdTx {
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.ontid);
         sdk.getWalletMgr().writeWallet();
         boolean b = false;
-        System.out.println(tx.toHexString());
         b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         return identity;
     }
@@ -202,7 +201,6 @@ public class NativeOntIdTx {
         }
         byte[] parabytes = buildParams(ontid.getBytes(),index);
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "getKeyState", parabytes, VmType.Native.value(), null,0);
-        System.out.println(tx.toHexString());
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         if (obj == null || ((String) obj).length() == 0) {
             throw new SDKException(ErrorCode.ResultIsNull);

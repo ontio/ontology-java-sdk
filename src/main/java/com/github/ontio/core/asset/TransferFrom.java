@@ -33,7 +33,6 @@ import java.util.Map;
  *
  */
 public class TransferFrom implements Serializable {
-    public byte version;
     public Address sender;
     public Address from;
     public Address to;
@@ -48,7 +47,6 @@ public class TransferFrom implements Serializable {
     @Override
     public void deserialize(BinaryReader reader) throws IOException {
         try {
-            version = reader.readByte();
             sender = reader.readSerializable(Address.class);
             from = reader.readSerializable(Address.class);
             to = reader.readSerializable(Address.class);
@@ -62,7 +60,6 @@ public class TransferFrom implements Serializable {
 
     @Override
     public void serialize(BinaryWriter writer) throws IOException {
-        writer.writeByte((byte)0);
         writer.writeSerializable(sender);
         writer.writeSerializable(from);
         writer.writeSerializable(to);

@@ -201,7 +201,6 @@ public class NativeOntIdTx {
         }
         byte[] parabytes = buildParams(ontid.getBytes(),index);
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "getKeyState", parabytes, VmType.Native.value(), null,0);
-        System.out.println(tx.toHexString());
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         if (obj == null || ((String) obj).length() == 0) {
             throw new SDKException(ErrorCode.ResultIsNull);
@@ -380,6 +379,32 @@ public class NativeOntIdTx {
         byte[] pk = Helper.hexToBytes(info.pubkey);
         byte[] parabytes = buildParams(ontid.getBytes(),serializeAttributes(attrsMap),pk);
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"addAttributes",parabytes, VmType.Native.value(), addr,gas);
+        sdk.signTx(tx, addr, password);
+        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        if (b) {
+            return tx.hash().toString();
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @param ontid
+     * @param password
+     * @param path
+     * @param gas
+     * @return
+     * @throws Exception
+     */
+    public String sendRemoveAttribute(String ontid,String password,String path,long gas) throws Exception {
+        if (contractAddress == null) {
+            throw new SDKException(ErrorCode.NullCodeHash);
+        }
+        String addr = ontid.replace(Common.didont, "");
+        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
+        byte[] pk = Helper.hexToBytes(info.pubkey);
+        byte[] parabytes = buildParams(ontid.getBytes(),path.getBytes(),pk);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"removeAttribute",parabytes, VmType.Native.value(), addr,gas);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
         if (b) {

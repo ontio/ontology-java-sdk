@@ -49,6 +49,9 @@ public class ClaimRecordTx {
     }
 
     public String sendCommit(String ontid,String password,String claimId,long gas) throws Exception {
+        if(gas < 0){
+            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+        }
         if (codeAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -73,6 +76,9 @@ public class ClaimRecordTx {
         return null;
     }
     public String sendRevoke(String ontid,String password,String claimId,long gas) throws Exception {
+        if(gas < 0){
+            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+        }
         if (codeAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }

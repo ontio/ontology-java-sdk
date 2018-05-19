@@ -64,7 +64,7 @@ public class OntAssetTx {
      * @throws Exception
      */
     public String sendTransfer(String assetName, String sendAddr, String password, String recvAddr, long amount,long gas) throws Exception {
-        if (amount <= 0) {
+        if (amount <= 0 || gas < 0) {
             throw new SDKException(ErrorCode.AmountError);
         }
         Transaction tx = makeTransfer(assetName, sendAddr, password, recvAddr, amount,gas);
@@ -77,7 +77,7 @@ public class OntAssetTx {
         return null;
     }
     public Transaction makeTransfer(String assetName, String sendAddr, String password, String recvAddr, long amount,long gas) throws Exception {
-        if (amount <= 0) {
+        if (amount <= 0 || gas < 0) {
             throw new SDKException(ErrorCode.AmountError);
         }
         String contractAddr = null;
@@ -133,6 +133,9 @@ public class OntAssetTx {
      * @throws Exception
      */
     public String sendApprove(String assetName ,String sendAddr, String password, String recvAddr, long amount,long gas) throws Exception {
+        if (amount <= 0 || gas < 0) {
+            throw new SDKException(ErrorCode.AmountError);
+        }
         String contractAddr;
         if (assetName.toUpperCase().equals("ONG")) {
             contractAddr = ongContract;
@@ -167,6 +170,9 @@ public class OntAssetTx {
      * @throws Exception
      */
     public String sendTransferFrom(String assetName ,String sendAddr, String password, String fromAddr, String toAddr, long amount,long gas) throws Exception {
+        if (amount <= 0 || gas < 0) {
+            throw new SDKException(ErrorCode.AmountError);
+        }
         String contractAddr;
         if (assetName.toUpperCase().equals("ONG")) {
             contractAddr = ongContract;
@@ -300,6 +306,12 @@ public class OntAssetTx {
      * @throws Exception
      */
     public String sendTransferToMany(String assetName, String sendAddr, String password, String[] recvAddr, long[] amount,long gas) throws Exception {
+        if(gas < 0){
+            throw new SDKException(ErrorCode.AmountError);
+        }
+        if (recvAddr.length != amount.length){
+            throw new SDKException(ErrorCode.ParamLengthNotSame);
+        }
         for (long amou : amount) {
             if (amou <= 0) {
                 throw new SDKException(ErrorCode.AmountError);
@@ -342,6 +354,12 @@ public class OntAssetTx {
      * @throws Exception
      */
     public String sendTransferFromMany(String assetName, String[] sendAddr, String[] password, String recvAddr, long[] amount,long gas) throws Exception {
+        if(gas < 0){
+            throw new SDKException(ErrorCode.AmountError);
+        }
+        if (sendAddr.length != password.length){
+            throw new SDKException(ErrorCode.ParamLengthNotSame);
+        }
         for (long amou : amount) {
             if (amou <= 0) {
                 throw new SDKException(ErrorCode.AmountError);
@@ -388,7 +406,7 @@ public class OntAssetTx {
     }
 
     public String sendOngTransferFrom(String sendAddr, String password, String to, long amount,long gas) throws Exception {
-        if (amount <= 0) {
+        if (amount <= 0 || gas <0) {
             throw new SDKException(ErrorCode.AmountError);
         }
         AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);

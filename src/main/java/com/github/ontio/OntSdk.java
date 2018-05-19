@@ -48,7 +48,7 @@ public class OntSdk {
 
     private static OntSdk instance = null;
     public SignatureScheme signatureScheme = SignatureScheme.SHA256WITHECDSA;
-    public long DEFAULT_GAS_LIMIT = 0;
+    public long DEFAULT_GAS_LIMIT = 30000;
     public static synchronized OntSdk getInstance(){
         if(instance == null){
             instance = new OntSdk();

@@ -114,7 +114,8 @@ public class ErrorCode {
     public static String DidError = getError(58102,"OntAsset Error,Did error");
     public static String NullPkId = getError(58103,"OntAsset Error,null pkId");
     public static String NullClaimId = getError(58104,"OntAsset Error,null claimId");
-    public static String AmountError = getError(58105,"OntAsset Error,amount is less than or equal to zero");
+    public static String AmountError = getError(58105,"OntAsset Error,amount or gas is less than or equal to zero");
+    public static String ParamLengthNotSame = getError(58105,"OntAsset Error,param length is not the same");
 
     //RecordTx Error
     public static String NullKeyOrValue = getError(58201,"RecordTx Error,null key or value");

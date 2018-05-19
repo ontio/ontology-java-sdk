@@ -73,6 +73,9 @@ public class NativeOntIdTx {
      * @throws Exception
      */
     public Identity sendRegister(Identity ident, String password,long gas,boolean preExec) throws Exception {
+        if(gas < 0){
+            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+        }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -115,6 +118,9 @@ public class NativeOntIdTx {
      * @throws Exception
      */
     public Identity sendRegister(Identity ident, String password,Map<String, Object> attrsMap,long gas) throws Exception {
+        if(gas < 0){
+            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+        }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -265,6 +271,9 @@ public class NativeOntIdTx {
      * @throws Exception
      */
     public String sendAddPubKey(String ontid, String password, String newpubkey,long gas) throws Exception {
+        if(gas < 0){
+            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+        }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -290,6 +299,9 @@ public class NativeOntIdTx {
      * @throws Exception
      */
     public String sendRemovePubKey(String ontid, String password, String removePubkey,long gas) throws Exception {
+        if(gas < 0){
+            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+        }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -315,6 +327,9 @@ public class NativeOntIdTx {
      * @throws Exception
      */
     public String sendAddRecovery(String ontid, String password, String recovery,long gas) throws Exception {
+        if(gas < 0){
+            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+        }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -341,6 +356,9 @@ public class NativeOntIdTx {
      * @throws Exception
      */
     public String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery, String password,long gas) throws Exception {
+        if(gas < 0){
+            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+        }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -366,8 +384,11 @@ public class NativeOntIdTx {
      * @throws Exception
      */
     public String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery,String[] addresses, String[] password,long gas) throws Exception {
+        if(gas < 0){
+            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+        }
         if(addresses.length != password.length) {
-            throw new SDKException(ErrorCode.ParamError);
+            throw new SDKException(ErrorCode.ParamErr("address.length is not same with password.length"));
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
@@ -388,6 +409,9 @@ public class NativeOntIdTx {
     }
 
     public String sendAddAttributes(String ontid, String password, Map<String, Object> attrsMap,long gas) throws Exception {
+        if(gas < 0){
+            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+        }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -414,6 +438,9 @@ public class NativeOntIdTx {
      * @throws Exception
      */
     public String sendRemoveAttribute(String ontid,String password,String path,long gas) throws Exception {
+        if(gas < 0){
+            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+        }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }

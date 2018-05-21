@@ -79,6 +79,7 @@ public class NativeOntIdTx {
      * @return
      * @throws Exception
      */
+
     public Identity sendRegister(Identity ident, String password, String payer,String payerpassword,long gas,boolean preExec) throws Exception {
         if(gas < 0){
             throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
@@ -142,6 +143,7 @@ public class NativeOntIdTx {
      * @return
      * @throws Exception
      */
+
     public Identity sendRegister(Identity ident, String password,Map<String, Object> attrsMap,String payer,String payerpassword,long gas) throws Exception {
         if(gas < 0){
             throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
@@ -319,6 +321,7 @@ public class NativeOntIdTx {
      * @return
      * @throws Exception
      */
+
     public String sendAddPubKey(String ontid, String password, String newpubkey,String payer,String payerpassword,long gas) throws Exception {
         if(gas < 0){
             throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
@@ -366,6 +369,7 @@ public class NativeOntIdTx {
      * @return
      * @throws Exception
      */
+
     public String sendRemovePubKey(String ontid, String password, String removePubkey,String payer,String payerpassword,long gas) throws Exception {
         if(gas < 0){
             throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
@@ -413,6 +417,7 @@ public class NativeOntIdTx {
      * @return
      * @throws Exception
      */
+
     public String sendAddRecovery(String ontid, String password, String recovery,String payer,String payerpassword,long gas) throws Exception {
         if(gas < 0){
             throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));

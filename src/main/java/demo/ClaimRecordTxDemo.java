@@ -7,6 +7,7 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.block.Block;
+import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Identity;
 
 import java.util.Base64;
@@ -24,15 +25,17 @@ public class ClaimRecordTxDemo {
 
             ontSdk.nativevm().ontId().setCodeAddress("ff00000000000000000000000000000000000003");
 
+            Account payerAcc = ontSdk.getWalletMgr().createAccount(password);
+
             List<Identity> dids = ontSdk.getWalletMgr().getIdentitys();
             if (dids.size() < 2) {
                 Identity identity = ontSdk.getWalletMgr().createIdentity(password);
 
-                ontSdk.nativevm().ontId().sendRegister(identity,password,0);
+                ontSdk.nativevm().ontId().sendRegister(identity,password,payerAcc.address,password,0);
 
                 Identity identity2 = ontSdk.getWalletMgr().createIdentity(password);
 
-                ontSdk.nativevm().ontId().sendRegister(identity2,password,0);
+                ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcc.address,password,0);
 
                 dids = ontSdk.getWalletMgr().getIdentitys();
                 Thread.sleep(6000);

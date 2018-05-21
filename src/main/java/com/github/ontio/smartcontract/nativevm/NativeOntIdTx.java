@@ -431,6 +431,16 @@ public class NativeOntIdTx {
         return null;
     }
 
+    /**
+     *
+     * @param ontid
+     * @param password
+     * @param recovery
+     * @param payer
+     * @param gas
+     * @return
+     * @throws Exception
+     */
     public Transaction makeAddRecovery(String ontid, String password, String recovery,String payer,long gas) throws Exception {
         if(gas < 0){
             throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));

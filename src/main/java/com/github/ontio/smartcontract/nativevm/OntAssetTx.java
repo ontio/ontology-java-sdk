@@ -19,6 +19,7 @@
 
 package com.github.ontio.smartcontract.nativevm;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
@@ -115,7 +116,7 @@ public class OntAssetTx {
         byte[] parabytes = buildParams(Address.decodeBase58(address).toArray());
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr,"balanceOf", parabytes, VmType.Native.value(), null,0);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-        String res = (String)obj;
+        String res = ((JSONObject)obj).getString("Result");
         if (("").equals(res)) {
             return 0;
         }
@@ -212,7 +213,8 @@ public class OntAssetTx {
         }
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr,"name", "".getBytes(), VmType.Native.value(), null,0);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-        return new String(Helper.hexToBytes((String) obj));
+        String res = ((JSONObject)obj).getString("Result");
+        return new String(Helper.hexToBytes(res));
     }
 
     /**
@@ -232,7 +234,8 @@ public class OntAssetTx {
         }
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr,"symbol", "".getBytes(), VmType.Native.value(), null,0);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-        return new String(Helper.hexToBytes((String) obj));
+        String res = ((JSONObject)obj).getString("Result");
+        return new String(Helper.hexToBytes(res));
     }
 
     /**
@@ -252,7 +255,7 @@ public class OntAssetTx {
         }
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr,"decimals", "".getBytes(), VmType.Native.value(), null,0);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-        String res = (String)obj;
+        String res = ((JSONObject)obj).getString("Result");
         if (("").equals(res)) {
             return 0;
         }
@@ -276,7 +279,7 @@ public class OntAssetTx {
         }
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr,"totalSupply", "".getBytes(), VmType.Native.value(), null,0);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-        String res = (String)obj;
+        String res = ((JSONObject)obj).getString("Result");
         if (("").equals(res)) {
             return 0;
         }

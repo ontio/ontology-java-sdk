@@ -124,6 +124,16 @@ public class OntAssetTx {
         return Long.valueOf(res,16);
     }
 
+    /**
+     * 
+     * @param assetName
+     * @param fromAddr
+     * @param toAddr
+     * @return
+     * @throws SDKException
+     * @throws ConnectorException
+     * @throws IOException
+     */
     public long sendAllowance(String assetName,String fromAddr,String toAddr) throws SDKException, ConnectorException, IOException {
         String contractAddr;
         if (assetName.toUpperCase().equals("ONG")) {

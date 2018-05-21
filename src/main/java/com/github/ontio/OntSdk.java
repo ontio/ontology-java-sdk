@@ -22,6 +22,7 @@ package com.github.ontio;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.ErrorCode;
+import com.github.ontio.common.Helper;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.core.asset.Sig;
 import com.github.ontio.crypto.SignatureScheme;
@@ -161,6 +162,28 @@ public class OntSdk {
         setSignatureScheme(signatureScheme);
     }
 
+    /**
+     *
+     * @param tx
+     * @param addr
+     * @param password
+     * @return
+     * @throws Exception
+     */
+    public Transaction addSign(Transaction tx,String addr,String password) throws Exception {
+        Sig[] sigs = new Sig[tx.sigs.length + 1];
+        for(int i= 0; i< tx.sigs.length; i++){
+            sigs[i] = tx.sigs[i];
+        }
+        sigs[tx.sigs.length] = new Sig();
+        sigs[tx.sigs.length].M = 1;
+        sigs[tx.sigs.length].pubKeys = new byte[1][];
+        sigs[tx.sigs.length].sigData = new byte[1][];
+        sigs[tx.sigs.length].pubKeys[0] = Helper.hexToBytes(getWalletMgr().getAccountInfo(addr,password).pubkey);
+        sigs[tx.sigs.length].sigData[0] = tx.sign(getWalletMgr().getAccount(addr,password),signatureScheme);
+        tx.sigs = sigs;
+        return tx;
+    }
 
     public Transaction signTx(Transaction tx, String address, String password) throws Exception{
         address = address.replace(Common.didont, "");

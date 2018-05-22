@@ -23,8 +23,6 @@ public class ClaimRecordTxDemo {
 
             String password = "111111";
 
-            ontSdk.nativevm().ontId().setCodeAddress("ff00000000000000000000000000000000000003");
-
             Account payerAcc = ontSdk.getWalletMgr().createAccount(password);
 
             List<Identity> dids = ontSdk.getWalletMgr().getIdentitys();
@@ -55,7 +53,7 @@ public class ClaimRecordTxDemo {
             boolean b = ontSdk.nativevm().ontId().verifyOntIdClaim(claim);
             System.out.println(b);
 
-            System.exit(0);
+//            System.exit(0);
 
             String[] claims = claim.split("\\.");
 
@@ -65,7 +63,7 @@ public class ClaimRecordTxDemo {
 
             ontSdk.neovm().claimRecord().setCodeAddress("806256c36653d4091a3511d308aac5c414b2a444");
 
-            String commitRes = ontSdk.neovm().claimRecord().sendCommit(dids.get(1).ontid,password,payload.getString("jti"),0);
+            String commitRes = ontSdk.neovm().claimRecord().sendCommit(dids.get(0).ontid,dids.get(1).ontid,password,payload.getString("jti"),0);
             System.out.println("commitRes:" + commitRes);
             Thread.sleep(6000);
 

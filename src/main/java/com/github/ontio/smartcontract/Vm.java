@@ -19,6 +19,7 @@
 
 package com.github.ontio.smartcontract;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Common;
@@ -78,8 +79,8 @@ public class Vm {
 
     public String sendInvokeSmartCodeWithNoSignPreExec(AbiFunction abiFunction, byte vmtype) throws Exception {
         Transaction tx = invokeTransaction(null, null, abiFunction, vmtype,0);
-        String result = (String)sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-        return result;
+        Object obj = (String)sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        return ((JSONObject)obj).getString("Result");
     }
     /**
      *
@@ -103,8 +104,8 @@ public class Vm {
     public String sendInvokeSmartCodeWithSignPreExec(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
         Transaction tx = invokeTransaction( ontid, password, abiFunction, vmtype,0);
         sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(ontid, password)}});
-        String result = (String)sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-        return result;
+        Object obj = (String)sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        return ((JSONObject)obj).getString("Result");
     }
     /**
      * @param ontid
@@ -339,8 +340,12 @@ public class Vm {
         tx.name = name;
         tx.author = author;
         tx.email = email;
-        tx.gasPrice = 0;
-        tx.gasLimit = 0;
+        if(sdk.DEFAULT_GAS_LIMIT == 0){
+            tx.gasPrice = 0;
+        }else {
+            tx.gasPrice = gas / sdk.DEFAULT_GAS_LIMIT;
+        }
+        tx.gasLimit = sdk.DEFAULT_GAS_LIMIT;
         tx.description = desp;
         return tx;
     }

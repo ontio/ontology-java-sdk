@@ -25,17 +25,49 @@ wm.setCodeAddress("803ca638069742da4b6871fe3d7f78718eeee78a");
 > Note: codeAddress is the address of the record contract。
 
 
-* 2. attest data onto the blockchain
+The specification of the following interface document is https://github.com/kunxian-xia/ontology-DID/blob/master/docs/en/claim_spec.md。
 
+* 2. String sendCommit(String ontid,String password,String claimId,long gas)
+
+        function description： Save data to the chain
+
+        parameter description：
+
+        ontid：identity ontid
+
+        password： identity password
+
+        claimId ： trusted claims claim uniqueness mark, ie Jti field in Claim
+
+        gas ： gas amount
+
+        return value：交易hash
+
+
+示例代码
 
 ```
-String res = ontSdk.getRecordTx().sendPut("TA9WXpq7GNAc2D6gX9NZtCdybRq8ehGUxw","passwordtest","key","value");
+String[] claims = claim.split("\\.");
+JSONObject payload = JSONObject.parseObject(new String(Base64.getDecoder().decode(claims[1].getBytes())));
+ontSdk.neovm().claimRecord().sendCommit(ontid,password,payload.getString("jti"),0)
 ```
 
-> Note: The key represents the key of the data value stored in the chain, which can later be stored according to the key.
+* 3. String sendGetStatus(String ontid,String password,String claimId)
 
+        function description：query status of trusted claim
 
-* 3. Get data from the chain by the key
+        parameter description：
+
+        ontid：identity ontid
+
+        password： identity password
+
+        claimId ： trusted claims claim uniqueness mark, ie Jti field in Claim
+
+        gas ： gas amount
+
+        return value：There are two parts: In the first part, the status of the claim: "Not attested", "Attested", "Attest has been revoked"; the second part is the certificate's ontid
+
 
 
 ```
@@ -43,10 +75,18 @@ String res = ontSdk.getRecordTx().sendGet("TA9WXpq7GNAc2D6gX9NZtCdybRq8ehGUxw","
 ```
 
 
-* 4. description of response
+* 4. String sendRevoke(String ontid,String password,String claimId,long gas)
 
+        function description：Repeal of a trust claim
 
-```
-{"Data":{"Algrithem":"SM2","Hash":"","Text":"value","Signature":""},"CAkey":"","SeqNo":"","Timestamp":0}
-```
-> Note: Algrithem:encryption algorithm name，Hash:record hash，Text:stored value，Signature:signing the record hash，CAkey:initiator identity flag，SeqNo:transaction serial number，Timestamp:external time stamp
+        parameter description：
+
+        ontid：attester's ontid
+
+        password： attester's ontid password
+
+        claimId ： Trusted claims claim uniqueness mark, ie Jti field in Claim
+
+        gas ： gas amount
+
+        return value：This function will return true if and only if the claim is attested, and the revokerOntId is equal to the attester's ONT identity; Otherwise, it will return false.

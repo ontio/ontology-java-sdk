@@ -9,11 +9,16 @@
 `label` 是账户的名称。
 `isDefault`表明账户是否是默认的账户。默认值为false。
 `lock` 表明账户是否是被用户锁住的。客户端不能消费掉被锁的账户中的资金。
-`algorithm` 是加密算法名称。
+`algorithm` 是秘钥算法名称。
 `parameters` 是加密算法所需参数。
 `curve` 是椭圆曲线的名称。
 `key` 是NEP-2格式的私钥。该字段可以为null（对于只读地址或非标准地址）。
+`encAlg` 私钥加密的算法名称，固定为aes-256-ctr.
 `extra` 是客户端存储额外信息的字段。该字段可以为null。
+`signatureScheme` 是签名方案，用于交易签名。
+`hash` hash算法，用于派生秘钥。
+`passwordHash` 密码hash值
+
 
 ```
 public class Account {
@@ -24,6 +29,11 @@ public class Account {
     public String algorithm = "";
     public Map parameters = new HashMap() ;
     public String key = "";
+    @JSONField(name = "enc-alg")
+    public String encAlg = "aes-256-ctr";
+    public String hash = "sha256";
+    public String signatureScheme = "SHA256withECDSA";
+    public String passwordHash = "";
     public Object extra = null;
 }
 ```
@@ -61,9 +71,196 @@ ontSdk.getWalletMgr().getWallet().setDefaultAccount("address");
 
 ## 原生数字资产
 
-* 使用SDK方法
 
-我们建议您使用SDK封装的方法操作原生数字资产，比如 ONT Token等。
+ont和ong资产接口列表
+
+ 1. sendTransfer(String assetName, String sendAddr, String password, String recvAddr, long amount,long gas)
+
+    功能说明： 从发送方转移一定数量的资产到接收方账户
+
+    参数说明：
+
+    assetName：资产名，ont或者ong资产
+
+    sendAddr： 发送方地址
+
+    password ： 发送方密码
+
+    recvAddr ： 接收方地址
+
+    amount ： 转移的资产数量
+
+    gas ： gas数量
+
+    返回值：交易hash
+
+ 2. sendTransferToMany(String assetName, String sendAddr, String password, String[] recvAddr, long[] amount,long gas)
+
+    功能说明： 从发送方转移一定数量的资产到多个接收方账户
+
+    参数说明：
+
+    assetName：资产名，ont或者ong资产
+
+    sendAddr： 发送方地址
+
+    password ： 发送方密码
+
+    recvAddr ： 接收方地址数组
+
+    amount ： 转移的资产数量数组
+
+    gas ： gas数量
+
+    返回值：交易hash
+
+ 3. sendTransferFromMany(String assetName, String[] sendAddr, String[] password, String recvAddr, long[] amount,long gas)
+
+     功能说明： 从多个发送发转移资产到某个接收方
+
+     参数说明：
+
+     assetName：资产名，ont或者ong资产
+
+     sendAddr： 发送方地址数组
+
+     password ： 发送方密码数组
+
+     recvAddr ： 接收方地址
+
+     amount ： 转移的资产数量数组
+
+     gas ： gas数量
+
+     返回值：交易hash
+
+ 4. sendOngTransferFrom(String sendAddr, String password, String to, long amount,long gas)
+
+      功能说明： 从sendAddr账户提取ong到to账户
+
+      参数说明：
+
+      sendAddr： 发送方地址
+
+      password ： 发送方密码
+
+      to ： 接收方地址
+
+      amount ： 转移的资产数量
+
+      gas ： gas数量
+
+      返回值：交易hash
+
+ 5. sendApprove(String assetName ,String sendAddr, String password, String recvAddr, long amount,long gas)
+
+       功能说明： sendAddr账户允许recvAddr转移amount数量的资产
+
+       参数说明：
+
+       assetName：资产名
+
+       sendAddr： 发送方地址
+
+       password： 发送方密码
+
+       recvAddr： 接收方地址
+
+       amount： 转移的资产数量
+
+       gas： gas数量
+
+       返回值：交易hash
+
+ 6. sendTransferFrom(String assetName ,String sendAddr, String password, String fromAddr, String toAddr, long amount,long gas)
+
+        功能说明： sendAddr账户从fromAddr账户转移amount数量的资产到toAddr账户
+
+        参数说明：
+
+        assetName：资产名
+
+        sendAddr： 发送方地址
+
+        password： 发送方密码
+
+        fromAddr： 资产转出方地址
+
+        toAddr： 资产转入方地址
+
+        amount： 转移的资产数量
+
+        gas： gas数量
+
+        返回值：交易hash
+
+ 7. sendBalanceOf(String assetName, String address)
+
+         功能说明： 查询账户address的assetName资产余额
+
+         参数说明：
+
+         assetName：资产名
+
+         address： 账户地址
+
+         返回值：账户余额
+
+ 8. sendAllowance(String assetName,String fromAddr,String toAddr)
+
+         功能说明： 查询账户address的assetName资产余额
+
+         参数说明：
+
+         assetName: 资产名
+
+         fromAddr: 授权转出方的账户地址
+
+         toAddr: 允许转入方的账户地址
+
+         返回值：授权转移的数量
+
+ 9. queryName(String assetName)
+
+          功能说明： 查询assetName资产名信息
+
+          参数说明：
+
+          assetName：资产名
+
+          返回值：资产名称
+
+ 10. querySymbol(String assetName)
+
+           功能说明： 查询assetName资产Symbol信息
+
+           参数说明：
+
+           assetName：资产名
+
+           返回值：Symbol信息
+
+ 11. queryDecimals(String assetName)
+
+            功能说明： 查询assetName资产的精确度
+
+            参数说明：
+
+            assetName：资产名
+
+            返回值：精确度
+ 12. queryTotalSupply(String assetName)
+
+             功能说明： 查询assetName资产的总供应量
+
+             参数说明：
+
+             assetName：资产名
+
+             返回值：总供应量
+
+
+资产转移示例代码：
 
 ```
 //step1:获得ontSdk实例
@@ -71,123 +268,14 @@ OntSdk wm = OntSdk.getInstance();
 wm.setRpcConnection(url);
 wm.openWalletFile("OntAssetDemo.json");
 //step2:获得ontAssetTx实例
-ontAssetTx = ontSdk.getOntAssetTx()
+ont = sdk.nativevm().ont()
 //step3:调用转账方法
-ontAssetTx.sendTransfer("ont",info2.address,"passwordtest",info1.address,100000000L);
-ontAssetTx.sendTransferToMany("ont",info1.address,"passwordtest",new String[]{info2.address,info3.address},new long[]{100L,200L});
-ontAssetTx.sendTransferFromMany("ont", new String[]{info1.address, info2.address}, new String[]{"passwordtest", "passwordtest"}, info3.address, new long[]{1L, 2L});
-ontAssetTx.sendOngTransferFrom(info1.address,"passwordtest",info2.address,100);
+ont.sendTransfer("ont",info2.address,"passwordtest",info1.address,100000000L);
+ont.sendTransferToMany("ont",info1.address,"passwordtest",new String[]{info2.address,info3.address},new long[]{100L,200L});
+ont.sendTransferFromMany("ont", new String[]{info1.address, info2.address}, new String[]{"passwordtest", "passwordtest"}, info3.address, new long[]{1L, 2L});
+ont.sendOngTransferFrom(info1.address,"passwordtest",info2.address,100);
 ```
 
-* 使用智能合约
-
-您也可以使用智能合约操作原生数字资产。
-
-ontology资产智能合约abi文件，abi文件是对智能合约函数接口的描述，通过abi文件可以清楚如何传参：
-
-```
-{
-    "hash":"0xceab719b8baa2310f232ee0d277c061704541cfb",
-    "entrypoint":"Main",
-    "functions":
-    [
-        {
-            "name":"Main",
-            "parameters":
-            [
-                {
-                    "name":"operation",
-                    "type":"String"
-                },
-                {
-                    "name":"args",
-                    "type":"Array"
-                }
-            ],
-            "returntype":"Any"
-        },
-        {
-            "name":"Transfer",
-            "parameters":
-            [
-                {
-                    "name":"from",
-                    "type":"ByteArray"
-                },
-                {
-                    "name":"to",
-                    "type":"ByteArray"
-                },
-                {
-                    "name":"value",
-                    "type":"Integer"
-                }
-            ],
-            "returntype":"Boolean"
-        },
-        {
-            "name":"BalanceOf",
-            "parameters":
-            [
-                {
-                    "name":"address",
-                    "type":"ByteArray"
-                }
-            ],
-            "returntype":"Integer"
-        }
-    ],
-    "events":
-    [
-    ]
-}
-```
-
-通过调用ontology资产智能合约进行转账操作
-
-```
-//step1:读取智能合约abi文件
-InputStream is = new FileInputStream("C:\\NeoContract1.abi.json");
-byte[] bys = new byte[is.available()];
-is.read(bys);
-is.close();
-String abi = new String(bys);
-
-//step2：解析abi文件
-AbiInfo abiinfo = JSON.parseObject(abi, AbiInfo.class);
-
-//step3：设置智能合约codeaddress
-ontSdk.setCodeAddress(abiinfo.getHash());
-
-//step4：选择函数，设置函数参数
-AbiFunction func = abiinfo.getFunction("Transfer");
-System.out.println(func.getParameters());
-func.setParamsValue(from.getBytes(),to.getBytes(),value.getBytes());
-
-//setp5：调用合约
-String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign("passwordtest",addr,func);
-```
-
-AbiInfo结构是怎样的？
-
-```
-public class AbiInfo {
-    public String hash;
-    public String entrypoint;
-    public List<AbiFunction> functions;
-    public List<AbiEvent> events;
-}
-public class AbiFunction {
-    public String name;
-    public String returntype;
-    public List<Parameter> parameters;
-}
-public class Parameter {
-    public String name;
-    public String type;
-    public String value;
-}
-```
 ## nep-5智能合约数字资产
 
 nep-5文档：

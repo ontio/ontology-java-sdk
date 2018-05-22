@@ -18,6 +18,7 @@ ontSdk.openWalletFile("OntAssetDemo.json");
 
 ## 基本操作接口
 
+
 * 获取当前区块高度
 ```
 int height = ontSdk.getConnectMgr().getBlockHeight();
@@ -25,33 +26,120 @@ int height = ontSdk.getConnectMgr().getBlockHeight();
 
 * 获取区块
 
+根据高度获取区块
 ```
 Block block = ontSdk.getConnectMgr().getBlock(9757);
+```
+
+根据区块hash获得区块
+
+```
+Block block = ontSdk.getConnectMgr().getBlock(blockhash);
+```
+
+* 获得block json数据
+
+根据高度获取区块json
+```
+Object block = ontSdk.getConnectMgr().getBlockJson(9757);
+```
+
+根据区块hash获得区块json
+
+```
+Object block = ontSdk.getConnectMgr().getBlockJson(blockhash);
+```
+* 获得合约代码
+
+根据合约hash获得合约代码
+
+```
+Object contract =  ontSdk.getConnectMgr().getContract(contractHash)
+```
+
+根据合约hash获得合约代码json数据
+
+```
+Object contractJson = ontSdk.getConnectMgr().getContractJson(hash)
+```
+
+* 查询余额
+
+根据账户地址查询余额
+
+```
+Object  balance = ontSdk.getConnectMgr().getBalance(address)
 ```
 
 * 获取区块链节点数
 
 ```
-ontSdk.getConnectMgr().getNodeCount();
+int count = ontSdk.getConnectMgr().getNodeCount();
 ```
 
 * 获取出块时间
 
 ```
-ontSdk.getConnectMgr().getGenerateBlockTime();
+int time = ontSdk.getConnectMgr().getGenerateBlockTime();
+```
+
+* 获得区块高度
+
+```
+int blockheight = ontSdk.getConnectMgr().getBlockHeight()
+```
+
+* 获得智能合约事件
+
+根据高度获得智能合约事件
+
+```
+Object  event = ontSdk.getConnectMgr().getSmartCodeEvent(height)
+```
+
+根据交易hash获得智能合约事件
+
+```
+Object  event = ontSdk.getConnectMgr().getSmartCodeEvent(hash)
+```
+
+* 根据交易hash获得区块高度
+
+```
+int blockheight = ontSdk.getConnectMgr().getBlockHeightByTxHash(txhash)
+```
+
+* 获得智能合约存储的数据
+
+```
+String value = ontSdk.getConnectMgr().getStorage(codehash,key)
+```
+
+* 获得merkle证明
+
+根据交易hash获得merkle证明
+
+```
+Object proof =  ontSdk.getConnectMgr().getMerkleProof(String hash)
 ```
 
 * 从区块链中获取交易
 
+根据交易hash获得交易对象
 ```
 Transaction info = ontSdk.getConnectMgr().getTransaction(txhash);
+```
+
+根据交易hash获得交易json数据
+
+```
+Object info = ontSdk.getConnectMgr().getTransactionJson(txhash);
 ```
 
 * 从区块链中获取InvokeCodeTransaction
 
 ```
 InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getTransaction(txhash);
-System.out.println(t);
 ```
 ## 数据结构说明
 
@@ -66,6 +154,7 @@ System.out.println(t);
 |    timestamp|   int| 区块时间戳，unix时间戳  |
 |    height|   int|  区块高度  |
 |    consensusData|   long |  共识数据 |
+|    consensusPayload|   byte[] |  共识payload |
 |    nextBookKeeper|   UInt160 |  下一个区块的记账合约的散列值 |
 |    sigData|   array|  签名 |
 |    bookKeepers|   array|  验签者 |
@@ -80,9 +169,10 @@ System.out.println(t);
 |    version|   int|  版本号  |
 |    txType|   TransactionType|  交易类型|
 |    nonce|   int |  随机数|
+| gasPrice|  long |  gas价格|
+| gasLimit|  long |  gas上限|
+|    payer|   Address |  支付交易费用账户|
 |    attributes|   Attribute[]|  交易属性列表 |
-|    fee|   Fee[] |  交易手续费列表 |
-|    networkFee|   long| 网络手续费  |
 |    sigs|   Sign[]|   签名数组  |
 |    payload| Payload |  payload  |
 
@@ -107,12 +197,6 @@ System.out.println(t);
 |    sigData|   array | 签名值数组 |
 
 
-* Fee交易手续费
-
-| Field     |     Type |   Description   | 
-| :--------------: | :--------:| :------: |
-|    amount|   long|  金额|
-|    payer|   Address | 付费者 |
 
 * Attribute交易属性
 

@@ -12,19 +12,28 @@
 `parameters` encryption parameters  
 `curve` elliptic curve  
 `key` NEP-2 private key, whose value can be null (in case of read-only or non-standard address)  
-`contract` smart contract, whose value can be null (in case of read-only address)  
+`contract` smart contract, whose value can be null (in case of read-only address)
+`encAlg` 私钥加密的算法名称，固定为aes-256-ctr.
 `extra` extra information stored by client developer, whose value can be null
+`signatureScheme` `signatureScheme` is a signature scheme used for transaction signatures.
+`hash` hash algorithm for derived privateKey。
+`passwordHash`  password hash
 ```
-
-public class Account {
-    public String label = "";
-    public String address = "";
-    public boolean isDefault = false;
-    public boolean lock = false;
-    public String algorithm = "";
-    public Map parameters = new HashMap() ;
-    public String key = "";
-    public Contract contract = new Contract();
+    public class Account {
+        public String label = "";
+        public String address = "";
+        public boolean isDefault = false;
+        public boolean lock = false;
+        public String algorithm = "";
+        public Map parameters = new HashMap() ;
+        public String key = "";
+        @JSONField(name = "enc-alg")
+        public String encAlg = "aes-256-ctr";
+        public String hash = "sha256";
+        public String signatureScheme = "SHA256withECDSA";
+        public String passwordHash = "";
+        public Object extra = null;
+    }
 
 ```
 
@@ -63,9 +72,195 @@ ontSdk.getWalletMgr().getWallet().setDefaultAccount("address");
 
 ## Native digital asset(Token)
 
-* Use SDK Method
+ont and ong asset list
 
-We suggest that you use SDK method directly to deal with native digital asset.
+ 1. sendTransfer(String assetName, String sendAddr, String password, String recvAddr, long amount,long gas)
+
+    function description： Transfer a certain amount of assets from the sender to the receiver's account
+
+    parameter description：
+
+    assetName：asset name，ont or ong
+
+    sendAddr： sender address
+
+    password ： sender password
+
+    recvAddr ： receive address
+
+    amount ： asset amount
+
+    gas ： gas amount
+
+    return value： transaction hash
+
+ 2. sendTransferToMany(String assetName, String sendAddr, String password, String[] recvAddr, long[] amount,long gas)
+
+    function description： transfer a certain amount of assets from the sender to multiple receiver accounts
+
+    parameter description：
+
+    assetName：asset name，ont or ong
+
+    sendAddr： sender address
+
+    password ： sender password
+
+    recvAddr ： receive address array
+
+    amount ： asset amount array
+
+    gas ： gas amount
+
+    return value：transaction hash
+
+ 3. sendTransferFromMany(String assetName, String[] sendAddr, String[] password, String recvAddr, long[] amount,long gas)
+
+     function description： transfer assets from multiple senders to one receiver
+
+     parameter description：
+
+     assetName：asset name，ont or ong
+
+     sendAddr： sender address array
+
+     password ： sender password array
+
+     recvAddr ： receive address
+
+     amount ： array of transferred assets
+
+     gas ： gas amount
+
+     return value：transaction hash
+
+ 4. sendOngTransferFrom(String sendAddr, String password, String to, long amount,long gas)
+
+      function description： extract ong to to account from sendAddr account
+
+      parameter description：
+
+      sendAddr： sender address
+
+      password ： sender password
+
+      to ： receive address
+
+      amount ： asset amount
+
+      gas ： gas amount
+
+      return value：transaction hash
+
+ 5. sendApprove(String assetName ,String sendAddr, String password, String recvAddr, long amount,long gas)
+
+       function description： sendAddr account allows recvAddr to transfer amount of assets
+
+       parameter description：
+
+       assetName：asset name，ont or ong
+
+       sendAddr： sender address
+
+       password： sender password
+
+       recvAddr： receive address
+
+       amount： asset amount
+
+       gas： gas amount
+
+       return value：transaction hash
+
+ 6. sendTransferFrom(String assetName ,String sendAddr, String password, String fromAddr, String toAddr, long amount,long gas)
+
+        function description： The sendAddr account transfers the amount of assets from the fromAddr account to the toAddr account
+
+        parameter description：
+
+        assetName：asset name，ont or ong
+
+        sendAddr： sender address
+
+        password： sender password
+
+        fromAddr： sender address
+
+        toAddr： receive address
+
+        amount： asset amount
+
+        gas： gas amount
+
+        return value：transaction hash
+
+ 7. sendBalanceOf(String assetName, String address)
+
+         function description： Query the assetName asset balance of the account address
+
+         c：
+
+         assetName：asset name，ont or ong
+
+         address：
+
+         return value： balance of address
+
+ 8. sendAllowance(String assetName,String fromAddr,String toAddr)
+
+         function description： query the assetName asset balance of the account address
+
+         ont = sdk.nativevm().ont()：
+
+         assetName：asset name，ont or ong
+
+         fromAddr： Authorized party address
+
+         toAddr：authorized party address
+
+         return value： asset amount
+
+ 9. queryName(String assetName)
+
+          function description： query assetName asset name information
+
+          parameter description：
+
+          assetName：asset name
+
+          return value：asset name detail information
+
+ 10. querySymbol(String assetName)
+
+           function description： query AssetName Asset Symbol Information
+
+           parameter description：
+
+           assetName：asset name
+
+           return value：Symbol information
+
+ 11. queryDecimals(String assetName)
+
+            function description： query the accuracy of assetName assets
+
+            parameter description：
+
+            assetName：asset name
+
+            return value：decimal
+
+ 12. queryTotalSupply(String assetName)
+
+             function description： query the total supply of assetName assets
+
+             parameter description：
+
+             assetName：asset name
+
+             return value：total Supply
+
+Example:
 
 ```
 //step1:get sdk instance
@@ -73,12 +268,12 @@ OntSdk wm = OntSdk.getInstance();
 wm.setRpcConnection(url);
 wm.openWalletFile("OntAssetDemo.json");
 //step2:get ontAssetTx instance
-ontAssetTx = ontSdk.getOntAssetTx()
+ont = sdk.nativevm().ont()
 //step3:transfer
-ontAssetTx.sendTransfer("ont",info2.address,"passwordtest",info1.address,100000000L);
-ontAssetTx.sendTransferToMany("ont",info1.address,"passwordtest",new String[]{info2.address,info3.address},new long[]{100L,200L});
-ontAssetTx.sendTransferFromMany("ont", new String[]{info1.address, info2.address}, new String[]{"passwordtest", "passwordtest"}, info3.address, new long[]{1L, 2L});
-ontAssetTx.sendOngTransferFrom(info1.address,"passwordtest",info2.address,100);
+ont.sendTransfer("ont",info2.address,"passwordtest",info1.address,100000000L);
+ont.sendTransferToMany("ont",info1.address,"passwordtest",new String[]{info2.address,info3.address},new long[]{100L,200L});
+ont.sendTransferFromMany("ont", new String[]{info1.address, info2.address}, new String[]{"passwordtest", "passwordtest"}, info3.address, new long[]{1L, 2L});
+ont.sendOngTransferFrom(info1.address,"passwordtest",info2.address,100);
 ```
 
 * Use Smart Contract

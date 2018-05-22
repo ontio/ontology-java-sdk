@@ -25,7 +25,7 @@ System.out.println("CodeAddress:" + Helper.getCodeAddress(code, VmType.NEOVM.val
 ```
 //step1：构造交易
 //需先将智能合约参数转换成vm可识别的opcode
-Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(params, vmtype, fees);
+Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), sender.toBase58(),0);
 
 //step2：对交易签名
 ontSdk.signTx(tx, info1.address, password);
@@ -61,7 +61,7 @@ code = Helper.toHexString(bys);
 ontSdk.setCodeAddress(Helper.getCodeAddress(code,VmType.NEOVM.value()));
 
 //部署合约
-Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(code, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
+Transaction tx = ontSdk.vm().makeDeployCodeTransaction(codeHexStr, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),payer,0);;
 String txHex = Helper.toHexString(tx.toArray());
 ontSdk.getConnectMgr().sendRawTransaction(txHex);
 //等待出块
@@ -79,6 +79,8 @@ DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getTran
 |        | email   | String | emal     | 必选 |
 |        | desp   | String | 描述信息     | 必选 |
 |        | VmType   | byte | 虚拟机类型     | 必选 |
+|        | payer   | String | 支付交易费用的账户地址     | 必选 |
+|        | gas   | long | gas费用     | 必选 |
 | 输出参数 | tx   | Transaction  | 交易实例  |  |
 
 ## 智能合约调用
@@ -123,7 +125,7 @@ System.out.println(func.getParameters());
 func.setParamsValue(did.ontid.getBytes(),"key".getBytes(),"bytes".getBytes(),"values02".getBytes(),Helper.hexToBytes(info.pubkey));
 System.out.println(func);
 //调用智能合约，sendInvokeSmartCodeWithSign方法封装好了构造交易，签名交易，发送交易步骤
-String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", func, (byte) VmType.NEOVM.value()););
+String hash = ontSdk.vm().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", func, (byte) VmType.NEOVM.value(),gas);
 
 ```
 
@@ -163,9 +165,9 @@ public class Parameter {
 ontSdk.getSmartcodeTx().setCodeAddress(codeAddress);
 String funcName = "add";
 //构造合约函数需要的参数
-String params = ontSdk.getSmartcodeTx().buildWasmContractJsonParam(new Object[]{20,30});
+String params = ontSdk.vm().buildWasmContractJsonParam(new Object[]{20,30});
 //指定虚拟机类型构造交易
-Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(ontSdk.getSmartcodeTx().getCodeAddress(),funcName,params.getBytes(),VmType.WASMVM.value(),new Fee[0]);
+Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontSdk.getSmartcodeTx().getCodeAddress(),funcName,params.getBytes(),VmType.WASMVM.value(),payer,gas);
 //发送交易
 ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
 

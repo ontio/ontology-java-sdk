@@ -32,6 +32,7 @@ import com.github.ontio.core.VmType;
 import com.github.ontio.core.asset.*;
 import com.github.ontio.core.payload.Vote;
 import com.github.ontio.io.BinaryWriter;
+import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
 import org.bouncycastle.math.ec.ECPoint;
@@ -115,6 +116,35 @@ public class OntAssetTx {
         }
         byte[] parabytes = buildParams(Address.decodeBase58(address).toArray());
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr,"balanceOf", parabytes, VmType.Native.value(), null,0);
+        Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        String res = ((JSONObject)obj).getString("Result");
+        if (("").equals(res)) {
+            return 0;
+        }
+        return Long.valueOf(res,16);
+    }
+
+    /**
+     * 
+     * @param assetName
+     * @param fromAddr
+     * @param toAddr
+     * @return
+     * @throws SDKException
+     * @throws ConnectorException
+     * @throws IOException
+     */
+    public long sendAllowance(String assetName,String fromAddr,String toAddr) throws SDKException, ConnectorException, IOException {
+        String contractAddr;
+        if (assetName.toUpperCase().equals("ONG")) {
+            contractAddr = ongContract;
+        } else if (assetName.toUpperCase().equals("ONT")) {
+            contractAddr = ontContract;
+        } else {
+            throw new SDKException(ErrorCode.AssetNameError);
+        }
+        byte[] parabytes = buildParams(Address.decodeBase58(fromAddr).toArray(),Address.decodeBase58(toAddr).toArray());
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr,"allowance", parabytes, VmType.Native.value(), null,0);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         if (("").equals(res)) {

@@ -64,18 +64,18 @@ public class MerkleVerifierTest {
         Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,payer.address,0);
         ontSdk.signTx(tx,identity.ontid,password);
         ontSdk.addSign(tx,payer.address,password);
-        ontSdk.getConnectMgr().sendRawTransaction(tx);
+        ontSdk.getConnect().sendRawTransaction(tx);
         Thread.sleep(6000);
 
         String hash = tx.hash().toHexString();
         Map proof = new HashMap();
         Map map = new HashMap();
-        int height = ontSdk.getConnectMgr().getBlockHeightByTxHash(hash);
+        int height = ontSdk.getConnect().getBlockHeightByTxHash(hash);
         map.put("Type", "MerkleProof");
         map.put("TxnHash", hash);
         map.put("BlockHeight", height);
 
-        Map tmpProof = (Map) ontSdk.getConnectMgr().getMerkleProof(hash);
+        Map tmpProof = (Map) ontSdk.getConnect().getMerkleProof(hash);
         UInt256 txroot = UInt256.parse((String) tmpProof.get("TransactionsRoot"));
         int blockHeight = (int) tmpProof.get("BlockHeight");
         UInt256 curBlockRoot = UInt256.parse((String) tmpProof.get("CurBlockRoot"));

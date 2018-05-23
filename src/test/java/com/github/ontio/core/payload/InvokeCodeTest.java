@@ -17,7 +17,6 @@ public class InvokeCodeTest {
     public void serializeExclusiveData() throws IOException {
         InvokeCode invokeCode = new InvokeCode();
         invokeCode.code = "test".getBytes();
-        invokeCode.gasLimit = 10;
         invokeCode.vmType = VmType.NEOVM.value();
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -28,6 +27,6 @@ public class InvokeCodeTest {
 
         InvokeCode invokeCode1 = new InvokeCode();
         invokeCode1.deserializeExclusiveData(new BinaryReader(new ByteArrayInputStream(byteArrayOutputStream.toByteArray())));
-        assertEquals(invokeCode.gasLimit,invokeCode1.gasLimit);
+        assertEquals(invokeCode.vmType,invokeCode1.vmType);
     }
 }

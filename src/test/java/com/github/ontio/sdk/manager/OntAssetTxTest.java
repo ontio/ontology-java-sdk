@@ -32,9 +32,8 @@ public class OntAssetTxTest {
         ontSdk.setRestful(restUrl);
         ontSdk.setDefaultConnect(ontSdk.getRestful());
         ontSdk.openWalletFile("OntAssetTxTest.json");
-        ontSdk.setSignatureScheme(SignatureScheme.SM3WITHSM2);
         if (ontSdk.getWalletMgr().getAccounts().size() < 3) {
-            info1 = ontSdk.getWalletMgr().createAccountFromPriKey(password, "d6aae3603a82499062fe2ddd68840dce417e2e9e7785fbecb3100dd68c4e2d44");
+            info1 = ontSdk.getWalletMgr().createAccountFromPriKey(password, "54ca4db481966046b15f8d15ff433e611c49ab8e68a279ebf579e4cfd108196d");
             info2 = ontSdk.getWalletMgr().createAccount(password);
             info3 = ontSdk.getWalletMgr().createAccount(password);
             ontSdk.getWalletMgr().writeWallet();
@@ -75,15 +74,15 @@ public class OntAssetTxTest {
     @Test
     public void sendApprove() throws Exception {
         ontSdk.nativevm().ont().sendApprove("ont",info1.address,password,info2.address,10L,0);
-        long info1balance = ontSdk.nativevm().ont().sendBalanceOf("ont",info1.address);
-        long info2balance = ontSdk.nativevm().ont().sendBalanceOf("ont",info2.address);
+        long info1balance = ontSdk.nativevm().ont().queryBalanceOf("ont",info1.address);
+        long info2balance = ontSdk.nativevm().ont().queryBalanceOf("ont",info2.address);
         Thread.sleep(6000);
 
 System.out.println(info1.address);
         ontSdk.nativevm().ont().sendTransferFrom("ont",info2.address,password,info1.address,info2.address,10L,0);
         Thread.sleep(6000);
-        long info1balance2 = ontSdk.nativevm().ont().sendBalanceOf("ont",info1.address);
-        long info2balance2 = ontSdk.nativevm().ont().sendBalanceOf("ont",info2.address);
+        long info1balance2 = ontSdk.nativevm().ont().queryBalanceOf("ont",info1.address);
+        long info2balance2 = ontSdk.nativevm().ont().queryBalanceOf("ont",info2.address);
 
         Assert.assertTrue((info1balance - info1balance2) == 10);
         Assert.assertTrue((info2balance2 - info2balance) == 10);
@@ -94,7 +93,7 @@ System.out.println(info1.address);
     @Test
     public void sendOngTransferFrom() throws Exception {
 
-        String res = ontSdk.nativevm().ont().sendOngTransferFrom(info1.address,password,info2.address,10L,0);
+        String res = ontSdk.nativevm().ont().claimOng(info1.address,password,info2.address,10L,0);
         Assert.assertNotNull(res);
     }
 
@@ -110,7 +109,6 @@ System.out.println(info1.address);
         String ongname = ontSdk.nativevm().ont().queryName("ong");
         Assert.assertNotNull(ontname);
         Assert.assertNotNull(ongname);
-
 
         String ontsym = ontSdk.nativevm().ont().querySymbol("ont");
         String ongsym = ontSdk.nativevm().ont().querySymbol("ong");

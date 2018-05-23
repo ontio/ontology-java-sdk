@@ -52,7 +52,7 @@ public class NativeOntIdTxTest {
         Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,payerAcc.address,0);
         ontSdk.signTx(tx, identity.ontid,password);
         ontSdk.addSign(tx,payerAcc.address,password);
-        ontSdk.getConnectMgr().sendRawTransaction(tx);
+        ontSdk.getConnect().sendRawTransaction(tx);
         Thread.sleep(6000);
         String ddo = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);
         Assert.assertTrue(ddo.contains(identity.ontid));
@@ -63,7 +63,7 @@ public class NativeOntIdTxTest {
         Transaction tx = ontSdk.nativevm().ontId().makeAddPubKey(identity.ontid,password,info.pubkey,payerAcc.address,0);
         ontSdk.signTx(tx, identity.ontid,password);
         ontSdk.addSign(tx,payerAcc.address,password);
-        ontSdk.getConnectMgr().sendRawTransaction(tx);
+        ontSdk.getConnect().sendRawTransaction(tx);
         Thread.sleep(6000);
         String ddo = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);
         Assert.assertTrue(ddo.contains(info.pubkey));
@@ -72,7 +72,7 @@ public class NativeOntIdTxTest {
         Transaction tx2 = ontSdk.nativevm().ontId().makeRemovePubKey(identity.ontid,password,info.pubkey,payerAcc.address,0);
         ontSdk.signTx(tx2,identity.ontid,password);
         ontSdk.addSign(tx2,payerAcc.address,password);
-        ontSdk.getConnectMgr().sendRawTransaction(tx2);
+        ontSdk.getConnect().sendRawTransaction(tx2);
         Thread.sleep(6000);
         String ddo2 = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);
         Assert.assertFalse(ddo2.contains(info.pubkey));
@@ -85,7 +85,7 @@ public class NativeOntIdTxTest {
         Transaction tx = ontSdk.nativevm().ontId().makeAddAttributes(identity.ontid,password,attrsMap,payerAcc.address,0);
         ontSdk.signTx(tx, identity.ontid,password);
         ontSdk.addSign(tx,payerAcc.address,password);
-        ontSdk.getConnectMgr().sendRawTransaction(tx);
+        ontSdk.getConnect().sendRawTransaction(tx);
         Thread.sleep(6000);
         String ddo = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);
         Assert.assertTrue(ddo.contains("key1"));
@@ -95,7 +95,7 @@ public class NativeOntIdTxTest {
         Transaction tx2= ontSdk.nativevm().ontId().makeRemoveAttribute(identity.ontid,password,"key1",payerAcc.address,0);
         ontSdk.signTx(tx2,identity.ontid,password);
         ontSdk.addSign(tx2,payerAcc.address,password);
-        ontSdk.getConnectMgr().sendRawTransaction(tx2);
+        ontSdk.getConnect().sendRawTransaction(tx2);
         Thread.sleep(6000);
 
         String ddo2 = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);
@@ -116,7 +116,7 @@ public class NativeOntIdTxTest {
         Transaction tx = ontSdk.nativevm().ontId().makeAddRecovery(identity.ontid,password,info.addressBase58,payerAcc.address,0);
         ontSdk.signTx(tx, identity.ontid,password);
         ontSdk.addSign(tx,payerAcc.address,password);
-        ontSdk.getConnectMgr().sendRawTransaction(tx);
+        ontSdk.getConnect().sendRawTransaction(tx);
         Thread.sleep(6000);
         String ddo = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);
         Assert.assertTrue(ddo.contains(info.addressBase58));
@@ -135,7 +135,7 @@ public class NativeOntIdTxTest {
         Transaction tx = ontSdk.nativevm().ontId().makeAddRecovery(identity.ontid,password,info.addressBase58,payerAcc.address,0);
         ontSdk.signTx(tx, identity.ontid,password);
         ontSdk.addSign(tx,payerAcc.address,password);
-        ontSdk.getConnectMgr().sendRawTransaction(tx);
+        ontSdk.getConnect().sendRawTransaction(tx);
         Thread.sleep(6000);
 
         AccountInfo info2 = ontSdk.getWalletMgr().createAccountInfo(password);
@@ -143,7 +143,7 @@ public class NativeOntIdTxTest {
         Transaction tx2 = ontSdk.nativevm().ontId().makeChangeRecovery(identity.ontid,info2.addressBase58,info.addressBase58,password,0);
         ontSdk.signTx(tx2, identity.ontid,password);
         ontSdk.addSign(tx2,info.addressBase58,password);
-        ontSdk.getConnectMgr().sendRawTransaction(tx2);
+        ontSdk.getConnect().sendRawTransaction(tx2);
 
         Thread.sleep(6000);
 

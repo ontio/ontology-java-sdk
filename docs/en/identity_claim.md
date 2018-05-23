@@ -7,10 +7,11 @@ Relevant descriptions of digital ID can be found in [ONT ID Protocol and Trust F
 
 ## Wallet file specification
 
-A wallet file is a JSON data storage file that stores multiple digital identities and digital asset accounts. 
+A wallet file is a JSON data storage file that stores multiple digital identities and digital asset accounts.
 You may refer to [Wallet File Specification](Wallet_File_Specification.md) for detailed information.
 
 You need to create/open a wallet file to create a digital identity.
+
 
 ```
 //If the wallet file does not exist, a wallet file will be auto-generated.
@@ -40,15 +41,17 @@ public class Identity {
 	public boolean lock = false;
 	public List<Control> controls = new ArrayList<Control>();
 }
-
 ```
+
+
 `algorithm` Encryption algorithm  
 `parameters` The parameters used in the encryption algorithm  
 `curve` Elliptic curve  
 `id` The single identifier of control  
 `key` NEP-2 private key
-```
 
+
+```
 public class Control {
     public String algorithm = "ECDSA";
     public Map parameters = new HashMap() ;
@@ -57,10 +60,12 @@ public class Control {
 }
 ```
 
+
 * 2 Create a digital identity
 
 
 ontsdk instance init
+
 
 ```
 String url = "http://127.0.0.1:20384";
@@ -71,13 +76,16 @@ wm.setDefaultConnect(wm.getRestful());
 wm.openWalletFile("InvokeSmartCodeDemo.json");
 ```
 
-Digital identity creation refers to generation of a digital identity with identity data structure and writing it to wallet file. 
+
+Digital identity creation refers to generation of a digital identity with identity data structure and writing it to wallet file.
+
 
 ```
 Identity identity = ontSdk.getWalletMgr().createIdentity("password");
 //The account or identity created is stored in the memory only and a write api is required to write it to the wallet file.
 ontSdk.getWalletMgr().writeWallet();
 ```
+
 
 * 3 Register blockchain-based identity
 
@@ -88,10 +96,12 @@ There are two ways to register your identity with the chain
 method one
 
 Registrant specifies the account address for payment of transaction fees
+
 ```
 Identity identity = ontSdk.getWalletMgr().createIdentity(password);
 ontSdk.nativevm().ontId().sendRegister(identity,password,payer,payerpassword,gas);
 ```
+
 
 method two
 
@@ -102,7 +112,6 @@ Identity identity = ontSdk.getWalletMgr().createIdentity(password);
 Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,serverAddress,0);
 ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
 ontSdk.getConnectMgr().sendRawTransaction(tx);
-
 ```
 
 Upon successful registration, the corresponding DDO of the ONT ID will be stored in Ontology blockchain. Detailed information about DDO can be found in [ONT ID identity protocol and smart contract implementation](https://git.ont.network/Ontology_Open_Platform/ontid/src/master/docs/en/ONTID_protocol_spec.md).
@@ -127,6 +136,7 @@ password： Password used to encrypt the private key
 * 5 Query blockchain-based identity
 
 DDO of blockchain-based identity can be queried by entering ONT ID.
+
 
 ```
 //get DDO by entering ONT ID
@@ -157,13 +167,16 @@ String ddo = ontSdk.nativevm().ontId().sendGetDDO(ontid);
 
 * 6 Remove identity
 
+
 ```
 ontSdk.getWalletMgr().getWallet().removeIdentity(ontid);
 //wrote to wallet
 ontSdk.getWalletMgr().writeWallet();
 ```
 
+
 * 7 Set default account or identity
+
 
 ```
 ontSdk.getWalletMgr().getWallet().setDefaultIdentity(index);
@@ -181,6 +194,7 @@ specifies the account address for payment of transaction fees
 String sendAddAttributes(String ontid, String password, Map<String, Object> attrsMap,String payer,String payerpassword,long gas)
 ```
 
+
 | Param   | Field   | Type  | Descriptions |      Remarks |
 | ----- | ------- | ------ | ------------- | ----------- |
 | input param | password| String | publisher's address | required, password to decrypt private key|
@@ -195,6 +209,7 @@ String sendAddAttributes(String ontid, String password, Map<String, Object> attr
 method two
 
 Send the constructed transaction to the server and let the server sign the transaction fee account.
+
 
 ```
 Transaction tx = ontSdk.nativevm().ontId().makeAddAttributes(ontid,password,attrsMap,payer,0);
@@ -223,6 +238,7 @@ String hash = ontSdk.getOntIdTx().sendRemoveAttribute(String ontid,String passwo
 method two
 
 Send the constructed transaction to the server and let the server sign the transaction fee account.
+
 ```
 Transaction tx = ontSdk.nativevm().ontId().makeRemoveAttribute(ontid,password,attrsMap,payer,0);
 ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
@@ -252,6 +268,7 @@ String sendAddPubKey(String ontid, String password, String newpubkey,String paye
 method two
 
 Send the constructed transaction to the server and let the server sign the transaction fee account.
+
 ```
 Transaction tx = ontSdk.nativevm().ontId().makeAddPubKey(ontid,password,newpubkey,payer,gas);
 ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
@@ -262,9 +279,11 @@ ontSdk.getConnectMgr().sendRawTransaction(tx);
 
 method one
 
+
 ```
 String sendRemovePubKey(String ontid, String password, String removePubkey,String payer,String payerpassword,long gas)
 ```
+
 
 | Param      | Field   | Type  | Descriptions |             Remarks |
 | ----- | ------- | ------ | ------------- | ----------- |
@@ -280,6 +299,7 @@ String sendRemovePubKey(String ontid, String password, String removePubkey,Strin
 method two
 
 Send the constructed transaction to the server and let the server sign the transaction fee account.
+
 ```
 Transaction tx = ontSdk.nativevm().ontId().makeRemovePubKey(ontid,password,removePubkey,payer,gas);
 ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
@@ -351,8 +371,8 @@ String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery, 
   metadata : Metadata,  
   signature : Signature
 }
-
 ```
+
 
 `unsignedData`  A JSON string of unsigned claim objects, including Context, Id, Claim, and Metadata  
 `signedData` A JSON string of signed claim objects, including claim object and digitally signed object  
@@ -363,6 +383,7 @@ String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery, 
 
 * Metadata has the following data structure
 
+
 ```
 {
   createTime : datetime string
@@ -372,8 +393,9 @@ String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery, 
   revocation : string,
   crl : string
 }
-
 ```
+
+
 `createtime` The time the claim is created  
 `issuer` Claim issuer  
 `subject` Claim subject  
@@ -402,7 +424,7 @@ Verifiable claim is constructed based on user input, which contains signed data.
 Map<String, Object> map = new HashMap<String, Object>();
 map.put("Issuer", dids.get(0).ontid);
 map.put("Subject", dids.get(1).ontid);
-String claim = ontSdk.getOntIdTx().createOntIdClaim(ontid,"passwordtest","claim:context",map,map);
+String claim = oontSdk.nativevm().ontId().createOntIdClaim(ontid,"passwordtest","claim:context",map,map);
 System.out.println(claim);
 ```
 > Note: The Issuer may have multiple public keys. The parameter ontid of createOntIdClaim specifies which public key to use.
@@ -410,8 +432,7 @@ System.out.println(claim);
 ### 3 Verify verifiable claim
 
 ```
-boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(dids.get(0).ontid,"passwordtest",claim);
-
+boolean b = ontSdk.nativevm().ontId().verifyOntIdClaim(dids.get(0).ontid,"passwordtest",claim);
 ```
 
 
@@ -420,22 +441,22 @@ boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(dids.get(0).ontid,"passwordtest
 
 ```
 //register ontid
-Identity ident = ontSdk.getOntIdTx().sendRegister("passwordtest");
+Identity ident = ontSdk.nativevm().ontId().sendRegister(identit,password,payer,payerpassword,gas);
 String ontid = ident.ontid;
 //update attribute
-String hash = ontSdk.getOntIdTx().sendUpdateAttribute(ontid,"passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
+String hash = ontSdk.nativevm().ontId().sendAddAttributes(ontid,password,attributeMap,payer,payerpassword);
 ```
 > Note: When the attribute does not exist, calling the sendUpdateAttribute method will increase the corresponding attribute. When the attribute exists, the corresponding attribute will be updated. Attri represents the attribute name, "Json" is the attribute value data type, and recordMap represents the attribute value.
 
 Claim issuance and verification:
+
 ```
 Map<String, Object> map = new HashMap<String, Object>();
 map.put("Issuer", dids.get(0).ontid);
 map.put("Subject", dids.get(1).ontid);
 
 //Password is confidentially held by the issuer, who must be contained in wallet file ontid.
-String claim = ontSdk.getOntIdTx().createOntIdClaim(ontid,"passwordtest","claim:context",map,map);
+String claim = ontSdk.nativevm().ontId().createOntIdClaim(ontid,"passwordtest","claim:context",map,map);
 System.out.println(claim);
-boolean b = ontSdk.getOntIdTx().verifyOntIdClaim(claim);
+boolean b = ontSdk.nativevm().ontId().verifyOntIdClaim(claim);
 ```
-

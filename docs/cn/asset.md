@@ -4,8 +4,6 @@
 
 # 数字资产
 
-接口列表：
-
 
 ## 数据结构说明
 `address` 是base58编码的账户地址。
@@ -60,7 +58,7 @@ ontSdk.getWalletMgr().writeWallet();
 
 ```
 ontSdk.getWalletMgr().getWallet().removeAccount(address);
-//写入钱包 
+//写入钱包
 ontSdk.getWalletMgr().writeWallet();
 ```
 
@@ -77,7 +75,7 @@ ontSdk.getWalletMgr().getWallet().setDefaultAccount("address");
 
 ont和ong资产接口列表
 
- 1. sendTransfer(String assetName, String sendAddr, String password, String recvAddr, long amount,long gas)
+1. sendTransfer(String assetName, String sendAddr, String password, String recvAddr, long amount,long gas)
 
     功能说明： 从发送方转移一定数量的资产到接收方账户
 
@@ -97,7 +95,7 @@ ont和ong资产接口列表
 
     返回值：交易hash
 
- 2. sendTransferToMany(String assetName, String sendAddr, String password, String[] recvAddr, long[] amount,long gas)
+2. sendTransferToMany(String assetName, String sendAddr, String password, String[] recvAddr, long[] amount,long gas)
 
     功能说明： 从发送方转移一定数量的资产到多个接收方账户
 
@@ -117,7 +115,7 @@ ont和ong资产接口列表
 
     返回值：交易hash
 
- 3. sendTransferFromMany(String assetName, String[] sendAddr, String[] password, String recvAddr, long[] amount,long gas)
+3. sendTransferFromMany(String assetName, String[] sendAddr, String[] password, String recvAddr, long[] amount,long gas)
 
      功能说明： 从多个发送发转移资产到某个接收方
 
@@ -137,7 +135,7 @@ ont和ong资产接口列表
 
      返回值：交易hash
 
- 4. sendOngTransferFrom(String sendAddr, String password, String to, long amount,long gas)
+4. sendOngTransferFrom(String sendAddr, String password, String to, long amount,long gas)
 
       功能说明： 从sendAddr账户提取ong到to账户
 
@@ -155,7 +153,7 @@ ont和ong资产接口列表
 
       返回值：交易hash
 
- 5. sendApprove(String assetName ,String sendAddr, String password, String recvAddr, long amount,long gas)
+5. sendApprove(String assetName ,String sendAddr, String password, String recvAddr, long amount,long gas)
 
        功能说明： sendAddr账户允许recvAddr转移amount数量的资产
 
@@ -175,7 +173,7 @@ ont和ong资产接口列表
 
        返回值：交易hash
 
- 6. sendTransferFrom(String assetName ,String sendAddr, String password, String fromAddr, String toAddr, long amount,long gas)
+6. sendTransferFrom(String assetName ,String sendAddr, String password, String fromAddr, String toAddr, long amount,long gas)
 
         功能说明： sendAddr账户从fromAddr账户转移amount数量的资产到toAddr账户
 
@@ -197,7 +195,7 @@ ont和ong资产接口列表
 
         返回值：交易hash
 
- 7. sendBalanceOf(String assetName, String address)
+7. sendBalanceOf(String assetName, String address)
 
          功能说明： 查询账户address的assetName资产余额
 
@@ -209,7 +207,7 @@ ont和ong资产接口列表
 
          返回值：账户余额
 
- 8. sendAllowance(String assetName,String fromAddr,String toAddr)
+8. sendAllowance(String assetName,String fromAddr,String toAddr)
 
          功能说明： 查询账户address的assetName资产余额
 
@@ -223,7 +221,7 @@ ont和ong资产接口列表
 
          返回值：授权转移的数量
 
- 9. queryName(String assetName)
+9. queryName(String assetName)
 
           功能说明： 查询assetName资产名信息
 
@@ -233,7 +231,7 @@ ont和ong资产接口列表
 
           返回值：资产名称
 
- 10. querySymbol(String assetName)
+10. querySymbol(String assetName)
 
            功能说明： 查询assetName资产Symbol信息
 
@@ -243,7 +241,7 @@ ont和ong资产接口列表
 
            返回值：Symbol信息
 
- 11. queryDecimals(String assetName)
+11. queryDecimals(String assetName)
 
             功能说明： 查询assetName资产的精确度
 
@@ -252,7 +250,8 @@ ont和ong资产接口列表
             assetName：资产名
 
             返回值：精确度
- 12. queryTotalSupply(String assetName)
+            
+12. queryTotalSupply(String assetName)
 
              功能说明： 查询assetName资产的总供应量
 
@@ -458,5 +457,3 @@ String result = (String) sdk.getConnectMgr().sendRawTransactionPreExec(txHex);
 
 
 请查看智能合约采用websocket连接调用合约方法，详见[smartcontract](smartcontract.md)。
-
-

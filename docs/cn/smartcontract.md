@@ -18,6 +18,7 @@ code = Helper.toHexString(bys);
 System.out.println("Code:" + Helper.toHexString(bys));
 System.out.println("CodeAddress:" + Helper.getCodeAddress(code, VmType.NEOVM.value()));
 ```
+
 > Note: 在获得codeAddress的时候，需要设置该合约需要运行在什么虚拟机上，目前支持的虚拟机是NEO和WASM。
 
 * 调用智能合约invokeTransaction的过程，sdk中具体做了什么
@@ -104,7 +105,7 @@ byte[] bys = new byte[is.available()];
 is.read(bys);
 is.close();
 String abi = new String(bys);
-            
+
 //解析abi文件
 AbiInfo abiinfo = JSON.parseObject(abi, AbiInfo.class);
 System.out.println("codeHash:"+abiinfo.getHash());
@@ -280,7 +281,7 @@ for (;;){
     "entrypoint":"Main",
     "functions":
     [
-        
+
     ],
     "events":
     [

@@ -196,9 +196,9 @@
  
  部署与调用
   ```
-      |                                            Function                                           |     Description            
-  ----|-----------------------------------------------------------------------------------------------|------------------------
-    1 | DeployCode makeDeployCodeTransaction(String code, boolean needStorage, String name, String version, String author, String email, String desp, byte vmtype,String payer,long gas)  |   部署              
-    2 | InvokeCode makeInvokeCodeTransaction(String codeAddr,String method,byte[] params, byte vmtype, String payer,long gas)   |   调用
+      |                                            Function                                                                                                                             |     Description            
+  ----|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------
+    1 | DeployCode makeDeployCodeTransaction(String code, boolean needStorage, String name, String version, String author, String email, String desp, byte vmtype,String payer,long gas)|   部署              
+    2 | InvokeCode makeInvokeCodeTransaction(String codeAddr,String method,byte[] params, byte vmtype, String payer,long gas)                                                           |   调用
    
   ```

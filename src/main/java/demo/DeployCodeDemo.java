@@ -87,7 +87,7 @@ public class DeployCodeDemo {
 
             System.out.println("txhash:" + tx.hash().toString());
             Thread.sleep(6000);
-            String txhash = tx.hash().toHexStringReverse();
+            String txhash = tx.hash().toHexString();
             DeployCode t = (DeployCode) ontSdk.getConnect().getTransaction(txhash);
             System.out.println(t.txType.value() & 0xff);
         } catch (Exception e) {
@@ -96,8 +96,8 @@ public class DeployCodeDemo {
     }
 
     public static OntSdk getOntSdk() throws Exception {
-        String ip = "http://polaris1.ont.io";
-//        String ip = "http://127.0.0.1";
+//        String ip = "http://polaris1.ont.io";
+        String ip = "http://127.0.0.1";
 //        String ip = "http://54.222.182.88;
 //        String ip = "http://139.219.108.204";
         String restUrl = ip + ":" + "20334";

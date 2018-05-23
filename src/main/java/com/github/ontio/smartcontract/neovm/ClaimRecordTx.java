@@ -19,6 +19,7 @@
 
 package com.github.ontio.smartcontract.neovm;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.ErrorCode;
@@ -48,7 +49,7 @@ public class ClaimRecordTx {
         return codeAddress;
     }
 
-    public String sendCommit(String ontid,String password,String claimId,long gas) throws Exception {
+    public String sendCommit(String issuerOntid,String password,String subjectOntid,String claimId,long gas) throws Exception {
         if(gas < 0){
             throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
         }
@@ -58,8 +59,8 @@ public class ClaimRecordTx {
         if (claimId == null || claimId == ""){
             throw new SDKException(ErrorCode.NullKeyOrValue);
         }
-        String addr = ontid.replace(Common.didont,"");
-        byte[] did = (Common.didont + addr).getBytes();
+        String addr = issuerOntid.replace(Common.didont,"");
+        byte[] did = (issuerOntid + "&" + subjectOntid).getBytes();
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
         List list = new ArrayList<Object>();
         list.add("Commit".getBytes());
@@ -120,7 +121,7 @@ public class ClaimRecordTx {
         sdk.signTx(tx, addr, password);
         Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         if (obj != null ) {
-            return (String) obj;
+            return ((JSONObject)obj).getString("Result");
         }
         return null;
     }

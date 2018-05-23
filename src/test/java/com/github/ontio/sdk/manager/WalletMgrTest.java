@@ -79,15 +79,6 @@ public class WalletMgrTest {
     }
 
     @Test
-    public void sendRegister() throws Exception {
-        Identity identity = walletMgr.createIdentity("123456");
-        Identity identity1 = ontIdTx.sendRegister(identity,"123456",0);
-        Thread.sleep(6000);
-        String string = ontIdTx.sendGetDDO(identity1.ontid);
-        assertTrue(string.contains(identity1.ontid));
-    }
-
-    @Test
     public void importIdentity() throws Exception {
         List<Identity> identities = wallet.getIdentities();
         identities.clear();

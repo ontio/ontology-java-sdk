@@ -26,7 +26,7 @@ System.out.println("CodeAddress:" + Helper.getCodeAddress(code, VmType.NEOVM.val
 ```
 //step1：construct transaction
 //Firstly, convert the parameters of smart contract into the vm-recognizable opcode 
-Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(params, vmtype, fees);
+Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), sender.toBase58(),gas);
 
 //step2：sign the transaction
 ontSdk.signTx(tx, info1.address, password);
@@ -63,7 +63,7 @@ code = Helper.toHexString(bys);
 ontSdk.setCodeAddress(Helper.getCodeAddress(codeHexStr,vmtype));
 
 //Deploy the contract
-Transaction tx = ontSdk.getSmartcodeTx().makeDeployCodeTransaction(code, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value());
+Transaction tx = ontSdk.vm().makeDeployCodeTransaction(codeHexStr, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),payer,0);;
 String txHex = Helper.toHexString(tx.toArray());
 ontSdk.getConnectMgr().sendRawTransaction(txHex);
 //Waiting for block generation
@@ -81,6 +81,8 @@ DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getTran
 |               | email       | String                | Author email                      | Required                               |
 |               | desp        | String                | Description                       | Required                               |
 |               | VmType      | byte                  | Virtual machine type              | Required                               |
+|               | payer       | String                | account address used to pay transaction fee| Required |
+|               | gas         | long                  | gas fee                           | Required |
 | Output params | tx          | Transaction           | Transaction instance              | |
 
 ----
@@ -127,7 +129,7 @@ System.out.println(func.getParameters());
 func.setParamsValue(did.ontid.getBytes(),"key".getBytes(),"bytes".getBytes(),"values02".getBytes(),Helper.hexToBytes(info.pubkey));
 
 //Call a smart contract, sendInvokeSmartCodeWithSign method encapsulates a structured transaction, signing a transaction, sending a transaction step
-String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", func, (byte) VmType.NEOVM.value());
+String hash = ontSdk.vm().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", func, (byte) VmType.NEOVM.value(),gas);
 
 ```
 
@@ -169,7 +171,7 @@ String funcName = "add";
 //The parameters needed to construct a contract function
 String params = ontSdk.getSmartcodeTx().buildWasmContractJsonParam(new Object[]{20,30});
 //Specify a virtual machine type to construct a transaction
-Transaction tx = ontSdk.getSmartcodeTx().makeInvokeCodeTransaction(ontSdk.getSmartcodeTx().getCodeAddress(),funcName,params.getBytes(),VmType.WASMVM.value(),new Fee[0]);
+Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontSdk.getSmartcodeTx().getCodeAddress(),funcName,params.getBytes(),VmType.WASMVM.value(),payer,gas);
 //send transaction
 ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
 

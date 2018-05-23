@@ -34,6 +34,9 @@
 |51011  |  Decoded3bytesError |Account Error,decoded 3 bytes error|
 |51012  |  DecodePrikeyPassphraseError |Account Error,decode prikey passphrase error|
 |51013  |  PrikeyLengthError |Account Error,Prikey length error|
+|51014  |  EncryptedPriKeyError |Account Error,null prikey error|
+|51015  |  encryptedPriKeyAddressPasswordErr |Account Error,encryptedPriKey address password not match.|
+|51016  |  EncriptPrivateKeyError |Account Error, encript privatekey error,|
 |52001  |  InputError |Uint256 Error,input error|
 |52002  |  ChecksumNotValidate |Base58 Error,Checksum does not validate|
 |52003  |  InputTooShort |Base58 Error,Input too short|
@@ -44,30 +47,42 @@
 |52008  |  InvalidSignatureDataLen |Signature Error,invalid signature data length|
 |52009  |  MalformedSignature |Signature Error,malformed signature|
 |52010  |  UnsupportedSignatureScheme |Signature Error,unsupported signature scheme:|
+|52011  |  DataSignatureErr |Signature Error,Data signature error.|
+|52012  |  UnSupportOperation |Address Error, UnsupportedOperationException|
 |53001  |  TxDeserializeError |Core Error,Transaction deserialize failed|
 |53002  |  BlockDeserializeError |Core Error,Block deserialize failed|
+|54001  |  MerkleVerifierErr |Wrong params: the tree size is smaller than the leaf index|
+|54002  |  TargetHashesErr |targetHashes error|
+|54003  |  ConstructedRootHashErr ||
+|54004  |  AsserFailedHashFullTree |assert failed in hash full tree|
+|54005  |  LeftTreeFull | left tree always full |
 |58001  |  SendRawTxError |SmartCodeTx Error,sendRawTransaction error|
 |58002  |  TypeError |SmartCodeTx Error,type error|
 |58003  |  NullCodeHash |OntIdTx Error,null codeHash|
 |58004  |  ParamError |OntIdTx Error,param error|
-|58005  |  DidNull |OntIdTx Error,SendDid or receiverDid is null in metaData|
-|58006  |  NotExistCliamIssuer |OntIdTx Error,Not exist cliam issuer|
+|58005  |  ParamErr |OntIdTx Error,param error...|
+|58006  |  DidNull |OntIdTx Error,SendDid or receiverDid is null in metaData|
+|58007  |  NotExistCliamIssuer |OntIdTx Error,Not exist cliam issuer|
 |58007  |  NotFoundPublicKeyId |OntIdTx Error,not found PublicKeyId|
 |58008  |  PublicKeyIdErr |OntIdTx Error,PublicKeyId err|
 |58009  |  BlockHeightNotMatch |OntIdTx Error,BlockHeight not match|
 |58010  |  NodesNotMatch |OntIdTx Error,nodes not match|
 |58011  |  ResultIsNull |OntIdTx Error,result is null|
-|58012  |  AssetNameError |OntAsset Error,asset name error|
-|58013  |  DidError |OntAsset Error,Did error|
-|58014  |  NullPkId |OntAsset Error,null pkId|
-|58015  |  NullClaimId |OntAsset Error,null claimId|
-|58016  |  OntAsset Error,amount is less than or equal to zero|
-|58017  |  NullKeyOrValue |RecordTx Error,null key or value|
-|58018  |  NullKey |RecordTx Error,null  key|
-|58019  |  GetAccountByAddressErr |WalletManager Error,getAccountByAddress err|
-|58020  |  WebsocketNotInit |OntSdk Error,websocket not init|
-|58021  |  ConnRestfulNotInit |OntSdk Error,connRestful not init|
-|58022  |  SetParamsValueValueNumError |AbiFunction Error,setParamsValue value num error|
-|58023  |  InvalidUrl |Interfaces Error,Invalid url:|
-|58024  |  AESailed |ECIES Error,AES failed initialisation -|
+|58012  |  CreateOntIdClaimErr |OntIdTx Error, createOntIdClaim error|
+|58013  |  VerifyOntIdClaimErr |OntIdTx Error, verifyOntIdClaim error|
+|58014  |  WriteVarBytesError |OntIdTx Error, writeVarBytes error|
+|58101  |  AssetNameError |OntAsset Error,asset name error|
+|58102  |  DidError |OntAsset Error,Did error|
+|58103  |  NullPkId |OntAsset Error,null pkId|
+|58104  |  NullClaimId |OntAsset Error,null claimId|
+|58105  |  OntAsset Error,amount is less than or equal to zero|
+|58106  |  ParamLengthNotSame |OntAsset Error,param length is not the same|
+|58201  |  NullKeyOrValue |RecordTx Error,null key or value|
+|58202  |  NullKey |RecordTx Error,null  key|
+|58301  |  WebsocketNotInit |OntSdk Error,websocket not init|
+|58302  |  ConnRestfulNotInit |OntSdk Error,connRestful not init|
+|58401  |  SetParamsValueValueNumError |AbiFunction Error,setParamsValue value num error|
+|58402  |  InvalidUrlErr |Interfaces Error,Invalid url:|
+|58403  |  InvalidUrl |Interfaces Error,Invalid url:|
+|58501  |  GetAccountByAddressErr |WalletManager Error,getAccountByAddress err|
 |59000  |  OtherError| other error|

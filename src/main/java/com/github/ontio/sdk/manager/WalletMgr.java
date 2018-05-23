@@ -317,7 +317,6 @@ public class WalletMgr {
     public AccountInfo getAccountInfo(String address, String password) throws Exception {
         address = address.replace(Common.didont, "");
         AccountInfo info = new AccountInfo();
-        System.out.println(address);
         com.github.ontio.account.Account acc = getAccountByAddress(Address.decodeBase58(address), password);
         info.addressBase58 = address;
         info.pubkey = Helper.toHexString(acc.serializePublicKey());

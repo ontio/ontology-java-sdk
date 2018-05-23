@@ -28,8 +28,56 @@ int height = ontSdk.getConnectMgr().getBlockHeight();
 
 * Get block
 
+get block by block height
+
 ```
 Block block = ontSdk.getConnectMgr().getBlock(9757);
+```
+
+
+get block by block hash
+
+
+```
+Block block = ontSdk.getConnectMgr().getBlock(blockhash);
+```
+
+* Get block json
+
+get block by block height
+
+```
+Object block = ontSdk.getConnectMgr().getBlockJson(9757);
+```
+
+
+get block by block hash
+
+
+```
+Object block = ontSdk.getConnectMgr().getBlockJson(blockhash);
+```
+
+* Get contarct code
+
+get contract code by contract hash
+
+```
+Object contract =  ontSdk.getConnectMgr().getContract(contractHash)
+```
+
+get contract json  by contract hash
+
+```
+Object contractJson = ontSdk.getConnectMgr().getContractJson(hash)
+```
+
+* Get balance
+
+query balance by address
+
+```
+Object  balance = ontSdk.getConnectMgr().getBalance(address)
 ```
 
 * Get blockchain node count
@@ -44,10 +92,57 @@ ontSdk.getConnectMgr().getNodeCount();
 ontSdk.getConnectMgr().getGenerateBlockTime();
 ```
 
+* get block height
+
+```
+int blockheight = ontSdk.getConnectMgr().getBlockHeight()
+```
+
+* get smartcontract event
+
+get smartcontract event by block height
+
+```
+Object  event = ontSdk.getConnectMgr().getSmartCodeEvent(height)
+```
+
+get smartcontract event by transaction hash
+
+```
+Object  event = ontSdk.getConnectMgr().getSmartCodeEvent(hash)
+```
+
+* get block height by transaction hash
+
+```
+int blockheight = ontSdk.getConnectMgr().getBlockHeightByTxHash(txhash)
+```
+
+* get data stored in smart contract by key
+
+```
+String value = ontSdk.getConnectMgr().getStorage(codehash,key)
+```
+
+* get merkle proof
+
+get merkle proof by transaction hash
+
+```
+Object proof =  ontSdk.getConnectMgr().getMerkleProof(String hash)
+```
+
+
 * Get blockchain-based transaction
 
 ```
 Transaction info = ontSdk.getConnectMgr().getTransaction(hash);
+```
+
+get transaction json by transaction hash
+
+```
+Object info = ontSdk.getConnectMgr().getTransactionJson(txhash);
 ```
 
 * Get InvokeTransaction
@@ -69,6 +164,7 @@ InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getTran
 |    timestamp|   int| block time stamp, unix time stamp|
 |    height|   int|  block height |
 |    consensusData|   long |  consensus data |
+|    consensusPayload|   byte[] |  consensus payload |
 |    nextBookKeeper|   UInt160 |  bookkeeping contract scripthash of the next block |
 |    sigData|   array|  signature |
 |    bookKeepers|   array|  bookkeepers |
@@ -84,8 +180,9 @@ InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getTran
 |    txType|   TransactionType|transaction type|
 |    nonce|   int |  random number|
 |    attributes|   Attribute[]|  transaction attribute list |
-|    fee|   Fee[] |  transaction fee list |
-|    networkFee|   long| network fee  |
+| gasPrice|  long |  gas price|
+| gasLimit|  long |  gas limit|
+|    payer|   Address |  account used to pay fee|
 |    sigs|   Sign[]|   signature array  |
 |    payload| Payload |  payload  |
 

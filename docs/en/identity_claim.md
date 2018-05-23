@@ -69,10 +69,7 @@ wm.setRpc(rpcUrl);
 wm.setRestful(restUrl);
 wm.setDefaultConnect(wm.getRestful());
 wm.openWalletFile("InvokeSmartCodeDemo.json");
-ontSdk.setCodeAddress("89ff0f39193ddaeeeab9de4873b549f71bbe809c");
 ```
-
-> Note: Ontid is implemented by a smart contract, so the ontid smart contract codeHash needs to be set.
 
 Digital identity creation refers to generation of a digital identity with identity data structure and writing it to wallet file. 
 
@@ -84,12 +81,28 @@ ontSdk.getWalletMgr().writeWallet();
 
 * 3 Register blockchain-based identity
 
-The identity cannot be put to use until being successfully registered on the blockchain.
+Only after successfully registering an identity with the block chain can the identity be truly used.
+
+There are two ways to register your identity with the chain
+
+method one
+
+Registrant specifies the account address for payment of transaction fees
+```
+Identity identity = ontSdk.getWalletMgr().createIdentity(password);
+ontSdk.nativevm().ontId().sendRegister(identity,password,payer,payerpassword,gas);
+```
+
+method two
+
+Send the constructed transaction to the server and let the server sign the transaction fee account.
 
 ```
-ontSdk.getOntIdTx().sendRegister(identity,"passwordtest");
-或
-ontSdk.getOntIdTx().sendRegister("passwordtest");
+Identity identity = ontSdk.getWalletMgr().createIdentity(password);
+Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,serverAddress,0);
+ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
+ontSdk.getConnectMgr().sendRawTransaction(tx);
+
 ```
 
 Upon successful registration, the corresponding DDO of the ONT ID will be stored in Ontology blockchain. Detailed information about DDO can be found in [ONT ID identity protocol and smart contract implementation](https://git.ont.network/Ontology_Open_Platform/ontid/src/master/docs/en/ONTID_protocol_spec.md).
@@ -102,10 +115,14 @@ Users who have already created a digital identity or account may import it into 
 > **Note:** It is advised to check if an identity already exists on the blockchain before you import one. If DDO does not exist, it means that no such identity has been registered on the blockchain. Then you may need to use ontSdk.getOntIdTx().sendRegister(identity,"passwordtest") for registration.
 
 ```
-Identity identity = ontSdk.getWalletMgr().importIdentity("6PYMpk8DjWzaEvneyaqxMBap9DuUPH72W6BsWWTtpWE4JJZkGq5ENtfYbT","passwordtest");
+Identity identity = ontSdk.getWalletMgr().importIdentity(encriptPrivateKey,password);
 //write to wallet     
 ontSdk.getWalletMgr().writeWallet();
 ```
+
+Parameter Description：
+encriptPrivateKey: Encrypted private key
+password： Password used to encrypt the private key
 
 * 5 Query blockchain-based identity
 
@@ -113,22 +130,27 @@ DDO of blockchain-based identity can be queried by entering ONT ID.
 
 ```
 //get DDO by entering ONT ID
-String ddo = ontSdk.getOntIdTx().sendGetDDO(ontid,"passwordtest",ontid);
+String ddo = ontSdk.nativevm().ontId().sendGetDDO(ontid);
 
 //return in DDO format
 {
-	"OntId": "did:ont:AMs5NFdXPgCgC7Dci1FdFttvD42HELoLxG",
-	"Attributes": {
-		"attri0": {
-			"Type": "String",
-			"Value": "\"value0\""
-		}
-	},
+	"Attributes": [{
+		"Type": "String",
+		"Value": "value1",
+		"Key": "key1"
+	}],
+	"OntId": "did:ont:TA5UqF8iPqecMdBzTdzzANVeY8HW1krrgy",
+	"Recovery": "TA6AhqudP1dcLknEXmFinHPugDdudDnMJZ",
 	"Owners": [{
 		"Type": "ECDSA",
-		"Curve": "P-256",
-		"Value": "120202535a446befcf7a68b6656307928f25aab847d04a7533dfc8affab73e01785dbe",
-		"PublicKeyId": "did:ont:TA9VPsYoQMHWBWCxyGNvrb5RK47mvbFBQ7#keys-1"
+		"Curve": "P256",
+		"Value": "12020346f8c238c9e4deaf6110e8f5967cf973f53b778ed183f4a6e7571acd51ddf80e",
+		"PubKeyId": "did:ont:TA5UqF8iPqecMdBzTdzzANVeY8HW1krrgy#keys-1"
+	}, {
+		"Type": "ECDSA",
+		"Curve": "P256",
+		"Value": "1202022fabd733d7d7d7009125bfde3cb0afe274769c78fd653079ecd5954ae9f52644",
+		"PubKeyId": "did:ont:TA5UqF8iPqecMdBzTdzzANVeY8HW1krrgy#keys-2"
 	}]
 }
 ```
@@ -150,32 +172,168 @@ ontSdk.getWalletMgr().getWallet().setDefaultIdentity(ontid);
 
 * 8 Update blockchain-based DDO attribute
 
+method one
+
+specifies the account address for payment of transaction fees
+
 ```
 //update an attribute
-String sendUpdateAttribute(String ontid,String password,byte[] key,byte[] type,byte[] value)
+String sendAddAttributes(String ontid, String password, Map<String, Object> attrsMap,String payer,String payerpassword,long gas)
 ```
 
 | Param   | Field   | Type  | Descriptions |      Remarks |
 | ----- | ------- | ------ | ------------- | ----------- |
 | input param | password| String | publisher's address | required, password to decrypt private key|
 |   | ontid    | String | name of asset | required, ID |
-|        | key    | byte[]  | key       | required, key |
-|        | type    | byte[] | type     |  required, type |
-|        | value   | byte[] | value     | required, value |
+|        | attrsMap    | Map  | attribute collection  | required |
+|        | payer    | String | type     |  required |
+|        | payerpassword   | String | payer password     | required|
+|        | gas   | long | transaction fee | required |
 | output param | txhash   | String  | transaction hash | 64-bit string |
-                        
-* 9 Remove blockchain-based DDO attribute
+
+
+method two
+
+Send the constructed transaction to the server and let the server sign the transaction fee account.
 
 ```
-String hash = ontSdk.getOntIdTx().sendRemoveAttribute(did.ontid, "passwordtest", "attri".getBytes());
+Transaction tx = ontSdk.nativevm().ontId().makeAddAttributes(ontid,password,attrsMap,payer,0);
+ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
+ontSdk.getConnectMgr().sendRawTransaction(tx);
+```
+
+* 9 Remove blockchain-based DDO attribute
+
+method one
+
+```
+String hash = ontSdk.getOntIdTx().sendRemoveAttribute(String ontid,String password,String path,String payer,String payerpassword,long gas);
 ```
 
 | Param        | Field   | Type   | Descriptions  |       Remarks       |
 | -----        | ------- | ------ | ------------- | ------------------- |
 | input param  | password| String | publisher's address | required, password to decrypt private key |
 |   | ontid    | String | name of asset | required, ID |
-|        | key    | byte[]  | key       | required, key |
+|   | path    | String | path       | required |
+|   | payer    | String  | payer       | required，payer |
+|   | payerpassword | String  | account address used to pay transaction fee | required |
+|   | gas   | long | transaction fee     | required |
 | output param | txhash   | String  | transaction hash | 64-bit string |
+
+method two
+
+Send the constructed transaction to the server and let the server sign the transaction fee account.
+```
+Transaction tx = ontSdk.nativevm().ontId().makeRemoveAttribute(ontid,password,attrsMap,payer,0);
+ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
+ontSdk.getConnectMgr().sendRawTransaction(tx);
+```
+
+
+* add publicKey
+
+method one
+
+```
+String sendAddPubKey(String ontid, String password, String newpubkey,String payer,String payerpassword,long gas)
+```
+
+| Param      | Field   | Type  | Descriptions |             Remarks |
+| ----- | ------- | ------ | ------------- | ----------- |
+| input param| password| String | identity password | required |
+|        | ontid    | String | identity ID   | required，identity Id |
+|        | newpubkey| String  |public key       | required， newpubkey|
+|        | payer    | String  | payer       | required，payer |
+|        | payerpassword | String  | account address used to pay transaction fee  | required |
+|        | gas   | long |   transaction fee    | required |
+| output param | txhash   | String  | transaction hash  | transaction hash |
+
+
+method two
+
+Send the constructed transaction to the server and let the server sign the transaction fee account.
+```
+Transaction tx = ontSdk.nativevm().ontId().makeAddPubKey(ontid,password,newpubkey,payer,gas);
+ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
+ontSdk.getConnectMgr().sendRawTransaction(tx);
+```
+
+* 删除公钥
+
+method one
+
+```
+String sendRemovePubKey(String ontid, String password, String removePubkey,String payer,String payerpassword,long gas)
+```
+
+| Param      | Field   | Type  | Descriptions |             Remarks |
+| ----- | ------- | ------ | ------------- | ----------- |
+| input param | password| String | identity password | required |
+|        | ontid    | String | identity ID   | required，identity Id |
+|        | removePubkey| String  |public key       | required， removePubkey|
+|        | payer    | String  | payer       | required，payer |
+|        | payerpassword | String  | account address used to pay transaction fee  | required |
+|        | gas   | long | transaction fee | required |
+| output param | txhash   | String  | transaction hash  | Transaction hash |
+
+
+method two
+
+Send the constructed transaction to the server and let the server sign the transaction fee account.
+```
+Transaction tx = ontSdk.nativevm().ontId().makeRemovePubKey(ontid,password,removePubkey,payer,gas);
+ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
+ontSdk.getConnectMgr().sendRawTransaction(tx);
+```
+
+* add recovery
+
+method one
+
+```
+String sendAddRecovery(String ontid, String password, String recovery,String payer,String payerpassword,long gas)
+```
+
+| Param      | Field   | Type  | Descriptions |             Remarks |
+| ----- | ------- | ------ | ------------- | ----------- |
+| input param | password| String | identity password | required |
+|        | ontid    | String | identity ID   | required，identity Id |
+|        | recovery| String  |recovery address | required，recovery|
+|        | payer    | String  | payer       | required，payer |
+|        | payerpassword | String  | account address used to pay transaction fee  | required |
+|        | gas   | long |transaction fee  | required |
+| output param | txhash   | String  | transaction hash  | Transaction hash |
+
+
+method two
+
+Send the constructed transaction to the server and let the server sign the transaction fee account.
+
+```
+Transaction tx = ontSdk.nativevm().ontId().makeAddRecovery(ontid,password,recovery,payer,gas);
+ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
+ontSdk.getConnectMgr().sendRawTransaction(tx);
+```
+
+* 修改recovery
+
+
+```
+String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery, String password,long gas)
+```
+
+| Param      | Field   | Type  | Descriptions |             Remarks |
+| ----- | ------- | ------ | ------------- | ----------- |
+| input param | password| String | identity password | required |
+|        | ontid    | String | identity ID   | required，identity Id |
+|        | newRecovery| String  |newRecovery address | required，newRecovery|
+|        | oldRecovery| String  |oldRecovery address | required，oldRecovery|
+|        | oldRecovery password | String  | oldRecovery password  | required |
+|        | gas   | long |transaction fee  | required |
+| output param | txhash   | String  | transaction hash  | transaction hash |
+
+
+
 
 ## Verifiable claim
 

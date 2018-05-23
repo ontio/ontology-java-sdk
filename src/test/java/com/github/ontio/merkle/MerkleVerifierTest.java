@@ -4,8 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.github.ontio.OntSdk;
 import com.github.ontio.common.UInt256;
 import com.github.ontio.core.block.Block;
+import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
+import com.github.ontio.sdk.wallet.Account;
+import com.github.ontio.sdk.wallet.Identity;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,6 +21,7 @@ import static org.junit.Assert.*;
 
 public class MerkleVerifierTest {
     OntSdk ontSdk;
+    String password = "111111";
 
     @Before
     public void setUp() throws SDKException {
@@ -54,8 +58,16 @@ public class MerkleVerifierTest {
 
     @Test
     public void getProof() throws Exception {
-        Block block = ontSdk.getConnectMgr().getBlock(ontSdk.getConnectMgr().getBlockHeight());
-        String hash = block.transactions[0].hash().toHexString();
+        Identity identity = ontSdk.getWalletMgr().createIdentity(password);
+        Account payer = ontSdk.getWalletMgr().createAccount(password);
+
+        Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,payer.address,0);
+        ontSdk.signTx(tx,identity.ontid,password);
+        ontSdk.addSign(tx,payer.address,password);
+        ontSdk.getConnectMgr().sendRawTransaction(tx);
+        Thread.sleep(6000);
+
+        String hash = tx.hash().toHexString();
         Map proof = new HashMap();
         Map map = new HashMap();
         int height = ontSdk.getConnectMgr().getBlockHeightByTxHash(hash);

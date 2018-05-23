@@ -3,9 +3,11 @@
 
 # Basic blockchain interop
 
+
 The following describes basic blockchain interop function of SDK and defines relevant data structure.
 
 Please use the following methods to initialize OntSDK use case before launching JAVA SDK.
+
 
 ```
 OntSdk wm = OntSdk.getInstance();
@@ -15,20 +17,26 @@ wm.setDefaultConnect(wm.getRestful());
 wm.openWalletFile("OntAssetDemo.json");
 ```
 
-> Note: setRestful indicates that the connection is established using the restful interface, and setRpc indicates that the connection is established using the rpc interface,setDefaultConnect is used to set default connect method. 
+
+> Note: setRestful indicates that the connection is established using the restful interface, and setRpc indicates that the connection is established using the rpc interface,setDefaultConnect is used to set default connect method.
 
 
 ## Basic operation interfaces
 
+
 * Get the current block height
+
 
 ```
 int height = ontSdk.getConnectMgr().getBlockHeight();
 ```
 
+
 * Get block
 
+
 get block by block height
+
 
 ```
 Block block = ontSdk.getConnectMgr().getBlock(9757);
@@ -42,7 +50,9 @@ get block by block hash
 Block block = ontSdk.getConnectMgr().getBlock(blockhash);
 ```
 
+
 * Get block json
+
 
 get block by block height
 
@@ -62,11 +72,14 @@ Object block = ontSdk.getConnectMgr().getBlockJson(blockhash);
 
 get contract code by contract hash
 
+
 ```
 Object contract =  ontSdk.getConnectMgr().getContract(contractHash)
 ```
 
+
 get contract json  by contract hash
+
 
 ```
 Object contractJson = ontSdk.getConnectMgr().getContractJson(hash)
@@ -74,7 +87,9 @@ Object contractJson = ontSdk.getConnectMgr().getContractJson(hash)
 
 * Get balance
 
+
 query balance by address
+
 
 ```
 Object  balance = ontSdk.getConnectMgr().getBalance(address)
@@ -155,7 +170,7 @@ InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getTran
 
 * Block
 
-| Field     |     Type |   Description   | 
+| Field     |     Type |   Description   |
 | :--------------: | :--------:| :------: |
 |    version|   int|  version  |
 |    prevBlockHash|   UInt256|  scripthash of the previous block|
@@ -174,7 +189,7 @@ InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getTran
 
 * Transaction
 
-| Field     |     Type |   Description   | 
+| Field     |     Type |   Description   |
 | :--------------: | :--------:| :------: |
 |    version|   int|  version  |
 |    txType|   TransactionType|transaction type|
@@ -187,11 +202,9 @@ InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getTran
 |    payload| Payload |  payload  |
 
 
-
-
 * TransactionType
 
-| Value     |     Type |   Description   | 
+| Value     |     Type |   Description   |
 | :--------------: | :--------:| :------: |
 |    208|   int |  smart contract deployment |
 |    209|   int | smart contract invocation |
@@ -201,7 +214,7 @@ InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getTran
 
 * Signature Area
 
-| Field     |     Type |   Description   | 
+| Field     |     Type |   Description   |
 | :--------------: | :--------:| :------: |
 |    pubKeys|   array |  public key array|
 |    M|   int | M |
@@ -210,14 +223,14 @@ InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getTran
 
 * Fee
 
-| Field     |     Type |   Description   | 
+| Field     |     Type |   Description   |
 | :--------------: | :--------:| :------: |
 |    amount|   long|  amount|
 |    payer|   UInt160 | payer |
 
 * Attribute
 
-| Field    |     Type |   Description   | 
+| Field    |     Type |   Description   |
 | :--------------: | :--------:| :------: |
 |    usage |   AttributeUsage |  usage|
 |    data|   byte[] | attribute value |
@@ -225,9 +238,9 @@ InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getTran
 
 * TransactionAttributeUsage
 
-| Value     |     Type |   Description   | 
+| Value     |     Type |   Description   |
 | :--------------: | :--------:| :------: |
-|    0|   int|  Nonce|
-|    32|   int | Script |
+|    0  |   int|  Nonce|
+|    32 |   int | Script |
 |    129|   int | DescriptionUrl |
 |    144|   int | Description |

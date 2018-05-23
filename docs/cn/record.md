@@ -68,6 +68,7 @@ ontSdk.neovm().claimRecord().sendCommit(ontid,password,payload.getString("jti"),
         返回值：有两部分: 第一部分，claim的状态："Not attested", "Attested", "Attest has been revoked";第二部分是存证者的ontid
 
 
+示例代码
 
 ```
 String res = ontSdk.getRecordTx().sendGet("TA9WXpq7GNAc2D6gX9NZtCdybRq8ehGUxw","passwordtest","key");
@@ -89,4 +90,3 @@ String res = ontSdk.getRecordTx().sendGet("TA9WXpq7GNAc2D6gX9NZtCdybRq8ehGUxw","
         gas ： gas数量
 
         返回值：只有当该claim处于Attested状态，并且ontid是存证者的ontid时返回true，其他情况返回false
-

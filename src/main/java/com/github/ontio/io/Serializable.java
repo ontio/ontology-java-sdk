@@ -55,6 +55,9 @@ public interface Serializable {
 	default String toHexString(){
     	return Helper.toHexString(toArray());
 	}
+	default String toHexStringReverse(){
+		return Helper.toHexString(Helper.reverse(toArray()));
+	}
     
     static <T extends Serializable> T from(byte[] value, Class<T> t) throws InstantiationException, IllegalAccessException {
     	try (ByteArrayInputStream ms = new ByteArrayInputStream(value)) {

@@ -81,7 +81,7 @@ public class Helper {
 		}
 		return bt;
 	}
-    public static String getCodeAddress(String codeHexStr,byte vmtype){
+    public static String getContractAddress(String codeHexStr,byte vmtype){
         Address code = Address.toScriptHash(Helper.hexToBytes(codeHexStr));
         byte[] hash = code.toArray();
         hash[0] = vmtype;

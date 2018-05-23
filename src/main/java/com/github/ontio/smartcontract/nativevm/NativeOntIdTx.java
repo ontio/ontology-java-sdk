@@ -60,9 +60,6 @@ public class NativeOntIdTx {
         this.sdk = sdk;
     }
 
-    public void setCodeAddress(String codeHash) {
-        this.contractAddress = codeHash.replace("0x", "");
-    }
 
     public String getCodeAddress() {
         return contractAddress;
@@ -531,7 +528,7 @@ public class NativeOntIdTx {
      * @return
      * @throws Exception
      */
-    public String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery,String[] addresses, String[] password,long gas) throws Exception {
+    private String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery,String[] addresses, String[] password,long gas) throws Exception {
         if(gas < 0){
             throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
         }

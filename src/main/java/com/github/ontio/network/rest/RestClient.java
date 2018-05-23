@@ -252,6 +252,15 @@ public class RestClient extends AbstractConnector {
         }
         throw new RestfulException(to(rr));
     }
+    @Override
+    public String getAllowance(String asset,String from,String to) throws ConnectorException, IOException{
+        String rs = api.getAllowance(asset,from,to);
+        Result rr = JSON.parseObject(rs, Result.class);
+        if (rr.Error == 0) {
+            return (String)rr.Result;
+        }
+        throw new RestfulException(to(rr));
+    }
     private String to(Result rr) {
         return JSON.toJSONString(rr);
     }

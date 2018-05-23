@@ -207,6 +207,9 @@ public class ConnectMgr {
         hash = hash.replace("0x", "");
         return connector.getMerkleProof(hash);
     }
+    public String getAllowance(String asset,String from,String to) throws ConnectorException, IOException {
+        return connector.getAllowance(asset,from,to);
+    }
 }
 
 

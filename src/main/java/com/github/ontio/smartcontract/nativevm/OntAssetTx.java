@@ -430,14 +430,17 @@ public class OntAssetTx {
         }
         return null;
     }
-
-    public String sendOngTransferFrom(String sendAddr, String password, String to, long amount,long gas) throws Exception {
+    public String unclaimOng(String address)  throws Exception{
+        String uncliamong = sdk.getConnect().getAllowance("ong",Address.parse(ontContract).toBase58(),address);
+        return uncliamong;
+    }
+    public String claimOng(String sendAddr, String password, String to, long amount,long gas) throws Exception {
         if (amount <= 0 || gas <0) {
             throw new SDKException(ErrorCode.AmountError);
         }
         AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
         TransferFrom transferFrom = new TransferFrom(Address.addressFromPubKey(sender.pubkey),Address.parse(ontContract),Address.decodeBase58(to),amount);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"transferFrom", transferFrom.toArray(), VmType.Native.value(), sendAddr,gas);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract,"transferFrom", transferFrom.toArray(), VmType.Native.value(), sendAddr,gas);
         sdk.signTx(tx, sendAddr, password);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {

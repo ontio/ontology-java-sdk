@@ -245,5 +245,14 @@ public class RpcClient extends AbstractConnector {
             throw new RuntimeException(e);
         }
     }
+    @Override
+    public String getAllowance(String asset,String from,String to) throws ConnectorException, IOException {
+        Object result = rpc.call("getallowance", asset,from,to);
+        try {
+            return (String)result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 

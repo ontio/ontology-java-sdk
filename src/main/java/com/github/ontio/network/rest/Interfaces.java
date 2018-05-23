@@ -181,6 +181,14 @@ class Interfaces {
             throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
+    public String getAllowance(String asset,String from,String to) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            return http.get(url + UrlConsts.Url_get_allowance + asset+"/"+from+"/"+to, params);
+        } catch (Exception e) {
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
+        }
+    }
     public String getBalance(String address) throws RestfulException {
         Map<String, String> params = new HashMap<String, String>();
         try {

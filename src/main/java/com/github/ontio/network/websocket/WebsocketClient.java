@@ -288,6 +288,18 @@ public class WebsocketClient extends AbstractConnector {
         mWebSocket.send(JSON.toJSONString(map));
         return "";
     }
+    @Override
+    public String getAllowance(String asset,String from,String to) throws ConnectorException, IOException{
+        Map map = new HashMap<>();
+        map.put("Action", "getmerkleproof");
+        map.put("Version", "1.0.0");
+        map.put("Asset", asset);
+        map.put("From", from);
+        map.put("To", to);
+        map.put("Id", generateReqId());
+        mWebSocket.send(JSON.toJSONString(map));
+        return "";
+    }
     public void wsStart() {
         //request = new Request.Builder().url(WS_URL).build();
         String httpUrl = null;

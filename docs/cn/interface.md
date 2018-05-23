@@ -47,6 +47,7 @@
    16 | ontSdk.getConnect().sendRawTransaction("txhexString")    |  发送交易
    17 | ontSdk.getConnect().sendRawTransaction(Transaction)      |  发送交易
    18 | ontSdk.getConnect().sendRawTransactionPreExec()          |  发送预执行交易
+   18 | ontSdk.getConnect().getAllowance("ont","from","to")      |  查询允许使用值
 ```  
 
 ### 钱包管理接口：
@@ -103,7 +104,8 @@
     7 | String querySymbol(String assetName)                                                                        |  查询资产Symbol
     8 | long queryDecimals(String assetName)                                                                        |  查询精度
     9 | long queryTotalSupply(String assetName)                                                                     |  查询总供应量
-   10 | String sendOngTransferFrom(String sendAddr, String password, String to, long amount,long gas)               |  提取ong
+   10 | String cliamOng(String sendAddr, String password, String to, long amount,long gas)                          |  提取ong
+   11 | String unclaimOng(String address)                                                                           |  查询未提取的ong
       
       
       |                                         other   Function                                                       |           Description            

@@ -15,6 +15,7 @@ import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.info.IdentityInfo;
 import com.github.ontio.sdk.wallet.Identity;
+import com.github.ontio.smartcontract.neovm.BuildParams;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +31,6 @@ import static org.junit.Assert.*;
 public class ConnectMgrTest {
 
     OntSdk ontSdk;
-    public static Object lock = new Object();
     String codeAddress;
     String blockHash;
     String  address = "TA7yeU2TTwmwZaBy9DV2uG1PdXJ9187pVH";
@@ -63,7 +63,7 @@ public class ConnectMgrTest {
         ontSdk.signTx(tx,identity.ontid,password);
 
         String txHex = Helper.toHexString(tx.toArray());
-        boolean b = ontSdk.getConnectMgr().sendRawTransaction(txHex);
+        boolean b = ontSdk.getConnect().sendRawTransaction(txHex);
         Thread.sleep(6000);
 
 
@@ -74,26 +74,26 @@ public class ConnectMgrTest {
         tmp.add(Helper.hexToBytes("dde1a09571bf98e04e62b1a8778b2d413747408f4594c946577965fa571de8e5"));
         tmp.add(identity.ontid.getBytes());
         list.add(tmp);
-        byte[] params = ontSdk.vm().createCodeParamsScript(list);
+        byte[] params = BuildParams.createCodeParamsScript(list);
         Transaction tx2 = ontSdk.vm().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), identity.ontid,0);
         ontSdk.signTx(tx2, identity.ontid, password);
-        boolean b2 = ontSdk.getConnectMgr().sendRawTransaction(tx2.toHexString());
+        boolean b2 = ontSdk.getConnect().sendRawTransaction(tx2.toHexString());
         Assert.assertEquals(true,b);
 
         Thread.sleep(6000);
 
-        Transaction txres = ontSdk.getConnectMgr().getTransaction(tx2.hash().toHexString());
+        Transaction txres = ontSdk.getConnect().getTransaction(tx2.hash().toHexString());
         Assert.assertNotNull(txres);
-        Object obj = ontSdk.getConnectMgr().getTransactionJson(tx2.hash().toHexString());
+        Object obj = ontSdk.getConnect().getTransactionJson(tx2.hash().toHexString());
         Assert.assertNotNull(obj);
 
-        Object obj2 = ontSdk.getConnectMgr().getSmartCodeEvent(tx2.hash().toHexString());
+        Object obj2 = ontSdk.getConnect().getSmartCodeEvent(tx2.hash().toHexString());
         Assert.assertNotNull(obj2);
 
-        int blockheight = ontSdk.getConnectMgr().getBlockHeightByTxHash(tx2.hash().toHexString());
+        int blockheight = ontSdk.getConnect().getBlockHeightByTxHash(tx2.hash().toHexString());
         Assert.assertNotNull(blockheight);
 
-        Object contract = ontSdk.getConnectMgr().getContract(codeHex);
+        Object contract = ontSdk.getConnect().getContract(codeAddress);
         Assert.assertNotNull(contract);
 
 //        ontSdk.getConnectMgr().getStorage(codeAddress,)
@@ -105,70 +105,63 @@ public class ConnectMgrTest {
 
         byte[] parabytes = ontSdk.nativevm().ontId().buildParams(Address.decodeBase58(address).toArray());
         Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContract,"balanceOf", parabytes, VmType.Native.value(), null,0);
-        Object obj = ontSdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         Assert.assertNotEquals(null,obj);
     }
 
     @Test
     public void getGenerateBlockTime() throws ConnectorException, IOException {
-        int res = ontSdk.getConnectMgr().getGenerateBlockTime();
+        int res = ontSdk.getConnect().getGenerateBlockTime();
         Assert.assertNotEquals(0,res);
-    }
-
-    @Test
-    public void getNodeCount() throws ConnectorException, IOException {
-        int nodecount = ontSdk.getConnectMgr().getNodeCount();
-        Assert.assertTrue(nodecount >= 0);
     }
 
     @Test
     public void getBlockHeight() throws ConnectorException, IOException {
 
-        int res = ontSdk.getConnectMgr().getBlockHeight();
+        int res = ontSdk.getConnect().getBlockHeight();
         Assert.assertTrue(res > 0);
     }
 
     @Test
     public void getBlock() throws ConnectorException, IOException {
-        int blockHeight =  ontSdk.getConnectMgr().getBlockHeight();
-        Block b = ontSdk.getConnectMgr().getBlock(blockHeight);
+        int blockHeight =  ontSdk.getConnect().getBlockHeight();
+        Block b = ontSdk.getConnect().getBlock(blockHeight);
         Assert.assertNotNull(b);
 
     }
 
     @Test
     public void getBlockByBlockhash() throws ConnectorException, IOException {
-        int blockHeight =  ontSdk.getConnectMgr().getBlockHeight();
-        Block b2 = ontSdk.getConnectMgr().getBlock(blockHeight);
+        int blockHeight =  ontSdk.getConnect().getBlockHeight();
+        Block b2 = ontSdk.getConnect().getBlock(blockHeight);
         blockHash = b2.hash().toString();
-        Block b = ontSdk.getConnectMgr().getBlock(blockHash);
+        Block b = ontSdk.getConnect().getBlock(blockHash);
         Assert.assertNotNull(b);
     }
 
     @Test
     public void getBalance() throws ConnectorException, IOException {
-        System.out.println(address);
-        Object obj = ontSdk.getConnectMgr().getBalance(address);
+        Object obj = ontSdk.getConnect().getBalance(address);
         Assert.assertNotNull(obj);
     }
 
     @Test
     public void getBlockJson() throws ConnectorException, IOException {
-        int blockHeight =  ontSdk.getConnectMgr().getBlockHeight();
-        Object obj = ontSdk.getConnectMgr().getBlockJson(blockHeight);
+        int blockHeight =  ontSdk.getConnect().getBlockHeight();
+        Object obj = ontSdk.getConnect().getBlockJson(blockHeight);
         Assert.assertNotNull(obj);
     }
 
     @Test
     public void getContract() throws ConnectorException, IOException {
-        Object obj = ontSdk.getConnectMgr().getContract(codeAddress);
+        Object obj = ontSdk.getConnect().getContract("ff00000000000000000000000000000000000001");
         Assert.assertNotNull(obj);
     }
 
     @Test
     public void getContractJson() throws ConnectorException, IOException {
 
-        Object obj = ontSdk.getConnectMgr().getContractJson(codeAddress);
+        Object obj = ontSdk.getConnect().getContractJson("ff00000000000000000000000000000000000001");
         Assert.assertNotNull(obj);
     }
 }

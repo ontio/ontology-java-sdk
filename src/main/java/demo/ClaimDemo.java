@@ -41,8 +41,6 @@ public class ClaimDemo {
         try {
             OntSdk ontSdk = getOntSdk();
 
-            ontSdk.nativevm().ontId().setCodeAddress("80b0cc71bda8653599c5666cae084bff587e2de1");
-
             List<Identity> dids = ontSdk.getWalletMgr().getIdentitys();
             if (dids.size() < 2) {
                 Identity identity = ontSdk.getWalletMgr().createIdentity("passwordtest");

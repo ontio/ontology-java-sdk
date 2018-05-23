@@ -3,11 +3,11 @@
 
 # 智能合约基本说明
 
-* codeAddress是什么
+* contractAddress是什么
 
-codeAddress是智能合约的唯一标识。
+contractAddress是智能合约的唯一标识。
 
-* 如何获得codeAddress ？
+* 如何获得contractAddress ？
 
 ```
 InputStream is = new FileInputStream("IdContract.avm");

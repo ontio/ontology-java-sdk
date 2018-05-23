@@ -44,8 +44,8 @@ public class OntAssetSM2Demo {
             System.out.println("senderAd:" + sender.toBase58());
             System.out.println("recvAddr:" + recvAddr123.toBase58());
 
-            System.out.println("senderAd : ont :" + ontSdk.nativevm().ont().sendBalanceOf("ont",sender.toBase58()));
-            System.out.println("recvAddr : ont :" + ontSdk.nativevm().ont().sendBalanceOf("ont",recvAddr123.toBase58()));
+            System.out.println("senderAd : ont :" + ontSdk.nativevm().ont().queryBalanceOf("ont",sender.toBase58()));
+            System.out.println("recvAddr : ont :" + ontSdk.nativevm().ont().queryBalanceOf("ont",recvAddr123.toBase58()));
 
             int amount = 10;
 
@@ -69,8 +69,8 @@ public class OntAssetSM2Demo {
             System.out.println("recvAddr:" + recvAddr.toBase58());
 
 
-            System.out.println("senderAd : ont :" + ontSdk.nativevm().ont().sendBalanceOf("ont",multiAddr.toBase58()));
-            System.out.println("recvAddr : ont :" + ontSdk.nativevm().ont().sendBalanceOf("ont",recvAddr.toBase58()));
+            System.out.println("senderAd : ont :" + ontSdk.nativevm().ont().queryBalanceOf("ont",multiAddr.toBase58()));
+            System.out.println("recvAddr : ont :" + ontSdk.nativevm().ont().queryBalanceOf("ont",recvAddr.toBase58()));
 
             int amount = 1;
 
@@ -98,9 +98,9 @@ public class OntAssetSM2Demo {
             System.out.println("sender2:" + sender2.toBase58());
             System.out.println("recvAddr:" + recvAddr.toBase58());
 
-            System.out.println("sender1 : ont :" + ontSdk.nativevm().ont().sendBalanceOf("ont",sender1.toBase58()));
-            System.out.println("sender2 : ont :" + ontSdk.nativevm().ont().sendBalanceOf("ont",sender2.toBase58()));
-            System.out.println("recvAddr : ont :" + ontSdk.nativevm().ont().sendBalanceOf("ont",recvAddr.toBase58()));
+            System.out.println("sender1 : ont :" + ontSdk.nativevm().ont().queryBalanceOf("ont",sender1.toBase58()));
+            System.out.println("sender2 : ont :" + ontSdk.nativevm().ont().queryBalanceOf("ont",sender2.toBase58()));
+            System.out.println("recvAddr : ont :" + ontSdk.nativevm().ont().queryBalanceOf("ont",recvAddr.toBase58()));
 
             int amount = 10;
             int amount2 = 20;

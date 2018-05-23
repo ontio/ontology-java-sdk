@@ -61,7 +61,7 @@ public class NativeOntIdTx {
     }
 
 
-    public String getCodeAddress() {
+    public String getContractAddress() {
         return contractAddress;
     }
 

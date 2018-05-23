@@ -105,7 +105,7 @@ public class OntAssetTx {
      * @return
      * @throws Exception
      */
-    public long sendBalanceOf(String assetName, String address) throws Exception {
+    public long queryBalanceOf(String assetName, String address) throws Exception {
         String contractAddr;
         if (assetName.toUpperCase().equals("ONG")) {
             contractAddr = ongContract;
@@ -134,7 +134,7 @@ public class OntAssetTx {
      * @throws ConnectorException
      * @throws IOException
      */
-    public long sendAllowance(String assetName,String fromAddr,String toAddr) throws SDKException, ConnectorException, IOException {
+    public long queryAllowance(String assetName,String fromAddr,String toAddr) throws SDKException, ConnectorException, IOException {
         String contractAddr;
         if (assetName.toUpperCase().equals("ONG")) {
             contractAddr = ongContract;

@@ -61,7 +61,7 @@ public class ClaimRecordTxDemo {
 
             System.out.println("ClaimId:" + payload.getString("jti"));
 
-            ontSdk.neovm().claimRecord().setCodeAddress("806256c36653d4091a3511d308aac5c414b2a444");
+            ontSdk.neovm().claimRecord().setContractAddress("806256c36653d4091a3511d308aac5c414b2a444");
 
             String commitRes = ontSdk.neovm().claimRecord().sendCommit(dids.get(0).ontid,dids.get(1).ontid,password,payload.getString("jti"),0);
             System.out.println("commitRes:" + commitRes);

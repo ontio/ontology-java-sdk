@@ -36,7 +36,7 @@ import com.github.ontio.sdk.exception.SDKException;
  */
 public class Nep5Tx {
     private OntSdk sdk;
-    private String contractAddr = null;
+    private String contractAddress = null;
     private String nep5abi = "{\"hash\":\"0xd17d91a831c094c1fd8d8634b8cd6fa9fbaedc99\",\"entrypoint\":\"Main\"," +
             "\"functions\":[{\"name\":\"Name\",\"parameters\":[],\"returntype\":\"String\"}," +
             "{\"name\":\"Symbol\",\"parameters\":[],\"returntype\":\"String\"}," +
@@ -52,12 +52,12 @@ public class Nep5Tx {
         this.sdk = sdk;
     }
 
-    public void setCodeAddress(String codeHash) {
-        this.contractAddr = codeHash.replace("0x", "");
+    public void setContractAddress(String codeHash) {
+        this.contractAddress = codeHash.replace("0x", "");
     }
 
-    public String getCodeAddress() {
-        return contractAddr;
+    public String getContractAddress() {
+        return contractAddress;
     }
 
     public String sendInit(String payer,String password,long gas) throws Exception {
@@ -68,14 +68,14 @@ public class Nep5Tx {
         return sendInit(null,null,0,true);
     }
 
-    public String sendInit(String payer,String password,long gas,boolean preExec) throws Exception {
-        if (contractAddr == null) {
+    private String sendInit(String payer,String password,long gas,boolean preExec) throws Exception {
+        if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         AbiInfo abiinfo = JSON.parseObject(nep5abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("Init");
         func.name = "init";
-        return sdk.neovm().sendTransaction(contractAddr,payer,password,gas,func,preExec);
+        return sdk.neovm().sendTransaction(contractAddress,payer,password,gas,func,preExec);
     }
 
 
@@ -95,70 +95,70 @@ public class Nep5Tx {
         return sendTransfer(sendAddr, password, recvAddr, amount,gas, true);
     }
 
-    public String sendTransfer(String sendAddr, String password, String recvAddr, int amount, long gas,boolean preExec) throws Exception {
-        if (contractAddr == null) {
+    private String sendTransfer(String sendAddr, String password, String recvAddr, int amount, long gas,boolean preExec) throws Exception {
+        if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         AbiInfo abiinfo = JSON.parseObject(nep5abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("Transfer");
         func.name = "transfer";
         func.setParamsValue(Address.decodeBase58(sendAddr).toArray(), Address.decodeBase58(recvAddr).toArray(), amount);
-        return sdk.neovm().sendTransaction(contractAddr,sendAddr,password,gas,func, preExec);
+        return sdk.neovm().sendTransaction(contractAddress,sendAddr,password,gas,func, preExec);
     }
 
     public String queryBalanceOf(String addr) throws Exception {
-        if (contractAddr == null) {
+        if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         AbiInfo abiinfo = JSON.parseObject(nep5abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("BalanceOf");
         func.name = "balanceOf";
         func.setParamsValue(Address.decodeBase58(addr).toArray());
-        return sdk.neovm().sendTransaction(contractAddr,null,null,0,func, true);
+        return sdk.neovm().sendTransaction(contractAddress,null,null,0,func, true);
     }
 
     public String queryTotalSupply() throws Exception {
-        if (contractAddr == null) {
+        if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         AbiInfo abiinfo = JSON.parseObject(nep5abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("TotalSupply");
         func.name = "totalSupply";
         func.setParamsValue();
-        return sdk.neovm().sendTransaction(contractAddr,null,null,0,func, true);
+        return sdk.neovm().sendTransaction(contractAddress,null,null,0,func, true);
     }
 
     public String queryName() throws Exception {
-        if (contractAddr == null) {
+        if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         AbiInfo abiinfo = JSON.parseObject(nep5abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("Name");
         func.name = "name";
         func.setParamsValue();
-        return sdk.neovm().sendTransaction(contractAddr,null,null,0,func, true);
+        return sdk.neovm().sendTransaction(contractAddress,null,null,0,func, true);
     }
 
     public String queryDecimals() throws Exception {
-        if (contractAddr == null) {
+        if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         AbiInfo abiinfo = JSON.parseObject(nep5abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("Decimals");
         func.name = "decimals";
         func.setParamsValue();
-        return sdk.neovm().sendTransaction(contractAddr,null,null,0,func, true);
+        return sdk.neovm().sendTransaction(contractAddress,null,null,0,func, true);
     }
 
     public String querySymbol() throws Exception {
-        if (contractAddr == null) {
+        if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         AbiInfo abiinfo = JSON.parseObject(nep5abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("Symbol");
         func.name = "symbol";
         func.setParamsValue();
-        return sdk.neovm().sendTransaction(contractAddr,null,null,0,func, true);
+        return sdk.neovm().sendTransaction(contractAddress,null,null,0,func, true);
     }
 
 

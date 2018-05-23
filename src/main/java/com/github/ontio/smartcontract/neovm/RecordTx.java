@@ -36,24 +36,24 @@ import java.util.List;
 
 public class RecordTx {
     private OntSdk sdk;
-    private String codeAddress = null;
+    private String contractAddress = null;
 
 
     public RecordTx(OntSdk sdk) {
         this.sdk = sdk;
     }
 
-    public void setCodeAddress(String codeHash) {
-        this.codeAddress = codeHash.replace("0x", "");
+    public void setContractAddress(String codeHash) {
+        this.contractAddress = codeHash.replace("0x", "");
     }
 
-    public String getCodeAddress() {
-        return codeAddress;
+    public String getContractAddress() {
+        return contractAddress;
     }
 
 
     public String sendPut(String addr,String password,String key,String value,long gas) throws Exception {
-        if (codeAddress == null) {
+        if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         if (key == null || value == null || key == "" || value == ""){
@@ -78,7 +78,7 @@ public class RecordTx {
         return null;
     }
     public String sendGet(String addr,String password,String key) throws Exception {
-        if (codeAddress == null) {
+        if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         if (key == null || key == ""){
@@ -100,7 +100,7 @@ public class RecordTx {
 
     public Transaction makeInvokeTransaction(List<Object> list,String addr,long gas) throws Exception {
         byte[] params = BuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), addr,gas);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,null,params, VmType.NEOVM.value(), addr,gas);
         return tx;
     }
 

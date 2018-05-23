@@ -197,7 +197,6 @@ public class WebsocketDemo {
         wm.setRestful(restUrl);
         wm.setWesocket(wsUrl, lock);
         wm.setDefaultConnect(wm.getWebSocket());
-        wm.nativevm().ontId().setCodeAddress("80f6bff7645a84298a1a52aa3745f84dba6615cf");
         wm.openWalletFile("OntAssetDemo.json");
         return wm;
     }

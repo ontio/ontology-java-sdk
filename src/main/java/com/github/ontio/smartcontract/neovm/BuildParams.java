@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
+ *
+ *  The ontology is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The ontology is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package com.github.ontio.smartcontract.neovm;
 
 import com.alibaba.fastjson.JSON;
@@ -21,70 +40,6 @@ import java.util.List;
  * @date 2018/5/23
  */
 public class BuildParams {
-
-
-//    /**
-//     * @param abiFunction
-//     * @param vmtype
-//     * @return
-//     * @throws Exception
-//     */
-//    public String sendInvokeSmartCodeWithNoSign(AbiFunction abiFunction, byte vmtype,long gas) throws Exception {
-//        Transaction tx = invokeTransaction(null, null, abiFunction, vmtype,gas);
-//        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
-//        if (!b) {
-//            throw new SDKException(ErrorCode.SendRawTxError);
-//        }
-//        return tx.hash().toString();
-//    }
-
-//    public String sendInvokeSmartCodeWithNoSignPreExec(AbiFunction abiFunction, byte vmtype) throws Exception {
-//        Transaction tx = makeInvokecodeTransaction(null, null, abiFunction, vmtype,0);
-//        Object obj = (String)sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-//        return ((JSONObject)obj).getString("Result");
-//    }
-//    /**
-//     *
-//     * @param ontid
-//     * @param password
-//     * @param abiFunction
-//     * @param vmtype
-//     * @return
-//     * @throws Exception
-//     */
-//    public String sendInvokeSmartCodeWithSign(String ontid, String password, AbiFunction abiFunction, byte vmtype,long gas) throws Exception {
-//        Transaction tx = makeInvokecodeTransaction( ontid, password, abiFunction, vmtype,gas);
-//        sdk.signTx(tx,ontid,password);
-//        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
-//        if (!b) {
-//            throw new SDKException(ErrorCode.SendRawTxError);
-//        }
-//        return tx.hash().toString();
-//    }
-//
-//    public String sendInvokeSmartCodeWithSignPreExec(String ontid, String password, AbiFunction abiFunction, byte vmtype) throws Exception {
-//        Transaction tx = makeInvokecodeTransaction( ontid, password, abiFunction, vmtype,0);
-//        sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(ontid, password)}});
-//        Object obj = (String)sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-//        return ((JSONObject)obj).getString("Result");
-//    }
-//    /**
-//     * @param ontid
-//     * @param password
-//     * @param abiFunction
-//     * @param vmtype
-//     * @return
-//     * @throws Exception
-//     */
-//    public Object sendInvokeTransactionPreExec(String ontid, String password, AbiFunction abiFunction, byte vmtype,long gas) throws Exception {
-//        Transaction tx = makeInvokecodeTransaction( ontid, password, abiFunction, vmtype,gas);
-//        return sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-//    }
-//    public Transaction invokeTransactionNoSign(AbiFunction abiFunction, byte vmtype,long gas) throws Exception {
-//        byte[] params = buildParams("",null,null,abiFunction,vmtype,gas);
-//        Transaction tx = makeInvokeCodeTransaction(contractAddress,null,params, vmtype, ontid,gas);
-//        return makeInvokecodeTransaction(null,null,abiFunction,vmtype,gas);
-//    }
 
     public static byte[] Int2Bytes_LittleEndian(int iValue){
         byte[] rst = new byte[4];

@@ -98,7 +98,7 @@ public class Nep5Demo {
         wm.setRpc(rpcUrl);
         wm.setRestful(restUrl);
         wm.setDefaultConnect(wm.getRestful());
-        wm.neovm().nep5().setCodeAddress("809071dac173b27f467d0e062bfdb24ff43ac74d");
+        wm.neovm().nep5().setContractAddress("809071dac173b27f467d0e062bfdb24ff43ac74d");
         wm.openWalletFile("nep5.json");
 
 

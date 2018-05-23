@@ -50,7 +50,7 @@ public class RecordTxDemo {
 
         wm.openWalletFile("RecordTxDemo.json");
 
-        wm.neovm().record().setCodeAddress("80f6bff7645a84298a1a52aa3745f84dba6615cf");
+        wm.neovm().record().setContractAddress("80f6bff7645a84298a1a52aa3745f84dba6615cf");
         return wm;
     }
 }

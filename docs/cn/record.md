@@ -1,7 +1,7 @@
 <h1 align="center"> Ontology Java SDK User Guide </h1>
 <p align="center" class="version">Version 0.7.0 </p>
 
-# 数字存证
+# 数字身份Claim存证
 
 ## 操作步骤
 

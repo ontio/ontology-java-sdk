@@ -16,6 +16,7 @@ ontSdk.openWalletFile("OntAssetDemo.json");
 ```
 > Note: setRestful表示采用restful接口建立连接，setRpc表示采用rpc接口建立连接,setDefaultConnect表示设置默认的链接方式。
 
+
 ## 基本操作接口
 
 

@@ -21,49 +21,7 @@ wm.openWalletFile("Demo3.json");
 
 
 ## 数字身份账户管理
-接口列表：
-```
-ontid功能接口：
-
-      |                                         Main   Function                                                         |           Description            
- -----|-------------------------------------------------------------------------------------------------------------|---------------------------------------------
-    1 | String getCodeAddress()                                                                                     |  查询合约地址
-    2 | Identity sendRegister(Identity ident, String password,String payer,String payerpassword,long gas)           |  注册ontid
-    3 | Identity sendRegisterPreExec(Identity ident, String password,String payerpassword,String payer, long gas)   |  预执行注册ontid                              
-    4 | Identity sendRegisterWithAttrs(Identity ident,String pwd,Map attrsMap,String payer,String payerpwd,long gas)|  注册ontid并添加属性
-    5 | String sendAddPubKey(String ontid, String password, String newpubkey,String payer,String payerpwd,long gas) |  添加公钥    
-    6 | String sendGetPublicKeys(String ontid)                                                                      |  获取公钥
-    7 | String sendRemovePubKey(String ontid, String pwd, String removePubkey,String payer,String payerpwd,long gas)|  删除公钥
-    8 | String sendGetKeyState(String ontid,int index)                                                              |  获取某公钥状态
-    9 | String sendAddAttributes(String ontid, String pswd, Map attrsMap,String payer,String payerpassword,long gas)|  添加属性
-   10 | String sendGetAttributes(String ontid)                                                                      |  查询属性
-   11 | String sendRemoveAttribute(String ontid,String password,String path,String payer,String payerpwd,long gas)  |  删除属性
-   12 | String sendAddRecovery(String ontid, String pwd, String recovery,String payer,String payerpwd,long gas)     |  添加恢复人
-   13 | String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery, String password,long gas)   |  修改恢复人
-   14 | String sendGetDDO(String ontid)                                                                             |  查询DDO  
    
-
-Cliam相关接口：
-
-     |                                           Claim Function                                                                      |     Description            
- ----|-------------------------------------------------------------------------------------------------------------------------------|------------------------
-   1 | boolean verifyMerkleProof(String claim)                                                                                       |    验证merkle证明                
-   2 | String createOntIdClaim(String signerOntid, String pwd, String context, Map claimMap, Map metaData,Map clmRevMap,long expire) |   创建claim
-   3 | boolean verifyOntIdClaim(String claim)                                                                                        |   验证claim
-
-
-
-构造交易接口：
-   
-     |                                           Make Transaction  Function                                                |     Description            
- ----|---------------------------------------------------------------------------------------------------------------------|------------------------ 
-   1 | Transaction makeRegister(String ontid,String password,String payer,long gas)                                        |   构造注册交易
-   2 | Transaction makeRegisterWithAttrs(String ontid,String password,Map<String, Object> attrsMap,String payer,long gas)  |   构造注册ontid并添加属性交易
-   3 | Transaction makeAddPubKey(String ontid,String password,String newpubkey,String payer,long gas)                      |   构造添加公钥交易
-   4 | Transaction makeRemovePubKey(String ontid, String password, String removePubkey,String payer,long gas)              |   构造删除公钥交易
-   5 | Transaction makeAddAttributes(String ontid, String password, Map<String, Object> attrsMap,String payer,long gas)    |   构造添加属性交易
-   6 | Transaction makeRemoveAttribute(String ontid,String password,String path,String payer,long gas)                     |   构造删除属性交易
-   7 | Transaction makeAddRecovery(String ontid, String password, String recovery,String payer,long gas)                   |   构造添加恢复人交易
 ```
 * 1 数据结构说明
 

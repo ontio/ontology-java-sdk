@@ -343,6 +343,15 @@ public class WalletMgr {
         return null;
     }
 
+    public Account getDefaultAccount() {
+        for (Account e : wallet.getAccounts()) {
+            if (e.isDefault) {
+                return e;
+            }
+        }
+        return null;
+    }
+
     public Account getAccount(String address) {
         for (Account e : wallet.getAccounts()) {
             if (e.address.equals(address)) {

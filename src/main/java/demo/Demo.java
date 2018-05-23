@@ -40,12 +40,12 @@ public class Demo {
 //            System.out.println(ontSdk.getConnect().getBalance("TA5NzM9iE3VT9X8SGk5h3dii6GPFQh2vme"));
 //            System.out.println(Helper.toHexString(ontSdk.getConnect().getBlock(1).transactions[0].sigs[0].sigData[0]));
             System.out.println(ontSdk.getConnect().getBlock(15));
-//            System.out.println(ontSdk.getConnect().getGenerateBlockTime());
-//            System.out.println(ontSdk.getConnect().getBlockHeight());
-//            System.out.println(ontSdk.getConnect().getBlockJson(15));
-//            System.out.println(ontSdk.getConnect().getBlockJson("ee2d842fe7cdf48bc39b34d616a9e8f7f046970ed0a988dde3fe05c9126cce74"));
-//            System.out.println(ontSdk.getConnect().getGenerateBlockTime());
-//            System.out.println(ontSdk.getConnect().getNodeCount());
+            System.out.println(ontSdk.getConnect().getGenerateBlockTime());
+            System.out.println(ontSdk.getConnect().getBlockHeight());
+            System.out.println(ontSdk.getConnect().getBlockJson(15));
+            System.out.println(ontSdk.getConnect().getBlockJson("ee2d842fe7cdf48bc39b34d616a9e8f7f046970ed0a988dde3fe05c9126cce74"));
+            System.out.println(ontSdk.getConnect().getGenerateBlockTime());
+            System.out.println(ontSdk.getConnect().getNodeCount());
 //            System.out.println(((InvokeCodeTransaction)ontSdk.getConnect().getRawTransaction("c2592940837c2347f6a7b391d4940abb7171dd5dd156b7c031d20a5940142b5a")));
 //            System.out.println((ontSdk.getConnect().getTransaction("d441a967315989116bf0afad498e4016f542c1e7f8605da943f07633996c24cc")));
 //            System.out.println(ontSdk.getConnect().getSmartCodeEvent(59));

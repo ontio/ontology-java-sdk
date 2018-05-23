@@ -34,26 +34,26 @@ import java.util.List;
 
 public class ClaimRecordTx {
     private OntSdk sdk;
-    private String codeAddress = null;
+    private String contractAddress = null;
 
 
     public ClaimRecordTx(OntSdk sdk) {
         this.sdk = sdk;
     }
 
-    public void setCodeAddress(String codeHash) {
-        this.codeAddress = codeHash.replace("0x", "");
+    public void setContractAddress(String codeHash) {
+        this.contractAddress = codeHash.replace("0x", "");
     }
 
-    public String getCodeAddress() {
-        return codeAddress;
+    public String getContractAddress() {
+        return contractAddress;
     }
 
     public String sendCommit(String issuerOntid,String password,String subjectOntid,String claimId,long gas) throws Exception {
         if(gas < 0){
             throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
         }
-        if (codeAddress == null) {
+        if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         if (claimId == null || claimId == ""){
@@ -80,7 +80,7 @@ public class ClaimRecordTx {
         if(gas < 0){
             throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
         }
-        if (codeAddress == null) {
+        if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         if (claimId == null || claimId == ""){
@@ -104,7 +104,7 @@ public class ClaimRecordTx {
         return null;
     }
     public String sendGetStatus(String ontid,String password,String claimId) throws Exception {
-        if (codeAddress == null) {
+        if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         if (claimId == null || claimId == ""){
@@ -127,7 +127,7 @@ public class ClaimRecordTx {
     }
     public Transaction makeInvokeTransaction(List<Object> list,String addr,long gas) throws Exception {
         byte[] params = BuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), addr,gas);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,null,params, VmType.NEOVM.value(), addr,gas);
         return tx;
     }
 }

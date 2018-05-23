@@ -75,12 +75,28 @@ public class NativeOntIdTx {
      * @param payer
      * @param payerpassword
      * @param gas
-     * @param preExec
      * @return
      * @throws Exception
      */
+    public Identity sendRegister(Identity ident, String password,String payer,String payerpassword,long gas) throws Exception {
+        return sendRegister(ident, password, payer,payerpassword, gas, false);
+    }
 
-    public Identity sendRegister(Identity ident, String password, String payer,String payerpassword,long gas,boolean preExec) throws Exception {
+    /**
+     *
+     * @param ident
+     * @param password
+     * @param payerpassword
+     * @param payer
+     * @param gas
+     * @return
+     * @throws Exception
+     */
+    public Identity sendRegisterPreExec(Identity ident, String password,String payerpassword,String payer, long gas) throws Exception {
+        return sendRegister(ident, password, payer,payerpassword, gas, true);
+    }
+
+    private Identity sendRegister(Identity ident, String password, String payer,String payerpassword,long gas,boolean preExec) throws Exception {
         if(gas < 0){
             throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
         }
@@ -95,13 +111,16 @@ public class NativeOntIdTx {
         sdk.getWalletMgr().writeWallet();
         boolean b = false;
         if(preExec){
-            String result = (String) sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
-            b = Integer.parseInt(result) > 0 ? true : false;
-            if (!b) {
+            Object obj = (String) sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+            String result = ((JSONObject) obj).getString("Result");
+            if (Integer.parseInt(result) == 0) {
                 throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
             }
         }else{
             b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+            if (!b) {
+                throw new SDKException(ErrorCode.SendRawTxError);
+            }
         }
         return identity;
     }
@@ -123,13 +142,6 @@ public class NativeOntIdTx {
         return tx;
     }
 
-    public Identity sendRegister(Identity ident, String password,String payer,String payerpassword,long gas) throws Exception {
-        return sendRegister(ident, password, payer,payerpassword, gas, false);
-    }
-
-    public Identity sendRegisterPreExec(Identity ident, String password,String payerpassword,String payer, long gas) throws Exception {
-        return sendRegister(ident, password, payer,payerpassword, gas, true);
-    }
 
 
     /**
@@ -144,7 +156,7 @@ public class NativeOntIdTx {
      * @throws Exception
      */
 
-    public Identity sendRegister(Identity ident, String password,Map<String, Object> attrsMap,String payer,String payerpassword,long gas) throws Exception {
+    public Identity sendRegisterWithAttrs(Identity ident, String password,Map<String, Object> attrsMap,String payer,String payerpassword,long gas) throws Exception {
         if(gas < 0){
             throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
         }
@@ -153,7 +165,7 @@ public class NativeOntIdTx {
         }
         IdentityInfo info = sdk.getWalletMgr().getIdentityInfo(ident.ontid, password);
         String ontid = info.ontid;
-        Transaction tx = makeRegister(ontid,password,attrsMap,payer,gas);
+        Transaction tx = makeRegisterWithAttrs(ontid,password,attrsMap,payer,gas);
         sdk.signTx(tx, ontid, password);
         sdk.addSign(tx,payer,payerpassword);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.ontid);
@@ -173,7 +185,7 @@ public class NativeOntIdTx {
      * @return
      * @throws Exception
      */
-    public Transaction makeRegister(String ontid,String password,Map<String, Object> attrsMap,String payer,long gas) throws Exception {
+    public Transaction makeRegisterWithAttrs(String ontid,String password,Map<String, Object> attrsMap,String payer,long gas) throws Exception {
         if(gas < 0){
             throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
         }
@@ -189,34 +201,34 @@ public class NativeOntIdTx {
 
     private byte[] serializeAttributes(Map<String, Object> attrsMap) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        BinaryWriter binaryWriter = new BinaryWriter(byteArrayOutputStream);
+        BinaryWriter writer = new BinaryWriter(byteArrayOutputStream);
 
         for (Map.Entry<String, Object> e : attrsMap.entrySet()) {
             Object val = e.getValue();
             if (val instanceof BigInteger) {
-                binaryWriter.writeVarBytes(e.getKey().getBytes());
-                binaryWriter.writeVarBytes("Integer".getBytes());
-                binaryWriter.writeVarBytes(String.valueOf((int) val).getBytes());
+                writer.writeVarBytes(e.getKey().getBytes());
+                writer.writeVarBytes("Integer".getBytes());
+                writer.writeVarBytes(String.valueOf((int) val).getBytes());
             } else if (val instanceof byte[]) {
-                binaryWriter.writeVarBytes(e.getKey().getBytes());
-                binaryWriter.writeVarBytes("ByteArray".getBytes());
-                binaryWriter.writeVarBytes(new String((byte[]) val).getBytes());
+                writer.writeVarBytes(e.getKey().getBytes());
+                writer.writeVarBytes("ByteArray".getBytes());
+                writer.writeVarBytes(new String((byte[]) val).getBytes());
             } else if (val instanceof Boolean) {
-                binaryWriter.writeVarBytes(e.getKey().getBytes());
-                binaryWriter.writeVarBytes("Boolean".getBytes());
-                binaryWriter.writeVarBytes(String.valueOf((boolean) val).getBytes());
+                writer.writeVarBytes(e.getKey().getBytes());
+                writer.writeVarBytes("Boolean".getBytes());
+                writer.writeVarBytes(String.valueOf((boolean) val).getBytes());
             } else if (val instanceof Integer) {
-                binaryWriter.writeVarBytes(e.getKey().getBytes());
-                binaryWriter.writeVarBytes("Integer".getBytes());
-                binaryWriter.writeVarBytes(String.valueOf((int) val).getBytes());
+                writer.writeVarBytes(e.getKey().getBytes());
+                writer.writeVarBytes("Integer".getBytes());
+                writer.writeVarBytes(String.valueOf((int) val).getBytes());
             } else if (val instanceof String) {
-                binaryWriter.writeVarBytes(e.getKey().getBytes());
-                binaryWriter.writeVarBytes("String".getBytes());
-                binaryWriter.writeVarBytes(((String) val).getBytes());
+                writer.writeVarBytes(e.getKey().getBytes());
+                writer.writeVarBytes("String".getBytes());
+                writer.writeVarBytes(((String) val).getBytes());
             } else {
-                binaryWriter.writeVarBytes(e.getKey().getBytes());
-                binaryWriter.writeVarBytes("Object".getBytes());
-                binaryWriter.writeVarBytes(JSON.toJSONString(val).getBytes());
+                writer.writeVarBytes(e.getKey().getBytes());
+                writer.writeVarBytes("Object".getBytes());
+                writer.writeVarBytes(JSON.toJSONString(val).getBytes());
             }
         }
         return byteArrayOutputStream.toByteArray();

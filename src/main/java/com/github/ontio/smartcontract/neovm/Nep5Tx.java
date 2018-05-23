@@ -20,10 +20,12 @@
 package com.github.ontio.smartcontract.neovm;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.core.VmType;
+import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.abi.AbiFunction;
 import com.github.ontio.sdk.abi.AbiInfo;
 import com.github.ontio.sdk.exception.SDKException;
@@ -73,15 +75,7 @@ public class Nep5Tx {
         AbiInfo abiinfo = JSON.parseObject(nep5abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("Init");
         func.name = "init";
-        if (preExec) {
-            String result = (String) sdk.vm().sendInvokeSmartCodeWithNoSignPreExec(func, VmType.NEOVM.value());
-            if (Integer.parseInt(result) > 0) {
-                throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
-            }
-            return result;
-        } else {
-            return sdk.vm().sendInvokeSmartCodeWithSign(payer,password,func, VmType.NEOVM.value(),gas);
-        }
+        return sdk.neovm().sendTransaction(contractAddr,payer,password,gas,func,preExec);
     }
 
 
@@ -109,19 +103,10 @@ public class Nep5Tx {
         AbiFunction func = abiinfo.getFunction("Transfer");
         func.name = "transfer";
         func.setParamsValue(Address.decodeBase58(sendAddr).toArray(), Address.decodeBase58(recvAddr).toArray(), amount);
-
-        if (preExec) {
-            String result = (String) sdk.vm().sendInvokeSmartCodeWithSignPreExec(sendAddr, password, func, VmType.NEOVM.value());
-            if (Integer.parseInt(result) > 0) {
-                throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
-            }
-            return result;
-        } else {
-            return sdk.vm().sendInvokeSmartCodeWithSign(sendAddr, password, func, VmType.NEOVM.value(),gas);
-        }
+        return sdk.neovm().sendTransaction(contractAddr,sendAddr,password,gas,func, preExec);
     }
 
-    public String sendBalanceOf(String addr) throws Exception {
+    public String queryBalanceOf(String addr) throws Exception {
         if (contractAddr == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -129,11 +114,10 @@ public class Nep5Tx {
         AbiFunction func = abiinfo.getFunction("BalanceOf");
         func.name = "balanceOf";
         func.setParamsValue(Address.decodeBase58(addr).toArray());
-        String result = (String) sdk.vm().sendInvokeSmartCodeWithNoSignPreExec(func, VmType.NEOVM.value());
-        return result;
+        return sdk.neovm().sendTransaction(contractAddr,null,null,0,func, true);
     }
 
-    public String sendTotalSupply() throws Exception {
+    public String queryTotalSupply() throws Exception {
         if (contractAddr == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -141,11 +125,10 @@ public class Nep5Tx {
         AbiFunction func = abiinfo.getFunction("TotalSupply");
         func.name = "totalSupply";
         func.setParamsValue();
-        String result = (String) sdk.vm().sendInvokeSmartCodeWithNoSignPreExec(func, VmType.NEOVM.value());
-        return result;
+        return sdk.neovm().sendTransaction(contractAddr,null,null,0,func, true);
     }
 
-    public String sendName() throws Exception {
+    public String queryName() throws Exception {
         if (contractAddr == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -153,11 +136,10 @@ public class Nep5Tx {
         AbiFunction func = abiinfo.getFunction("Name");
         func.name = "name";
         func.setParamsValue();
-        String result = (String) sdk.vm().sendInvokeSmartCodeWithNoSignPreExec(func, VmType.NEOVM.value());
-        return result;
+        return sdk.neovm().sendTransaction(contractAddr,null,null,0,func, true);
     }
 
-    public String sendDecimals() throws Exception {
+    public String queryDecimals() throws Exception {
         if (contractAddr == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -165,11 +147,10 @@ public class Nep5Tx {
         AbiFunction func = abiinfo.getFunction("Decimals");
         func.name = "decimals";
         func.setParamsValue();
-        String result = (String) sdk.vm().sendInvokeSmartCodeWithNoSignPreExec(func, VmType.NEOVM.value());
-        return result;
+        return sdk.neovm().sendTransaction(contractAddr,null,null,0,func, true);
     }
 
-    public String sendSymbol() throws Exception {
+    public String querySymbol() throws Exception {
         if (contractAddr == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -177,8 +158,8 @@ public class Nep5Tx {
         AbiFunction func = abiinfo.getFunction("Symbol");
         func.name = "symbol";
         func.setParamsValue();
-        String result = (String) sdk.vm().sendInvokeSmartCodeWithNoSignPreExec(func, VmType.NEOVM.value());
-        return result;
+        return sdk.neovm().sendTransaction(contractAddr,null,null,0,func, true);
     }
+
 
 }

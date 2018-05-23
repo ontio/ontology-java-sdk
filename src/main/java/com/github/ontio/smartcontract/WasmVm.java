@@ -19,6 +19,7 @@
 
 package com.github.ontio.smartcontract;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.common.ErrorCode;
@@ -26,57 +27,31 @@ import com.github.ontio.core.VmType;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.abi.AbiFunction;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.smartcontract.nativevm.OntAssetTx;
 import com.github.ontio.smartcontract.neovm.BuildParams;
 import com.github.ontio.smartcontract.neovm.ClaimRecordTx;
 import com.github.ontio.smartcontract.neovm.Nep5Tx;
 import com.github.ontio.smartcontract.neovm.RecordTx;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @Description:
  * @date 2018/5/17
  */
-public class NeoVm {
-    private Nep5Tx nep5Tx = null;
-    private RecordTx recordTx = null;
-    private ClaimRecordTx claimRecordTx = null;
+public class WasmVm {
 
     private OntSdk sdk;
-    public NeoVm(OntSdk sdk){
+    public WasmVm(OntSdk sdk){
         this.sdk = sdk;
     }
-    /**
-     *  get OntAsset Tx
-     * @return instance
-     */
-    public Nep5Tx nep5() {
-        if(nep5Tx == null){
-            nep5Tx = new Nep5Tx(sdk);
-        }
-        return nep5Tx;
-    }
 
-    /**
-     * RecordTx
-     * @return instance
-     */
-    public RecordTx record() {
-        if(recordTx == null){
-            recordTx = new RecordTx(sdk);
-        }
-        return recordTx;
-    }
-
-    public ClaimRecordTx claimRecord(){
-        if (claimRecordTx == null){
-            claimRecordTx = new ClaimRecordTx(sdk);
-        }
-        return claimRecordTx;
-    }
     public String sendTransaction(String contractAddr,String payer, String password, long gas, AbiFunction func, boolean preExec) throws Exception {
         byte[] params = BuildParams.serializeAbiFunction(func);
         if (preExec) {
-            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, VmType.NEOVM.value(), null, 0);
+            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, VmType.WASMVM.value(), null, 0);
             Object obj = (String) sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
             String result = ((JSONObject) obj).getString("Result");
             if (Integer.parseInt(result) == 0) {
@@ -84,7 +59,7 @@ public class NeoVm {
             }
             return result;
         } else {
-            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, VmType.NEOVM.value(), payer, gas);
+            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, VmType.WASMVM.value(), payer, gas);
             sdk.signTx(tx, payer, password);
             boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
             if (!b) {
@@ -92,5 +67,42 @@ public class NeoVm {
             }
             return tx.hash().toHexStringReverse();
         }
+    }
+    public String buildWasmContractJsonParam(Object[] objs) {
+        List params = new ArrayList();
+        for (int i = 0; i < objs.length; i++) {
+            Object val = objs[i];
+            if (val instanceof String) {
+                Map map = new HashMap();
+                map.put("type","string");
+                map.put("value",val);
+                params.add(map);
+            } else if (val instanceof Integer) {
+                Map map = new HashMap();
+                map.put("type","int");
+                map.put("value",String.valueOf(val));
+                params.add(map);
+            } else if (val instanceof Long) {
+                Map map = new HashMap();
+                map.put("type","int64");
+                map.put("value",String.valueOf(val));
+                params.add(map);
+            } else if (val instanceof int[]) {
+                Map map = new HashMap();
+                map.put("type","int_array");
+                map.put("value",val);
+                params.add(map);
+            } else if (val instanceof long[]) {
+                Map map = new HashMap();
+                map.put("type","int_array");
+                map.put("value",val);
+                params.add(map);
+            } else {
+                continue;
+            }
+        }
+        Map result = new HashMap();
+        result.put("Params",params);
+        return JSON.toJSONString(result);
     }
 }

@@ -31,6 +31,7 @@ import com.github.ontio.sdk.manager.*;
 import com.github.ontio.smartcontract.NativeVm;
 import com.github.ontio.smartcontract.NeoVm;
 import com.github.ontio.smartcontract.Vm;
+import com.github.ontio.smartcontract.WasmVm;
 
 /**
  * Ont Sdk
@@ -42,9 +43,10 @@ public class OntSdk {
     private ConnectMgr connWebSocket;
     private ConnectMgr connDefault;
 
-    private Vm smartcodeTx = null;
+    private Vm vm = null;
     private NativeVm nativevm = null;
     private NeoVm neovm = null;
+    private WasmVm wasmvm = null;
 
 
     private static OntSdk instance = null;
@@ -73,15 +75,19 @@ public class OntSdk {
         }
         return neovm;
     }
-    /**
-     *  Smartcode Tx
-     * @return instance
-     */
-    public Vm vm() {
-        if(smartcodeTx == null){
-            smartcodeTx = new Vm(getInstance());
+    public WasmVm wasmvm() {
+        if(wasmvm == null){
+            vm();
+            wasmvm = new WasmVm(getInstance());
         }
-        return smartcodeTx;
+        return wasmvm;
+    }
+
+    public Vm vm() {
+        if(vm == null){
+            vm = new Vm(getInstance());
+        }
+        return vm;
     }
     public ConnectMgr getRpc() throws SDKException{
         if(connRpc == null){

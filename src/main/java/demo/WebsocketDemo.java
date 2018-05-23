@@ -108,18 +108,6 @@ public class WebsocketDemo {
                     ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
                 }
 
-                if (false) {
-                    String attri = "attri";
-                    Map recordMap = new HashMap();
-                    recordMap.put("key0", "world0");
-                    recordMap.put("key1", i);
-                    recordMap.put("keyNum", 1234589);
-                    recordMap.put("key2", false);
-                    ontSdk.neovm().ontId().setCodeAddress("80e7d2fc22c24c466f44c7688569cc6e6d6c6f92");
-//                    Transaction tx = ontSdk.neovm().ontId().makeUpdateAttribute(ontid, "passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes(),0);
-//                    ontSdk.signTx(tx, ontid, password);
-//                    ontSdk.getWebSocket().sendRawTransaction(tx.toHexString());
-                }
 
                 //waitResult(ontSdk, lock);
 
@@ -135,7 +123,7 @@ public class WebsocketDemo {
                     ontSdk.getConnectMgr().getTransactionJson("7c3e38afb62db28c7360af7ef3c1baa66aeec27d7d2f60cd22c13ca85b2fd4f3");
                 }
                 if (false) {
-                    ontSdk.neovm().ontId().setCodeAddress("80f6bff7645a84298a1a52aa3745f84dba6615cf");
+
                     InputStream is = new FileInputStream("C:\\ZX\\huguanjun.abi.json");//IdContract
                     byte[] bys = new byte[is.available()];
                     is.read(bys);
@@ -149,9 +137,6 @@ public class WebsocketDemo {
                     AbiFunction func0 = abiinfo.getFunction("Put");
                     Identity did0 = ontSdk.getWalletMgr().getIdentitys().get(0);
                     func0.setParamsValue("key".getBytes(), "value".getBytes());
-                    String hash0 = ontSdk.vm().sendInvokeSmartCodeWithSign(did0.ontid, "passwordtest", func0, (byte) VmType.NEOVM.value(),0);
-
-                    System.out.println(hash0);
                 }
                 if(true){
                     Map map = new HashMap();

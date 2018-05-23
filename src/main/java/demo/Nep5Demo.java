@@ -63,18 +63,18 @@ public class Nep5Demo {
 
             System.exit(0);
 
-            String balance = ontSdk.neovm().nep5().sendBalanceOf(acct.address);
+            String balance = ontSdk.neovm().nep5().queryBalanceOf(acct.address);
             System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(balance))).longValue());
 
-            String totalSupply = ontSdk.neovm().nep5().sendTotalSupply();
+            String totalSupply = ontSdk.neovm().nep5().queryTotalSupply();
             System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(totalSupply))).longValue());
 
-            String decimals = ontSdk.neovm().nep5().sendDecimals();
+            String decimals = ontSdk.neovm().nep5().queryDecimals();
             System.out.println(decimals);
 
-            String name = ontSdk.neovm().nep5().sendName();
+            String name = ontSdk.neovm().nep5().queryName();
             System.out.println(new String(Helper.hexToBytes(name)));
-            String symbol = ontSdk.neovm().nep5().sendSymbol();
+            String symbol = ontSdk.neovm().nep5().querySymbol();
             System.out.println(new String(Helper.hexToBytes(symbol)));
 
             System.out.println(Address.decodeBase58(acct.address).toHexString());

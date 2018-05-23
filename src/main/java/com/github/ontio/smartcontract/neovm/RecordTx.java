@@ -99,7 +99,7 @@ public class RecordTx {
     }
 
     public Transaction makeInvokeTransaction(List<Object> list,String addr,long gas) throws Exception {
-        byte[] params = sdk.vm().createCodeParamsScript(list);
+        byte[] params = BuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), addr,gas);
         return tx;
     }

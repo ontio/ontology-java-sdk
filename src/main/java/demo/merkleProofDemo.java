@@ -45,7 +45,7 @@ public class merkleProofDemo {
             String txhash = "76763a5f9fc6b68d54463933e51c4b4dbce6732146294525c09b167637f2facf";
             Object proof = ontSdk.nativevm().ontId().getMerkleProof(txhash);
             System.out.println(proof);
-            System.out.println(ontSdk.getConnectMgr().getMerkleProof(txhash));
+            System.out.println(ontSdk.getConnect().getMerkleProof(txhash));
             System.out.println(ontSdk.nativevm().ontId().verifyMerkleProof(JSON.toJSONString(proof)));
             System.exit(0);
         } catch (Exception e) {

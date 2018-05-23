@@ -83,12 +83,12 @@ public class DeployCodeDemo {
             ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
             String txHex = Helper.toHexString(tx.toArray());
             System.out.println(txHex);
-            ontSdk.getConnectMgr().sendRawTransaction(txHex);
+            ontSdk.getConnect().sendRawTransaction(txHex);
 
             System.out.println("txhash:" + tx.hash().toString());
             Thread.sleep(6000);
             String txhash = tx.hash().toHexStringReverse();
-            DeployCode t = (DeployCode) ontSdk.getConnectMgr().getTransaction(txhash);
+            DeployCode t = (DeployCode) ontSdk.getConnect().getTransaction(txhash);
             System.out.println(t.txType.value() & 0xff);
         } catch (Exception e) {
             e.printStackTrace();

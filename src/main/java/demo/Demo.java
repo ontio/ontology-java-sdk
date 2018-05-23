@@ -37,31 +37,31 @@ public class Demo {
     public static void main(String[] args) {
         try {
             OntSdk ontSdk = getOntSdk();
-//            System.out.println(ontSdk.getConnectMgr().getBalance("TA5NzM9iE3VT9X8SGk5h3dii6GPFQh2vme"));
-//            System.out.println(Helper.toHexString(ontSdk.getConnectMgr().getBlock(1).transactions[0].sigs[0].sigData[0]));
-//            System.out.println(ontSdk.getConnectMgr().getBlock(15));
-//            System.out.println(ontSdk.getConnectMgr().getGenerateBlockTime());
-//            System.out.println(ontSdk.getConnectMgr().getBlockHeight());
-//            System.out.println(ontSdk.getConnectMgr().getBlockJson(15));
-//            System.out.println(ontSdk.getConnectMgr().getBlockJson("ee2d842fe7cdf48bc39b34d616a9e8f7f046970ed0a988dde3fe05c9126cce74"));
-//            System.out.println(ontSdk.getConnectMgr().getGenerateBlockTime());
-//            System.out.println(ontSdk.getConnectMgr().getNodeCount());
-//            System.out.println(((InvokeCodeTransaction)ontSdk.getConnectMgr().getRawTransaction("c2592940837c2347f6a7b391d4940abb7171dd5dd156b7c031d20a5940142b5a")));
-//            System.out.println((ontSdk.getConnectMgr().getTransaction("d441a967315989116bf0afad498e4016f542c1e7f8605da943f07633996c24cc")));
-//            System.out.println(ontSdk.getConnectMgr().getSmartCodeEvent(59));
-//            System.out.println(ontSdk.getConnectMgr().getContractJson("803ca638069742da4b6871fe3d7f78718eeee78a"));
-//            System.out.println(ontSdk.getConnectMgr().getMerkleProof("0087217323d87284d21c3539f216dd030bf9da480372456d1fa02eec74c3226d"));
-            //System.out.println(ontSdk.getConnectMgr().getBlockHeightByTxHash("7c3e38afb62db28c7360af7ef3c1baa66aeec27d7d2f60cd22c13ca85b2fd4f3"));
-            //String v = (String)ontSdk.getConnectMgr().getStorage("ff00000000000000000000000000000000000001", Address.decodeBase58("TA63xZXqdPLtDeznWQ6Ns4UsbqprLrrLJk").toHexString());
+//            System.out.println(ontSdk.getConnect().getBalance("TA5NzM9iE3VT9X8SGk5h3dii6GPFQh2vme"));
+//            System.out.println(Helper.toHexString(ontSdk.getConnect().getBlock(1).transactions[0].sigs[0].sigData[0]));
+            System.out.println(ontSdk.getConnect().getBlock(15));
+//            System.out.println(ontSdk.getConnect().getGenerateBlockTime());
+//            System.out.println(ontSdk.getConnect().getBlockHeight());
+//            System.out.println(ontSdk.getConnect().getBlockJson(15));
+//            System.out.println(ontSdk.getConnect().getBlockJson("ee2d842fe7cdf48bc39b34d616a9e8f7f046970ed0a988dde3fe05c9126cce74"));
+//            System.out.println(ontSdk.getConnect().getGenerateBlockTime());
+//            System.out.println(ontSdk.getConnect().getNodeCount());
+//            System.out.println(((InvokeCodeTransaction)ontSdk.getConnect().getRawTransaction("c2592940837c2347f6a7b391d4940abb7171dd5dd156b7c031d20a5940142b5a")));
+//            System.out.println((ontSdk.getConnect().getTransaction("d441a967315989116bf0afad498e4016f542c1e7f8605da943f07633996c24cc")));
+//            System.out.println(ontSdk.getConnect().getSmartCodeEvent(59));
+//            System.out.println(ontSdk.getConnect().getContractJson("803ca638069742da4b6871fe3d7f78718eeee78a"));
+//            System.out.println(ontSdk.getConnect().getMerkleProof("0087217323d87284d21c3539f216dd030bf9da480372456d1fa02eec74c3226d"));
+            //System.out.println(ontSdk.getConnect().getBlockHeightByTxHash("7c3e38afb62db28c7360af7ef3c1baa66aeec27d7d2f60cd22c13ca85b2fd4f3"));
+            //String v = (String)ontSdk.getConnect().getStorage("ff00000000000000000000000000000000000001", Address.decodeBase58("TA63xZXqdPLtDeznWQ6Ns4UsbqprLrrLJk").toHexString());
             //System.out.println(v);
-            Block block = ontSdk.getConnectMgr().getBlock(ontSdk.getConnectMgr().getBlockHeight());
+            Block block = ontSdk.getConnect().getBlock(ontSdk.getConnect().getBlockHeight());
             String hash = block.transactions[0].hash().toHexString();
-            System.out.println(ontSdk.getConnectMgr().getMerkleProof(hash));
+            System.out.println(ontSdk.getConnect().getMerkleProof(hash));
             Object proof = ontSdk.nativevm().ontId().getMerkleProof(hash);
             System.out.println(proof);
             System.out.println(ontSdk.nativevm().ontId().verifyMerkleProof(JSON.toJSONString(proof)));
             System.exit(0);
-            List list = (List) ontSdk.getConnectMgr().getSmartCodeEvent("a12117c319aa6906efd8869ba65c221f4e2ee44a8a2766fd326c8d7125beffbf");
+            List list = (List) ontSdk.getConnect().getSmartCodeEvent("a12117c319aa6906efd8869ba65c221f4e2ee44a8a2766fd326c8d7125beffbf");
 
             List states = (List) ((Map) (list.get(0))).get("States");
             List state1 = (List) states.get(0);
@@ -88,7 +88,7 @@ public class Demo {
             Account acct = ontSdk.getWalletMgr().createAccount("password");
             Identity identity = ontSdk.getWalletMgr().createIdentity("password");
             //Block block = ontSdk.getConnectManager().getBlock(757);
-            System.out.println(ontSdk.getConnectMgr().getNodeCount());
+            System.out.println(ontSdk.getConnect().getNodeCount());
             //  System.out.println(ontSdk.getConnectManager().getGenerateBlockTime());
             // ontSdk.getOepMgr().getAccount(ontSdk.getOepMgr().getAccounts().get(0).address,"1234567");
 

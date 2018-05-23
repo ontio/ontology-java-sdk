@@ -84,7 +84,7 @@ public class OntAssetSM2Demo {
             System.out.println("tx.sigs.length:" + tx.sigs.length);
             System.out.println("tx.sigs.length:" + tx.sigs[0].pubKeys.length);
 //            System.out.println(tx.hash().toHexString());
-            ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+            ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 
 
         }
@@ -115,7 +115,7 @@ public class OntAssetSM2Demo {
             ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct0}, {acct1, acct2}});
 
             System.out.println(tx.hash().toHexString());
-            ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+            ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 
         }
 

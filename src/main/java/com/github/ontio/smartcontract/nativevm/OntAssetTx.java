@@ -72,7 +72,7 @@ public class OntAssetTx {
         Transaction tx = makeTransfer(assetName, sendAddr, password, recvAddr, amount,gas);
         sdk.signTx(tx, sendAddr, password);
         System.out.println(tx.toHexString());
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -116,7 +116,7 @@ public class OntAssetTx {
         }
         byte[] parabytes = buildParams(Address.decodeBase58(address).toArray());
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr,"balanceOf", parabytes, VmType.Native.value(), null,0);
-        Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         if (("").equals(res)) {
             return 0;
@@ -145,7 +145,7 @@ public class OntAssetTx {
         }
         byte[] parabytes = buildParams(Address.decodeBase58(fromAddr).toArray(),Address.decodeBase58(toAddr).toArray());
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr,"allowance", parabytes, VmType.Native.value(), null,0);
-        Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         if (("").equals(res)) {
             return 0;
@@ -177,12 +177,9 @@ public class OntAssetTx {
         }
         AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
         State state = new State(Address.addressFromPubKey(sender.pubkey), Address.decodeBase58(recvAddr), amount);
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        BinaryWriter binaryWriter = new BinaryWriter(byteArrayOutputStream);
-        state.serialize(binaryWriter);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr,"approve", byteArrayOutputStream.toByteArray(), VmType.Native.value(), sendAddr,gas);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr,"approve", state.toArray(), VmType.Native.value(), sendAddr,gas);
         sdk.signTx(tx,sendAddr,password);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if(b){
             return tx.hash().toHexString();
         }
@@ -214,12 +211,9 @@ public class OntAssetTx {
         }
         AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
         TransferFrom transferFrom = new TransferFrom(Address.addressFromPubKey(sender.pubkey),Address.decodeBase58(fromAddr), Address.decodeBase58(toAddr), amount);
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        BinaryWriter binaryWriter = new BinaryWriter(byteArrayOutputStream);
-        transferFrom.serialize(binaryWriter);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr,"transferFrom", byteArrayOutputStream.toByteArray(), VmType.Native.value(), sendAddr,gas);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr,"transferFrom", transferFrom.toArray(), VmType.Native.value(), sendAddr,gas);
         sdk.signTx(tx,sendAddr,password);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if(b){
             return tx.hash().toHexString();
         }
@@ -242,7 +236,7 @@ public class OntAssetTx {
             throw new SDKException(ErrorCode.AssetNameError);
         }
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr,"name", "".getBytes(), VmType.Native.value(), null,0);
-        Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         return new String(Helper.hexToBytes(res));
     }
@@ -263,7 +257,7 @@ public class OntAssetTx {
             throw new SDKException(ErrorCode.AssetNameError);
         }
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr,"symbol", "".getBytes(), VmType.Native.value(), null,0);
-        Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         return new String(Helper.hexToBytes(res));
     }
@@ -284,7 +278,7 @@ public class OntAssetTx {
             throw new SDKException(ErrorCode.AssetNameError);
         }
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr,"decimals", "".getBytes(), VmType.Native.value(), null,0);
-        Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         if (("").equals(res)) {
             return 0;
@@ -308,7 +302,7 @@ public class OntAssetTx {
             throw new SDKException(ErrorCode.AssetNameError);
         }
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr,"totalSupply", "".getBytes(), VmType.Native.value(), null,0);
-        Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         if (("").equals(res)) {
             return 0;
@@ -316,12 +310,12 @@ public class OntAssetTx {
         return Long.valueOf(res,16);
     }
 
-    public byte[] buildParams(byte[] ...params) throws SDKException {
+    private byte[] buildParams(byte[] ...params) throws SDKException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        BinaryWriter binaryWriter = new BinaryWriter(byteArrayOutputStream);
+        BinaryWriter writer = new BinaryWriter(byteArrayOutputStream);
         try {
             for (byte[] param : params) {
-                binaryWriter.writeVarBytes(param);
+                writer.writeVarBytes(param);
             }
         } catch (IOException e) {
             throw new SDKException(ErrorCode.WriteVarBytesError);
@@ -370,7 +364,7 @@ public class OntAssetTx {
         Transfers transfers = new Transfers(states);
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr,"transfer",transfers.toArray(), VmType.Native.value(), sender.addressBase58,gas);
         sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(sendAddr, password)}});
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -424,14 +418,13 @@ public class OntAssetTx {
                     try {
                         return new Account[]{sdk.getWalletMgr().getAccount(p, password[i])};
                     } catch (Exception e) {
-                        e.printStackTrace();
                     }
                 }
             }
             return null;
         }).toArray(Account[][]::new);
         sdk.signTx(tx, acct);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -446,7 +439,7 @@ public class OntAssetTx {
         TransferFrom transferFrom = new TransferFrom(Address.addressFromPubKey(sender.pubkey),Address.parse(ontContract),Address.decodeBase58(to),amount);
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"transferFrom", transferFrom.toArray(), VmType.Native.value(), sendAddr,gas);
         sdk.signTx(tx, sendAddr, password);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }

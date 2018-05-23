@@ -70,7 +70,7 @@ public class ClaimRecordTx {
         list.add(tmp);
         Transaction tx = makeInvokeTransaction(list,info.addressBase58,gas);
         sdk.signTx(tx, addr, password);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -97,7 +97,7 @@ public class ClaimRecordTx {
         list.add(tmp);
         Transaction tx = makeInvokeTransaction(list,info.addressBase58,gas);
         sdk.signTx(tx, addr, password);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -119,7 +119,7 @@ public class ClaimRecordTx {
         list.add(tmp);
         Transaction tx = makeInvokeTransaction(list,null,0);
         sdk.signTx(tx, addr, password);
-        Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         if (obj != null ) {
             return ((JSONObject)obj).getString("Result");
         }

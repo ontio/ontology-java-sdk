@@ -45,7 +45,7 @@ public class NativeOntIdDemo {
                 Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,payerAcc.address,0);
                 ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
                 ontSdk.addSign(tx,payerAcc.address,password);
-                ontSdk.getConnectMgr().sendRawTransaction(tx);
+                ontSdk.getConnect().sendRawTransaction(tx);
 
                 Identity identity2 = ontSdk.getWalletMgr().createIdentity(password);
                 ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcc.address,password,0);

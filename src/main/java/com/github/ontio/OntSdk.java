@@ -102,7 +102,7 @@ public class OntSdk {
         }
         return connRestful;
     }
-    public ConnectMgr getConnectMgr(){
+    public ConnectMgr getConnect(){
         if(connDefault != null){
             return connDefault;
         }

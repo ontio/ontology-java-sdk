@@ -91,7 +91,7 @@ public class MakeTxWithoutWalletDemo {
                 ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct0}});
 
                 System.out.println(tx.hash().toHexString());
-                ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+                ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 
             }
 
@@ -112,7 +112,7 @@ public class MakeTxWithoutWalletDemo {
                 ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct1, acct2}});
 
                 System.out.println(tx.hash().toHexString());
-                ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+                ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 
             }
 
@@ -138,7 +138,7 @@ public class MakeTxWithoutWalletDemo {
                 ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct0}, {acct1, acct2}});
 
                 System.out.println(tx.hash().toHexString());
-                ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+                ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 
             }
         } catch (Exception e) {

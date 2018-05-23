@@ -74,10 +74,7 @@ public class WalletMgr {
                 wallet.setAccounts(new ArrayList<>());
             }
             writeWallet();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -114,10 +111,7 @@ public class WalletMgr {
                 String prikey = com.github.ontio.account.Account.getCtrDecodedPrivateKey(identity.controls.get(0).key, password,addr, walletFile.getScrypt().getN(),scheme);
                 storePrivateKey(identityPriKeyMap, identity.ontid, password, prikey);
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

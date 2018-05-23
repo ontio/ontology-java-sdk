@@ -105,22 +105,22 @@ public class WebsocketDemo {
                     Transaction tx = ontSdk.nativevm().ont().makeTransfer("ont", info1.address, "passwordtest", info2.address, 100L,0);
                     ontSdk.signTx(tx, info1.address, password);
                     System.out.println(tx.toHexString());
-                    ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+                    ontSdk.getConnect().sendRawTransaction(tx.toHexString());
                 }
 
 
                 //waitResult(ontSdk, lock);
 
                 if (false) {
-                    ontSdk.getConnectMgr().getBalance("TA63xZXqdPLtDeznWQ6Ns4UsbqprLrrLJk");
-                    ontSdk.getConnectMgr().getBlockJson("c8c165bf0ac6107f7f324b0badb60af4dc4e1157b5eb9d3163c8f332a8612c98");
-                    ontSdk.getConnectMgr().getNodeCount();
-                    ontSdk.getConnectMgr().getGenerateBlockTime();
-                    ontSdk.getConnectMgr().getContractJson("80e7d2fc22c24c466f44c7688569cc6e6d6c6f92");
-                    ontSdk.getConnectMgr().getSmartCodeEvent("7c3e38afb62db28c7360af7ef3c1baa66aeec27d7d2f60cd22c13ca85b2fd4f3");
-                    ontSdk.getConnectMgr().getBlockHeightByTxHash("7c3e38afb62db28c7360af7ef3c1baa66aeec27d7d2f60cd22c13ca85b2fd4f3");
-                    ontSdk.getConnectMgr().getStorage("ff00000000000000000000000000000000000001", Address.decodeBase58("TA63xZXqdPLtDeznWQ6Ns4UsbqprLrrLJk").toHexString());
-                    ontSdk.getConnectMgr().getTransactionJson("7c3e38afb62db28c7360af7ef3c1baa66aeec27d7d2f60cd22c13ca85b2fd4f3");
+                    ontSdk.getConnect().getBalance("TA63xZXqdPLtDeznWQ6Ns4UsbqprLrrLJk");
+                    ontSdk.getConnect().getBlockJson("c8c165bf0ac6107f7f324b0badb60af4dc4e1157b5eb9d3163c8f332a8612c98");
+                    ontSdk.getConnect().getNodeCount();
+                    ontSdk.getConnect().getGenerateBlockTime();
+                    ontSdk.getConnect().getContractJson("80e7d2fc22c24c466f44c7688569cc6e6d6c6f92");
+                    ontSdk.getConnect().getSmartCodeEvent("7c3e38afb62db28c7360af7ef3c1baa66aeec27d7d2f60cd22c13ca85b2fd4f3");
+                    ontSdk.getConnect().getBlockHeightByTxHash("7c3e38afb62db28c7360af7ef3c1baa66aeec27d7d2f60cd22c13ca85b2fd4f3");
+                    ontSdk.getConnect().getStorage("ff00000000000000000000000000000000000001", Address.decodeBase58("TA63xZXqdPLtDeznWQ6Ns4UsbqprLrrLJk").toHexString());
+                    ontSdk.getConnect().getTransactionJson("7c3e38afb62db28c7360af7ef3c1baa66aeec27d7d2f60cd22c13ca85b2fd4f3");
                 }
                 if (false) {
 

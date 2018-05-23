@@ -59,7 +59,7 @@ public class OntAssetDemo {
             System.out.println(info1.address);
             System.out.println(info2.address);
             System.out.println(info3.address);
-            System.out.println(sdk.getConnectMgr().getBalance(info3.address));
+            System.out.println(sdk.getConnect().getBalance(info3.address));
 //            System.exit(0);
 //            System.out.println(sdk.nativevm().ont().queryName("ont"));
 //            System.out.println(sdk.nativevm().ont().querySymbol("ont"));

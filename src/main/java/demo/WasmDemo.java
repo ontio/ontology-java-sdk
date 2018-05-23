@@ -44,14 +44,14 @@ public class WasmDemo {
                 Transaction tx = ontSdk.vm().makeDeployCodeTransaction(code, true, "name", "1.0", "1", "1", "1", VmType.WASMVM.value(),identity.ontid,0);
                 String txHex = Helper.toHexString(tx.toArray());
                 System.out.println(txHex);
-                ontSdk.getConnectMgr().sendRawTransaction(txHex);
+                ontSdk.getConnect().sendRawTransaction(txHex);
             }
 //            System.exit(0);
             String params = ontSdk.wasmvm().buildWasmContractJsonParam(new Object[]{20,30});
             System.out.println(params);
             Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontSdk.vm().getCodeAddress(),"add",params.getBytes(),VmType.WASMVM.value(),"addr",0);
             ontSdk.signTx(tx,new Account[][]{{}});
-            ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+            ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 
         } catch (Exception e) {
             e.printStackTrace();

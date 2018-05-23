@@ -111,13 +111,13 @@ public class NativeOntIdTx {
         sdk.getWalletMgr().writeWallet();
         boolean b = false;
         if(preExec){
-            Object obj = (String) sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+            Object obj = (String) sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
             String result = ((JSONObject) obj).getString("Result");
             if (Integer.parseInt(result) == 0) {
                 throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
             }
         }else{
-            b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+            b = sdk.getConnect().sendRawTransaction(tx.toHexString());
             if (!b) {
                 throw new SDKException(ErrorCode.SendRawTxError);
             }
@@ -171,7 +171,7 @@ public class NativeOntIdTx {
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.ontid);
         sdk.getWalletMgr().writeWallet();
         boolean b = false;
-        b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         return identity;
     }
 
@@ -248,7 +248,7 @@ public class NativeOntIdTx {
         }
         byte[] parabytes = buildParams(ontid.getBytes());
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "getPublicKeys", parabytes, VmType.Native.value(), null,0);
-        Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         if (res.equals("")) {
             throw new SDKException(ErrorCode.ResultIsNull);
@@ -286,7 +286,7 @@ public class NativeOntIdTx {
         }
         byte[] parabytes = buildParams(ontid.getBytes(),index);
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "getKeyState", parabytes, VmType.Native.value(), null,0);
-        Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         if (res.equals("")) {
             throw new SDKException(ErrorCode.ResultIsNull);
@@ -300,7 +300,7 @@ public class NativeOntIdTx {
         }
         byte[] parabytes = buildParams(ontid.getBytes());
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "getAttributes", parabytes, VmType.Native.value(), null,0);
-        Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         if (res.equals("")) {
             throw new SDKException(ErrorCode.ResultIsNull);
@@ -345,7 +345,7 @@ public class NativeOntIdTx {
         Transaction tx = makeAddPubKey(ontid,password,newpubkey,payer,gas);
         sdk.signTx(tx, addr, password);
         sdk.addSign(tx,payer,payerpassword);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -393,7 +393,7 @@ public class NativeOntIdTx {
         Transaction tx = makeRemovePubKey(ontid,password,removePubkey,payer,gas);
         sdk.signTx(tx, addr, password);
         sdk.addSign(tx,payer,payerpassword);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -441,7 +441,7 @@ public class NativeOntIdTx {
         Transaction tx = makeAddRecovery(ontid,password,recovery,payer,gas);
         sdk.signTx(tx, addr, password);
         sdk.addSign(tx,payer,payerpassword);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -491,7 +491,7 @@ public class NativeOntIdTx {
         }
         Transaction tx = makeChangeRecovery(ontid,newRecovery,oldRecovery,password,gas);
         sdk.signTx(tx, oldRecovery, password);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -549,7 +549,7 @@ public class NativeOntIdTx {
         byte[] parabytes = buildParams(ontid.getBytes(),Address.decodeBase58(newRecovery).toArray(),Address.decodeBase58(oldRecovery).toArray());
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"changeRecovery",parabytes, VmType.Native.value(), oldRecovery,gas);
         sdk.signTx(tx, new com.github.ontio.account.Account[][]{accounts});
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -578,7 +578,7 @@ public class NativeOntIdTx {
         Transaction tx = makeAddAttributes(ontid,password,attrsMap,payer,gas);
         sdk.signTx(tx, addr, password);
         sdk.addSign(tx,payer,payerpassword);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -632,7 +632,7 @@ public class NativeOntIdTx {
         Transaction tx = makeRemoveAttribute(ontid,password,path,payer,gas);
         sdk.signTx(tx, addr, password);
         sdk.addSign(tx,payer,payerpassword);
-        boolean b = sdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
@@ -673,12 +673,12 @@ public class NativeOntIdTx {
     public Object getMerkleProof(String txhash) throws Exception {
         Map proof = new HashMap();
         Map map = new HashMap();
-        int height = sdk.getConnectMgr().getBlockHeightByTxHash(txhash);
+        int height = sdk.getConnect().getBlockHeightByTxHash(txhash);
         map.put("Type", "MerkleProof");
         map.put("TxnHash", txhash);
         map.put("BlockHeight", height);
 
-        Map tmpProof = (Map) sdk.getConnectMgr().getMerkleProof(txhash);
+        Map tmpProof = (Map) sdk.getConnect().getMerkleProof(txhash);
         UInt256 txroot = UInt256.parse((String) tmpProof.get("TransactionsRoot"));
         int blockHeight = (int) tmpProof.get("BlockHeight");
         UInt256 curBlockRoot = UInt256.parse((String) tmpProof.get("CurBlockRoot"));
@@ -707,7 +707,7 @@ public class NativeOntIdTx {
             String txhash = (String) proof.get("TxnHash");
             int blockHeight = (int) proof.get("BlockHeight");
             UInt256 merkleRoot = UInt256.parse((String) proof.get("MerkleRoot"));
-            Block block = sdk.getConnectMgr().getBlock(blockHeight);
+            Block block = sdk.getConnect().getBlock(blockHeight);
             if (block.height != blockHeight) {
                 throw new SDKException("blockHeight not match");
             }
@@ -837,7 +837,7 @@ public class NativeOntIdTx {
         }
         byte[] parabytes = buildParams(ontid.getBytes());
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "getDDO", parabytes, VmType.Native.value(), null,0);
-        Object obj = sdk.getConnectMgr().sendRawTransactionPreExec(tx.toHexString());
+        Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         if (res.equals("")) {
             throw new SDKException(ErrorCode.ResultIsNull);

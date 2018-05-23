@@ -171,6 +171,9 @@ public class OntSdk {
      * @throws Exception
      */
     public Transaction addSign(Transaction tx,String addr,String password) throws Exception {
+        if(tx.sigs == null){
+            tx.sigs = new Sig[0];
+        }
         Sig[] sigs = new Sig[tx.sigs.length + 1];
         for(int i= 0; i< tx.sigs.length; i++){
             sigs[i] = tx.sigs[i];

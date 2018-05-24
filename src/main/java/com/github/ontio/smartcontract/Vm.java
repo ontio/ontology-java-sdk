@@ -76,12 +76,11 @@ public class Vm {
      * @return
      * @throws SDKException
      */
-    public DeployCode makeDeployCodeTransaction(String codeStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp, byte vmtype,String payer,long gas) throws SDKException {
-        if (payer == null || payer.length() == 0){
-            throw new SDKException(ErrorCode.ParamError);
-        }
+    public DeployCode makeDeployCodeTransaction(String codeStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp, byte vmtype,String payer,long gaslimit,long gas) throws SDKException {
         DeployCode tx = new DeployCode();
-        tx.payer = Address.decodeBase58(payer.replace(Common.didont,""));
+        if(payer != null){
+            tx.payer = Address.decodeBase58(payer.replace(Common.didont,""));
+        }
         tx.attributes = new Attribute[1];
         tx.attributes[0] = new Attribute();
         tx.attributes[0].usage = AttributeUsage.Nonce;
@@ -93,17 +92,17 @@ public class Vm {
         tx.name = name;
         tx.author = author;
         tx.email = email;
-        if(sdk.DEFAULT_GAS_LIMIT == 0){
+        tx.gasLimit = gaslimit;
+        if(tx.gasLimit == 0){
             tx.gasPrice = 0;
         }else {
-            tx.gasPrice = gas / sdk.DEFAULT_GAS_LIMIT;
+            tx.gasPrice = gas / tx.gasLimit;
         }
-        tx.gasLimit = sdk.DEFAULT_GAS_LIMIT;
         tx.description = desp;
         return tx;
     }
 
-    public InvokeCode makeInvokeCodeTransaction(String codeAddr,String method,byte[] params, byte vmtype, String payer,long gas) throws SDKException {
+    public InvokeCode makeInvokeCodeTransaction(String codeAddr,String method,byte[] params, byte vmtype, String payer,long gaslimit,long gas) throws SDKException {
         if(vmtype == VmType.NEOVM.value()) {
             Contract contract = new Contract((byte) 0, null, Address.parse(codeAddr), "", params);
             params = Helper.addBytes(new byte[]{0x67}, contract.toArray());
@@ -120,11 +119,11 @@ public class Vm {
         tx.attributes[0].usage = AttributeUsage.Nonce;
         tx.attributes[0].data = UUID.randomUUID().toString().getBytes();
         tx.code = params;
-        tx.gasLimit = sdk.DEFAULT_GAS_LIMIT;
-        if(sdk.DEFAULT_GAS_LIMIT == 0){
+        tx.gasLimit = gaslimit;
+        if(tx.gasLimit == 0){
             tx.gasPrice = 0;
         }else {
-            tx.gasPrice = gas / sdk.DEFAULT_GAS_LIMIT;
+            tx.gasPrice = gas / tx.gasLimit;
         }
         if(payer != null){
             tx.payer = Address.decodeBase58(payer.replace(Common.didont,""));

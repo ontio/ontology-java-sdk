@@ -34,12 +34,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class RecordTx {
+public class Record {
     private OntSdk sdk;
     private String contractAddress = null;
 
 
-    public RecordTx(OntSdk sdk) {
+    public Record(OntSdk sdk) {
         this.sdk = sdk;
     }
 
@@ -52,7 +52,7 @@ public class RecordTx {
     }
 
 
-    public String sendPut(String addr,String password,String key,String value,long gas) throws Exception {
+    public String sendPut(String addr,String password,String key,String value,long gaslimit,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -69,7 +69,7 @@ public class RecordTx {
         tmp.add(key.getBytes());
         tmp.add(JSON.toJSONString(constructRecord(value)).getBytes());
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list,info.addressBase58,gas);
+        Transaction tx = makeInvokeTransaction(list,info.addressBase58,gaslimit,gas);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -77,7 +77,7 @@ public class RecordTx {
         }
         return null;
     }
-    public String sendGet(String addr,String password,String key) throws Exception {
+    public String sendGet(String addr,String password,String key,String payer,String pw,long gaslimit,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -92,15 +92,15 @@ public class RecordTx {
         List tmp = new ArrayList<Object>();
         tmp.add(key.getBytes());
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list,null,0);
+        Transaction tx = makeInvokeTransaction(list,payer,gaslimit,gas);
         sdk.signTx(tx, addr, password);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         return new String(Helper.hexToBytes((String)obj));
     }
 
-    public Transaction makeInvokeTransaction(List<Object> list,String addr,long gas) throws Exception {
+    public Transaction makeInvokeTransaction(List<Object> list,String payer,long gaslimit,long gas) throws Exception {
         byte[] params = BuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,null,params, VmType.NEOVM.value(), addr,gas);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,null,params, VmType.NEOVM.value(), payer,gaslimit,gas);
         return tx;
     }
 

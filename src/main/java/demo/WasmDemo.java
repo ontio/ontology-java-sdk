@@ -49,7 +49,7 @@ public class WasmDemo {
 //            System.exit(0);
             String params = ontSdk.wasmvm().buildWasmContractJsonParam(new Object[]{20,30});
             System.out.println(params);
-            Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontSdk.vm().getCodeAddress(),"add",params.getBytes(),VmType.WASMVM.value(),"addr",0);
+            Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontSdk.vm().getCodeAddress(),"add",params.getBytes(),VmType.WASMVM.value(),null,0,0);
             ontSdk.signTx(tx,new Account[][]{{}});
             ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 

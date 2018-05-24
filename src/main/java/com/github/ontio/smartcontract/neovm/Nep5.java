@@ -34,7 +34,7 @@ import com.github.ontio.sdk.exception.SDKException;
 /**
  *
  */
-public class Nep5Tx {
+public class Nep5 {
     private OntSdk sdk;
     private String contractAddress = null;
     private String nep5abi = "{\"hash\":\"0xd17d91a831c094c1fd8d8634b8cd6fa9fbaedc99\",\"entrypoint\":\"Main\"," +
@@ -48,7 +48,7 @@ public class Nep5Tx {
             "{\"name\":\"BalanceOf\",\"parameters\":[{\"name\":\"address\",\"type\":\"ByteArray\"}],\"returntype\":\"Integer\"}]," +
             "\"events\":[{\"name\":\"transfer\",\"parameters\":[{\"name\":\"arg1\",\"type\":\"ByteArray\"},{\"name\":\"arg2\",\"type\":\"ByteArray\"},{\"name\":\"arg3\",\"type\":\"Integer\"}],\"returntype\":\"Void\"}]}";
 
-    public Nep5Tx(OntSdk sdk) {
+    public Nep5(OntSdk sdk) {
         this.sdk = sdk;
     }
 
@@ -60,22 +60,26 @@ public class Nep5Tx {
         return contractAddress;
     }
 
-    public String sendInit(String payer,String password,long gas) throws Exception {
-        return sendInit(payer,password,gas,false);
+    public String sendInit(String payer,String password,long gaslimit,long gas) throws Exception {
+        return sendInit(payer,password,gaslimit,gas,false);
     }
 
-    public String sendInitPreExec() throws Exception {
-        return sendInit(null,null,0,true);
+    public String sendInitGetGasLimit(String payer,String pw,long gaslimit,long gas) throws Exception {
+        return sendInit(payer,pw,gaslimit,gas,true);
     }
 
-    private String sendInit(String payer,String password,long gas,boolean preExec) throws Exception {
+    private String sendInit(String payer,String password,long gaslimit,long gas,boolean preExec) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         AbiInfo abiinfo = JSON.parseObject(nep5abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("Init");
         func.name = "init";
-        return sdk.neovm().sendTransaction(contractAddress,payer,password,gas,func,preExec);
+        Object obj = sdk.neovm().sendTransaction(contractAddress,payer,password,gaslimit,gas,func,preExec);
+        if(preExec) {
+            return ((JSONObject) obj).getString("Gas");
+        }
+        return (String)obj;
     }
 
 
@@ -87,15 +91,15 @@ public class Nep5Tx {
      * @return
      * @throws Exception
      */
-    public String sendTransfer(String sendAddr, String password, String recvAddr, int amount,long gas) throws Exception {
-        return sendTransfer(sendAddr, password, recvAddr, amount,gas, false);
+    public String sendTransfer(String sendAddr, String password, String recvAddr, int amount,long gaslimit,long gas) throws Exception {
+        return sendTransfer(sendAddr, password, recvAddr, amount,gaslimit,gas, false);
     }
 
-    public String sendTransferPreExec(String sendAddr, String password, String recvAddr, int amount,long gas) throws Exception {
-        return sendTransfer(sendAddr, password, recvAddr, amount,gas, true);
+    public String sendTransferGetGasLimit(String sendAddr, String password, String recvAddr, int amount,long gaslimit,long gas) throws Exception {
+        return sendTransfer(sendAddr, password, recvAddr, amount,gaslimit,gas, true);
     }
 
-    private String sendTransfer(String sendAddr, String password, String recvAddr, int amount, long gas,boolean preExec) throws Exception {
+    private String sendTransfer(String sendAddr, String password, String recvAddr, int amount,long gaslimit, long gas,boolean preExec) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -103,10 +107,14 @@ public class Nep5Tx {
         AbiFunction func = abiinfo.getFunction("Transfer");
         func.name = "transfer";
         func.setParamsValue(Address.decodeBase58(sendAddr).toArray(), Address.decodeBase58(recvAddr).toArray(), amount);
-        return sdk.neovm().sendTransaction(contractAddress,sendAddr,password,gas,func, preExec);
+        Object obj = sdk.neovm().sendTransaction(contractAddress,sendAddr,password,gaslimit,gas,func, preExec);
+        if(preExec) {
+            return ((JSONObject) obj).getString("Gas");
+        }
+        return ((JSONObject) obj).getString("Result");
     }
 
-    public String queryBalanceOf(String addr) throws Exception {
+    public String queryBalanceOf(String addr,String payer,String pw,long gaslimit,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -114,10 +122,11 @@ public class Nep5Tx {
         AbiFunction func = abiinfo.getFunction("BalanceOf");
         func.name = "balanceOf";
         func.setParamsValue(Address.decodeBase58(addr).toArray());
-        return sdk.neovm().sendTransaction(contractAddress,null,null,0,func, true);
+        Object obj =  sdk.neovm().sendTransaction(contractAddress,payer,pw,gaslimit,gas,func, true);
+        return ((JSONObject) obj).getString("Result");
     }
 
-    public String queryTotalSupply() throws Exception {
+    public String queryTotalSupply(String payer,String pw,long gaslimit,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -125,10 +134,11 @@ public class Nep5Tx {
         AbiFunction func = abiinfo.getFunction("TotalSupply");
         func.name = "totalSupply";
         func.setParamsValue();
-        return sdk.neovm().sendTransaction(contractAddress,null,null,0,func, true);
+        Object obj =   sdk.neovm().sendTransaction(contractAddress,payer,pw,gaslimit,gas,func, true);
+        return ((JSONObject) obj).getString("Result");
     }
 
-    public String queryName() throws Exception {
+    public String queryName(String payer,String pw,long gaslimit,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -136,10 +146,11 @@ public class Nep5Tx {
         AbiFunction func = abiinfo.getFunction("Name");
         func.name = "name";
         func.setParamsValue();
-        return sdk.neovm().sendTransaction(contractAddress,null,null,0,func, true);
+        Object obj =   sdk.neovm().sendTransaction(contractAddress,payer,pw,gaslimit,gas,func, true);
+        return ((JSONObject) obj).getString("Result");
     }
 
-    public String queryDecimals() throws Exception {
+    public String queryDecimals(String payer,String pw,long gaslimit,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -147,10 +158,11 @@ public class Nep5Tx {
         AbiFunction func = abiinfo.getFunction("Decimals");
         func.name = "decimals";
         func.setParamsValue();
-        return sdk.neovm().sendTransaction(contractAddress,null,null,0,func, true);
+        Object obj =   sdk.neovm().sendTransaction(contractAddress,payer,pw,gaslimit,gas,func, true);
+        return ((JSONObject) obj).getString("Result");
     }
 
-    public String querySymbol() throws Exception {
+    public String querySymbol(String payer,String pw,long gaslimit,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -158,7 +170,8 @@ public class Nep5Tx {
         AbiFunction func = abiinfo.getFunction("Symbol");
         func.name = "symbol";
         func.setParamsValue();
-        return sdk.neovm().sendTransaction(contractAddress,null,null,0,func, true);
+        Object obj =   sdk.neovm().sendTransaction(contractAddress,payer,pw,gaslimit,gas,func, true);
+        return ((JSONObject) obj).getString("Result");
     }
 
 

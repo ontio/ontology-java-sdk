@@ -85,9 +85,9 @@ public class OntAssetDemo {
 //            System.out.println("info1 : ong :" + sdk.nativevm().ont().sendBalanceOf("ont",info1.address));
 //            System.out.println("info2 : ong :" + sdk.nativevm().ont().sendBalanceOf("ont",info2.address));
 //            System.out.println("info3 : ong :" + sdk.nativevm().ont().sendBalanceOf("ont",info3.address));
-            System.out.println(sdk.nativevm().ont().unclaimOng(info1.address));
-            //String hash = sdk.nativevm().ont().claimOng(info1.address,"passwordtest",info1.address,9865600000L,0);
-           // String hash = sdk.nativevm().ont().sendTransfer("ont",info1.address,"passwordtest","TA4pCAb4zUifHyxSx32dZRjTrnXtxEWKZr",10000L,0);
+            System.out.println(sdk.nativevm().ong().unclaimOng(info1.address));
+//            String hash = sdk.nativevm().ont().claimOng(info1.address,"passwordtest",info1.address,22390000000000L,0);
+//            String hash = sdk.nativevm().ont().sendTransfer("ont",info1.address,"passwordtest","TA4pCAb4zUifHyxSx32dZRjTrnXtxEWKZr",10000L,0);
 //            String hash1 = ontSdk.getOntAssetTx().sendTransferToMany("ont",info1.address,"passwordtest",new String[]{info2.address,info3.address},new long[]{100L,200L});
 //            String hash2 = ontSdk.getOntAssetTx().sendTransferFromMany("ont", new String[]{info1.address, info2.address}, new String[]{"passwordtest", "passwordtest"}, info3.address, new long[]{1L, 2L});
 //            sdk.nativevm().ont().sendApprove("ont",info1.address,"passwordtest",info1.address,1,0);
@@ -105,13 +105,13 @@ public class OntAssetDemo {
 //        String ip = "http://139.219.129.55";
 //        String ip = "http://101.132.193.149";
         String restUrl = ip + ":" + "20334";
-        String rpcUrl = ip + ":" + "20386";
+        String rpcUrl = ip + ":" + "20336";
         String wsUrl = ip + ":" + "20385";
 
         OntSdk wm = OntSdk.getInstance();
         wm.setRpc(rpcUrl);
         wm.setRestful(restUrl);
-        wm.setDefaultConnect(wm.getRestful());
+        wm.setDefaultConnect(wm.getRpc());
         wm.openWalletFile("OntAssetDemo.json");
         return wm;
     }

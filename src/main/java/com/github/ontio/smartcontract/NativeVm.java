@@ -20,16 +20,18 @@
 package com.github.ontio.smartcontract;
 
 import com.github.ontio.OntSdk;
-import com.github.ontio.smartcontract.nativevm.NativeOntIdTx;
-import com.github.ontio.smartcontract.nativevm.OntAssetTx;
+import com.github.ontio.smartcontract.nativevm.Ong;
+import com.github.ontio.smartcontract.nativevm.OntId;
+import com.github.ontio.smartcontract.nativevm.Ont;
 
 /**
  * @Description:
  * @date 2018/5/17
  */
 public class NativeVm {
-    private OntAssetTx ont = null;
-    private NativeOntIdTx nativeOntIdTx = null;
+    private Ont ont = null;
+    private Ong ong = null;
+    private OntId nativeOntIdTx = null;
     private OntSdk sdk;
     public NativeVm(OntSdk sdk){
         this.sdk = sdk;
@@ -38,15 +40,21 @@ public class NativeVm {
      *  get OntAsset Tx
      * @return instance
      */
-    public OntAssetTx ont() {
+    public Ont ont() {
         if(ont == null){
-            ont = new OntAssetTx(sdk);
+            ont = new Ont(sdk);
         }
         return ont;
     }
-    public NativeOntIdTx ontId(){
+    public Ong ong() {
+        if(ong == null){
+            ong = new Ong(sdk);
+        }
+        return ong;
+    }
+    public OntId ontId(){
         if (nativeOntIdTx == null){
-            nativeOntIdTx = new NativeOntIdTx(sdk);
+            nativeOntIdTx = new OntId(sdk);
         }
         return nativeOntIdTx;
     }

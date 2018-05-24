@@ -79,11 +79,13 @@ public class DeployCodeDemo {
 
             ontSdk.vm().setCodeAddress(Helper.getContractAddress(code, VmType.NEOVM.value()));
 
-            Transaction tx = ontSdk.vm().makeDeployCodeTransaction(code, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0);
+            Transaction tx = ontSdk.vm().makeDeployCodeTransaction(code, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),identity.ontid,0,0);
             ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
             String txHex = Helper.toHexString(tx.toArray());
             System.out.println(txHex);
-           ontSdk.getConnect().sendRawTransaction(txHex);
+           Object result = ontSdk.getConnect().sendRawTransactionPreExec(txHex);
+            System.out.println(result);
+            System.exit(0);
 
             System.out.println("txhash:" + tx.hash().toString());
             Thread.sleep(6000);

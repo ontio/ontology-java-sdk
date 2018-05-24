@@ -86,7 +86,7 @@ public class MakeTxWithoutWalletDemo {
                 Transfers transfers = new Transfers(new State[]{state});
                 Contract contract = new Contract((byte) 0, null, Address.parse(ontContractAddr), "transfer", transfers.toArray());
 
-                Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), sender.toBase58(),0);
+                Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), sender.toBase58(),0,0);
                 System.out.println(tx.json());
                 ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct0}});
 
@@ -107,7 +107,7 @@ public class MakeTxWithoutWalletDemo {
                 Transfers transfers = new Transfers(new State[]{state});
                 Contract contract = new Contract((byte) 0, null, Address.parse(ontContractAddr), "transfer", transfers.toArray());
 
-                Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), multiAddr.toBase58(),0);
+                Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), multiAddr.toBase58(),0,0);
                 System.out.println(tx.json());
                 ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct1, acct2}});
 
@@ -133,7 +133,7 @@ public class MakeTxWithoutWalletDemo {
                 Transfers transfers = new Transfers(new State[]{state, state2});
                 Contract contract = new Contract((byte) 0, null, Address.parse(ontContractAddr), "transfer", transfers.toArray());
 
-                Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), sender1.toBase58(),0);
+                Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), sender1.toBase58(),0,0);
                 System.out.println(tx.json());
                 ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct0}, {acct1, acct2}});
 

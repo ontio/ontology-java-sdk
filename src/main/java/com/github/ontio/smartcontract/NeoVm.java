@@ -26,20 +26,19 @@ import com.github.ontio.core.VmType;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.abi.AbiFunction;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.smartcontract.nativevm.OntAssetTx;
 import com.github.ontio.smartcontract.neovm.BuildParams;
-import com.github.ontio.smartcontract.neovm.ClaimRecordTx;
-import com.github.ontio.smartcontract.neovm.Nep5Tx;
-import com.github.ontio.smartcontract.neovm.RecordTx;
+import com.github.ontio.smartcontract.neovm.ClaimRecord;
+import com.github.ontio.smartcontract.neovm.Nep5;
+import com.github.ontio.smartcontract.neovm.Record;
 
 /**
  * @Description:
  * @date 2018/5/17
  */
 public class NeoVm {
-    private Nep5Tx nep5Tx = null;
-    private RecordTx recordTx = null;
-    private ClaimRecordTx claimRecordTx = null;
+    private Nep5 nep5Tx = null;
+    private Record recordTx = null;
+    private ClaimRecord claimRecordTx = null;
 
     private OntSdk sdk;
     public NeoVm(OntSdk sdk){
@@ -49,9 +48,9 @@ public class NeoVm {
      *  get OntAsset Tx
      * @return instance
      */
-    public Nep5Tx nep5() {
+    public Nep5 nep5() {
         if(nep5Tx == null){
-            nep5Tx = new Nep5Tx(sdk);
+            nep5Tx = new Nep5(sdk);
         }
         return nep5Tx;
     }
@@ -60,31 +59,30 @@ public class NeoVm {
      * RecordTx
      * @return instance
      */
-    public RecordTx record() {
+    public Record record() {
         if(recordTx == null){
-            recordTx = new RecordTx(sdk);
+            recordTx = new Record(sdk);
         }
         return recordTx;
     }
 
-    public ClaimRecordTx claimRecord(){
+    public ClaimRecord claimRecord(){
         if (claimRecordTx == null){
-            claimRecordTx = new ClaimRecordTx(sdk);
+            claimRecordTx = new ClaimRecord(sdk);
         }
         return claimRecordTx;
     }
-    public String sendTransaction(String contractAddr,String payer, String password, long gas, AbiFunction func, boolean preExec) throws Exception {
+    public Object sendTransaction(String contractAddr,String payer, String password,long gaslimit, long gas, AbiFunction func, boolean preExec) throws Exception {
         byte[] params = BuildParams.serializeAbiFunction(func);
         if (preExec) {
-            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, VmType.NEOVM.value(), null, 0);
+            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, VmType.NEOVM.value(), payer,gaslimit, gas);
             Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
-            String result = ((JSONObject) obj).getString("Result");
-            if (Integer.parseInt(result) == 0) {
+            if (((JSONObject) obj).getInteger("State") != 1){
                 throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
             }
-            return result;
+            return obj;
         } else {
-            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, VmType.NEOVM.value(), payer, gas);
+            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, VmType.NEOVM.value(), payer,gaslimit, gas);
             sdk.signTx(tx, payer, password);
             boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
             if (!b) {

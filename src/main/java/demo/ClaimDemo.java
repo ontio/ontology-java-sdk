@@ -44,9 +44,9 @@ public class ClaimDemo {
             List<Identity> dids = ontSdk.getWalletMgr().getIdentitys();
             if (dids.size() < 2) {
                 Identity identity = ontSdk.getWalletMgr().createIdentity("passwordtest");
-                ontSdk.nativevm().ontId().sendRegister(identity,"passwordtest",identity.ontid,"passwordtest",0);
+                ontSdk.nativevm().ontId().sendRegister(identity,"passwordtest",identity.ontid,"passwordtest",0,0);
                 identity = ontSdk.getWalletMgr().createIdentity("passwordtest");
-                ontSdk.nativevm().ontId().sendRegister(identity,"passwordtest",identity.ontid,"passwordtest",0);
+                ontSdk.nativevm().ontId().sendRegister(identity,"passwordtest",identity.ontid,"passwordtest",0,0);
                 dids = ontSdk.getWalletMgr().getIdentitys();
                 Thread.sleep(6000);
             }

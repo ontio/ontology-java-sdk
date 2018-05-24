@@ -32,12 +32,12 @@ import com.github.ontio.sdk.info.AccountInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClaimRecordTx {
+public class ClaimRecord {
     private OntSdk sdk;
     private String contractAddress = null;
 
 
-    public ClaimRecordTx(OntSdk sdk) {
+    public ClaimRecord(OntSdk sdk) {
         this.sdk = sdk;
     }
 
@@ -49,7 +49,7 @@ public class ClaimRecordTx {
         return contractAddress;
     }
 
-    public String sendCommit(String issuerOntid,String password,String subjectOntid,String claimId,long gas) throws Exception {
+    public String sendCommit(String issuerOntid,String password,String subjectOntid,String claimId,long gaslimit,long gas) throws Exception {
         if(gas < 0){
             throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
         }
@@ -68,7 +68,7 @@ public class ClaimRecordTx {
         tmp.add(Helper.hexToBytes(claimId));
         tmp.add(did);
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list,info.addressBase58,gas);
+        Transaction tx = makeInvokeTransaction(list,info.addressBase58,gaslimit,gas);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -76,7 +76,7 @@ public class ClaimRecordTx {
         }
         return null;
     }
-    public String sendRevoke(String ontid,String password,String claimId,long gas) throws Exception {
+    public String sendRevoke(String ontid,String password,String claimId,long gaslimit,long gas) throws Exception {
         if(gas < 0){
             throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
         }
@@ -95,7 +95,7 @@ public class ClaimRecordTx {
         tmp.add(Helper.hexToBytes(claimId));
         tmp.add(did);
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list,info.addressBase58,gas);
+        Transaction tx = makeInvokeTransaction(list,info.addressBase58,gaslimit,gas);
         sdk.signTx(tx, addr, password);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -103,7 +103,7 @@ public class ClaimRecordTx {
         }
         return null;
     }
-    public String sendGetStatus(String ontid,String password,String claimId) throws Exception {
+    public String sendGetStatus(String ontid,String password,String claimId,String payer,String pw,long gaslimit,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -117,7 +117,7 @@ public class ClaimRecordTx {
         List tmp = new ArrayList<Object>();
         tmp.add(Helper.hexToBytes(claimId));
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list,null,0);
+        Transaction tx = makeInvokeTransaction(list,payer,gaslimit,gas);
         sdk.signTx(tx, addr, password);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         if (obj != null ) {
@@ -125,9 +125,9 @@ public class ClaimRecordTx {
         }
         return null;
     }
-    public Transaction makeInvokeTransaction(List<Object> list,String addr,long gas) throws Exception {
+    public Transaction makeInvokeTransaction(List<Object> list,String payer,long gaslimit,long gas) throws Exception {
         byte[] params = BuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,null,params, VmType.NEOVM.value(), addr,gas);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,null,params, VmType.NEOVM.value(), payer,gaslimit,gas);
         return tx;
     }
 }

@@ -29,11 +29,11 @@ public class ClaimRecordTxDemo {
             if (dids.size() < 2) {
                 Identity identity = ontSdk.getWalletMgr().createIdentity(password);
 
-                ontSdk.nativevm().ontId().sendRegister(identity,password,payerAcc.address,password,0);
+                ontSdk.nativevm().ontId().sendRegister(identity,password,payerAcc.address,password,0,0);
 
                 Identity identity2 = ontSdk.getWalletMgr().createIdentity(password);
 
-                ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcc.address,password,0);
+                ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcc.address,password,0,0);
 
                 dids = ontSdk.getWalletMgr().getIdentitys();
                 Thread.sleep(6000);
@@ -63,20 +63,20 @@ public class ClaimRecordTxDemo {
 
             ontSdk.neovm().claimRecord().setContractAddress("806256c36653d4091a3511d308aac5c414b2a444");
 
-            String commitRes = ontSdk.neovm().claimRecord().sendCommit(dids.get(0).ontid,dids.get(1).ontid,password,payload.getString("jti"),0);
+            String commitRes = ontSdk.neovm().claimRecord().sendCommit(dids.get(0).ontid,dids.get(1).ontid,password,payload.getString("jti"),0,0);
             System.out.println("commitRes:" + commitRes);
             Thread.sleep(6000);
 
-            String getstatusRes = ontSdk.neovm().claimRecord().sendGetStatus(dids.get(1).ontid,password,payload.getString("jti"));
+            String getstatusRes = ontSdk.neovm().claimRecord().sendGetStatus(dids.get(1).ontid,password,payload.getString("jti"),null,"pw",0,0);
             byte[] getstatusResBytes = Helper.hexToBytes(getstatusRes);
             System.out.println("getstatusResBytes:" + new String(getstatusResBytes));
             Thread.sleep(6000);
 
-            String revokeRes = ontSdk.neovm().claimRecord().sendRevoke(dids.get(1).ontid,password,payload.getString("jti"),0);
+            String revokeRes = ontSdk.neovm().claimRecord().sendRevoke(dids.get(1).ontid,password,payload.getString("jti"),0,0);
             System.out.println("revokeRes:" + revokeRes);
             Thread.sleep(6000);
 
-            String getstatusRes2 = ontSdk.neovm().claimRecord().sendGetStatus(dids.get(1).ontid,password,payload.getString("jti"));
+            String getstatusRes2 = ontSdk.neovm().claimRecord().sendGetStatus(dids.get(1).ontid,password,payload.getString("jti"),null,"pw",0,0);
             byte[] getstatusResBytes2 = Helper.hexToBytes(getstatusRes2);
             System.out.println("getstatusResBytes2:" + new String(getstatusResBytes2));
 

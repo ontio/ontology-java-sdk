@@ -42,13 +42,13 @@ public class NativeOntIdDemo {
 
             if(ontSdk.getWalletMgr().getIdentitys().size() < 2){
                 Identity identity = ontSdk.getWalletMgr().createIdentity(password);
-                Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,payerAcc.address,0);
+                Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,payerAcc.address,0,0);
                 ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
                 ontSdk.addSign(tx,payerAcc.address,password);
                 ontSdk.getConnect().sendRawTransaction(tx);
 
                 Identity identity2 = ontSdk.getWalletMgr().createIdentity(password);
-                ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcc.address,password,0);
+                ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcc.address,password,0,0);
 
                 ontSdk.getWalletMgr().writeWallet();
                 Thread.sleep(6000);

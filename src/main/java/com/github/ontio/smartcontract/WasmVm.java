@@ -28,9 +28,6 @@ import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.abi.AbiFunction;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.smartcontract.neovm.BuildParams;
-import com.github.ontio.smartcontract.neovm.ClaimRecordTx;
-import com.github.ontio.smartcontract.neovm.Nep5Tx;
-import com.github.ontio.smartcontract.neovm.RecordTx;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,10 +45,10 @@ public class WasmVm {
         this.sdk = sdk;
     }
 
-    public String sendTransaction(String contractAddr,String payer, String password, long gas, AbiFunction func, boolean preExec) throws Exception {
+    public String sendTransaction(String contractAddr,String payer, String password,long gaslimit, long gas, AbiFunction func, boolean preExec) throws Exception {
         byte[] params = BuildParams.serializeAbiFunction(func);
         if (preExec) {
-            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, VmType.WASMVM.value(), null, 0);
+            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, VmType.WASMVM.value(), payer, gaslimit,gas);
             Object obj = (String) sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
             String result = ((JSONObject) obj).getString("Result");
             if (Integer.parseInt(result) == 0) {
@@ -59,13 +56,13 @@ public class WasmVm {
             }
             return result;
         } else {
-            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, VmType.WASMVM.value(), payer, gas);
+            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, VmType.WASMVM.value(), payer, gaslimit,gas);
             sdk.signTx(tx, payer, password);
             boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
             if (!b) {
                 throw new SDKException(ErrorCode.SendRawTxError);
             }
-            return tx.hash().toHexStringReverse();
+            return tx.hash().toString();
         }
     }
     public String buildWasmContractJsonParam(Object[] objs) {

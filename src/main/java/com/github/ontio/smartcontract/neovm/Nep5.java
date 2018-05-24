@@ -61,14 +61,14 @@ public class Nep5 {
     }
 
     public String sendInit(String payer,String password,long gaslimit,long gas) throws Exception {
-        return sendInit(payer,password,gaslimit,gas,false);
+        return (String)sendInit(payer,password,gaslimit,gas,false);
     }
 
-    public String sendInitGetGasLimit() throws Exception {
-        return sendInit(null,null,0,0,true);
+    public long sendInitGetGasLimit() throws Exception {
+        return (long)sendInit(null,null,0,0,true);
     }
 
-    private String sendInit(String payer,String password,long gaslimit,long gas,boolean preExec) throws Exception {
+    private Object sendInit(String payer,String password,long gaslimit,long gas,boolean preExec) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -77,9 +77,12 @@ public class Nep5 {
         func.name = "init";
         Object obj = sdk.neovm().sendTransaction(contractAddress,payer,password,gaslimit,gas,func,preExec);
         if(preExec) {
-            return ((JSONObject) obj).getString("Gas");
+            if (Integer.parseInt(((JSONObject) obj).getString("Result")) != 1){
+                throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
+            }
+            return ((JSONObject) obj).getLong("Gas");
         }
-        return (String)obj;
+        return obj;
     }
 
 
@@ -91,15 +94,15 @@ public class Nep5 {
      * @return
      * @throws Exception
      */
-    public String sendTransfer(String sendAddr, String password, String recvAddr, int amount,long gaslimit,long gas) throws Exception {
-        return sendTransfer(sendAddr, password, recvAddr, amount,gaslimit,gas, false);
+    public String sendTransfer(String sendAddr, String password, String recvAddr, long amount,long gaslimit,long gas) throws Exception {
+        return (String)sendTransfer(sendAddr, password, recvAddr, amount,gaslimit,gas, false);
     }
 
-    public String sendTransferGetGasLimit(String sendAddr, String password, String recvAddr, int amount) throws Exception {
-        return sendTransfer(sendAddr, password, recvAddr, amount,0,0, true);
+    public long sendTransferGetGasLimit(String sendAddr, String password, String recvAddr, long amount) throws Exception {
+        return (long)sendTransfer(sendAddr, password, recvAddr, amount,0,0, true);
     }
 
-    private String sendTransfer(String sendAddr, String password, String recvAddr, int amount,long gaslimit, long gas,boolean preExec) throws Exception {
+    private Object sendTransfer(String sendAddr, String password, String recvAddr, long amount,long gaslimit, long gas,boolean preExec) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -107,11 +110,19 @@ public class Nep5 {
         AbiFunction func = abiinfo.getFunction("Transfer");
         func.name = "transfer";
         func.setParamsValue(Address.decodeBase58(sendAddr).toArray(), Address.decodeBase58(recvAddr).toArray(), amount);
-        Object obj = sdk.neovm().sendTransaction(contractAddress,sendAddr,password,gaslimit,gas,func, preExec);
         if(preExec) {
-            return ((JSONObject) obj).getString("Gas");
+            byte[] params = BuildParams.serializeAbiFunction(func);
+
+            Transaction tx = sdk.vm().makeInvokeCodeTransaction(getContractAddress(), null, params, VmType.NEOVM.value(), null,0, 0);
+            sdk.signTx(tx, sendAddr, password);
+            Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+            if (Integer.parseInt(((JSONObject) obj).getString("Result")) != 1){
+                throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
+            }
+            return ((JSONObject) obj).getLong("Gas");
         }
-        return ((JSONObject) obj).getString("Result");
+        Object obj = sdk.neovm().sendTransaction(contractAddress,sendAddr,password,gaslimit,gas,func, preExec);
+        return obj;
     }
 
     public String queryBalanceOf(String addr) throws Exception {

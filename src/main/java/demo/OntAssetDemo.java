@@ -85,9 +85,9 @@ public class OntAssetDemo {
 //            System.out.println("info1 : ong :" + sdk.nativevm().ont().sendBalanceOf("ont",info1.address));
 //            System.out.println("info2 : ong :" + sdk.nativevm().ont().sendBalanceOf("ont",info2.address));
 //            System.out.println("info3 : ong :" + sdk.nativevm().ont().sendBalanceOf("ont",info3.address));
-            System.out.println(sdk.nativevm().ong().unclaimOng(info1.address));
-//            String hash = sdk.nativevm().ont().claimOng(info1.address,"passwordtest",info1.address,22390000000000L,0);
-//            String hash = sdk.nativevm().ont().sendTransfer("ont",info1.address,"passwordtest","TA4pCAb4zUifHyxSx32dZRjTrnXtxEWKZr",10000L,0);
+//            System.out.println(sdk.nativevm().ong().unclaimOng(info1.address));
+            String hash = sdk.nativevm().ong().claimOng(info1.address,"passwordtest",info3.address,2960000000000L,info1.address,"passwordtest",sdk.DEFAULT_GAS_LIMIT,0);
+//            String hash = sdk.nativevm().ont().sendTransfer(info1.address,"passwordtest",info3.address,10000L,sdk.DEFAULT_GAS_LIMIT,0);
 //            String hash1 = ontSdk.getOntAssetTx().sendTransferToMany("ont",info1.address,"passwordtest",new String[]{info2.address,info3.address},new long[]{100L,200L});
 //            String hash2 = ontSdk.getOntAssetTx().sendTransferFromMany("ont", new String[]{info1.address, info2.address}, new String[]{"passwordtest", "passwordtest"}, info3.address, new long[]{1L, 2L});
 //            sdk.nativevm().ont().sendApprove("ont",info1.address,"passwordtest",info1.address,1,0);

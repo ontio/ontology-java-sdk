@@ -363,7 +363,7 @@ public class Ong {
      * @throws Exception
      */
     public String unclaimOng(String address)  throws Exception{
-        String uncliamong = sdk.getConnect().getAllowance("ong",Address.parse(ongContract).toBase58(),address);
+        String uncliamong = sdk.getConnect().getAllowance("ong",Address.parse(ontContract).toBase58(),address);
         return uncliamong;
     }
 

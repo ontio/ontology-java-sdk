@@ -24,6 +24,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.ErrorCode;
+import com.github.ontio.common.Helper;
 import com.github.ontio.core.scripts.ScriptBuilder;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.abi.AbiFunction;
@@ -32,6 +33,8 @@ import com.github.ontio.sdk.exception.SDKException;
 
 import java.lang.reflect.Array;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,8 +65,8 @@ public class BuildParams {
                     builder.push((byte[]) val);
                 } else if (val instanceof Boolean) {
                     builder.push((Boolean) val);
-                } else if (val instanceof Integer) {
-                    builder.push(new BigInteger(Int2Bytes_LittleEndian((int)val)));
+                } else if (val instanceof Long) {
+                    builder.push(BigInteger.valueOf((long)val));
                 } else if (val instanceof List) {
                     List tmp = (List) val;
                     createCodeParamsScript(builder, tmp);
@@ -91,8 +94,8 @@ public class BuildParams {
                     sb.push((byte[]) val);
                 } else if (val instanceof Boolean) {
                     sb.push((Boolean) val);
-                } else if (val instanceof Integer) {
-                    sb.push(new BigInteger(Int2Bytes_LittleEndian((int)val)));
+                } else if (val instanceof Long) {
+                    sb.push(BigInteger.valueOf((Long) val));
                 } else if (val instanceof List) {
                     List tmp = (List) val;
                     createCodeParamsScript(sb, tmp);
@@ -109,7 +112,6 @@ public class BuildParams {
 
     /**
      * @param abiFunction
-     * @param vmtype
      * @return
      * @throws Exception
      */
@@ -125,7 +127,7 @@ public class BuildParams {
             } else if ("Boolean".equals(obj.getType())) {
                 tmp.add(JSON.parseObject(obj.getValue(), boolean.class));
             } else if ("Integer".equals(obj.getType())) {
-                tmp.add(JSON.parseObject(obj.getValue(), int.class));
+                tmp.add(JSON.parseObject(obj.getValue(), Long.class));
             } else if ("Array".equals(obj.getType())) {
                 tmp.add(JSON.parseObject(obj.getValue(), Array.class));
             } else if ("InteropInterface".equals(obj.getType())) {
@@ -141,13 +143,5 @@ public class BuildParams {
         }
         byte[] params = createCodeParamsScript(list);
         return params;
-//        Transaction tx = null;
-//        if (ontid == null && password == null) {
-//            tx = makeInvokeCodeTransaction(contractAddress,null,params, vmtype, ontid,gas);
-//        } else {
-//            tx = makeInvokeCodeTransaction(contractAddress,null,params, vmtype, ontid,gas);
-//        }
-//        return tx;
     }
 }
-//Transaction tx = makeInvokeCodeTransaction(contractAddress,null,params, vmtype, ontid,gas);

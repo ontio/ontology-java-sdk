@@ -77,9 +77,6 @@ public class NeoVm {
         if (preExec) {
             Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, VmType.NEOVM.value(), null,0, 0);
             Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
-            if (((JSONObject) obj).getInteger("State") != 1){
-                throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
-            }
             return obj;
         } else {
             Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, VmType.NEOVM.value(), payer,gaslimit, gas);

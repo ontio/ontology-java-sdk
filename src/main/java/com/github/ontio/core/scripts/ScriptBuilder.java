@@ -69,7 +69,12 @@ public class ScriptBuilder implements AutoCloseable {
     	if (number.compareTo(BigInteger.ZERO) > 0 && number.compareTo(BigInteger.valueOf(16)) <= 0) {
             return add((byte) (ScriptOp.OP_1.getByte() - 1 + number.byteValue()));
         }
-        return push(number.toByteArray());
+        if(number.longValue() < 0 || number.longValue() >= Long.MAX_VALUE){
+            throw new IllegalArgumentException();
+        }
+        ByteBuffer byteBuffer = ByteBuffer.allocate(Long.BYTES).order(ByteOrder.LITTLE_ENDIAN);
+        byteBuffer.putLong(number.longValue());
+        return push(byteBuffer.array());
     }
 
     public ScriptBuilder push(byte[] data) {

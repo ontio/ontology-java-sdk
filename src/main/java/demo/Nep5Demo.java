@@ -26,7 +26,11 @@ import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Identity;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.List;
 import java.util.Map;
 
@@ -52,21 +56,22 @@ public class Nep5Demo {
             Account acct = ontSdk.getWalletMgr().createAccountFromPriKey("passwordtest","c19f16785b8f3543bbaf5e1dbb5d398dfa6c85aaad54fc9d71203ce83e505c07");
             ontSdk.getWalletMgr().writeWallet();
             System.out.println("recv:"+acct.address);
-            if(true) {
-//                String result = ontSdk.neovm().nep5().sendInit(acct.address,"passwordtest",19965600000L);
-                Object result = ontSdk.neovm().nep5().sendInitGetGasLimit();
-                System.out.println(result);
+            if(false) {
+                long gasLimit = ontSdk.neovm().nep5().sendInitGetGasLimit();
+                //System.out.println(gasLimit);
+                //String result = ontSdk.neovm().nep5().sendInit(acct.address,"passwordtest",gasLimit,gasLimit*1);
+                //System.out.println(result);
                 System.exit(0);
             }
-            System.out.println(Helper.toHexString("transfer".getBytes()));
-            String txhash = ontSdk.neovm().nep5().sendTransferGetGasLimit(acct.address,"passwordtest",acct1.getAddressU160().toBase58(),10);
-            System.out.println(txhash);
-
+            long gasLimit =  ontSdk.neovm().nep5().sendTransferGetGasLimit(acct.address,"passwordtest",acct1.getAddressU160().toBase58(), 464400000000000L);
+            System.out.println(gasLimit);
+            //ontSdk.neovm().nep5().sendTransfer(acct.address,"passwordtest",acct1.getAddressU160().toBase58(),464400000000000L,gasLimit,gasLimit*1);
+            System.exit(0);
 
 
             String balance = ontSdk.neovm().nep5().queryBalanceOf(acct.address);
             System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(balance))).longValue());
-            System.exit(0);
+            //System.exit(0);
             String totalSupply = ontSdk.neovm().nep5().queryTotalSupply();
             System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(totalSupply))).longValue());
 

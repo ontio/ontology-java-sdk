@@ -108,10 +108,6 @@ public class ConnectMgrTest {
 
         int blockheight = ontSdk.getConnect().getBlockHeightByTxHash(tx2.hash().toHexString());
         Assert.assertNotNull(blockheight);
-
-        Object contract = ontSdk.getConnect().getContract(codeAddress);
-        Assert.assertNotNull(contract);
-
 //        ontSdk.getConnectMgr().getStorage(codeAddress,)
 
     }

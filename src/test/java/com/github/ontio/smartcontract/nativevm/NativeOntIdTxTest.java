@@ -144,7 +144,7 @@ public class NativeOntIdTxTest {
         Assert.assertTrue(ddo.contains("key99"));
 
         String attribute = ontSdk.nativevm().ontId().sendGetAttributes(identity.ontid);
-        Assert.assertFalse(attribute.contains("key1"));
+        Assert.assertTrue(attribute.contains("key1"));
 
         Transaction tx2= ontSdk.nativevm().ontId().makeRemoveAttribute(identity.ontid,password,"key1",payerAcc.address,ontSdk.DEFAULT_GAS_LIMIT,0);
         ontSdk.signTx(tx2,identity.ontid,password);

@@ -837,7 +837,7 @@ public class NativeOntIdTx {
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         if (res.equals("")) {
-            throw new SDKException(ErrorCode.ResultIsNull);
+            return res;
         }
         Map map = parseDdoData2(ontid,res);
         if (map.size() == 0) {
@@ -913,19 +913,19 @@ public class NativeOntIdTx {
         return map;
     }
 
-    private int parse4bytes(byte[] bs, int offset) {
-        return (bs[offset] & 0xFF) * 256 * 256 * 256 + (bs[offset + 1] & 0xFF) * 256 * 256 + (bs[offset + 2] & 0xFF) * 256 + (bs[offset + 3] & 0xFF);
-    }
+//    private int parse4bytes(byte[] bs, int offset) {
+//        return (bs[offset] & 0xFF) * 256 * 256 * 256 + (bs[offset + 1] & 0xFF) * 256 * 256 + (bs[offset + 2] & 0xFF) * 256 + (bs[offset + 3] & 0xFF);
+//    }
 
-    private int bytes2int(byte[] b) {
-        int i = 0;
-        int ret = 0;
-        for (; i < b.length; i++) {
-            ret = ret * 256;
-            ret = ret + b[i];
-        }
-        return ret;
-    }
+//    private int bytes2int(byte[] b) {
+//        int i = 0;
+//        int ret = 0;
+//        for (; i < b.length; i++) {
+//            ret = ret * 256;
+//            ret = ret + b[i];
+//        }
+//        return ret;
+//    }
 
     public byte[] buildParams(Object ...params) throws SDKException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

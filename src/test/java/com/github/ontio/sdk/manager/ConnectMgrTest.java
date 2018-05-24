@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.IOUtils;
 import com.github.ontio.OntSdk;
+import com.github.ontio.OntSdkTest;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.Helper;
@@ -46,7 +47,7 @@ public class ConnectMgrTest {
     public void setUp() throws Exception {
 
         ontSdk = OntSdk.getInstance();
-        String restUrl = "http://127.0.0.1:20334";
+        String restUrl = OntSdkTest.URL;
         ontSdk.setRestful(restUrl);
         ontSdk.setDefaultConnect(ontSdk.getRestful());
         ontSdk.openWalletFile(wallet);
@@ -55,6 +56,12 @@ public class ConnectMgrTest {
             identity = ontSdk.getWalletMgr().createIdentity(password);
         }else{
             identity = ontSdk.getWalletMgr().getIdentitys().get(0);
+        }
+        try {
+            ontSdk.getConnect().getBlock(0);
+        }catch (Exception e){
+            System.out.println("please check your url");
+            return;
         }
     }
 

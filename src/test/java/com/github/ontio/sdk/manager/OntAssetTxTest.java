@@ -52,6 +52,7 @@ public class OntAssetTxTest {
     public void sendTransfer() throws Exception {
 
         String res= ontSdk.nativevm().ont().sendTransfer("ont",info1.address,password,info2.address,100L,0);
+
         Assert.assertNotNull(res);
     }
 
@@ -82,6 +83,8 @@ public class OntAssetTxTest {
         long info2balance = ontSdk.nativevm().ont().queryBalanceOf("ont",info2.address);
         Thread.sleep(6000);
 
+        long allo = ontSdk.nativevm().ont().queryAllowance("ont",info1.address,info2.address);
+        Assert.assertTrue(allo > 0);
         ontSdk.nativevm().ont().sendTransferFrom("ont",info2.address,password,info1.address,info2.address,10L,0);
         Thread.sleep(6000);
         long info1balance2 = ontSdk.nativevm().ont().queryBalanceOf("ont",info1.address);

@@ -25,21 +25,12 @@ public class WalletTest {
         ontSdk = OntSdk.getInstance();
         ontSdk.openWalletFile(walletFile);
 
-        if(ontSdk.getWalletMgr().getIdentitys().size() < 2){
-            ontSdk.getWalletMgr().createIdentity("passwordtest");
-            ontSdk.getWalletMgr().createIdentity("passwordtest");
 
-            ontSdk.getWalletMgr().createAccount("passwordtest");
-            ontSdk.getWalletMgr().createAccount("passwordtest");
+        id1 = ontSdk.getWalletMgr().createIdentity("passwordtest");
+        id2 = ontSdk.getWalletMgr().createIdentity("passwordtest");
 
-            ontSdk.getWalletMgr().writeWallet();
-        }
-
-        id1 = ontSdk.getWalletMgr().getIdentitys().get(0);
-        id2 = ontSdk.getWalletMgr().getIdentitys().get(1);
-        acct1 = ontSdk.getWalletMgr().getAccounts().get(0);
-        acct2 = ontSdk.getWalletMgr().getAccounts().get(1);
-
+        acct1 = ontSdk.getWalletMgr().createAccount("passwordtest");
+        acct2 = ontSdk.getWalletMgr().createAccount("passwordtest");
     }
 
     @After

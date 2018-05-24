@@ -24,11 +24,13 @@ public class WalletMgrTest {
 
     Account payer;
 
+    String walletFile = "wallet.json";
+
     @Before
     public void setUp() throws Exception {
         ontSdk = OntSdk.getInstance();
         ontSdk.setRestful("http://polaris1.ont.io:20334");
-        ontSdk.openWalletFile("wallet.json");
+        ontSdk.openWalletFile(walletFile);
         walletMgr = ontSdk.getWalletMgr();
         wallet = walletMgr.getWallet();
         ontIdTx = ontSdk.nativevm().ontId();
@@ -38,7 +40,13 @@ public class WalletMgrTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void removeWallet(){
+        File file = new File(walletFile);
+        if(file.exists()){
+            if(file.delete()){
+                System.out.println("delete wallet file success");
+            }
+        }
     }
 
     @Test

@@ -16,11 +16,13 @@ import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.info.IdentityInfo;
 import com.github.ontio.sdk.wallet.Identity;
 import com.github.ontio.smartcontract.neovm.BuildParams;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.xml.crypto.dsig.TransformService;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +40,8 @@ public class ConnectMgrTest {
     Identity identity;
     private final String ontContract = "ff00000000000000000000000000000000000001";
 
+    String wallet = "ConnectMgrTest.json";
+
     @Before
     public void setUp() throws Exception {
 
@@ -45,12 +49,23 @@ public class ConnectMgrTest {
         String restUrl = "http://127.0.0.1:20334";
         ontSdk.setRestful(restUrl);
         ontSdk.setDefaultConnect(ontSdk.getRestful());
-        ontSdk.openWalletFile("ConnectMgrTest.json");
+        ontSdk.openWalletFile(wallet);
 
         if(ontSdk.getWalletMgr().getIdentitys().size() < 1){
             identity = ontSdk.getWalletMgr().createIdentity(password);
         }else{
             identity = ontSdk.getWalletMgr().getIdentitys().get(0);
+        }
+    }
+
+
+    @After
+    public void removeWallet(){
+        File file = new File(wallet);
+        if(file.exists()){
+            if(file.delete()){
+                System.out.println("delete wallet file success");
+            }
         }
     }
 

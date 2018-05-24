@@ -1,10 +1,11 @@
 package com.github.ontio.sdk.manager;
 
 import com.github.ontio.OntSdk;
+import com.github.ontio.OntSdkTest;
 import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Identity;
 import com.github.ontio.sdk.wallet.Wallet;
-import com.github.ontio.smartcontract.nativevm.NativeOntIdTx;
+import com.github.ontio.smartcontract.nativevm.OntId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +19,7 @@ public class WalletMgrTest {
     private OntSdk ontSdk;
     private WalletMgr walletMgr;
     private Wallet wallet;
-    private NativeOntIdTx ontIdTx;
+    private OntId ontIdTx;
 
     String password = "111111";
 
@@ -29,7 +30,7 @@ public class WalletMgrTest {
     @Before
     public void setUp() throws Exception {
         ontSdk = OntSdk.getInstance();
-        ontSdk.setRestful("http://polaris1.ont.io:20334");
+        ontSdk.setRestful(OntSdkTest.URL);
         ontSdk.openWalletFile(walletFile);
         walletMgr = ontSdk.getWalletMgr();
         wallet = walletMgr.getWallet();

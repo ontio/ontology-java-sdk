@@ -23,25 +23,14 @@ public class WalletTest {
     @Before
     public void setUp() throws Exception {
         ontSdk = OntSdk.getInstance();
-        ontSdk.setRestful("http://127.0.0.1:20384");
-        ontSdk.setDefaultConnect(ontSdk.getRestful());
         ontSdk.openWalletFile(walletFile);
 
-        if(ontSdk.getWalletMgr().getIdentitys().size() < 2){
-            ontSdk.getWalletMgr().createIdentity("passwordtest");
-            ontSdk.getWalletMgr().createIdentity("passwordtest");
 
-            ontSdk.getWalletMgr().createAccount("passwordtest");
-            ontSdk.getWalletMgr().createAccount("passwordtest");
+        id1 = ontSdk.getWalletMgr().createIdentity("passwordtest");
+        id2 = ontSdk.getWalletMgr().createIdentity("passwordtest");
 
-            ontSdk.getWalletMgr().writeWallet();
-        }
-
-        id1 = ontSdk.getWalletMgr().getIdentitys().get(0);
-        id2 = ontSdk.getWalletMgr().getIdentitys().get(1);
-        acct1 = ontSdk.getWalletMgr().getAccounts().get(0);
-        acct2 = ontSdk.getWalletMgr().getAccounts().get(1);
-
+        acct1 = ontSdk.getWalletMgr().createAccount("passwordtest");
+        acct2 = ontSdk.getWalletMgr().createAccount("passwordtest");
     }
 
     @After

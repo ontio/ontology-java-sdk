@@ -77,7 +77,7 @@ public class Record {
         }
         return null;
     }
-    public String sendGet(String addr,String password,String key,String payer,String pw,long gaslimit,long gas) throws Exception {
+    public String sendGet(String addr,String password,String key) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -92,7 +92,7 @@ public class Record {
         List tmp = new ArrayList<Object>();
         tmp.add(key.getBytes());
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list,payer,gaslimit,gas);
+        Transaction tx = makeInvokeTransaction(list,null,0,0);
         sdk.signTx(tx, addr, password);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         return new String(Helper.hexToBytes((String)obj));

@@ -75,7 +75,7 @@ public class NeoVm {
     public Object sendTransaction(String contractAddr,String payer, String password,long gaslimit, long gas, AbiFunction func, boolean preExec) throws Exception {
         byte[] params = BuildParams.serializeAbiFunction(func);
         if (preExec) {
-            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, VmType.NEOVM.value(), payer,gaslimit, gas);
+            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, VmType.NEOVM.value(), null,0, 0);
             Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
             if (((JSONObject) obj).getInteger("State") != 1){
                 throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));

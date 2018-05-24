@@ -22,7 +22,7 @@ public class RecordTxDemo {
             String hash = ontSdk.neovm().record().sendPut(id.ontid,"passwordtest","key","value-test",0,0);
             System.out.println(hash);
             Thread.sleep(6000);
-            String res = ontSdk.neovm().record().sendGet(id.ontid,"passwordtest","key",null,"pw",0,0);
+            String res = ontSdk.neovm().record().sendGet(id.ontid,"passwordtest","key");
             System.out.println("result:"+res);
 
             //System.out.println(ontSdk.getConnectMgr().getSmartCodeEvent(hash));

@@ -102,7 +102,7 @@ public class WebsocketDemo {
                     }
                     info1 = ontSdk.getWalletMgr().getAccounts().get(0);
                     info2 = ontSdk.getWalletMgr().getAccounts().get(1);
-                    Transaction tx = ontSdk.nativevm().ont().makeTransfer("ont", info1.address, "passwordtest", info2.address, 100L,0);
+                    Transaction tx = ontSdk.nativevm().ont().makeTransfer( info1.address, "passwordtest", info2.address, 100L,0,0);
                     ontSdk.signTx(tx, info1.address, password);
                     System.out.println(tx.toHexString());
                     ontSdk.getConnect().sendRawTransaction(tx.toHexString());

@@ -103,7 +103,7 @@ public class ClaimRecord {
         }
         return null;
     }
-    public String sendGetStatus(String ontid,String password,String claimId,String payer,String pw,long gaslimit,long gas) throws Exception {
+    public String sendGetStatus(String ontid,String password,String claimId) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -117,7 +117,7 @@ public class ClaimRecord {
         List tmp = new ArrayList<Object>();
         tmp.add(Helper.hexToBytes(claimId));
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list,payer,gaslimit,gas);
+        Transaction tx = makeInvokeTransaction(list,null,0,0);
         sdk.signTx(tx, addr, password);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         if (obj != null ) {

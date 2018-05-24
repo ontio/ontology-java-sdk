@@ -67,7 +67,7 @@ public class ClaimRecordTxDemo {
             System.out.println("commitRes:" + commitRes);
             Thread.sleep(6000);
 
-            String getstatusRes = ontSdk.neovm().claimRecord().sendGetStatus(dids.get(1).ontid,password,payload.getString("jti"),null,"pw",0,0);
+            String getstatusRes = ontSdk.neovm().claimRecord().sendGetStatus(dids.get(1).ontid,password,payload.getString("jti"));
             byte[] getstatusResBytes = Helper.hexToBytes(getstatusRes);
             System.out.println("getstatusResBytes:" + new String(getstatusResBytes));
             Thread.sleep(6000);
@@ -76,7 +76,7 @@ public class ClaimRecordTxDemo {
             System.out.println("revokeRes:" + revokeRes);
             Thread.sleep(6000);
 
-            String getstatusRes2 = ontSdk.neovm().claimRecord().sendGetStatus(dids.get(1).ontid,password,payload.getString("jti"),null,"pw",0,0);
+            String getstatusRes2 = ontSdk.neovm().claimRecord().sendGetStatus(dids.get(1).ontid,password,payload.getString("jti"));
             byte[] getstatusResBytes2 = Helper.hexToBytes(getstatusRes2);
             System.out.println("getstatusResBytes2:" + new String(getstatusResBytes2));
 

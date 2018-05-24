@@ -181,8 +181,8 @@ public class Ont {
      * @return
      * @throws Exception
      */
-    public String queryName(String payer,String pw,long gaslimit,long gas) throws Exception {
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"name", "".getBytes(), VmType.Native.value(), payer,gaslimit,gas);
+    public String queryName() throws Exception {
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"name", "".getBytes(), VmType.Native.value(), null,0,0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         return new String(Helper.hexToBytes(res));
@@ -193,8 +193,8 @@ public class Ont {
      * @return
      * @throws Exception
      */
-    public String querySymbol(String payer,String pw,long gaslimit,long gas) throws Exception {
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"symbol", "".getBytes(), VmType.Native.value(), payer,gaslimit,gas);
+    public String querySymbol() throws Exception {
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"symbol", "".getBytes(), VmType.Native.value(), null,0,0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         return new String(Helper.hexToBytes(res));
@@ -205,8 +205,8 @@ public class Ont {
      * @return
      * @throws Exception
      */
-    public long queryDecimals(String payer,String pw,long gaslimit,long gas) throws Exception {
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"decimals", "".getBytes(), VmType.Native.value(), payer,gaslimit,gas);
+    public long queryDecimals() throws Exception {
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"decimals", "".getBytes(), VmType.Native.value(), null,0,0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         if (("").equals(res)) {
@@ -220,8 +220,8 @@ public class Ont {
      * @return
      * @throws Exception
      */
-    public long queryTotalSupply(String payer,String pw,long gaslimit,long gas) throws Exception {
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"totalSupply", "".getBytes(), VmType.Native.value(), payer,gaslimit,gas);
+    public long queryTotalSupply() throws Exception {
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"totalSupply", "".getBytes(), VmType.Native.value(), null,0,0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         if (("").equals(res)) {

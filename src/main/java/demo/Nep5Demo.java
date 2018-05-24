@@ -54,28 +54,28 @@ public class Nep5Demo {
             System.out.println("recv:"+acct.address);
             if(true) {
 //                String result = ontSdk.neovm().nep5().sendInit(acct.address,"passwordtest",19965600000L);
-                Object result = ontSdk.neovm().nep5().sendInitGetGasLimit(null,"pw",0,0);
+                Object result = ontSdk.neovm().nep5().sendInitGetGasLimit();
                 System.out.println(result);
                 System.exit(0);
             }
             System.out.println(Helper.toHexString("transfer".getBytes()));
-            String txhash = ontSdk.neovm().nep5().sendTransferGetGasLimit(acct.address,"passwordtest",acct1.getAddressU160().toBase58(),10,0,0);
+            String txhash = ontSdk.neovm().nep5().sendTransferGetGasLimit(acct.address,"passwordtest",acct1.getAddressU160().toBase58(),10);
             System.out.println(txhash);
 
 
 
-            String balance = ontSdk.neovm().nep5().queryBalanceOf(acct.address,"payer","pw",0,0);
+            String balance = ontSdk.neovm().nep5().queryBalanceOf(acct.address);
             System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(balance))).longValue());
             System.exit(0);
-            String totalSupply = ontSdk.neovm().nep5().queryTotalSupply("payer","pw",0,0);
+            String totalSupply = ontSdk.neovm().nep5().queryTotalSupply();
             System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(totalSupply))).longValue());
 
-            String decimals = ontSdk.neovm().nep5().queryDecimals("payer","pw",0,0);
+            String decimals = ontSdk.neovm().nep5().queryDecimals();
             System.out.println(decimals);
 
-            String name = ontSdk.neovm().nep5().queryName("payer","pw",0,0);
+            String name = ontSdk.neovm().nep5().queryName();
             System.out.println(new String(Helper.hexToBytes(name)));
-            String symbol = ontSdk.neovm().nep5().querySymbol("payer","pw",0,0);
+            String symbol = ontSdk.neovm().nep5().querySymbol();
             System.out.println(new String(Helper.hexToBytes(symbol)));
 
             System.out.println(Address.decodeBase58(acct.address).toHexString());

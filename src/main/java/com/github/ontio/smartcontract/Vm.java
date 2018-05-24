@@ -63,8 +63,8 @@ public class Vm {
     }
 
 
-
     /**
+     *
      * @param codeStr
      * @param needStorage
      * @param name
@@ -73,10 +73,13 @@ public class Vm {
      * @param email
      * @param desp
      * @param vmtype
+     * @param payer
+     * @param gaslimit
+     * @param gasprice
      * @return
      * @throws SDKException
      */
-    public DeployCode makeDeployCodeTransaction(String codeStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp, byte vmtype,String payer,long gaslimit,long gas) throws SDKException {
+    public DeployCode makeDeployCodeTransaction(String codeStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp, byte vmtype,String payer,long gaslimit,long gasprice) throws SDKException {
         DeployCode tx = new DeployCode();
         if(payer != null){
             tx.payer = Address.decodeBase58(payer.replace(Common.didont,""));
@@ -93,16 +96,24 @@ public class Vm {
         tx.author = author;
         tx.email = email;
         tx.gasLimit = gaslimit;
-        if(tx.gasLimit == 0){
-            tx.gasPrice = 0;
-        }else {
-            tx.gasPrice = gas / tx.gasLimit;
-        }
+        tx.gasLimit = gasprice;
         tx.description = desp;
         return tx;
     }
 
-    public InvokeCode makeInvokeCodeTransaction(String codeAddr,String method,byte[] params, byte vmtype, String payer,long gaslimit,long gas) throws SDKException {
+    /**
+     *
+     * @param codeAddr
+     * @param method
+     * @param params
+     * @param vmtype
+     * @param payer
+     * @param gaslimit
+     * @param gasprice
+     * @return
+     * @throws SDKException
+     */
+    public InvokeCode makeInvokeCodeTransaction(String codeAddr,String method,byte[] params, byte vmtype, String payer,long gaslimit,long gasprice) throws SDKException {
         if(vmtype == VmType.NEOVM.value()) {
             Contract contract = new Contract((byte) 0, null, Address.parse(codeAddr), "", params);
             params = Helper.addBytes(new byte[]{0x67}, contract.toArray());
@@ -120,11 +131,7 @@ public class Vm {
         tx.attributes[0].data = UUID.randomUUID().toString().getBytes();
         tx.code = params;
         tx.gasLimit = gaslimit;
-        if(tx.gasLimit == 0){
-            tx.gasPrice = 0;
-        }else {
-            tx.gasPrice = gas / tx.gasLimit;
-        }
+        tx.gasPrice = gasprice;
         if(payer != null){
             tx.payer = Address.decodeBase58(payer.replace(Common.didont,""));
         }

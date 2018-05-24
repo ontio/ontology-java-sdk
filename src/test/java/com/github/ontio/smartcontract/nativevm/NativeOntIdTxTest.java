@@ -8,10 +8,12 @@ import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.info.IdentityInfo;
 import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Identity;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +22,7 @@ public class NativeOntIdTxTest {
     String password = "111111";
     Account payerAcc;
     Identity identity;
+    String walletFile = "NativeOntIdTxTest.json";
     @Before
     public void setUp() throws Exception {
 //        String ip = "http://polaris1.ont.io";
@@ -33,7 +36,7 @@ public class NativeOntIdTxTest {
         ontSdk = OntSdk.getInstance();
         ontSdk.setRestful(restUrl);
         ontSdk.setDefaultConnect(ontSdk.getRestful());
-        ontSdk.openWalletFile("NativeOntIdTxTest.json");
+        ontSdk.openWalletFile(walletFile);
         ontSdk.setSignatureScheme(SignatureScheme.SM3WITHSM2);
         payerAcc = ontSdk.getWalletMgr().createAccount(password);
         if(ontSdk.getWalletMgr().getIdentitys().size() < 1){
@@ -44,6 +47,16 @@ public class NativeOntIdTxTest {
             identity = ontSdk.getWalletMgr().getIdentitys().get(0);
         }
 
+    }
+
+    @After
+    public void removeWallet(){
+        File file = new File(walletFile);
+        if(file.exists()){
+            if(file.delete()){
+                System.out.println("delete wallet file success");
+            }
+        }
     }
 
     @Test

@@ -9,9 +9,11 @@ import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Identity;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +24,7 @@ import static org.junit.Assert.*;
 public class MerkleVerifierTest {
     OntSdk ontSdk;
     String password = "111111";
+    String walletFile = "MerkleVerifierTest.json";
 
     @Before
     public void setUp() throws SDKException {
@@ -32,7 +35,18 @@ public class MerkleVerifierTest {
         ontSdk.setRestful(restUrl);
         ontSdk.setDefaultConnect(ontSdk.getRestful());
 
-        ontSdk.openWalletFile("MerkleVerifierTest.json");
+        ontSdk.openWalletFile(walletFile);
+    }
+
+
+    @After
+    public void removeWallet(){
+        File file = new File(walletFile);
+        if(file.exists()){
+            if(file.delete()){
+                System.out.println("delete wallet file success");
+            }
+        }
     }
 
     @Test

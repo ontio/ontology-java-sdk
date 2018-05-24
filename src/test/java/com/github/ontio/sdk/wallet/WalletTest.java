@@ -1,9 +1,12 @@
 package com.github.ontio.sdk.wallet;
 
 import com.github.ontio.OntSdk;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.File;
 
 import static org.junit.Assert.*;
 
@@ -15,13 +18,14 @@ public class WalletTest {
     Account acct1;
     Account acct2;
 
+    String walletFile = "WalletTest.json";
+
     @Before
     public void setUp() throws Exception {
-
         ontSdk = OntSdk.getInstance();
         ontSdk.setRestful("http://127.0.0.1:20384");
         ontSdk.setDefaultConnect(ontSdk.getRestful());
-        ontSdk.openWalletFile("WalletTest.json");
+        ontSdk.openWalletFile(walletFile);
 
         if(ontSdk.getWalletMgr().getIdentitys().size() < 2){
             ontSdk.getWalletMgr().createIdentity("passwordtest");
@@ -40,6 +44,15 @@ public class WalletTest {
 
     }
 
+    @After
+    public void removeWallet(){
+        File file = new File(walletFile);
+        if(file.exists()){
+            if(file.delete()){
+                System.out.println("delete wallet file success");
+            }
+        }
+    }
 
     @Test
     public void removeAccount() {

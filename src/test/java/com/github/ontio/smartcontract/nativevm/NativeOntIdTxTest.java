@@ -1,7 +1,10 @@
 package com.github.ontio.smartcontract.nativevm;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
+import com.github.ontio.OntSdkTest;
 import com.github.ontio.common.Address;
+import com.github.ontio.common.Common;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.sdk.info.AccountInfo;
@@ -25,27 +28,16 @@ public class NativeOntIdTxTest {
     String walletFile = "NativeOntIdTxTest.json";
     @Before
     public void setUp() throws Exception {
-//        String ip = "http://polaris1.ont.io";
-//        String ip = "http://139.219.129.55";
-//        String ip = "http://101.132.193.149";
-        String ip = "http://127.0.0.1";
-        String restUrl = ip + ":" + "20334";
-        String rpcUrl = ip + ":" + "20336";
-        String wsUrl = ip + ":" + "20335";
-
         ontSdk = OntSdk.getInstance();
-        ontSdk.setRestful(restUrl);
+        ontSdk.setRestful(OntSdkTest.URL);
         ontSdk.setDefaultConnect(ontSdk.getRestful());
         ontSdk.openWalletFile(walletFile);
         ontSdk.setSignatureScheme(SignatureScheme.SM3WITHSM2);
         payerAcc = ontSdk.getWalletMgr().createAccount(password);
-        if(ontSdk.getWalletMgr().getIdentitys().size() < 1){
-            identity = ontSdk.getWalletMgr().createIdentity(password);
-            ontSdk.nativevm().ontId().sendRegister(identity,password,payerAcc.address,password,0);
-            Thread.sleep(6000);
-        }else{
-            identity = ontSdk.getWalletMgr().getIdentitys().get(0);
-        }
+
+        identity = ontSdk.getWalletMgr().createIdentity(password);
+        ontSdk.nativevm().ontId().sendRegister(identity,password,payerAcc.address,password,0);
+        Thread.sleep(6000);
 
     }
 
@@ -61,14 +53,43 @@ public class NativeOntIdTxTest {
 
     @Test
     public void sendRegister() throws Exception {
-        IdentityInfo info = ontSdk.getWalletMgr().createIdentityInfo(password);
         Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,payerAcc.address,0);
         ontSdk.signTx(tx, identity.ontid,password);
         ontSdk.addSign(tx,payerAcc.address,password);
         ontSdk.getConnect().sendRawTransaction(tx);
+
+        Identity identity2 = ontSdk.getWalletMgr().createIdentity(password);
+        ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcc.address,password,0);
+
+        Identity identity3 = ontSdk.getWalletMgr().createIdentity(password);
+        Map  attributeMap = new HashMap();
+        attributeMap.put("key2","value2");
+        ontSdk.nativevm().ontId().sendRegisterWithAttrs(identity3,password,attributeMap,payerAcc.address,password,0);
+
         Thread.sleep(6000);
         String ddo = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);
         Assert.assertTrue(ddo.contains(identity.ontid));
+
+        String dd02 = ontSdk.nativevm().ontId().sendGetDDO(identity3.ontid);
+        Assert.assertTrue(dd02.contains("key2"));
+
+        //merkleproof
+        Object merkleproof = ontSdk.nativevm().ontId().getMerkleProof(tx.hash().toHexString());
+        boolean b = ontSdk.nativevm().ontId().verifyMerkleProof(JSONObject.toJSONString(merkleproof));
+        Assert.assertTrue(b);
+
+        //claim
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("Issuer", identity.ontid);
+        map.put("Subject", identity2.ontid);
+
+        Map clmRevMap = new HashMap();
+        clmRevMap.put("typ","AttestContract");
+        clmRevMap.put("addr",identity.ontid.replace(Common.didont,""));
+
+        String claim = ontSdk.nativevm().ontId().createOntIdClaim(identity.ontid,password, "claim:context", map, map,clmRevMap,System.currentTimeMillis()/1000 +100000);
+        boolean b2 = ontSdk.nativevm().ontId().verifyOntIdClaim(claim);
+        Assert.assertTrue(b2);
     }
     @Test
     public void sendAddPubkey() throws Exception {
@@ -81,7 +102,6 @@ public class NativeOntIdTxTest {
         String ddo = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);
         Assert.assertTrue(ddo.contains(info.pubkey));
 
-
         Transaction tx2 = ontSdk.nativevm().ontId().makeRemovePubKey(identity.ontid,password,info.pubkey,payerAcc.address,0);
         ontSdk.signTx(tx2,identity.ontid,password);
         ontSdk.addSign(tx2,payerAcc.address,password);
@@ -89,6 +109,9 @@ public class NativeOntIdTxTest {
         Thread.sleep(6000);
         String ddo2 = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);
         Assert.assertFalse(ddo2.contains(info.pubkey));
+
+        String publikeys = ontSdk.nativevm().ontId().sendGetPublicKeys(identity.ontid);
+        Assert.assertNotNull(publikeys);
     }
 
     @Test
@@ -103,8 +126,6 @@ public class NativeOntIdTxTest {
         String ddo = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);
         Assert.assertTrue(ddo.contains("key1"));
 
-
-
         Transaction tx2= ontSdk.nativevm().ontId().makeRemoveAttribute(identity.ontid,password,"key1",payerAcc.address,0);
         ontSdk.signTx(tx2,identity.ontid,password);
         ontSdk.addSign(tx2,payerAcc.address,password);
@@ -114,6 +135,8 @@ public class NativeOntIdTxTest {
         String ddo2 = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);
         Assert.assertFalse(ddo2.contains("key1"));
 
+        String attribute = ontSdk.nativevm().ontId().sendGetAttributes(identity.ontid);
+        Assert.assertFalse(attribute.contains("key1"));
 
     }
 
@@ -164,5 +187,4 @@ public class NativeOntIdTxTest {
         Assert.assertTrue(ddo.contains(info2.addressBase58));
         Assert.assertFalse(ddo.contains(info.addressBase58));
     }
-
 }

@@ -23,8 +23,6 @@ public class WalletTest {
     @Before
     public void setUp() throws Exception {
         ontSdk = OntSdk.getInstance();
-        ontSdk.setRestful("http://127.0.0.1:20384");
-        ontSdk.setDefaultConnect(ontSdk.getRestful());
         ontSdk.openWalletFile(walletFile);
 
         if(ontSdk.getWalletMgr().getIdentitys().size() < 2){

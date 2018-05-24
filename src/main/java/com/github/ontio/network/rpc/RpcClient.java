@@ -48,13 +48,9 @@ public class RpcClient extends AbstractConnector {
     }
 
     @Override
-    public Object getBalance(String address) throws ConnectorException {
+    public Object getBalance(String address) throws ConnectorException,IOException {
         Object result = null;
-        try {
-            result = rpc.call("getbalance", address);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        result = rpc.call("getbalance", address);
         return result;
     }
 
@@ -82,14 +78,10 @@ public class RpcClient extends AbstractConnector {
     }
 
     @Override
-    public String getRawTransactionJson(String txhash) throws RpcException {
+    public Object getRawTransactionJson(String txhash) throws RpcException, IOException {
         Object result = null;
-        try {
-            result = rpc.call("getrawtransaction", txhash.toString(), 1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result.toString();
+        result = rpc.call("getrawtransaction", txhash.toString());
+        return Transaction.deserializeFrom(Helper.hexToBytes((String) result)).json();
     }
 
     @Override
@@ -111,46 +103,30 @@ public class RpcClient extends AbstractConnector {
     }
 
     @Override
-    public Object getBlockJson(int index) throws RpcException {
+    public Object getBlockJson(int index) throws RpcException,IOException {
         Object result = null;
-        try {
-            result = rpc.call("getblock", index, 1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        result = rpc.call("getblock", index, 1);
         return result;
     }
 
     @Override
-    public Object getBlockJson(String hash) throws RpcException {
+    public Object getBlockJson(String hash) throws RpcException,IOException {
         Object result = null;
-        try {
-            result = rpc.call("getblock", hash, 1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        result = rpc.call("getblock", hash, 1);
         return result;
     }
 
     @Override
-    public Object getContract(String hash) throws RpcException {
+    public Object getContract(String hash) throws RpcException,IOException {
         Object result = null;
-        try {
-            result = rpc.call("getcontractstate", hash);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        result = rpc.call("getcontractstate", hash);
         return result;
     }
 
     @Override
-    public Object getContractJson(String hash) throws RpcException {
+    public Object getContractJson(String hash) throws RpcException,IOException {
         Object result = null;
-        try {
-            result = rpc.call("getcontractstate", hash,1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        result = rpc.call("getcontractstate", hash,1);
         return result;
     }
 

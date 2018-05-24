@@ -23,25 +23,14 @@ public class WalletTest {
     @Before
     public void setUp() throws Exception {
         ontSdk = OntSdk.getInstance();
-        ontSdk.setRestful("http://127.0.0.1:20384");
-        ontSdk.setDefaultConnect(ontSdk.getRestful());
         ontSdk.openWalletFile(walletFile);
 
-        if(ontSdk.getWalletMgr().getIdentitys().size() < 2){
-            ontSdk.getWalletMgr().createIdentity("passwordtest");
-            ontSdk.getWalletMgr().createIdentity("passwordtest");
 
-            ontSdk.getWalletMgr().createAccount("passwordtest");
-            ontSdk.getWalletMgr().createAccount("passwordtest");
+        id1 = ontSdk.getWalletMgr().createIdentity("passwordtest");
+        id2 = ontSdk.getWalletMgr().createIdentity("passwordtest");
 
-            ontSdk.getWalletMgr().writeWallet();
-        }
-
-        id1 = ontSdk.getWalletMgr().getIdentitys().get(0);
-        id2 = ontSdk.getWalletMgr().getIdentitys().get(1);
-        acct1 = ontSdk.getWalletMgr().getAccounts().get(0);
-        acct2 = ontSdk.getWalletMgr().getAccounts().get(1);
-
+        acct1 = ontSdk.getWalletMgr().createAccount("passwordtest");
+        acct2 = ontSdk.getWalletMgr().createAccount("passwordtest");
     }
 
     @After
@@ -54,56 +43,26 @@ public class WalletTest {
         }
     }
 
-    @Test
-    public void removeAccount() {
-
-        boolean b = ontSdk.getWalletMgr().getWallet().removeAccount(acct1.address);
-        Assert.assertTrue(b);
-    }
 
     @Test
-    public void getAccount() {
+    public void getAccount() throws Exception {
         Account acct = ontSdk.getWalletMgr().getAccount(acct1.address);
         Assert.assertNotNull(acct);
 
-    }
-
-    @Test
-    public void removeIdentity() {
-
+        ontSdk.getWalletMgr().getWallet().setDefaultIdentity(id1.ontid);
+        ontSdk.getWalletMgr().getWallet().setDefaultIdentity(1);
+        ontSdk.getWalletMgr().getWallet().setDefaultAccount(acct1.address);
+        ontSdk.getWalletMgr().getWallet().setDefaultAccount(1);
+        Identity did = ontSdk.getWalletMgr().getIdentity(id1.ontid);
+        Assert.assertNotNull(did);
         boolean b = ontSdk.getWalletMgr().getWallet().removeIdentity(id1.ontid);
         Assert.assertTrue(b);
 
-
-    }
-
-    @Test
-    public void getIdentity() {
-
-        Identity did = ontSdk.getWalletMgr().getIdentity(id1.ontid);
-        Assert.assertNotNull(did);
-    }
-
-    @Test
-    public void setDefaultAccount() throws Exception {
-
-        ontSdk.getWalletMgr().getWallet().setDefaultAccount(1);
+        boolean b2 = ontSdk.getWalletMgr().getWallet().removeAccount(acct1.address);
+        Assert.assertTrue(b2);
 
 
     }
 
-    @Test
-    public void setDefaultAccountByAddress() {
-        ontSdk.getWalletMgr().getWallet().setDefaultAccount(acct1.address);
-    }
 
-    @Test
-    public void setDefaultIdentity() throws Exception {
-        ontSdk.getWalletMgr().getWallet().setDefaultIdentity(1);
-    }
-
-    @Test
-    public void setDefaultIdentityByOntid() {
-        ontSdk.getWalletMgr().getWallet().setDefaultIdentity(id1.ontid);
-    }
 }

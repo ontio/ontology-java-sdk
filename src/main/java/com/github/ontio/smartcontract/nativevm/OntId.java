@@ -248,7 +248,7 @@ public class OntId {
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         if (res.equals("")) {
-            throw new SDKException(ErrorCode.ResultIsNull);
+            return res;
         }
         ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(res));
         BinaryReader br = new BinaryReader(bais);
@@ -286,7 +286,7 @@ public class OntId {
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         if (res.equals("")) {
-            throw new SDKException(ErrorCode.ResultIsNull);
+            return res;
         }
         return new String(Helper.hexToBytes(res));
     }
@@ -300,7 +300,7 @@ public class OntId {
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         if (res.equals("")) {
-            throw new SDKException(ErrorCode.ResultIsNull);
+            return res;
         }
 
         ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(res));
@@ -837,7 +837,7 @@ public class OntId {
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         if (res.equals("")) {
-            throw new SDKException(ErrorCode.ResultIsNull);
+            return res;
         }
         Map map = parseDdoData2(ontid,res);
         if (map.size() == 0) {
@@ -912,123 +912,20 @@ public class OntId {
         map.put("OntId",ontid);
         return map;
     }
-    private Map parseDdoData(String ontid, String obj) {
-        byte[] bys = Helper.hexToBytes(obj);
-        int elen = parse4bytes(bys, 0);
-        int offset = 4;
-        if (elen == 0) {
-            return new HashMap();
-        }
-        byte[] pubkeysData = new byte[elen];
-        System.arraycopy(bys, offset, pubkeysData, 0, elen);
-//        int pubkeysNum = pubkeysData[0];
 
-        byte[] tmpb = new byte[4];
-        System.arraycopy(bys, offset, tmpb, 0, 4);
-        int pubkeysNum = bytes2int(tmpb);
+//    private int parse4bytes(byte[] bs, int offset) {
+//        return (bs[offset] & 0xFF) * 256 * 256 * 256 + (bs[offset + 1] & 0xFF) * 256 * 256 + (bs[offset + 2] & 0xFF) * 256 + (bs[offset + 3] & 0xFF);
+//    }
 
-        offset = 4;
-        Map map = new HashMap();
-        Map attriMap = new HashMap();
-        List ownersList = new ArrayList();
-        for (int i = 0; i < pubkeysNum; i++) {
-            int pubkeyIdLen = parse4bytes(pubkeysData, offset);
-            offset = offset + 4;
-            int pubkeyId = (int) pubkeysData[offset];
-            offset = offset + pubkeyIdLen;
-            int len = parse4bytes(pubkeysData, offset);
-            offset = offset + 4;
-            byte[] data = new byte[len];
-            System.arraycopy(pubkeysData, offset, data, 0, len);
-            Map owner = new HashMap();
-            owner.put("PublicKeyId", ontid + "#keys-" + String.valueOf(pubkeyId));
-            if(sdk.signatureScheme == SignatureScheme.SHA256WITHECDSA) {
-                owner.put("Type", KeyType.ECDSA);
-                owner.put("Curve", new Object[]{"P-256"}[0]);
-            }
-            owner.put("Value", Helper.toHexString(data));
-            ownersList.add(owner);
-            offset = offset + len;
-        }
-        map.put("Owners", ownersList);
-        map.put("OntId", ontid);
-        offset = 4 + elen;
-
-        elen = parse4bytes(bys, offset);
-        offset = offset + 4;
-        int totalOffset = offset + elen;
-        if (elen == 0) {
-            map.put("Attributes", attriMap);
-        }
-        if (elen != 0) {
-            byte[] attrisData = new byte[elen];
-            System.arraycopy(bys, offset, attrisData, 0, elen);
-
-//        int attrisNum = attrisData[0];
-            System.arraycopy(bys, offset, tmpb, 0, 4);
-            int attrisNum = bytes2int(tmpb);
-
-            offset = 4;
-            for (int i = 0; i < attrisNum; i++) {
-
-                int dataLen = parse4bytes(attrisData, offset);
-                offset = offset + 4;
-                byte[] data = new byte[dataLen];
-                System.arraycopy(attrisData, offset, data, 0, dataLen);
-                offset = offset + dataLen;
-
-
-                int index = 0;
-                int len = parse4bytes(data, index);
-                index = index + 4;
-                byte[] key = new byte[len];
-                System.arraycopy(data, index, key, 0, len);
-                index = index + len;
-
-                len = parse4bytes(data, index);
-                index = index + 4;
-                len = data[index];
-                index++;
-                byte[] type = new byte[len];
-                System.arraycopy(data, index, type, 0, len);
-                index = index + len;
-
-                byte[] value = new byte[dataLen - index];
-                System.arraycopy(data, index, value, 0, dataLen - index);
-
-                Map tmp = new HashMap();
-                tmp.put("Type", new String(type));
-                tmp.put("Value", new String(value));
-                attriMap.put(new String(key), tmp);
-            }
-            map.put("Attributes", attriMap);
-        }
-        if (totalOffset < bys.length) {
-            elen = parse4bytes(bys, totalOffset);
-            if (elen == 0) {
-                return map;
-            }
-            byte[] recoveryData = new byte[elen];
-            offset = 4;
-            System.arraycopy(bys, totalOffset + 4, recoveryData, 0, elen);
-            map.put("Recovery", Helper.toHexString(recoveryData));
-        }
-        return map;
-    }
-
-    private int parse4bytes(byte[] bs, int offset) {
-        return (bs[offset] & 0xFF) * 256 * 256 * 256 + (bs[offset + 1] & 0xFF) * 256 * 256 + (bs[offset + 2] & 0xFF) * 256 + (bs[offset + 3] & 0xFF);
-    }
-
-    private int bytes2int(byte[] b) {
-        int i = 0;
-        int ret = 0;
-        for (; i < b.length; i++) {
-            ret = ret * 256;
-            ret = ret + b[i];
-        }
-        return ret;
-    }
+//    private int bytes2int(byte[] b) {
+//        int i = 0;
+//        int ret = 0;
+//        for (; i < b.length; i++) {
+//            ret = ret * 256;
+//            ret = ret + b[i];
+//        }
+//        return ret;
+//    }
 
     public byte[] buildParams(Object ...params) throws SDKException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

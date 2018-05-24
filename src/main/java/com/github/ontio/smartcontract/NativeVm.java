@@ -20,9 +20,7 @@
 package com.github.ontio.smartcontract;
 
 import com.github.ontio.OntSdk;
-import com.github.ontio.smartcontract.nativevm.Ong;
-import com.github.ontio.smartcontract.nativevm.OntId;
-import com.github.ontio.smartcontract.nativevm.Ont;
+import com.github.ontio.smartcontract.nativevm.*;
 
 /**
  * @Description:
@@ -31,7 +29,10 @@ import com.github.ontio.smartcontract.nativevm.Ont;
 public class NativeVm {
     private Ont ont = null;
     private Ong ong = null;
-    private OntId nativeOntIdTx = null;
+    private OntId ontId = null;
+    private GlobalParams globalParams = null;
+    private Auth auth = null;
+    private Governance governance = null;
     private OntSdk sdk;
     public NativeVm(OntSdk sdk){
         this.sdk = sdk;
@@ -53,9 +54,27 @@ public class NativeVm {
         return ong;
     }
     public OntId ontId(){
-        if (nativeOntIdTx == null){
-            nativeOntIdTx = new OntId(sdk);
+        if (ontId == null){
+            ontId = new OntId(sdk);
         }
-        return nativeOntIdTx;
+        return ontId;
+    }
+    public GlobalParams gParams(){
+        if (globalParams == null){
+            globalParams = new GlobalParams(sdk);
+        }
+        return globalParams;
+    }
+    public Auth auth(){
+        if (auth == null){
+            auth = new Auth(sdk);
+        }
+        return auth;
+    }
+    public Governance governance(){
+        if (governance == null){
+            governance = new Governance(sdk);
+        }
+        return governance;
     }
 }

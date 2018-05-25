@@ -96,7 +96,7 @@ public class Vm {
         tx.author = author;
         tx.email = email;
         tx.gasLimit = gaslimit;
-        tx.gasLimit = gasprice;
+        tx.gasPrice = gasprice;
         tx.description = desp;
         return tx;
     }

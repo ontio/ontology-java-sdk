@@ -76,24 +76,6 @@ public class OntId {
      * @throws Exception
      */
     public Identity sendRegister(Identity ident, String password,String payer,String payerpassword,long gaslimit,long gasprice) throws Exception {
-        return sendRegister(ident, password, payer,payerpassword,gaslimit, gasprice, false);
-    }
-
-    /**
-     *
-     * @param ident
-     * @param password
-     * @param payerpassword
-     * @param payer
-     * @param gasprice
-     * @return
-     * @throws Exception
-     */
-    public Identity sendRegisterPreExec(Identity ident, String password,String payerpassword,String payer,long gaslimit, long gasprice) throws Exception {
-        return sendRegister(ident, password, payer,payerpassword, gaslimit,gasprice, true);
-    }
-
-    private Identity sendRegister(Identity ident, String password, String payer,String payerpassword,long gaslimit,long gasprice,boolean preExec) throws Exception {
         if(gasprice < 0){
             throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
         }
@@ -105,21 +87,35 @@ public class OntId {
         sdk.signTx(tx, ident.ontid, password);
         sdk.addSign(tx,payer,payerpassword);
         Identity identity = sdk.getWalletMgr().addOntIdController(ident.ontid, info.encryptedPrikey, info.ontid);
-        sdk.getWalletMgr().writeWallet();
-        boolean b = false;
-        if(preExec){
-            Object obj = (String) sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
-            String result = ((JSONObject) obj).getString("Result");
-            if (Integer.parseInt(result) == 0) {
-                throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
-            }
-        }else{
-            b = sdk.getConnect().sendRawTransaction(tx.toHexString());
-            if (!b) {
-                throw new SDKException(ErrorCode.SendRawTxError);
-            }
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
+        if (!b) {
+            throw new SDKException(ErrorCode.SendRawTxError);
         }
+        sdk.getWalletMgr().writeWallet();
         return identity;
+    }
+
+    /**
+     *
+     * @param ident
+     * @param password
+     * @return
+     * @throws Exception
+     */
+    public long sendRegisterGetGasLimit(Identity ident, String password) throws Exception {
+        if (contractAddress == null) {
+            throw new SDKException(ErrorCode.NullCodeHash);
+        }
+        IdentityInfo info = sdk.getWalletMgr().getIdentityInfo(ident.ontid, password);
+        Transaction tx = makeRegister(ident.ontid,password,null,0,0);
+        sdk.signTx(tx, ident.ontid, password);
+        Identity identity = sdk.getWalletMgr().addOntIdController(ident.ontid, info.encryptedPrikey, info.ontid);
+        Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+        String result = ((JSONObject) obj).getString("Result");
+        if (Integer.parseInt(result) == 0) {
+            throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
+        }
+        return ((JSONObject) obj).getLong("Gas");
     }
 
     /**

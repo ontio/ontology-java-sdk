@@ -72,8 +72,12 @@ public class Ont {
      * @throws Exception
      */
     public String sendTransfer(String sendAddr, String password, String recvAddr, long amount,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
-        if (amount <= 0 || gasprice < 0) {
-            throw new SDKException(ErrorCode.AmountError);
+        if(sendAddr==null || sendAddr.equals("")||password==null||password.equals("")|| recvAddr==null||recvAddr.equals("") ||
+                payer==null||payer.equals("")||payerpwd==null||payerpwd.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameters should not be null"));
+        }
+        if (amount <= 0 || gasprice < 0 || gaslimit < 0) {
+            throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
         }
         Transaction tx = makeTransfer(sendAddr, password, recvAddr, amount,payer,gaslimit,gasprice);
         sdk.signTx(tx, sendAddr, password);
@@ -98,14 +102,18 @@ public class Ont {
      * @throws Exception
      */
     public Transaction makeTransfer(String sendAddr, String password, String recvAddr, long amount,String payer,long gaslimit,long gasprice) throws Exception {
-        if (amount <= 0 || gasprice < 0) {
-            throw new SDKException(ErrorCode.AmountError);
+        if(sendAddr==null || sendAddr.equals("")||password==null||password.equals("")|| recvAddr==null||recvAddr.equals("") ||
+                payer==null||payer.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameters should not be null"));
+        }
+        if (amount <= 0 || gasprice < 0 || gaslimit < 0) {
+            throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
         }
         amount = amount * precision;
         AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
         State state = new State(Address.addressFromPubKey(sender.pubkey), Address.decodeBase58(recvAddr), amount);
         Transfers transfers = new Transfers(new State[]{state});
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"transfer",transfers.toArray(), VmType.Native.value(), sendAddr,gaslimit,gasprice);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"transfer",transfers.toArray(), VmType.Native.value(), payer,gaslimit,gasprice);
         return tx;
     }
 
@@ -159,8 +167,12 @@ public class Ont {
      * @throws Exception
      */
     public String sendApprove(String sendAddr, String password, String recvAddr, long amount,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
-        if (amount <= 0 || gasprice < 0) {
-            throw new SDKException(ErrorCode.AmountError);
+        if(sendAddr==null || sendAddr.equals("")||password==null||password.equals("")|| recvAddr==null||recvAddr.equals("") ||
+                payer==null||payer.equals("")||payerpwd==null||payerpwd.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameters should not be null"));
+        }
+        if (amount <= 0 || gasprice < 0 || gaslimit < 0) {
+            throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
         }
         Transaction tx = makeApprove(sendAddr,password,recvAddr,amount,payer,gaslimit,gasprice);
         sdk.signTx(tx,sendAddr,password);
@@ -185,8 +197,12 @@ public class Ont {
      * @throws Exception
      */
     public Transaction makeApprove(String sendAddr,String password,String recvAddr,long amount,String payer,long gaslimit,long gasprice) throws Exception {
-        if (amount <= 0 || gasprice < 0) {
-            throw new SDKException(ErrorCode.AmountError);
+        if(sendAddr==null || sendAddr.equals("")||password==null||password.equals("")||recvAddr==null || recvAddr.equals("")||
+                payer==null||payer.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameters should not be null"));
+        }
+        if (amount <= 0 || gasprice < 0 || gaslimit < 0) {
+            throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
         }
         AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
         State state = new State(Address.addressFromPubKey(sender.pubkey), Address.decodeBase58(recvAddr), amount);
@@ -209,10 +225,14 @@ public class Ont {
      * @throws Exception
      */
     public String sendTransferFrom(String sendAddr, String password, String fromAddr, String toAddr,long amount,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
-        if (amount <= 0 || gasprice < 0) {
-            throw new SDKException(ErrorCode.AmountError);
+        if(sendAddr==null || sendAddr.equals("")||password==null||password.equals("")||fromAddr==null||fromAddr.equals("")||toAddr==null||toAddr.equals("")||
+                payer==null||payer.equals("")||payerpwd==null||payerpwd.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameters should not be null"));
         }
-        Transaction tx = makeTransferFrom(sendAddr,password,fromAddr,toAddr,payer,amount,gaslimit,gasprice);
+        if (amount <= 0 || gasprice < 0 || gaslimit < 0) {
+            throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
+        }
+        Transaction tx = makeTransferFrom(sendAddr,password,fromAddr,toAddr,amount,payer,gaslimit,gasprice);
         sdk.signTx(tx,sendAddr,password);
         sdk.addSign(tx,payer,payerpwd);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -231,14 +251,20 @@ public class Ont {
      * @param payer
      * @param amount
      * @param gaslimit
-     * @param gas
+     * @param gasprice
      * @return
      * @throws Exception
      */
-    public Transaction makeTransferFrom(String sendAddr, String password, String fromAddr, String toAddr,String payer, long amount,long gaslimit,long gas) throws Exception {
+    public Transaction makeTransferFrom(String sendAddr, String password, String fromAddr, String toAddr, long amount,String payer,long gaslimit,long gasprice) throws Exception {
+        if(sendAddr==null || sendAddr.equals("")||password==null||password.equals("")||fromAddr==null||fromAddr.equals("")||toAddr==null||toAddr.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameters should not be null"));
+        }
+        if (amount <= 0 || gasprice < 0 || gaslimit < 0) {
+            throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
+        }
         AccountInfo sender = sdk.getWalletMgr().getAccountInfo(sendAddr, password);
         TransferFrom transferFrom = new TransferFrom(Address.addressFromPubKey(sender.pubkey),Address.decodeBase58(fromAddr), Address.decodeBase58(toAddr), amount);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"transferFrom", transferFrom.toArray(), VmType.Native.value(), sendAddr,gaslimit,gas);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"transferFrom", transferFrom.toArray(), VmType.Native.value(), payer,gaslimit,gasprice);
         return tx;
     }
 
@@ -323,8 +349,12 @@ public class Ont {
      * @throws Exception
      */
     public String sendTransferToMany(String sendAddr, String password, String[] recvAddr, long[] amount,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
-        if(gasprice < 0){
-            throw new SDKException(ErrorCode.AmountError);
+        if(sendAddr==null || sendAddr.equals("")||password==null||password.equals("")|| recvAddr==null||recvAddr.length==0 || amount ==null||amount.length==0||
+                payer==null||payer.equals("")||payerpwd==null||payerpwd.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameters should not be null"));
+        }
+        if (gasprice < 0 || gaslimit < 0) {
+            throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
         }
         if (recvAddr.length != amount.length){
             throw new SDKException(ErrorCode.ParamLengthNotSame);
@@ -357,8 +387,12 @@ public class Ont {
      * @throws Exception
      */
     public Transaction makeTransferToMany(String sendAddr, String password, String[] recvAddr, long[] amount,String payer,long gaslimit,long gasprice) throws Exception {
-        if(gasprice < 0){
-            throw new SDKException(ErrorCode.AmountError);
+        if(sendAddr==null || sendAddr.equals("")||password==null||password.equals("")|| recvAddr==null||recvAddr.length==0 ||amount==null||amount.length==0||
+                payer==null||payer.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameters should not be null"));
+        }
+        if (gasprice < 0 || gaslimit < 0) {
+            throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
         }
         if (recvAddr.length != amount.length){
             throw new SDKException(ErrorCode.ParamLengthNotSame);
@@ -396,8 +430,12 @@ public class Ont {
      * @throws Exception
      */
     public String sendTransferFromMany(String[] sendAddr, String[] password, String recvAddr, long[] amount,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
-        if(gasprice < 0){
-            throw new SDKException(ErrorCode.AmountError);
+        if(sendAddr==null || sendAddr.length==0||password==null||password.length==0|| recvAddr==null||recvAddr.equals("") ||amount==null||amount.length==0||
+                payer==null||payer.equals("")||payerpwd==null||payerpwd.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameters should not be null"));
+        }
+        if (gasprice < 0 || gaslimit < 0) {
+            throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
         }
         if (sendAddr.length != password.length){
             throw new SDKException(ErrorCode.ParamLengthNotSame);
@@ -444,8 +482,12 @@ public class Ont {
      * @throws Exception
      */
     public Transaction makeTransferFromMany(String[] sendAddr, String[] password, String recvAddr, long[] amount,String payer,long gaslimit,long gasprice) throws Exception {
-        if(gasprice < 0){
-            throw new SDKException(ErrorCode.AmountError);
+        if(sendAddr==null || sendAddr.length==0||password==null||password.length==0|| recvAddr==null||recvAddr.equals("") ||amount==null||amount.length==0||
+                payer==null||payer.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameters should not be null"));
+        }
+        if (gasprice < 0 || gaslimit < 0) {
+            throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
         }
         if (sendAddr.length != password.length){
             throw new SDKException(ErrorCode.ParamLengthNotSame);

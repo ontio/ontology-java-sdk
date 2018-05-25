@@ -317,7 +317,7 @@ public class Auth {
         if(key <0 || gaslimit < 0 || gasprice < 0){
             throw new SDKException(ErrorCode.ParamErr("key gaslimit or gasprice should not be less than 0"));
         }
-        byte[] parabytes = new WithdrawParam(contractAddr.getBytes(),ontid.getBytes(),delegate.getBytes(),role.getBytes(),key).toArray();
+        byte[] parabytes = new AuthWithdrawParam(contractAddr.getBytes(),ontid.getBytes(),delegate.getBytes(),role.getBytes(),key).toArray();
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"transfer",parabytes, VmType.Native.value(), payer,gaslimit,gasprice);
         return tx;
     }
@@ -462,13 +462,13 @@ class DelegateParam implements  Serializable{
     }
 }
 
-class WithdrawParam implements Serializable{
+class AuthWithdrawParam implements Serializable{
     byte[] contractAddr;
     byte[] initiator;
     byte[] delegate;
     byte[] role;
     int keyNo;
-    WithdrawParam(byte[] contractAddr,byte[] initiator, byte[] delegate,byte[] role,int keyNo){
+    public AuthWithdrawParam(byte[] contractAddr,byte[] initiator, byte[] delegate,byte[] role,int keyNo){
         this.contractAddr = contractAddr;
         this.initiator = initiator;
         this.delegate = delegate;

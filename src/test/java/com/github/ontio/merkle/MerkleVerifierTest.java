@@ -2,6 +2,7 @@ package com.github.ontio.merkle;
 
 import com.alibaba.fastjson.JSON;
 import com.github.ontio.OntSdk;
+import com.github.ontio.OntSdkTest;
 import com.github.ontio.common.UInt256;
 import com.github.ontio.core.block.Block;
 import com.github.ontio.core.transaction.Transaction;
@@ -28,8 +29,7 @@ public class MerkleVerifierTest {
 
     @Before
     public void setUp() throws SDKException {
-        String ip = "http://127.0.0.1";
-        String restUrl = ip + ":" + "20334";
+        String restUrl = OntSdkTest.URL;
 
         ontSdk = OntSdk.getInstance();
         ontSdk.setRestful(restUrl);

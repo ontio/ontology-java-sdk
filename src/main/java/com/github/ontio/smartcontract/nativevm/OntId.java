@@ -34,6 +34,7 @@ import com.github.ontio.crypto.KeyType;
 import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
+import com.github.ontio.io.Serializable;
 import com.github.ontio.merkle.MerkleVerifier;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.claim.Claim;
@@ -70,14 +71,18 @@ public class OntId {
      * @param ident
      * @param password
      * @param payer
-     * @param payerpassword
+     * @param payerpwd
+     * @param gaslimit
      * @param gasprice
      * @return
      * @throws Exception
      */
-    public Identity sendRegister(Identity ident, String password,String payer,String payerpassword,long gaslimit,long gasprice) throws Exception {
-        if(gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+    public Identity sendRegister(Identity ident, String password,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+        if(ident ==null || password ==null || password.equals("")||payer==null || payer.equals("")||payerpwd ==null || payerpwd.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gasprice < 0 || gaslimit<0){
+            throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
@@ -85,7 +90,7 @@ public class OntId {
         IdentityInfo info = sdk.getWalletMgr().getIdentityInfo(ident.ontid, password);
         Transaction tx = makeRegister(ident.ontid,password,payer,gaslimit,gasprice);
         sdk.signTx(tx, ident.ontid, password);
-        sdk.addSign(tx,payer,payerpassword);
+        sdk.addSign(tx,payer,payerpwd);
         Identity identity = sdk.getWalletMgr().addOntIdController(ident.ontid, info.encryptedPrikey, info.ontid);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (!b) {
@@ -103,6 +108,9 @@ public class OntId {
      * @throws Exception
      */
     public long sendRegisterGetGasLimit(Identity ident, String password) throws Exception {
+        if(ident ==null || password ==null || password.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -128,8 +136,11 @@ public class OntId {
      * @throws Exception
      */
     public Transaction makeRegister(String ontid,String password,String payer,long gaslimit,long gasprice) throws Exception {
-        if(gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+        if(password ==null || password.equals("")||payer==null || payer.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gasprice < 0 || gaslimit<0){
+            throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
@@ -149,15 +160,18 @@ public class OntId {
      * @param password
      * @param attrsMap
      * @param payer
-     * @param payerpassword
+     * @param payerpwd
      * @param gasprice
      * @return
      * @throws Exception
      */
 
-    public Identity sendRegisterWithAttrs(Identity ident, String password,Map<String, Object> attrsMap,String payer,String payerpassword,long gaslimit,long gasprice) throws Exception {
-        if(gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+    public Identity sendRegisterWithAttrs(Identity ident, String password,Map<String, Object> attrsMap,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+        if(ident ==null || password ==null || password.equals("")||payer==null || payer.equals("")||payerpwd ==null || payerpwd.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gasprice < 0 || gaslimit<0){
+            throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
@@ -166,7 +180,7 @@ public class OntId {
         String ontid = info.ontid;
         Transaction tx = makeRegisterWithAttrs(ontid,password,attrsMap,payer,gaslimit,gasprice);
         sdk.signTx(tx, ontid, password);
-        sdk.addSign(tx,payer,payerpassword);
+        sdk.addSign(tx,payer,payerpwd);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.ontid);
         sdk.getWalletMgr().writeWallet();
         boolean b = false;
@@ -185,8 +199,11 @@ public class OntId {
      * @throws Exception
      */
     public Transaction makeRegisterWithAttrs(String ontid,String password,Map<String, Object> attrsMap,String payer,long gaslimit,long gasprice) throws Exception {
-        if(gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+        if(password ==null || password.equals("")||payer==null || payer.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gasprice < 0 || gaslimit<0){
+            throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
@@ -242,6 +259,9 @@ public class OntId {
      * @throws IOException
      */
     public String sendGetPublicKeys(String ontid) throws SDKException, ConnectorException, IOException {
+        if(ontid == null || ontid.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("ontid should not be null"));
+        }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -280,6 +300,9 @@ public class OntId {
      * @throws IOException
      */
     public String sendGetKeyState(String ontid,int index) throws SDKException, ConnectorException, IOException {
+        if(ontid ==null || ontid.equals("")||index <0){
+            throw new SDKException(ErrorCode.ParamErr("parameter is wrong"));
+        }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -294,6 +317,9 @@ public class OntId {
     }
 
     public String sendGetAttributes(String ontid) throws SDKException, ConnectorException, IOException {
+        if(ontid == null || ontid.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("ontid should not be null"));
+        }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -330,16 +356,19 @@ public class OntId {
      * @param password
      * @param newpubkey
      * @param payer
-     * @param payerpassword
+     * @param payerpwd
      * @param gaslimit
      * @param gasprice
      * @return
      * @throws Exception
      */
 
-    public String sendAddPubKey(String ontid, String password, String newpubkey,String payer,String payerpassword,long gaslimit,long gasprice) throws Exception {
-        if(gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+    public String sendAddPubKey(String ontid, String password, String newpubkey,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+        if(ontid==null || ontid.equals("")||password ==null || password.equals("")||payer==null || payer.equals("")||payerpwd==null || payerpwd.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gasprice < 0 || gaslimit<0){
+            throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
@@ -347,7 +376,7 @@ public class OntId {
         String addr = ontid.replace(Common.didont, "");
         Transaction tx = makeAddPubKey(ontid,password,newpubkey,payer,gaslimit,gasprice);
         sdk.signTx(tx, addr, password);
-        sdk.addSign(tx,payer,payerpassword);
+        sdk.addSign(tx,payer,payerpwd);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -366,6 +395,12 @@ public class OntId {
      * @throws Exception
      */
     public Transaction makeAddPubKey(String ontid,String password,String newpubkey,String payer,long gaslimit,long gasprice) throws Exception {
+        if(ontid==null || ontid.equals("")||password ==null || password.equals("")||payer==null || payer.equals("")||newpubkey==null||newpubkey.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gasprice < 0 || gaslimit<0){
+            throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
+        }
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid.replace(Common.didont,""), password);
         byte[] pk = Helper.hexToBytes(info.pubkey);
         byte[] parabytes = buildParams(ontid.getBytes(),Helper.hexToBytes(newpubkey),pk);
@@ -379,15 +414,19 @@ public class OntId {
      * @param password
      * @param removePubkey
      * @param payer
-     * @param payerpassword
+     * @param payerpwd
      * @param gasprice
      * @return
      * @throws Exception
      */
 
-    public String sendRemovePubKey(String ontid, String password, String removePubkey,String payer,String payerpassword,long gaslimit,long gasprice) throws Exception {
-        if(gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+    public String sendRemovePubKey(String ontid, String password, String removePubkey,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+        if(ontid==null || ontid.equals("")||password ==null || password.equals("")||payer==null || payer.equals("")||removePubkey==null||removePubkey.equals("")
+                ||payerpwd==null||payerpwd.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gasprice < 0 || gaslimit<0){
+            throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
@@ -395,7 +434,7 @@ public class OntId {
         String addr = ontid.replace(Common.didont, "");
         Transaction tx = makeRemovePubKey(ontid,password,removePubkey,payer,gaslimit,gasprice);
         sdk.signTx(tx, addr, password);
-        sdk.addSign(tx,payer,payerpassword);
+        sdk.addSign(tx,payer,payerpwd);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -414,6 +453,15 @@ public class OntId {
      * @throws Exception
      */
     public Transaction makeRemovePubKey(String ontid, String password, String removePubkey,String payer,long gaslimit,long gasprice) throws Exception {
+        if(ontid==null || ontid.equals("")||password ==null || password.equals("")||payer==null || payer.equals("")||removePubkey==null||removePubkey.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gasprice < 0 || gaslimit<0){
+            throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
+        }
+        if (contractAddress == null) {
+            throw new SDKException(ErrorCode.NullCodeHash);
+        }
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid.replace(Common.didont,""), password);
         byte[] pk = Helper.hexToBytes(info.pubkey);
         byte[] parabytes = buildParams(ontid.getBytes(),Helper.hexToBytes(removePubkey),pk);
@@ -427,15 +475,18 @@ public class OntId {
      * @param password
      * @param recovery
      * @param payer
-     * @param payerpassword
+     * @param payerpwd
      * @param gasprice
      * @return
      * @throws Exception
      */
 
-    public String sendAddRecovery(String ontid, String password, String recovery,String payer,String payerpassword,long gaslimit,long gasprice) throws Exception {
-        if(gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+    public String sendAddRecovery(String ontid, String password, String recovery,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+        if(ontid==null || ontid.equals("")||password ==null || password.equals("")||payer==null || payer.equals("")||recovery==null||recovery.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gasprice < 0 || gaslimit<0){
+            throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
@@ -443,7 +494,7 @@ public class OntId {
         String addr = ontid.replace(Common.didont, "");
         Transaction tx = makeAddRecovery(ontid,password,recovery,payer,gaslimit,gasprice);
         sdk.signTx(tx, addr, password);
-        sdk.addSign(tx,payer,payerpassword);
+        sdk.addSign(tx,payer,payerpwd);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -462,8 +513,11 @@ public class OntId {
      * @throws Exception
      */
     public Transaction makeAddRecovery(String ontid, String password, String recovery,String payer,long gaslimit,long gasprice) throws Exception {
-        if(gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+        if(ontid==null || ontid.equals("")||password ==null || password.equals("")||payer==null || payer.equals("")||recovery ==null||recovery.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gasprice < 0 || gaslimit<0){
+            throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
@@ -486,8 +540,11 @@ public class OntId {
      * @throws Exception
      */
     public String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery, String password,long gaslimit,long gasprice) throws Exception {
-        if(gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+        if(ontid==null || ontid.equals("")||password ==null || password.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gasprice < 0 || gaslimit<0){
+            throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
@@ -512,8 +569,11 @@ public class OntId {
      * @throws SDKException
      */
     public Transaction makeChangeRecovery(String ontid, String newRecovery, String oldRecovery, String password,long gaslimit,long gasprice) throws SDKException {
-        if(gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+        if(ontid==null || ontid.equals("")||password ==null || password.equals("")||newRecovery==null||newRecovery.equals("")||oldRecovery==null||oldRecovery.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gasprice < 0 || gaslimit<0){
+            throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
@@ -537,8 +597,12 @@ public class OntId {
      * @throws Exception
      */
     private String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery,String[] addresses, String[] password,long gaslimit,long gasprice) throws Exception {
-        if(gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+        if(ontid==null || ontid.equals("")||password ==null || password.length==0||newRecovery==null||newRecovery.equals("")||oldRecovery==null||oldRecovery.equals("")||
+                addresses==null||addresses.length==0){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gasprice < 0 || gaslimit<0){
+            throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         if(addresses.length != password.length) {
             throw new SDKException(ErrorCode.ParamErr("address.length is not same with password.length"));
@@ -567,14 +631,17 @@ public class OntId {
      * @param password
      * @param attrsMap
      * @param payer
-     * @param payerpassword
+     * @param payerpwd
      * @param gasprice
      * @return
      * @throws Exception
      */
-    public String sendAddAttributes(String ontid, String password, Map<String, Object> attrsMap,String payer,String payerpassword,long gaslimit,long gasprice) throws Exception {
-        if(gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+    public String sendAddAttributes(String ontid, String password, Map<String, Object> attrsMap,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+        if(ontid==null || ontid.equals("")||password ==null||attrsMap==null||payer==null||payer.equals("")||payerpwd==null||payerpwd.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gasprice < 0 || gaslimit<0){
+            throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
@@ -582,7 +649,7 @@ public class OntId {
         String addr = ontid.replace(Common.didont, "");
         Transaction tx = makeAddAttributes(ontid,password,attrsMap,payer,gaslimit,gasprice);
         sdk.signTx(tx, addr, password);
-        sdk.addSign(tx,payer,payerpassword);
+        sdk.addSign(tx,payer,payerpwd);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -601,8 +668,11 @@ public class OntId {
      * @throws Exception
      */
     public Transaction makeAddAttributes(String ontid, String password, Map<String, Object> attrsMap,String payer,long gaslimit,long gasprice) throws Exception {
-        if(gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+        if(ontid==null || ontid.equals("")||password ==null||attrsMap==null||payer==null||payer.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gasprice < 0 || gaslimit<0){
+            throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
@@ -621,14 +691,17 @@ public class OntId {
      * @param password
      * @param path
      * @param payer
-     * @param payerpassword
+     * @param payerpwd
      * @param gasprice
      * @return
      * @throws Exception
      */
-    public String sendRemoveAttribute(String ontid,String password,String path,String payer,String payerpassword,long gaslimit,long gasprice) throws Exception {
-        if(gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+    public String sendRemoveAttribute(String ontid,String password,String path,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+        if(ontid==null || ontid.equals("")||password ==null||payer==null||payer.equals("")||path==null||path.equals("")||payerpwd==null||payerpwd.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gasprice < 0 || gaslimit<0){
+            throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
@@ -636,7 +709,7 @@ public class OntId {
         String addr = ontid.replace(Common.didont, "");
         Transaction tx = makeRemoveAttribute(ontid,password,path,payer,gaslimit,gasprice);
         sdk.signTx(tx, addr, password);
-        sdk.addSign(tx,payer,payerpassword);
+        sdk.addSign(tx,payer,payerpwd);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -655,8 +728,11 @@ public class OntId {
      * @throws Exception
      */
     public Transaction makeRemoveAttribute(String ontid,String password,String path,String payer,long gaslimit,long gasprice) throws Exception {
-        if(gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+        if(ontid==null || ontid.equals("")||password ==null||payer==null||payer.equals("")||path==null||path.equals("")||payer==null||payer.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gasprice < 0 || gaslimit<0){
+            throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
@@ -676,6 +752,9 @@ public class OntId {
      * @throws Exception
      */
     public Object getMerkleProof(String txhash) throws Exception {
+        if(txhash==null||txhash.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("txhash should not be null"));
+        }
         Map proof = new HashMap();
         Map map = new HashMap();
         int height = sdk.getConnect().getBlockHeightByTxHash(txhash);
@@ -701,13 +780,16 @@ public class OntId {
 
     /**
      *
-     * @param claim
+     * @param merkleProof
      * @return
      * @throws Exception
      */
-    public boolean verifyMerkleProof(String claim) throws Exception {
+    public boolean verifyMerkleProof(String merkleProof) throws Exception {
+        if(merkleProof ==null||merkleProof.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("claim should not be null"));
+        }
         try {
-            JSONObject obj = JSON.parseObject(claim);
+            JSONObject obj = JSON.parseObject(merkleProof);
             Map proof = (Map) obj.getJSONObject("Proof");
             String txhash = (String) proof.get("TxnHash");
             int blockHeight = (int) proof.get("BlockHeight");
@@ -748,6 +830,9 @@ public class OntId {
      * @throws Exception
      */
     public String createOntIdClaim(String signerOntid, String password, String context, Map<String, Object> claimMap, Map metaData,Map clmRevMap,long expire) throws Exception {
+        if(signerOntid==null|| signerOntid.equals("")||password==null||password.equals("")||context==null||context.equals("")||claimMap==null||metaData ==null||clmRevMap==null||expire<0){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
         if(expire < System.currentTimeMillis()/1000){
             throw new SDKException(ErrorCode.ExpireErr);
         }
@@ -794,6 +879,9 @@ public class OntId {
      * @throws Exception
      */
     public boolean verifyOntIdClaim(String claim) throws Exception {
+        if(claim==null){
+            throw new SDKException(ErrorCode.ParamErr("claim should not be null"));
+        }
         DataSignature sign = null;
         try {
 
@@ -837,6 +925,9 @@ public class OntId {
      * @throws IOException
      */
     public String sendGetDDO(String ontid) throws SDKException, ConnectorException, IOException {
+        if(ontid==null){
+            throw new SDKException(ErrorCode.ParamErr("ontid should not be null"));
+        }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }

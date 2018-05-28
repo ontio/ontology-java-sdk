@@ -230,42 +230,6 @@ public class OntId {
         }
         return attrBytes;
     }
-
-    private byte[] serializeAttributes(Map<String, Object> attrsMap) throws IOException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        BinaryWriter writer = new BinaryWriter(byteArrayOutputStream);
-
-        for (Map.Entry<String, Object> e : attrsMap.entrySet()) {
-            Object val = e.getValue();
-            if (val instanceof BigInteger) {
-                writer.writeVarBytes(e.getKey().getBytes());
-                writer.writeVarBytes("Integer".getBytes());
-                writer.writeVarBytes(String.valueOf((int) val).getBytes());
-            } else if (val instanceof byte[]) {
-                writer.writeVarBytes(e.getKey().getBytes());
-                writer.writeVarBytes("ByteArray".getBytes());
-                writer.writeVarBytes(new String((byte[]) val).getBytes());
-            } else if (val instanceof Boolean) {
-                writer.writeVarBytes(e.getKey().getBytes());
-                writer.writeVarBytes("Boolean".getBytes());
-                writer.writeVarBytes(String.valueOf((boolean) val).getBytes());
-            } else if (val instanceof Integer) {
-                writer.writeVarBytes(e.getKey().getBytes());
-                writer.writeVarBytes("Integer".getBytes());
-                writer.writeVarBytes(String.valueOf((int) val).getBytes());
-            } else if (val instanceof String) {
-                writer.writeVarBytes(e.getKey().getBytes());
-                writer.writeVarBytes("String".getBytes());
-                writer.writeVarBytes(((String) val).getBytes());
-            } else {
-                writer.writeVarBytes(e.getKey().getBytes());
-                writer.writeVarBytes("Object".getBytes());
-                writer.writeVarBytes(JSON.toJSONString(val).getBytes());
-            }
-        }
-        return byteArrayOutputStream.toByteArray();
-    }
-
     /**
      *
      * @param ontid

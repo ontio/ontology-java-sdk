@@ -2,6 +2,7 @@ package demo;
 
 import com.github.ontio.OntSdk;
 import com.github.ontio.common.Common;
+import com.github.ontio.core.ontid.Attribute;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Identity;
@@ -42,19 +43,19 @@ public class NativeOntIdDemo {
 
             if(ontSdk.getWalletMgr().getIdentitys().size() < 2){
                 Identity identity = ontSdk.getWalletMgr().createIdentity(password);
-                Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,payerAcc.address,0,0);
+                Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,payerAcc.address,ontSdk.DEFAULT_GAS_LIMIT,0);
                 ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
                 ontSdk.addSign(tx,payerAcc.address,password);
                 ontSdk.getConnect().sendRawTransaction(tx);
 
                 Identity identity2 = ontSdk.getWalletMgr().createIdentity(password);
-                ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcc.address,password,0,0);
+                ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcc.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
 
                 ontSdk.getWalletMgr().writeWallet();
                 Thread.sleep(6000);
             }
 
-//            System.exit(0);
+//
             List<Identity> dids = ontSdk.getWalletMgr().getIdentitys();
 
             System.out.println("dids.get(0).ontid:" + dids.get(0).ontid);
@@ -62,12 +63,18 @@ public class NativeOntIdDemo {
 
             String ddo1 = ontSdk.nativevm().ontId().sendGetDDO(dids.get(0).ontid);
             String publicKeys = ontSdk.nativevm().ontId().sendGetPublicKeys(dids.get(0).ontid);
-//            String ddo2 = ontSdk.nativevm().ontId().sendGetDDO(dids.get(1).ontid);
+            String ddo2 = ontSdk.nativevm().ontId().sendGetDDO(dids.get(1).ontid);
 
-            Map attrs = new HashMap<>();
-            attrs.put("key1","value1");
-//            ontSdk.nativevm().ontId().sendAddAttributes(dids.get(0).ontid,password,attrs,payerAcc.address,password,0);
-            ontSdk.nativevm().ontId();
+            System.out.println("ddo1:" + ddo1);
+//            System.out.println("ddo2:" + ddo2);
+
+            System.exit(0);
+
+            Attribute[] attributes = new Attribute[1];
+            attributes[0] = new Attribute("key1".getBytes(),"value1".getBytes(),"String".getBytes());
+            ontSdk.nativevm().ontId().sendAddAttributes(dids.get(0).ontid,password,attributes,payerAcc.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
+
+            System.exit(0);
 
             System.out.println("ddo1:" + ddo1);
             System.out.println("publicKeys:" + publicKeys);

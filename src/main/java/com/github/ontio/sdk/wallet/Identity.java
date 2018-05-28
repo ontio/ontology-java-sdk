@@ -34,11 +34,12 @@ public class Identity {
     public boolean lock = false;
     public List<Control> controls = new ArrayList<Control>();
     public  Object extra = null;
-    public void setExtra(Object extra){
-        this.extra = extra;
-    }
+
     public Object getExtra(){
         return extra;
+    }
+    public void setExtra(Object extra){
+        this.extra = extra;
     }
     @Override
     public String toString() {

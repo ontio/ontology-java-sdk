@@ -85,9 +85,6 @@ public class Claim {
         ClaimStr += new String(headerBytes) + "." + new String(payloadBytes) + "." + new String(Base64.getEncoder().encode(signature));
     }
 
-    public String getClaimStr() {
-        return ClaimStr;
-    }
 
     public String getClaim() {
         Map tmp = new HashMap<String, Object>();
@@ -95,6 +92,9 @@ public class Claim {
             tmp.put(e.getKey(), e.getValue());
         }
         return JSONObject.toJSONString(tmp);
+    }
+    public String getClaimStr() {
+        return ClaimStr;
     }
 }
 

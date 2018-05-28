@@ -158,6 +158,69 @@ public class Account {
         return curveParams;
     }
 
+    /**
+     * @param encryptedPriKey
+     * @param passphrase
+     * @return
+     * @throws Exception
+     */
+    public static String getEcbDecodedPrivateKey(String encryptedPriKey, String passphrase, int n, SignatureScheme scheme) throws Exception {
+        if (encryptedPriKey == null) {
+            throw new NullPointerException();
+        }
+        byte[] decoded = Base58.decodeChecked(encryptedPriKey);
+        if (decoded.length != 43 || decoded[0] != (byte) 0x01 || decoded[1] != (byte) 0x42 || decoded[2] != (byte) 0xe0) {
+            throw new SDKException(ErrorCode.Decoded3bytesError);
+        }
+        byte[] data = Arrays.copyOfRange(decoded, 0, decoded.length - 4);
+        return decode(passphrase, data, n, scheme);
+    }
+
+    private static String decode(String passphrase, byte[] input, int n, SignatureScheme scheme) throws Exception {
+        int N = n;
+        int r = 8;
+        int p = 8;
+        int dkLen = 64;
+        byte[] addresshash = new byte[4];
+        byte[] encryptedkey = new byte[32];
+        System.arraycopy(input, 3, addresshash, 0, 4);
+        System.arraycopy(input, 7, encryptedkey, 0, 32);
+
+        byte[] derivedkey = SCrypt.generate(passphrase.getBytes(StandardCharsets.UTF_8), addresshash, N, r, p, dkLen);
+        byte[] derivedhalf1 = new byte[32];
+        byte[] derivedhalf2 = new byte[32];
+        System.arraycopy(derivedkey, 0, derivedhalf1, 0, 32);
+        System.arraycopy(derivedkey, 32, derivedhalf2, 0, 32);
+
+        SecretKeySpec skeySpec = new SecretKeySpec(derivedhalf2, "AES");
+        Cipher cipher = Cipher.getInstance("AES/CTR/NoPadding");// AES/ECB/NoPadding
+        cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+        byte[] rawkey = cipher.doFinal(encryptedkey);
+
+        String priKey = Helper.toHexString(XOR(rawkey, derivedhalf1));
+        Account account = new Account(Helper.hexToBytes(priKey), scheme);
+        Address script_hash = Address.addressFromPubKey(account.serializePublicKey());
+        String address = script_hash.toBase58();
+        byte[] addresshashTmp = Digest.sha256(Digest.sha256(address.getBytes()));
+        byte[] addresshashNew = Arrays.copyOfRange(addresshashTmp, 0, 4);
+
+        if (!new String(addresshash).equals(new String(addresshashNew))) {
+            throw new SDKException(ErrorCode.DecodePrikeyPassphraseError + Helper.toHexString(addresshash) + "," + Helper.toHexString(addresshashNew));
+        }
+        return priKey;
+    }
+
+    private static byte[] XOR(byte[] x, byte[] y) throws Exception {
+        if (x.length != y.length) {
+            throw new SDKException(ErrorCode.PrikeyLengthError);
+        }
+        byte[] ret = new byte[x.length];
+        for (int i = 0; i < x.length; i++) {
+            ret[i] = (byte) (x[i] ^ y[i]);
+        }
+        return ret;
+    }
+
     public Address getAddressU160() {
         return addressU160;
     }
@@ -371,8 +434,12 @@ public class Account {
         }
     }
 
-
     public static String getCtrDecodedPrivateKey(String encryptedPriKey, String passphrase, String address, int n, SignatureScheme scheme) throws Exception {
+        byte[] addresshashTmp = Digest.sha256(Digest.sha256(address.getBytes()));
+        byte[] addresshash = Arrays.copyOfRange(addresshashTmp, 0, 4);
+        return getCtrDecodedPrivateKey(encryptedPriKey,passphrase,addresshash,n,scheme);
+    }
+    public static String getCtrDecodedPrivateKey(String encryptedPriKey, String passphrase, byte[] salt, int n, SignatureScheme scheme) throws Exception {
         if (encryptedPriKey == null) {
             throw new SDKException(ErrorCode.EncryptedPriKeyError);
         }
@@ -383,10 +450,7 @@ public class Account {
         int p = 8;
         int dkLen = 64;
 
-        byte[] addresshashTmp = Digest.sha256(Digest.sha256(address.getBytes()));
-        byte[] addresshash = Arrays.copyOfRange(addresshashTmp, 0, 4);
-
-        byte[] derivedkey = SCrypt.generate(passphrase.getBytes(StandardCharsets.UTF_8), addresshash, N, r, p, dkLen);
+        byte[] derivedkey = SCrypt.generate(passphrase.getBytes(StandardCharsets.UTF_8), salt, N, r, p, dkLen);
         byte[] derivedhalf2 = new byte[32];
         byte[] iv = new byte[16];
         System.arraycopy(derivedkey, 0, iv, 0, 16);
@@ -396,74 +460,15 @@ public class Account {
         Cipher cipher = Cipher.getInstance("AES/CTR/NoPadding");
         cipher.init(Cipher.DECRYPT_MODE, skeySpec, new IvParameterSpec(iv));
         byte[] rawkey = cipher.doFinal(encryptedkey);
-        if (!new Account(rawkey, scheme).getAddressU160().toBase58().equals(address)) {
+        String address = new Account(rawkey, scheme).getAddressU160().toBase58();
+        byte[] addresshashTmp = Digest.sha256(Digest.sha256(address.getBytes()));
+        byte[] addresshash = Arrays.copyOfRange(addresshashTmp, 0, 4);
+        if (Arrays.equals(addresshash,salt)) {
             throw new SDKException(ErrorCode.encryptedPriKeyAddressPasswordErr);
         }
         return Helper.toHexString(rawkey);
     }
 
-    /**
-     * @param encryptedPriKey
-     * @param passphrase
-     * @return
-     * @throws Exception
-     */
-    public static String getEcbDecodedPrivateKey(String encryptedPriKey, String passphrase, int n, SignatureScheme scheme) throws Exception {
-        if (encryptedPriKey == null) {
-            throw new NullPointerException();
-        }
-        byte[] decoded = Base58.decodeChecked(encryptedPriKey);
-        if (decoded.length != 43 || decoded[0] != (byte) 0x01 || decoded[1] != (byte) 0x42 || decoded[2] != (byte) 0xe0) {
-            throw new SDKException(ErrorCode.Decoded3bytesError);
-        }
-        byte[] data = Arrays.copyOfRange(decoded, 0, decoded.length - 4);
-        return decode(passphrase, data, n, scheme);
-    }
-
-    private static String decode(String passphrase, byte[] input, int n, SignatureScheme scheme) throws Exception {
-        int N = n;
-        int r = 8;
-        int p = 8;
-        int dkLen = 64;
-        byte[] addresshash = new byte[4];
-        byte[] encryptedkey = new byte[32];
-        System.arraycopy(input, 3, addresshash, 0, 4);
-        System.arraycopy(input, 7, encryptedkey, 0, 32);
-
-        byte[] derivedkey = SCrypt.generate(passphrase.getBytes(StandardCharsets.UTF_8), addresshash, N, r, p, dkLen);
-        byte[] derivedhalf1 = new byte[32];
-        byte[] derivedhalf2 = new byte[32];
-        System.arraycopy(derivedkey, 0, derivedhalf1, 0, 32);
-        System.arraycopy(derivedkey, 32, derivedhalf2, 0, 32);
-
-        SecretKeySpec skeySpec = new SecretKeySpec(derivedhalf2, "AES");
-        Cipher cipher = Cipher.getInstance("AES/CTR/NoPadding");// AES/ECB/NoPadding
-        cipher.init(Cipher.DECRYPT_MODE, skeySpec);
-        byte[] rawkey = cipher.doFinal(encryptedkey);
-
-        String priKey = Helper.toHexString(XOR(rawkey, derivedhalf1));
-        Account account = new Account(Helper.hexToBytes(priKey), scheme);
-        Address script_hash = Address.addressFromPubKey(account.serializePublicKey());
-        String address = script_hash.toBase58();
-        byte[] addresshashTmp = Digest.sha256(Digest.sha256(address.getBytes()));
-        byte[] addresshashNew = Arrays.copyOfRange(addresshashTmp, 0, 4);
-
-        if (!new String(addresshash).equals(new String(addresshashNew))) {
-            throw new SDKException(ErrorCode.DecodePrikeyPassphraseError + Helper.toHexString(addresshash) + "," + Helper.toHexString(addresshashNew));
-        }
-        return priKey;
-    }
-
-    private static byte[] XOR(byte[] x, byte[] y) throws Exception {
-        if (x.length != y.length) {
-            throw new SDKException(ErrorCode.PrikeyLengthError);
-        }
-        byte[] ret = new byte[x.length];
-        for (int i = 0; i < x.length; i++) {
-            ret[i] = (byte) (x[i] ^ y[i]);
-        }
-        return ret;
-    }
 
     @Override
     public boolean equals(Object obj) {

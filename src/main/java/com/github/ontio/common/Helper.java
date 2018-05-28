@@ -112,10 +112,5 @@ public class Helper {
     public static void print(Map<String, Object> map) {
         System.out.println(toString(map));
     }
-
-    public static int bytes2Int(byte[] src, ByteOrder byteOrder) {
-        ByteBuffer buffer = ByteBuffer.wrap(src);
-        buffer.order(byteOrder);
-        return buffer.getInt();
-    }
+    
 }

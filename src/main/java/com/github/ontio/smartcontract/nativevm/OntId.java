@@ -28,6 +28,7 @@ import com.github.ontio.common.*;
 import com.github.ontio.core.DataSignature;
 import com.github.ontio.core.VmType;
 import com.github.ontio.core.block.Block;
+import com.github.ontio.core.ontid.Attribute;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.Curve;
 import com.github.ontio.crypto.KeyType;
@@ -153,20 +154,20 @@ public class OntId {
     }
 
 
-
     /**
      *
      * @param ident
      * @param password
-     * @param attrsMap
+     * @param attributes
      * @param payer
      * @param payerpwd
+     * @param gaslimit
      * @param gasprice
      * @return
      * @throws Exception
      */
 
-    public Identity sendRegisterWithAttrs(Identity ident, String password,Map<String, Object> attrsMap,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+    public Identity sendRegisterWithAttrs(Identity ident, String password,Attribute[] attributes,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
         if(ident ==null || password ==null || password.equals("")||payer==null || payer.equals("")||payerpwd ==null || payerpwd.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -178,7 +179,7 @@ public class OntId {
         }
         IdentityInfo info = sdk.getWalletMgr().getIdentityInfo(ident.ontid, password);
         String ontid = info.ontid;
-        Transaction tx = makeRegisterWithAttrs(ontid,password,attrsMap,payer,gaslimit,gasprice);
+        Transaction tx = makeRegisterWithAttrs(ontid,password,attributes,payer,gaslimit,gasprice);
         sdk.signTx(tx, ontid, password);
         sdk.addSign(tx,payer,payerpwd);
         Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.ontid);
@@ -192,13 +193,14 @@ public class OntId {
      *
      * @param ontid
      * @param password
-     * @param attrsMap
+     * @param attributes
      * @param payer
+     * @param gaslimit
      * @param gasprice
      * @return
      * @throws Exception
      */
-    public Transaction makeRegisterWithAttrs(String ontid,String password,Map<String, Object> attrsMap,String payer,long gaslimit,long gasprice) throws Exception {
+    public Transaction makeRegisterWithAttrs(String ontid, String password, Attribute[] attributes, String payer, long gaslimit, long gasprice) throws Exception {
         if(password ==null || password.equals("")||payer==null || payer.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -210,46 +212,24 @@ public class OntId {
         }
         IdentityInfo info = sdk.getWalletMgr().getIdentityInfo(ontid, password);
         byte[] pk = Helper.hexToBytes(info.pubkey);
-        byte[] parabytes = buildParams(ontid.getBytes(), pk, serializeAttributes(attrsMap));
+        byte[] parabytes = buildParams(ontid.getBytes(), pk, serializeAttributes(attributes));
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"regIDWithAttributes",parabytes, VmType.Native.value(), payer,gaslimit,gasprice);
         return tx;
     }
 
-    private byte[] serializeAttributes(Map<String, Object> attrsMap) throws IOException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        BinaryWriter writer = new BinaryWriter(byteArrayOutputStream);
-
-        for (Map.Entry<String, Object> e : attrsMap.entrySet()) {
-            Object val = e.getValue();
-            if (val instanceof BigInteger) {
-                writer.writeVarBytes(e.getKey().getBytes());
-                writer.writeVarBytes("Integer".getBytes());
-                writer.writeVarBytes(String.valueOf((int) val).getBytes());
-            } else if (val instanceof byte[]) {
-                writer.writeVarBytes(e.getKey().getBytes());
-                writer.writeVarBytes("ByteArray".getBytes());
-                writer.writeVarBytes(new String((byte[]) val).getBytes());
-            } else if (val instanceof Boolean) {
-                writer.writeVarBytes(e.getKey().getBytes());
-                writer.writeVarBytes("Boolean".getBytes());
-                writer.writeVarBytes(String.valueOf((boolean) val).getBytes());
-            } else if (val instanceof Integer) {
-                writer.writeVarBytes(e.getKey().getBytes());
-                writer.writeVarBytes("Integer".getBytes());
-                writer.writeVarBytes(String.valueOf((int) val).getBytes());
-            } else if (val instanceof String) {
-                writer.writeVarBytes(e.getKey().getBytes());
-                writer.writeVarBytes("String".getBytes());
-                writer.writeVarBytes(((String) val).getBytes());
-            } else {
-                writer.writeVarBytes(e.getKey().getBytes());
-                writer.writeVarBytes("Object".getBytes());
-                writer.writeVarBytes(JSON.toJSONString(val).getBytes());
-            }
+    private byte[] serializeAttributes(Attribute[] attributes) throws IOException {
+        int totalLength = 0;
+        for(Attribute attr: attributes){
+            totalLength += attr.toArray().length;
         }
-        return byteArrayOutputStream.toByteArray();
+        byte[] attrBytes = new byte[totalLength];
+        int temp = 0;
+        for(Attribute attr: attributes){
+            System.arraycopy(attr.toArray(),0,attrBytes,temp,attr.toArray().length);
+            temp += attr.toArray().length;
+        }
+        return attrBytes;
     }
-
     /**
      *
      * @param ontid
@@ -629,15 +609,15 @@ public class OntId {
      *
      * @param ontid
      * @param password
-     * @param attrsMap
+     * @param attributes
      * @param payer
      * @param payerpwd
      * @param gasprice
      * @return
      * @throws Exception
      */
-    public String sendAddAttributes(String ontid, String password, Map<String, Object> attrsMap,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
-        if(ontid==null || ontid.equals("")||password ==null||attrsMap==null||payer==null||payer.equals("")||payerpwd==null||payerpwd.equals("")){
+    public String sendAddAttributes(String ontid, String password, Attribute[] attributes,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+        if(ontid==null || ontid.equals("")||password ==null||attributes==null|| attributes.length ==0 ||payer==null||payer.equals("")||payerpwd==null||payerpwd.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
         if(gasprice < 0 || gaslimit<0){
@@ -647,7 +627,7 @@ public class OntId {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         String addr = ontid.replace(Common.didont, "");
-        Transaction tx = makeAddAttributes(ontid,password,attrsMap,payer,gaslimit,gasprice);
+        Transaction tx = makeAddAttributes(ontid,password,attributes,payer,gaslimit,gasprice);
         sdk.signTx(tx, addr, password);
         sdk.addSign(tx,payer,payerpwd);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -661,14 +641,14 @@ public class OntId {
      *
      * @param ontid
      * @param password
-     * @param attrsMap
+     * @param attributes
      * @param payer
      * @param gasprice
      * @return
      * @throws Exception
      */
-    public Transaction makeAddAttributes(String ontid, String password, Map<String, Object> attrsMap,String payer,long gaslimit,long gasprice) throws Exception {
-        if(ontid==null || ontid.equals("")||password ==null||attrsMap==null||payer==null||payer.equals("")){
+    public Transaction makeAddAttributes(String ontid, String password, Attribute[] attributes,String payer,long gaslimit,long gasprice) throws Exception {
+        if(ontid==null || ontid.equals("")||password ==null||attributes==null|| attributes.length==0 ||payer==null||payer.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
         if(gasprice < 0 || gaslimit<0){
@@ -680,7 +660,7 @@ public class OntId {
         String addr = ontid.replace(Common.didont, "");
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
         byte[] pk = Helper.hexToBytes(info.pubkey);
-        byte[] parabytes = buildParams(ontid.getBytes(),serializeAttributes(attrsMap),pk);
+        byte[] parabytes = buildParams(ontid.getBytes(),serializeAttributes(attributes),pk);
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"addAttributes",parabytes, VmType.Native.value(), payer,gaslimit,gasprice);
         return tx;
     }

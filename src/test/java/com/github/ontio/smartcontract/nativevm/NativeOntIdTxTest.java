@@ -5,6 +5,7 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.OntSdkTest;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Common;
+import com.github.ontio.core.ontid.Attribute;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.sdk.info.AccountInfo;
@@ -62,9 +63,9 @@ public class NativeOntIdTxTest {
         ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcc.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
 
         Identity identity3 = ontSdk.getWalletMgr().createIdentity(password);
-        Map  attributeMap = new HashMap();
-        attributeMap.put("key2","value2");
-        ontSdk.nativevm().ontId().sendRegisterWithAttrs(identity3,password,attributeMap,payerAcc.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
+        Attribute[] attributes = new Attribute[1];
+        attributes[0] = new Attribute("key".getBytes(),"value".getBytes(),"type".getBytes());
+        ontSdk.nativevm().ontId().sendRegisterWithAttrs(identity3,password,attributes,payerAcc.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
 
         Thread.sleep(6000);
         String ddo = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);
@@ -127,16 +128,16 @@ public class NativeOntIdTxTest {
 
     @Test
     public void sendAddAttributes() throws Exception {
-        Map attrsMap = new HashMap<>();
-        attrsMap.put("key1","value1");
-        Transaction tx = ontSdk.nativevm().ontId().makeAddAttributes(identity.ontid,password,attrsMap,payerAcc.address,ontSdk.DEFAULT_GAS_LIMIT,0);
+        Attribute[] attributes = new Attribute[1];
+        attributes[0] = new Attribute("key1".getBytes(),"value1".getBytes(),"String".getBytes());
+        Transaction tx = ontSdk.nativevm().ontId().makeAddAttributes(identity.ontid,password,attributes,payerAcc.address,ontSdk.DEFAULT_GAS_LIMIT,0);
         ontSdk.signTx(tx, identity.ontid,password);
         ontSdk.addSign(tx,payerAcc.address,password);
         ontSdk.getConnect().sendRawTransaction(tx);
 
-        Map attrsMap2 = new HashMap<>();
-        attrsMap2.put("key99","value99");
-        ontSdk.nativevm().ontId().sendAddAttributes(identity.ontid,password,attrsMap2,payerAcc.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
+        Attribute[] attributes2 = new Attribute[1];
+        attributes2[0] = new Attribute("key1".getBytes(),"value1".getBytes(),"String".getBytes());
+        ontSdk.nativevm().ontId().sendAddAttributes(identity.ontid,password,attributes2,payerAcc.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
 
         Thread.sleep(6000);
         String ddo = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);

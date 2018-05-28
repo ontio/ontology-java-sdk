@@ -10,7 +10,7 @@ public class Attribute implements Serializable {
     byte[] key;
     byte[] valueType;
     byte[] value;
-    public Attribute(byte[] key,byte[] value,byte[] valueType){
+    public Attribute(byte[] key,byte[] valueType,byte[] value){
         this.key = key;
         this.valueType = valueType;
         this.value = value;

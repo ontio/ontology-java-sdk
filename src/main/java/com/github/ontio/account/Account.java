@@ -463,7 +463,7 @@ public class Account {
         String address = new Account(rawkey, scheme).getAddressU160().toBase58();
         byte[] addresshashTmp = Digest.sha256(Digest.sha256(address.getBytes()));
         byte[] addresshash = Arrays.copyOfRange(addresshashTmp, 0, 4);
-        if (Arrays.equals(addresshash,salt)) {
+        if (!Arrays.equals(addresshash,salt)) {
             throw new SDKException(ErrorCode.encryptedPriKeyAddressPasswordErr);
         }
         return Helper.toHexString(rawkey);

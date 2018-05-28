@@ -35,40 +35,48 @@ public class DataSignature implements Signable {
     private Account account;
     private String data;
     private SignatureScheme scheme;
-    public DataSignature(){
+
+    public DataSignature() {
     }
-    public DataSignature(String data){
+
+    public DataSignature(String data) {
         this.data = data;
     }
-    public DataSignature(SignatureScheme scheme, Account acct,String  data){
+
+    public DataSignature(SignatureScheme scheme, Account acct, String data) {
         this.scheme = scheme;
         this.account = acct;
         this.data = data;
     }
-    public String getData(){
+
+    public String getData() {
         return data;
     }
+
     public byte[] signature() {
         try {
-            byte[] signData = sign(account,scheme);
+            byte[] signData = sign(account, scheme);
             return signData;
         } catch (Exception e) {
             throw new RuntimeException(ErrorCode.DataSignatureErr);
         }
     }
+
     @Override
     public byte[] sign(Account account, SignatureScheme scheme) throws Exception {
-        return account.generateSignature(getHashData(), scheme,null);
+        return account.generateSignature(getHashData(), scheme, null);
     }
+
     @Override
     public boolean verifySignature(Account account, byte[] data, byte[] signature) throws Exception {
         return account.verifySignature(data, signature);
     }
+
     @Override
     public Address[] getAddressU160ForVerifying() {
         HashSet<Address> hashes = new HashSet<Address>();
         hashes.add(Address.addressFromPubKey(account.serializePublicKey()));
-        return hashes.stream().sorted().toArray(Address[]::new);
+        return null;
     }
 
     @Override

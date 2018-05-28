@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.github.ontio.OntSdk;
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.block.Block;
 import com.github.ontio.network.rpc.RpcClient;
@@ -33,49 +34,58 @@ import com.github.ontio.network.connect.IConnector;
 import com.github.ontio.network.rest.RestClient;
 import com.github.ontio.network.rest.Result;
 import com.github.ontio.network.websocket.WebsocketClient;
+import com.github.ontio.sdk.exception.SDKException;
 
 /**
  *
  */
 public class ConnectMgr {
     private IConnector connector;
+
     public ConnectMgr(String url, String type, Object lock) {
-        if (type.equals("websocket")){
-            setConnector(new WebsocketClient(url,lock));
+        if (type.equals("websocket")) {
+            setConnector(new WebsocketClient(url, lock));
         }
     }
+
     public ConnectMgr(String url, String type) {
         if (type.equals("rpc")) {
             setConnector(new RpcClient(url));
-        } else if (type.equals("restful")){
+        } else if (type.equals("restful")) {
             setConnector(new RestClient(url));
         }
     }
-    public void startWebsocketThread(boolean log){
-        if(connector instanceof WebsocketClient){
+
+    public void startWebsocketThread(boolean log) {
+        if (connector instanceof WebsocketClient) {
             ((WebsocketClient) connector).startWebsocketThread(log);
         }
     }
-    public void setReqId(long n){
-        if(connector instanceof WebsocketClient){
+
+    public void setReqId(long n) {
+        if (connector instanceof WebsocketClient) {
             ((WebsocketClient) connector).setReqId(n);
         }
     }
-    public void send(Map map){
-        if(connector instanceof WebsocketClient){
+
+    public void send(Map map) {
+        if (connector instanceof WebsocketClient) {
             ((WebsocketClient) connector).send(map);
         }
     }
-    public void sendHeartBeat(){
-        if(connector instanceof WebsocketClient){
+
+    public void sendHeartBeat() {
+        if (connector instanceof WebsocketClient) {
             ((WebsocketClient) connector).sendHeartBeat();
         }
     }
-    public void sendSubscribe(Map map){
-        if(connector instanceof WebsocketClient){
+
+    public void sendSubscribe(Map map) {
+        if (connector instanceof WebsocketClient) {
             ((WebsocketClient) connector).sendSubscribe(map);
         }
     }
+
     public ConnectMgr(IConnector connector) {
         setConnector(connector);
     }
@@ -134,12 +144,12 @@ public class ConnectMgr {
     }
 
     public Transaction getTransaction(String txhash) throws ConnectorException, IOException {
-        txhash = txhash.replace("0x","");
+        txhash = txhash.replace("0x", "");
         return connector.getRawTransaction(txhash);
     }
 
     public Object getTransactionJson(String txhash) throws ConnectorException, IOException {
-        txhash = txhash.replace("0x","");
+        txhash = txhash.replace("0x", "");
         return connector.getRawTransactionJson(txhash);
     }
 
@@ -155,7 +165,10 @@ public class ConnectMgr {
         return connector.getBlockHeight();
     }
 
-    public Block getBlock(int height) throws ConnectorException, IOException {
+    public Block getBlock(int height) throws ConnectorException, IOException, SDKException {
+        if (height < 0) {
+            throw new SDKException(ErrorCode.ParamError);
+        }
         return connector.getBlock(height);
     }
 
@@ -177,11 +190,12 @@ public class ConnectMgr {
     }
 
     public Object getContract(String hash) throws ConnectorException, IOException {
-        hash = hash.replace("0x","");
+        hash = hash.replace("0x", "");
         return connector.getContract(hash);
     }
+
     public Object getContractJson(String hash) throws ConnectorException, IOException {
-        hash = hash.replace("0x","");
+        hash = hash.replace("0x", "");
         return connector.getContractJson(hash);
     }
 
@@ -207,8 +221,9 @@ public class ConnectMgr {
         hash = hash.replace("0x", "");
         return connector.getMerkleProof(hash);
     }
-    public String getAllowance(String asset,String from,String to) throws ConnectorException, IOException {
-        return connector.getAllowance(asset,from,to);
+
+    public String getAllowance(String asset, String from, String to) throws ConnectorException, IOException {
+        return connector.getAllowance(asset, from, to);
     }
 }
 

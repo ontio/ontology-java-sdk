@@ -34,40 +34,42 @@ import java.util.HashSet;
 import java.util.Map;
 
 public class InvokeCode extends Transaction {
-	public byte vmType;
-	public byte[] code;
+    public byte vmType;
+    public byte[] code;
 
-	public InvokeCode() {
-		super(TransactionType.InvokeCode);
-	}
+    public InvokeCode() {
+        super(TransactionType.InvokeCode);
+    }
 
-	@Override
-	protected void deserializeExclusiveData(BinaryReader reader) throws IOException {
-		try {
-			vmType = reader.readByte();
-			code = reader.readVarBytes();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	@Override
-	protected void serializeExclusiveData(BinaryWriter writer) throws IOException {
-		byte[] temp = new byte[]{vmType};
-		writer.write(temp);
-		writer.writeVarBytes(code);
-	}
-	@Override
-	public Address[] getAddressU160ForVerifying() {
-		HashSet<Address> hashes = new HashSet<Address>(Arrays.asList(super.getAddressU160ForVerifying()));
-		return hashes.stream().sorted().toArray(Address[]::new);
-	}
-	@Override
-	public Object json() {
-		Map obj = (Map)super.json();
-		Map payload = new HashMap();
-		payload.put("Code", Helper.toHexString(code));
-		payload.put("VmType",vmType& Byte.MAX_VALUE);
-		obj.put("Payload",payload);
-		return obj;
-	}
+    @Override
+    protected void deserializeExclusiveData(BinaryReader reader) throws IOException {
+        try {
+            vmType = reader.readByte();
+            code = reader.readVarBytes();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void serializeExclusiveData(BinaryWriter writer) throws IOException {
+        byte[] temp = new byte[]{vmType};
+        writer.write(temp);
+        writer.writeVarBytes(code);
+    }
+
+    @Override
+    public Address[] getAddressU160ForVerifying() {
+        return null;
+    }
+
+    @Override
+    public Object json() {
+        Map obj = (Map) super.json();
+        Map payload = new HashMap();
+        payload.put("Code", Helper.toHexString(code));
+        payload.put("VmType", vmType & Byte.MAX_VALUE);
+        obj.put("Payload", payload);
+        return obj;
+    }
 }

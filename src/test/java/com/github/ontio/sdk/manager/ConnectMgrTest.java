@@ -135,7 +135,7 @@ public class ConnectMgrTest {
     }
 
     @Test
-    public void getBlock() throws ConnectorException, IOException {
+    public void getBlock() throws ConnectorException, IOException,SDKException {
         int blockHeight =  ontSdk.getConnect().getBlockHeight();
         Block b = ontSdk.getConnect().getBlock(blockHeight);
         Assert.assertNotNull(b);
@@ -143,7 +143,7 @@ public class ConnectMgrTest {
     }
 
     @Test
-    public void getBlockByBlockhash() throws ConnectorException, IOException {
+    public void getBlockByBlockhash() throws ConnectorException, IOException,SDKException {
         int blockHeight =  ontSdk.getConnect().getBlockHeight();
         Block b2 = ontSdk.getConnect().getBlock(blockHeight);
         blockHash = b2.hash().toString();

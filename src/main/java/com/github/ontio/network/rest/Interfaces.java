@@ -121,7 +121,7 @@ class Interfaces {
 
     public String getContract(String hash) throws RestfulException {
         Map<String, String> params = new HashMap<String, String>();
-        params.put("raw","1");
+        params.put("raw", "1");
         try {
             return http.get(url + UrlConsts.Url_get_contract_state + hash, params);
         } catch (Exception e) {
@@ -165,14 +165,15 @@ class Interfaces {
         }
     }
 
-    public String getStorage(String codehash,String key) throws RestfulException {
+    public String getStorage(String codehash, String key) throws RestfulException {
         Map<String, String> params = new HashMap<String, String>();
         try {
-            return http.get(url + UrlConsts.Url_get_storage + codehash+"/"+key, params);
+            return http.get(url + UrlConsts.Url_get_storage + codehash + "/" + key, params);
         } catch (Exception e) {
             throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
+
     public String getMerkleProof(String hash) throws RestfulException {
         Map<String, String> params = new HashMap<String, String>();
         try {
@@ -181,14 +182,7 @@ class Interfaces {
             throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
-    public String getAllowance(String asset,String from,String to) throws RestfulException {
-        Map<String, String> params = new HashMap<String, String>();
-        try {
-            return http.get(url + UrlConsts.Url_get_allowance + asset+"/"+from+"/"+to, params);
-        } catch (Exception e) {
-            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
-        }
-    }
+
     public String getBalance(String address) throws RestfulException {
         Map<String, String> params = new HashMap<String, String>();
         try {
@@ -220,6 +214,15 @@ class Interfaces {
         Map<String, String> params = new HashMap<String, String>();
         try {
             return http.get(url + UrlConsts.Url_get_block_by_hash + hash, params);
+        } catch (Exception e) {
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
+        }
+    }
+
+    public String getAllowance(String asset, String from, String to) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            return http.get(url + UrlConsts.Url_get_allowance + asset + "/" + from + "/" + to, params);
         } catch (Exception e) {
             throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }

@@ -25,25 +25,30 @@ import com.alibaba.fastjson.JSON;
  *
  */
 public class IdentityInfo {
-	public String ontid;
-	public String pubkey;
-	private String prikey;
-	private String prikeyWif;
-	public String encryptedPrikey;
-	public String addressU160;
-	public void setPrikey(String prikey){
-		this.prikey = prikey;
-	}
-	public void setPriwif(String priwif){
-		this.prikeyWif = priwif;
-	}
-	public String getPrikeyWif(){
-		return prikeyWif;
-	}
-	@Override
-	public String toString() {
-		return JSON.toJSONString(this);
-	}
-	
-	
+    public String ontid;
+    public String pubkey;
+
+    public String encryptedPrikey;
+    public String addressU160;
+    private String prikey;
+    private String prikeyWif;
+
+    public void setPrikey(String prikey) {
+        this.prikey = prikey;
+    }
+
+    public void setPriwif(String priwif) {
+        this.prikeyWif = priwif;
+    }
+
+    public String getPrikeyWif() {
+        return prikeyWif;
+    }
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this);
+    }
+
+
 }

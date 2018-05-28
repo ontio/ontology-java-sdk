@@ -22,10 +22,8 @@ package com.github.ontio.common;
 import com.alibaba.fastjson.JSON;
 
 /**
- * Custom type which inherits base class defines 32-bit data, 
+ * Custom type which inherits base class defines 32-bit data,
  * it mostly used to defined transaction identity
- *
- *
  */
 public class UInt256 extends UIntBase implements Comparable<UInt256> {
     public static final UInt256 ZERO = new UInt256();
@@ -38,22 +36,10 @@ public class UInt256 extends UIntBase implements Comparable<UInt256> {
         super(32, value);
     }
 
-    @Override
-    public int compareTo(UInt256 other) {
-        byte[] x = this.data_bytes;
-        byte[] y = other.data_bytes;
-        for (int i = x.length - 1; i >= 0; i--) {
-        	int r = Byte.toUnsignedInt(x[i]) - Byte.toUnsignedInt(y[i]);
-        	if (r != 0) {
-        		return r;
-        	}
-        }
-        return 0;
-    }
 
     public static UInt256 parse(String s) {
         if (s == null) {
-            throw new NullPointerException(); 
+            throw new NullPointerException();
         }
         if (s.startsWith("0x")) {
             s = s.substring(2);
@@ -74,5 +60,18 @@ public class UInt256 extends UIntBase implements Comparable<UInt256> {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @Override
+    public int compareTo(UInt256 other) {
+        byte[] x = this.data_bytes;
+        byte[] y = other.data_bytes;
+        for (int i = x.length - 1; i >= 0; i--) {
+            int r = Byte.toUnsignedInt(x[i]) - Byte.toUnsignedInt(y[i]);
+            if (r != 0) {
+                return r;
+            }
+        }
+        return 0;
     }
 }

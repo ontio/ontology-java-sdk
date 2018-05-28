@@ -39,14 +39,22 @@ import java.util.Random;
 class Interfaces {
     private final URL url;
 
-    public String getHost() {
-        return url.getHost() + " " + url.getPort();
-    }
+
 
     public Interfaces(String url) throws MalformedURLException {
         this.url = new URL(url);
     }
 
+    private static double getNextId() {
+        double d = 0.0;
+        do {
+            d = Math.random();
+        } while (("" + d).indexOf("E") != -1);
+        return d;
+    }
+    public String getHost() {
+        return url.getHost() + " " + url.getPort();
+    }
     public Object call(String method, Object... params) throws RpcException, IOException {
         Map req = makeRequest(method, params);
         Map response = (Map) send(req);
@@ -69,13 +77,6 @@ class Interfaces {
         return request;
     }
 
-    private static double getNextId() {
-        double d = 0.0;
-        do {
-            d = Math.random();
-        } while (("" + d).indexOf("E") != -1);
-        return d;
-    }
 
     private Object send(Object request) throws IOException {
         try {

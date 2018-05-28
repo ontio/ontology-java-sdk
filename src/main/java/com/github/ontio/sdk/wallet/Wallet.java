@@ -20,6 +20,7 @@
 package com.github.ontio.sdk.wallet;
 
 import com.alibaba.fastjson.JSON;
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.sdk.exception.SDKException;
 
 import java.text.SimpleDateFormat;
@@ -40,135 +41,160 @@ public class Wallet {
     private Object extra = null;
     private List<Identity> identities = new ArrayList<Identity>();
     private List<Account> accounts = new ArrayList<>();
-    public Wallet(){
+
+    public Wallet() {
         identities.clear();
     }
-    public void setExtra(Object extra){
-        this.extra = extra;
-    }
-    public Object getExtra(){
+
+    public Object getExtra() {
         return extra;
     }
 
-    public void setName(String name){
-        this.name = name;
+    public void setExtra(Object extra) {
+        this.extra = extra;
     }
-    public String getName(){
+
+    public String getName() {
         return name;
     }
-    public void setVersion(String version){
-        this.version = version;
+
+    public void setName(String name) {
+        this.name = name;
     }
-    public void setDefaultOntid(String defaultOntid){
-        this.defaultOntid = defaultOntid;
-    }
-    public String getDefaultOntid(){
+
+    public String getDefaultOntid() {
         return defaultOntid;
     }
-    public void setCreateTime(String createTime){
-        this.createTime = createTime;
+
+    public void setDefaultOntid(String defaultOntid) {
+        this.defaultOntid = defaultOntid;
     }
-    public String getCreateTime(){
+
+    public String getCreateTime() {
         return createTime;
     }
-    public void setDefaultAccountAddress(String defaultAccountAddress){
-        this.defaultAccountAddress = defaultAccountAddress;
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
     }
-    public String getDefaultAccountAddress(){
+
+    public String getDefaultAccountAddress() {
         return defaultAccountAddress;
     }
-    public String getVersion(){
+
+    public void setDefaultAccountAddress(String defaultAccountAddress) {
+        this.defaultAccountAddress = defaultAccountAddress;
+    }
+
+    public String getVersion() {
         return version;
     }
-    public void setScrypt(Scrypt scrypt){
-        this.scrypt = scrypt;
+
+    public void setVersion(String version) {
+        this.version = version;
     }
-    public Scrypt getScrypt(){
+
+    public Scrypt getScrypt() {
         return scrypt;
     }
-    public void setIdentities(List<Identity> identityList){
-        this.identities = identityList;
+
+    public void setScrypt(Scrypt scrypt) {
+        this.scrypt = scrypt;
     }
-    public List<Identity> getIdentities(){
+
+    public List<Identity> getIdentities() {
         return identities;
     }
 
-    public void setAccounts(List<Account> accountList){
-        this.accounts = accountList;
+    public void setIdentities(List<Identity> identityList) {
+        this.identities = identityList;
     }
-    public List<Account> getAccounts(){
+
+    public List<Account> getAccounts() {
         return accounts;
     }
-    public boolean removeAccount(String address){
-        for(Account e:accounts){
-            if(e.address.equals(address)){
+
+    public void setAccounts(List<Account> accountList) {
+        this.accounts = accountList;
+    }
+
+    public boolean removeAccount(String address) {
+        for (Account e : accounts) {
+            if (e.address.equals(address)) {
                 accounts.remove(e);
                 return true;
             }
         }
         return false;
     }
-    public Account getAccount(String address){
-        for(Account e:accounts){
-            if(e.address.equals(address)){
+
+    public Account getAccount(String address) {
+        for (Account e : accounts) {
+            if (e.address.equals(address)) {
                 return e;
             }
         }
         return null;
     }
-    public boolean removeIdentity(String ontid){
-        for(Identity e:identities){
-            if(e.ontid.equals(ontid)){
+
+    public boolean removeIdentity(String ontid) {
+        for (Identity e : identities) {
+            if (e.ontid.equals(ontid)) {
                 identities.remove(e);
                 return true;
             }
         }
         return false;
     }
-    public Identity getIdentity(String ontid){
-        for(Identity e:identities){
-            if(e.ontid.equals(ontid)){
+
+    public Identity getIdentity(String ontid) {
+        for (Identity e : identities) {
+            if (e.ontid.equals(ontid)) {
                 return e;
             }
         }
         return null;
     }
-    public void setDefaultAccount(int index) throws Exception{
-        if(index >= accounts.size()){
-            throw new SDKException("index error");
+
+    public void setDefaultAccount(int index) throws Exception {
+        if (index >= accounts.size()) {
+            throw new SDKException(ErrorCode.ParamError);
         }
-        for(Account e:accounts){
+        for (Account e : accounts) {
             e.isDefault = false;
         }
         accounts.get(index).isDefault = true;
         defaultAccountAddress = accounts.get(index).address;
     }
-    public void setDefaultAccount(String address){
-        for(Account e:accounts){
-            if(e.address.equals(address)){
+
+    public void setDefaultAccount(String address) {
+        for (Account e : accounts) {
+            if (e.address.equals(address)) {
                 e.isDefault = true;
                 defaultAccountAddress = address;
-            }else {
+            } else {
                 e.isDefault = false;
             }
         }
     }
-    public void setDefaultIdentity(int index) throws Exception{
-        if(index >= identities.size()){
-            throw new SDKException("index error");
+
+    public void setDefaultIdentity(int index) throws Exception {
+        if (index >= identities.size()) {
+            throw new SDKException(ErrorCode.ParamError);
         }
-        for(Identity e:identities){
+        for (Identity e : identities) {
             e.isDefault = false;
         }
         identities.get(index).isDefault = true;
         defaultOntid = identities.get(index).ontid;
     }
-    public void setDefaultIdentity(String ontid){
-        for(Identity e:identities){
-            if(e.ontid.equals(ontid)){
+
+    public void setDefaultIdentity(String ontid) {
+        for (Identity e : identities) {
+            if (e.ontid.equals(ontid)) {
                 e.isDefault = true;
                 defaultOntid = ontid;
-            }else {
+            } else {
                 e.isDefault = false;
             }
         }

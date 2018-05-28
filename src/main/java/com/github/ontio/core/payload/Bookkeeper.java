@@ -22,6 +22,7 @@ package com.github.ontio.core.payload;
 import java.io.IOException;
 import java.math.BigInteger;
 
+import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.transaction.TransactionType;
 import com.github.ontio.core.transaction.Transaction;
@@ -32,30 +33,35 @@ import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 
 /**
- * 
+ *
  */
 public class Bookkeeper extends Transaction {
-	public ECPoint issuer;
-	public BookkeeperAction action;
-	public byte[] cert;
-	
-	public Bookkeeper() {
-		super(TransactionType.Bookkeeper);
-	}
-	
-	@Override
-	protected void deserializeExclusiveData(BinaryReader reader) throws IOException {
-		issuer = ECC.secp256r1.getCurve().createPoint(
-        		new BigInteger(1,reader.readVarBytes()), new BigInteger(1,reader.readVarBytes()));
-		action = BookkeeperAction.valueOf(reader.readByte());
-		cert = reader.readVarBytes();
-	}
-	
-	@Override
-	protected void serializeExclusiveData(BinaryWriter writer) throws IOException {
-		writer.writeVarBytes(Helper.removePrevZero(issuer.getXCoord().toBigInteger().toByteArray()));
+    public ECPoint issuer;
+    public BookkeeperAction action;
+    public byte[] cert;
+
+    public Bookkeeper() {
+        super(TransactionType.Bookkeeper);
+    }
+
+    @Override
+    protected void deserializeExclusiveData(BinaryReader reader) throws IOException {
+        issuer = ECC.secp256r1.getCurve().createPoint(
+                new BigInteger(1, reader.readVarBytes()), new BigInteger(1, reader.readVarBytes()));
+        action = BookkeeperAction.valueOf(reader.readByte());
+        cert = reader.readVarBytes();
+    }
+
+    @Override
+    public Address[] getAddressU160ForVerifying() {
+        return null;
+    }
+
+    @Override
+    protected void serializeExclusiveData(BinaryWriter writer) throws IOException {
+        writer.writeVarBytes(Helper.removePrevZero(issuer.getXCoord().toBigInteger().toByteArray()));
         writer.writeVarBytes(Helper.removePrevZero(issuer.getYCoord().toBigInteger().toByteArray()));
         writer.writeByte(action.value());
         writer.writeVarBytes(cert);
-	}
+    }
 }

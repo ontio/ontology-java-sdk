@@ -29,13 +29,16 @@ import java.util.Date;
 
 
 public abstract class Common implements AutoCloseable {
-    public static String  didont = "did:ont:";
+    public static String didont = "did:ont:";
+
     public static byte[] generateKey64Bit() {
         return ECC.generateKey(64);
     }
+
     public static String currentTime() {
         return new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
     }
+
     private static String now() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date());
     }

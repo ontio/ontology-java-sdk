@@ -23,33 +23,40 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.github.ontio.common.Address;
 import com.github.ontio.core.transaction.TransactionType;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 
 public class Bookkeeping extends Transaction {
-	private long nonce;
+    private long nonce;
 
-	public Bookkeeping() {
-		super(TransactionType.Bookkeeping);
-	}
+    public Bookkeeping() {
+        super(TransactionType.Bookkeeping);
+    }
 
-	@Override
-	protected void deserializeExclusiveData(BinaryReader reader) throws IOException {
-		nonce = reader.readLong();
-	}
-	
-	@Override
-	protected void serializeExclusiveData(BinaryWriter writer) throws IOException {
-		writer.writeLong(nonce);
-	}
-	@Override
-	public Object json() {
-		Map obj = (Map)super.json();
-		Map payload = new HashMap();
-		payload.put("Nonce", nonce);
-		obj.put("Payload",payload);
-		return obj;
-	}
+    @Override
+    protected void deserializeExclusiveData(BinaryReader reader) throws IOException {
+        nonce = reader.readLong();
+    }
+
+    @Override
+    public Address[] getAddressU160ForVerifying() {
+        return null;
+    }
+
+    @Override
+    protected void serializeExclusiveData(BinaryWriter writer) throws IOException {
+        writer.writeLong(nonce);
+    }
+
+    @Override
+    public Object json() {
+        Map obj = (Map) super.json();
+        Map payload = new HashMap();
+        payload.put("Nonce", nonce);
+        obj.put("Payload", payload);
+        return obj;
+    }
 }

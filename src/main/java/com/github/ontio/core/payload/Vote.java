@@ -37,9 +37,11 @@ import java.math.BigInteger;
 public class Vote extends Transaction {
     public ECPoint[] pubKeys;
     public Address account;
+
     public Vote() {
         super(TransactionType.Vote);
     }
+
     @Override
     protected void deserializeExclusiveData(BinaryReader reader) throws IOException {
         try {
@@ -51,13 +53,18 @@ public class Vote extends Transaction {
             }
             account = reader.readSerializable(Address.class);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
+
+    @Override
+    public Address[] getAddressU160ForVerifying() {
+        return null;
+    }
+
     @Override
     protected void serializeExclusiveData(BinaryWriter writer) throws IOException {
         writer.writeInt(pubKeys.length);
-        for(ECPoint pubkey:pubKeys) {
+        for (ECPoint pubkey : pubKeys) {
             writer.writeVarBytes(Helper.removePrevZero(pubkey.getXCoord().toBigInteger().toByteArray()));
             writer.writeVarBytes(Helper.removePrevZero(pubkey.getYCoord().toBigInteger().toByteArray()));
         }

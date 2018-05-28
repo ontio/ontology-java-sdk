@@ -31,7 +31,6 @@ import java.util.Arrays;
 /**
  * Custom type which inherits base class defines 20-bit data,
  * it mostly used to defined contract address
- *
  */
 public class Address extends UIntBase implements Comparable<Address> {
     public static final Address ZERO = new Address();
@@ -45,18 +44,6 @@ public class Address extends UIntBase implements Comparable<Address> {
         super(20, value);
     }
 
-    @Override
-    public int compareTo(Address other) {
-        byte[] x = this.data_bytes;
-        byte[] y = other.data_bytes;
-        for (int i = x.length - 1; i >= 0; i--) {
-            int r = Byte.toUnsignedInt(x[i]) - Byte.toUnsignedInt(y[i]);
-            if (r != 0) {
-                return r;
-            }
-        }
-        return 0;
-    }
 
     public static Address parse(String value) {
         if (value == null) {
@@ -118,19 +105,11 @@ public class Address extends UIntBase implements Comparable<Address> {
         }
     }
 
-    public String toBase58() {
-        byte[] data = new byte[25];
-        data[0] = COIN_VERSION;
-        System.arraycopy(toArray(), 0, data, 1, 20);
-        byte[] checksum = Digest.sha256(Digest.sha256(data, 0, 21));
-        System.arraycopy(checksum, 0, data, 21, 4);
-        return Base58.encode(data);
-    }
 
     public static Address decodeBase58(String address) throws SDKException {
         byte[] data = Base58.decode(address);
         if (data.length != 25) {
-            throw new SDKException(ErrorCode.ParamError+"address length is wrong");
+            throw new SDKException(ErrorCode.ParamError + "address length is wrong");
         }
         if (data[0] != COIN_VERSION) {
             throw new SDKException(ErrorCode.ParamError);
@@ -148,6 +127,28 @@ public class Address extends UIntBase implements Comparable<Address> {
 
     public static Address toScriptHash(byte[] script) {
         return new Address(Digest.hash160(script));
+    }
+
+    @Override
+    public int compareTo(Address other) {
+        byte[] x = this.data_bytes;
+        byte[] y = other.data_bytes;
+        for (int i = x.length - 1; i >= 0; i--) {
+            int r = Byte.toUnsignedInt(x[i]) - Byte.toUnsignedInt(y[i]);
+            if (r != 0) {
+                return r;
+            }
+        }
+        return 0;
+    }
+
+    public String toBase58() {
+        byte[] data = new byte[25];
+        data[0] = COIN_VERSION;
+        System.arraycopy(toArray(), 0, data, 1, 20);
+        byte[] checksum = Digest.sha256(Digest.sha256(data, 0, 21));
+        System.arraycopy(checksum, 0, data, 21, 4);
+        return Base58.encode(data);
     }
 
     @Override

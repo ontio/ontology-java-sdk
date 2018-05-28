@@ -14,9 +14,6 @@ public enum KeyType {
         this.label = b;
     }
 
-    public int getLabel() {
-        return label;
-    }
 
     // get the crypto.KeyType according to the input label
     public static KeyType fromLabel(byte label) throws Exception {
@@ -26,5 +23,9 @@ public enum KeyType {
             }
         }
         throw new Exception(ErrorCode.UnknownAsymmetricKeyType);
+    }
+
+    public int getLabel() {
+        return label;
     }
 }

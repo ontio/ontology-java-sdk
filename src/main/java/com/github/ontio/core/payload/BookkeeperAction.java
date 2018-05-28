@@ -20,23 +20,25 @@
 package com.github.ontio.core.payload;
 
 public enum BookkeeperAction {
-	BookKeeperAction_ADD(0x00),
-	BookKeeperAction_SUB(0x01),
-	;
-	private byte value;
-	BookkeeperAction(int v) {
-        value = (byte)v;
-    }
-    public byte value() {
-        return value;
+    BookKeeperAction_ADD(0x00),
+    BookKeeperAction_SUB(0x01),;
+    private byte value;
+
+    BookkeeperAction(int v) {
+        value = (byte) v;
     }
 
+
     public static BookkeeperAction valueOf(byte v) {
-    	for (BookkeeperAction e : BookkeeperAction.values()) {
-    		if (e.value == v) {
-    			return e;
-    		}
-    	}
-    	throw new IllegalArgumentException();
+        for (BookkeeperAction e : BookkeeperAction.values()) {
+            if (e.value == v) {
+                return e;
+            }
+        }
+        throw new IllegalArgumentException();
+    }
+
+    public byte value() {
+        return value;
     }
 }

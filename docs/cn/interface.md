@@ -204,3 +204,27 @@
     2 | InvokeCode makeInvokeCodeTransaction(String codeAddr,String method,byte[] params, byte vmtype, String payer,long gas)                                                           |   调用
    
   ```
+
+ ### 权限管理合约
+
+* 权限管理功能接口：
+ ```
+       |                                            Function                                                                                                                               |     Description
+   ----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------
+     1 | String sendTransfer(String adminOntId,String password,String contractAddr, String newAdminOntID,int key,String payer,String payerpwd,long gaslimit,long gasprice)                 |   合约管理员转让合约管理权限
+     2 | String assignFuncsToRole(String adminOntID,String password,String contractAddr,String role,String[] funcName,int key,String payer,String payerpwd,long gaslimit,long gasprice)    |   为角色分配函数
+     3 | String assignOntIDsToRole(String adminOntId,String password,String contractAddr,String role,String[] ontIDs, int key,String payer,String payerpwd,long gaslimit,long gasprice)    |   绑定角色到实体身份
+     4 | String delegate(String ontid,String password,String contractAddr,String toOntId,String role,int period,int level,int key,String payer,String payerpwd,long gaslimit,long gasprice)|   将合约调用权代理给其他人
+     5 | String withdraw(String initiatorOntid,String password,String contractAddr,String delegate, String role,int key,String payer,String payerpwd,long gaslimit,long gasprice)          |   收回合约调用权
+ ```
+
+ * 构造交易接口：
+```
+       |                                            Function                                                                                                                               |     Description
+   ----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------
+     1 | Transaction makeTransfer(String adminOntID,String contractAddr, String newAdminOntID,int key,String payer,long gaslimit,long gasprice)                    |   合约管理员转让合约管理权限
+     2 | Transaction makeAssignFuncsToRole(String adminOntID,String contractAddr,String role,String[] funcName,int key,String payer,long gaslimit,long gasprice)   |   为角色分配函数
+     3 | Transaction makeAssignOntIDsToRole(String adminOntId,String contractAddr,String role,String[] ontIDs, int key,String payer,long gaslimit,long gasprice)   |   绑定角色到实体身份
+     4 | Transaction makeDelegate(String ontid,String contractAddr,String toAddr,String role,int period,int level,int key,String payer,long gaslimit,long gasprice)|   将合约调用权代理给其他人
+     5 | Transaction makeWithDraw(String ontid,String contractAddr,String delegate, String role,int key,String payer,long gaslimit,long gasprice)                  |   收回合约调用权
+ ```

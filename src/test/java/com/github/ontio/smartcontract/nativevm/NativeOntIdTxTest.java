@@ -136,7 +136,7 @@ public class NativeOntIdTxTest {
         ontSdk.getConnect().sendRawTransaction(tx);
 
         Attribute[] attributes2 = new Attribute[1];
-        attributes2[0] = new Attribute("key1".getBytes(),"value1".getBytes(),"String".getBytes());
+        attributes2[0] = new Attribute("key99".getBytes(),"value99".getBytes(),"String".getBytes());
         ontSdk.nativevm().ontId().sendAddAttributes(identity.ontid,password,attributes2,payerAcc.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
 
         Thread.sleep(6000);

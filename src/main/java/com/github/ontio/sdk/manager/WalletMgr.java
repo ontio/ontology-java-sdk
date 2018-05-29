@@ -154,7 +154,7 @@ public class WalletMgr {
         }
     }
     public Identity importIdentity(String encryptedPrikey, String password, String address) throws Exception {
-        return importIdentity(encryptedPrikey,password,address);
+        return importIdentity("",encryptedPrikey,password,address);
     }
     public Identity importIdentity(String label,String encryptedPrikey, String password, String address) throws Exception {
         String prikey = com.github.ontio.account.Account.getCtrDecodedPrivateKey(encryptedPrikey, password, address, walletFile.getScrypt().getN(), scheme);

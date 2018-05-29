@@ -31,11 +31,11 @@ public class Auth {
 
     /**
      *
-     * @param ontid
+     * @param adminOntId
      * @param password
      * @param contractAddr
      * @param newAdminOntID
-     * @param key
+     * @param keyNo
      * @param payer
      * @param payerpwd
      * @param gaslimit
@@ -43,11 +43,14 @@ public class Auth {
      * @return
      * @throws Exception
      */
-    public String sendTransfer(String adminOntId,String password,String contractAddr, String newAdminOntID,int key,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+    public String sendTransfer(String adminOntId,String password,String contractAddr, String newAdminOntID,int keyNo,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
         if(adminOntId ==null || adminOntId.equals("") || contractAddr == null || contractAddr.equals("") || newAdminOntID==null || newAdminOntID.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
-        Transaction tx = makeTransfer(adminOntId,contractAddr,newAdminOntID,key,payer,gaslimit,gasprice);
+        if(keyNo <0 || gaslimit <0 || gasprice <0){
+            throw new SDKException(ErrorCode.ParamErr("keyNo or gaslimit or gasprice should not be less than 0"));
+        }
+        Transaction tx = makeTransfer(adminOntId,contractAddr,newAdminOntID,keyNo,payer,gaslimit,gasprice);
         sdk.signTx(tx,adminOntId,password);
         sdk.addSign(tx,payer,payerpwd);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -62,19 +65,78 @@ public class Auth {
      * @param adminOntID
      * @param contractAddr
      * @param newAdminOntID
-     * @param key
+     * @param keyNo
      * @param payer
      * @param gaslimit
      * @param gasprice
      * @return
      * @throws SDKException
      */
-    public Transaction makeTransfer(String adminOntID,String contractAddr, String newAdminOntID,int key,String payer,long gaslimit,long gasprice) throws SDKException {
+    public Transaction makeTransfer(String adminOntID,String contractAddr, String newAdminOntID,int keyNo,String payer,long gaslimit,long gasprice) throws SDKException {
         if(adminOntID ==null || adminOntID.equals("") || contractAddr == null || contractAddr.equals("") || newAdminOntID==null || newAdminOntID.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
-        byte[] parabytes = new TransferParam(Helper.hexToBytes(contractAddr),newAdminOntID.getBytes(),key).toArray();
+        if(keyNo <0 || gaslimit <0 || gasprice <0){
+            throw new SDKException(ErrorCode.ParamErr("keyNo or gaslimit or gasprice should not be less than 0"));
+        }
+        byte[] parabytes = new TransferParam(Helper.hexToBytes(contractAddr),newAdminOntID.getBytes(),keyNo).toArray();
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"transfer",parabytes, VmType.Native.value(), payer,gaslimit,gasprice);
+        return tx;
+    }
+
+    /**
+     *
+     * @param ontid
+     * @param password
+     * @param contractAddr
+     * @param funcName
+     * @param keyNo
+     * @param payer
+     * @param payerpwd
+     * @param gaslimit
+     * @param gasprice
+     * @return
+     * @throws Exception
+     */
+    public String verifyToken(String ontid,String password,String contractAddr,String funcName,int keyNo,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+        if(ontid ==null || ontid.equals("") || password ==null || password.equals("")|| contractAddr == null || contractAddr.equals("") || funcName==null || funcName.equals("")
+                ||payer ==null||payer.equals("")||payerpwd==null||payerpwd.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(keyNo < 0 || gaslimit < 0 || gasprice < 0){
+            throw new SDKException(ErrorCode.ParamErr("key or gaslimit or gas price should not be less than 0"));
+        }
+        Transaction tx = makeVerifyToken(ontid,contractAddr,funcName,keyNo,payer,gaslimit,gasprice);
+        sdk.signTx(tx,ontid,password);
+        sdk.addSign(tx,payer,payerpwd);
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
+        if (!b) {
+            throw new SDKException(ErrorCode.SendRawTxError);
+        }
+        return tx.hash().toHexString();
+    }
+
+    /**
+     *
+     * @param ontid
+     * @param contractAddr
+     * @param funcName
+     * @param keyNo
+     * @param payer
+     * @param gaslimit
+     * @param gasprice
+     * @return
+     * @throws SDKException
+     */
+    public Transaction makeVerifyToken(String ontid,String contractAddr,String funcName,int keyNo,String payer,long gaslimit,long gasprice) throws SDKException {
+        if(ontid ==null || ontid.equals("")|| contractAddr == null || contractAddr.equals("") || funcName==null || funcName.equals("")||payer==null ||payer.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(keyNo < 0 || gaslimit < 0 || gasprice < 0){
+            throw new SDKException(ErrorCode.ParamErr("key or gaslimit or gas price should not be less than 0"));
+        }
+        byte[] parabytes = new VerifyTokenParam(Helper.hexToBytes(contractAddr),ontid.getBytes(),funcName.getBytes(),keyNo).toArray();
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"verifyToken",parabytes, VmType.Native.value(), payer,gaslimit,gasprice);
         return tx;
     }
 
@@ -85,7 +147,7 @@ public class Auth {
      * @param contractAddr
      * @param role
      * @param funcName
-     * @param key
+     * @param keyNo
      * @param payer
      * @param payerpwd
      * @param gaslimit
@@ -93,15 +155,15 @@ public class Auth {
      * @return
      * @throws Exception
      */
-    public String assignFuncsToRole(String adminOntID,String password,String contractAddr,String role,String[] funcName,int key,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+    public String assignFuncsToRole(String adminOntID,String password,String contractAddr,String role,String[] funcName,int keyNo,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
         if(adminOntID ==null || adminOntID.equals("") || contractAddr == null || contractAddr.equals("") || role==null || role.equals("") || funcName == null || funcName.length == 0
                 || payer==null || payer.equals("") ||payerpwd==null || payerpwd.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
-        if(key < 0 || gaslimit < 0 || gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("key or gaslimit or gas price should not be less than 0"));
+        if(keyNo < 0 || gaslimit < 0 || gasprice < 0){
+            throw new SDKException(ErrorCode.ParamErr("keyNo or gaslimit or gas price should not be less than 0"));
         }
-        Transaction tx = makeAssignFuncsToRole(adminOntID,contractAddr,role,funcName,key,payer,gaslimit,gasprice);
+        Transaction tx = makeAssignFuncsToRole(adminOntID,contractAddr,role,funcName,keyNo,payer,gaslimit,gasprice);
         sdk.signTx(tx,adminOntID,password);
         sdk.addSign(tx,payer,payerpwd);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -117,22 +179,22 @@ public class Auth {
      * @param contractAddr
      * @param role
      * @param funcName
-     * @param key
+     * @param keyNo
      * @param payer
      * @param gaslimit
      * @param gasprice
      * @return
      * @throws SDKException
      */
-    public Transaction makeAssignFuncsToRole(String adminOntID,String contractAddr,String role,String[] funcName,int key,String payer,long gaslimit,long gasprice) throws SDKException {
+    public Transaction makeAssignFuncsToRole(String adminOntID,String contractAddr,String role,String[] funcName,int keyNo,String payer,long gaslimit,long gasprice) throws SDKException {
         if(adminOntID ==null || adminOntID.equals("") || contractAddr == null || contractAddr.equals("") || role==null || role.equals("") || funcName == null || funcName.length == 0
                 || payer==null || payer.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
-        if(key < 0 || gaslimit < 0 || gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("key or gaslimit or gas price should not be less than 0"));
+        if(keyNo < 0 || gaslimit < 0 || gasprice < 0){
+            throw new SDKException(ErrorCode.ParamErr("keyNo or gaslimit or gas price should not be less than 0"));
         }
-        byte[] parabytes = new FuncsToRoleParam(Helper.hexToBytes(contractAddr),adminOntID.getBytes(),role.getBytes(),funcName,key).toArray();
+        byte[] parabytes = new FuncsToRoleParam(Helper.hexToBytes(contractAddr),adminOntID.getBytes(),role.getBytes(),funcName,keyNo).toArray();
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"assignFuncsToRole",parabytes, VmType.Native.value(), payer,gaslimit,gasprice);
         return tx;
     }
@@ -144,7 +206,7 @@ public class Auth {
      * @param contractAddr
      * @param role
      * @param ontIDs
-     * @param key
+     * @param keyNo
      * @param payer
      * @param payerpwd
      * @param gaslimit
@@ -152,15 +214,15 @@ public class Auth {
      * @return
      * @throws Exception
      */
-    public String assignOntIDsToRole(String adminOntId,String password,String contractAddr,String role,String[] ontIDs, int key,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+    public String assignOntIDsToRole(String adminOntId,String password,String contractAddr,String role,String[] ontIDs, int keyNo,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
         if(adminOntId == null || adminOntId.equals("") || password==null || password.equals("") || contractAddr== null || contractAddr.equals("") ||
                 role == null || role.equals("") || ontIDs==null || ontIDs.length == 0){
             throw  new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
-        if(gaslimit < 0 || gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("gaslimit or gasprice should not be less than 0"));
+        if(keyNo<0 || gaslimit < 0 || gasprice < 0){
+            throw new SDKException(ErrorCode.ParamErr("keyNo or gaslimit or gasprice should not be less than 0"));
         }
-        Transaction tx = makeAssignOntIDsToRole(adminOntId,contractAddr,role,ontIDs,key,payer,gaslimit,gasprice);
+        Transaction tx = makeAssignOntIDsToRole(adminOntId,contractAddr,role,ontIDs,keyNo,payer,gaslimit,gasprice);
         sdk.signTx(tx,adminOntId,password);
         sdk.addSign(tx,payer,payerpwd);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -176,26 +238,26 @@ public class Auth {
      * @param contractAddr
      * @param role
      * @param ontIDs
-     * @param key
+     * @param keyNo
      * @param payer
      * @param gaslimit
      * @param gasprice
      * @return
      * @throws SDKException
      */
-    public Transaction makeAssignOntIDsToRole(String adminOntId,String contractAddr,String role,String[] ontIDs, int key,String payer,long gaslimit,long gasprice) throws SDKException {
+    public Transaction makeAssignOntIDsToRole(String adminOntId,String contractAddr,String role,String[] ontIDs, int keyNo,String payer,long gaslimit,long gasprice) throws SDKException {
         if(adminOntId == null || adminOntId.equals("") || contractAddr== null || contractAddr.equals("") ||
                 role == null || role.equals("") || ontIDs==null || ontIDs.length == 0){
             throw  new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
-        if(gaslimit < 0 || gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("gaslimit or gasprice should not be less than 0"));
+        if(keyNo <0 || gaslimit < 0 || gasprice < 0){
+            throw new SDKException(ErrorCode.ParamErr("keyNo or gaslimit or gasprice should not be less than 0"));
         }
         byte[][] ontId = new byte[ontIDs.length][];
         for(int i=0; i< ontIDs.length ; i++){
             ontId[i] = ontIDs[i].getBytes();
         }
-        byte[] parabytes = new OntIDsToRoleParam(contractAddr.getBytes(),adminOntId.getBytes(),role.getBytes(),ontId,key).toArray();
+        byte[] parabytes = new OntIDsToRoleParam(Helper.hexToBytes(contractAddr),adminOntId.getBytes(),role.getBytes(),ontId,keyNo).toArray();
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"assignOntIDsToRole",parabytes, VmType.Native.value(), payer,gaslimit,gasprice);
         return tx;
     }
@@ -209,7 +271,7 @@ public class Auth {
      * @param role
      * @param period
      * @param level
-     * @param key
+     * @param keyNo
      * @param payer
      * @param payerpwd
      * @param gaslimit
@@ -217,15 +279,15 @@ public class Auth {
      * @return
      * @throws Exception
      */
-    public String delegate(String ontid,String password,String contractAddr,String toOntId,String role,int period,int level,int key,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+    public String delegate(String ontid,String password,String contractAddr,String toOntId,String role,int period,int level,int keyNo,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
         if(ontid == null || ontid.equals("") ||password == null || password.equals("") || contractAddr == null || contractAddr.equals("") ||toOntId==null || toOntId.equals("")||
                 role== null || role.equals("") || payer ==null || payer.equals("")||payerpwd == null || payerpwd.equals("")){
             throw  new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
-        if(period<0 || level <0 || key <0 || gaslimit < 0 || gasprice < 0){
+        if(period<0 || level <0 || keyNo <0 || gaslimit < 0 || gasprice < 0){
             throw new SDKException(ErrorCode.ParamErr("period level key gaslimit or gasprice should not be less than 0"));
         }
-        Transaction tx = makeDelegate(ontid,contractAddr,toOntId,role,period,level,key,payer,gaslimit,gasprice);
+        Transaction tx = makeDelegate(ontid,contractAddr,toOntId,role,period,level,keyNo,payer,gaslimit,gasprice);
         sdk.signTx(tx,ontid,password);
         sdk.addSign(tx,payer,payerpwd);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -243,22 +305,22 @@ public class Auth {
      * @param role
      * @param period
      * @param level
-     * @param key
+     * @param keyNo
      * @param payer
      * @param gaslimit
      * @param gasprice
      * @return
      * @throws SDKException
      */
-    public Transaction makeDelegate(String ontid,String contractAddr,String toAddr,String role,int period,int level,int key,String payer,long gaslimit,long gasprice) throws SDKException {
+    public Transaction makeDelegate(String ontid,String contractAddr,String toAddr,String role,int period,int level,int keyNo,String payer,long gaslimit,long gasprice) throws SDKException {
         if(ontid == null || ontid.equals("")|| contractAddr == null || contractAddr.equals("") ||toAddr==null || toAddr.equals("")||
                 role== null || role.equals("") || payer ==null || payer.equals("")){
             throw  new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
-        if(period<0 || level <0 || key <0 || gaslimit < 0 || gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("period level key gaslimit or gasprice should not be less than 0"));
+        if(period<0 || level <0 || keyNo <0 || gaslimit < 0 || gasprice < 0){
+            throw new SDKException(ErrorCode.ParamErr("period level keyNo gaslimit or gasprice should not be less than 0"));
         }
-        byte[] parabytes = new DelegateParam(contractAddr.getBytes(),ontid.getBytes(),toAddr.getBytes(),role.getBytes(),period,level,key).toArray();
+        byte[] parabytes = new DelegateParam(Helper.hexToBytes(contractAddr),ontid.getBytes(),toAddr.getBytes(),role.getBytes(),period,level,keyNo).toArray();
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"delegate",parabytes, VmType.Native.value(), payer,gaslimit,gasprice);
         return tx;
     }
@@ -270,7 +332,7 @@ public class Auth {
      * @param contractAddr
      * @param delegate
      * @param role
-     * @param key
+     * @param keyNo
      * @param payer
      * @param payerpwd
      * @param gaslimit
@@ -278,15 +340,15 @@ public class Auth {
      * @return
      * @throws Exception
      */
-    public String withdraw(String initiatorOntid,String password,String contractAddr,String delegate, String role,int key,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+    public String withdraw(String initiatorOntid,String password,String contractAddr,String delegate, String role,int keyNo,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
         if(initiatorOntid == null || initiatorOntid.equals("")|| password ==null|| password.equals("") || contractAddr == null || contractAddr.equals("") ||
                 role== null || role.equals("") || payer ==null || payer.equals("")){
             throw  new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
-        if(key <0 || gaslimit < 0 || gasprice < 0){
-            throw new SDKException(ErrorCode.ParamErr("key gaslimit or gasprice should not be less than 0"));
+        if(keyNo <0 || gaslimit < 0 || gasprice < 0){
+            throw new SDKException(ErrorCode.ParamErr("keyNo or gaslimit or gasprice should not be less than 0"));
         }
-        Transaction tx = makeWithDraw(initiatorOntid,contractAddr,delegate,role,key,payer,gaslimit,gasprice);
+        Transaction tx = makeWithDraw(initiatorOntid,contractAddr,delegate,role,keyNo,payer,gaslimit,gasprice);
         sdk.signTx(tx,initiatorOntid,password);
         sdk.addSign(tx,payer,payerpwd);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -302,22 +364,22 @@ public class Auth {
      * @param contractAddr
      * @param delegate
      * @param role
-     * @param key
+     * @param keyNo
      * @param payer
      * @param gaslimit
      * @param gasprice
      * @return
      * @throws SDKException
      */
-    public Transaction makeWithDraw(String ontid,String contractAddr,String delegate, String role,int key,String payer,long gaslimit,long gasprice) throws SDKException {
+    public Transaction makeWithDraw(String ontid,String contractAddr,String delegate, String role,int keyNo,String payer,long gaslimit,long gasprice) throws SDKException {
         if(ontid == null || ontid.equals("")|| contractAddr == null || contractAddr.equals("") ||
                 role== null || role.equals("") || payer ==null || payer.equals("")){
             throw  new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
-        if(key <0 || gaslimit < 0 || gasprice < 0){
+        if(keyNo <0 || gaslimit < 0 || gasprice < 0){
             throw new SDKException(ErrorCode.ParamErr("key gaslimit or gasprice should not be less than 0"));
         }
-        byte[] parabytes = new AuthWithdrawParam(contractAddr.getBytes(),ontid.getBytes(),delegate.getBytes(),role.getBytes(),key).toArray();
+        byte[] parabytes = new AuthWithdrawParam(Helper.hexToBytes(contractAddr),ontid.getBytes(),delegate.getBytes(),role.getBytes(),keyNo).toArray();
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"withdraw",parabytes, VmType.Native.value(), payer,gaslimit,gasprice);
         return tx;
     }
@@ -344,6 +406,31 @@ class TransferParam implements Serializable {
         writer.writeVarBytes(this.contractAddr);
         writer.writeVarBytes(this.newAdminOntID);
         writer.writeInt(KeyNo);
+    }
+}
+class VerifyTokenParam implements Serializable{
+    byte[] contractAddr;
+    byte[] caller;
+    byte[] fn;
+    int keyNo;
+    VerifyTokenParam(byte[] contractAddr,byte[] caller,byte[] fn,int keyNo){
+        this.contractAddr = contractAddr;
+        this.caller = caller;
+        this.fn = fn;
+        this.keyNo = keyNo;
+    }
+
+    @Override
+    public void deserialize(BinaryReader reader) throws IOException {
+
+    }
+
+    @Override
+    public void serialize(BinaryWriter writer) throws IOException {
+        writer.writeVarBytes(this.contractAddr);
+        writer.writeVarBytes(this.caller);
+        writer.writeVarBytes(this.fn);
+        writer.writeInt(keyNo);
     }
 }
 

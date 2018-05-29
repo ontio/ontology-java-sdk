@@ -19,6 +19,8 @@
 
 package com.github.ontio.common;
 
+import com.github.ontio.core.scripts.ScriptBuilder;
+import com.github.ontio.core.scripts.ScriptOp;
 import com.github.ontio.crypto.Base58;
 import com.github.ontio.crypto.Digest;
 import com.github.ontio.io.BinaryWriter;
@@ -34,7 +36,8 @@ import java.util.Arrays;
  */
 public class Address extends UIntBase implements Comparable<Address> {
     public static final Address ZERO = new Address();
-    public static final byte COIN_VERSION = 0x41;
+    public static final byte COIN_VERSION_ONT = 0x41;
+    public static final byte COIN_VERSION_NEO = 0x17;
 
     public Address() {
         this(null);
@@ -77,8 +80,11 @@ public class Address extends UIntBase implements Comparable<Address> {
     public static Address addressFromPubKey(byte[] publicKey) {
         byte[] bys = Digest.hash160(publicKey);
         bys[0] = 0x01;
-        Address u160 = new Address(bys);
-        return u160;
+        return new Address(bys);
+//        ScriptBuilder sb = new ScriptBuilder();
+//        sb.push(publicKey);
+//        sb.add(ScriptOp.OP_CHECKSIG);
+//        return new Address(Digest.hash160(sb.toArray()));
     }
 
     public static Address addressFromMultiPubKeys(int m, byte[]... publicKeys) throws Exception {
@@ -111,7 +117,7 @@ public class Address extends UIntBase implements Comparable<Address> {
         if (data.length != 25) {
             throw new SDKException(ErrorCode.ParamError + "address length is wrong");
         }
-        if (data[0] != COIN_VERSION) {
+        if (data[0] != COIN_VERSION_ONT) {
             throw new SDKException(ErrorCode.ParamError);
         }
         byte[] checksum = Digest.sha256(Digest.sha256(data, 0, 21));
@@ -144,7 +150,7 @@ public class Address extends UIntBase implements Comparable<Address> {
 
     public String toBase58() {
         byte[] data = new byte[25];
-        data[0] = COIN_VERSION;
+        data[0] = COIN_VERSION_ONT;
         System.arraycopy(toArray(), 0, data, 1, 20);
         byte[] checksum = Digest.sha256(Digest.sha256(data, 0, 21));
         System.arraycopy(checksum, 0, data, 21, 4);

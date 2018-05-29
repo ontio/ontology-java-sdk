@@ -181,6 +181,9 @@ public class OntSdk {
      * @throws Exception
      */
     public Transaction addSign(Transaction tx,String addr,String password) throws Exception {
+        return addSign(tx,getWalletMgr().getAccount(addr,password));
+    }
+    public Transaction addSign(Transaction tx,Account acct) throws Exception {
         if(tx.sigs == null){
             tx.sigs = new Sig[0];
         }
@@ -192,12 +195,11 @@ public class OntSdk {
         sigs[tx.sigs.length].M = 1;
         sigs[tx.sigs.length].pubKeys = new byte[1][];
         sigs[tx.sigs.length].sigData = new byte[1][];
-        sigs[tx.sigs.length].pubKeys[0] = Helper.hexToBytes(getWalletMgr().getAccountInfo(addr,password).pubkey);
-        sigs[tx.sigs.length].sigData[0] = tx.sign(getWalletMgr().getAccount(addr,password),signatureScheme);
+        sigs[tx.sigs.length].pubKeys[0] = acct.serializePublicKey();
+        sigs[tx.sigs.length].sigData[0] = tx.sign(acct,signatureScheme);
         tx.sigs = sigs;
         return tx;
     }
-
     public Transaction signTx(Transaction tx, String address, String password) throws Exception{
         address = address.replace(Common.didont, "");
         signTx(tx, new Account[][]{{getWalletMgr().getAccount(address, password)}});

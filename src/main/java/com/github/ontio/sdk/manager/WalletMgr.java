@@ -50,69 +50,68 @@ public class WalletMgr {
     private Wallet walletFile;
     private SignatureScheme scheme = null;
     private String filePath = null;
-    public static boolean PriKeyStoreInMem = true;//for dont need decode every time
-
-    public WalletMgr(String path, SignatureScheme scheme) {
-        try {
-            this.scheme = scheme;
-            this.filePath = path;
-            File file = new File(filePath);
-            if (!file.exists()) {
-                wallet = new Wallet();
-                wallet.setCreateTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(new Date()));
-                walletFile = new Wallet();
-                file.createNewFile();
-                writeWallet();
-            }
-            InputStream inputStream = new FileInputStream(filePath);
-            String text = IOUtils.toString(inputStream);
-            wallet = JSON.parseObject(text, Wallet.class);
-            walletFile = JSON.parseObject(text, Wallet.class);
-            if (wallet.getIdentities() == null) {
-                wallet.setIdentities(new ArrayList<>());
-            }
-            if (wallet.getAccounts() == null) {
-                wallet.setAccounts(new ArrayList<>());
-            }
+    public static boolean priKeyStoreInMem = true;//for dont need decode every time
+    public WalletMgr(Wallet wallet,SignatureScheme scheme) throws Exception {
+        this.scheme = scheme;
+        this.wallet = wallet;
+        this.walletFile = wallet;
+    }
+    public WalletMgr(String path, SignatureScheme scheme) throws Exception {
+        this.scheme = scheme;
+        this.filePath = path;
+        File file = new File(filePath);
+        if (!file.exists()) {
+            wallet = new Wallet();
+            wallet.setCreateTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(new Date()));
+            walletFile = new Wallet();
+            file.createNewFile();
             writeWallet();
-        } catch (Exception e) {
         }
+        InputStream inputStream = new FileInputStream(filePath);
+        String text = IOUtils.toString(inputStream);
+        wallet = JSON.parseObject(text, Wallet.class);
+        walletFile = JSON.parseObject(text, Wallet.class);
+        if (wallet.getIdentities() == null) {
+            wallet.setIdentities(new ArrayList<>());
+        }
+        if (wallet.getAccounts() == null) {
+            wallet.setAccounts(new ArrayList<>());
+        }
+        writeWallet();
     }
 
-    private WalletMgr(String path, String label,String password, KeyType type, Object[] params) {
-        try {
-            this.filePath = path;
-            File file = new File(filePath);
-            if (!file.exists()) {
-                wallet = new Wallet();
-                wallet.setCreateTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(new Date()));
-                walletFile = new Wallet();
-                file.createNewFile();
-                createIdentity(label,password);
-                writeWallet();
-            }
-            InputStream inputStream = new FileInputStream(filePath);
-            String text = IOUtils.toString(inputStream);
-            wallet = JSON.parseObject(text, Wallet.class);
-            walletFile = JSON.parseObject(text, Wallet.class);
-            if (wallet.getIdentities() == null) {
-                wallet.setIdentities(new ArrayList<>());
-            }
-            if (wallet.getAccounts() == null) {
-                wallet.setAccounts(new ArrayList<>());
-            }
-            if (getIdentitys().size() == 0) {
-                createIdentity(label,password);
-                writeWallet();
-                return;
-            }
-            Identity identity = getDefaultIdentity();
-            if (identity != null) {
-                String addr = identity.ontid.replace(Common.didont, "");
-                String prikey = com.github.ontio.account.Account.getCtrDecodedPrivateKey(identity.controls.get(0).key, password, addr, walletFile.getScrypt().getN(), scheme);
-                storePrivateKey(identityPriKeyMap, identity.ontid, password, prikey);
-            }
-        } catch (Exception e) {
+    private WalletMgr(String path, String label, String password, SignatureScheme scheme) throws Exception {
+        this.scheme = scheme;
+        this.filePath = path;
+        File file = new File(filePath);
+        if (!file.exists()) {
+            wallet = new Wallet();
+            wallet.setCreateTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(new Date()));
+            walletFile = new Wallet();
+            file.createNewFile();
+            createIdentity(label, password);
+            writeWallet();
+        }
+        InputStream inputStream = new FileInputStream(filePath);
+        String text = IOUtils.toString(inputStream);
+        wallet = JSON.parseObject(text, Wallet.class);
+        walletFile = JSON.parseObject(text, Wallet.class);
+        if (wallet.getIdentities() == null) {
+            wallet.setIdentities(new ArrayList<>());
+        }
+        if (wallet.getAccounts() == null) {
+            wallet.setAccounts(new ArrayList<>());
+        }
+        if (getIdentitys().size() == 0) {
+            createIdentity(label, password);
+            writeWallet();
+            return;
+        }
+        Identity identity = getDefaultIdentity();
+        if (identity != null) {
+            String addr = identity.ontid.replace(Common.didont, "");
+            String prikey = com.github.ontio.account.Account.getCtrDecodedPrivateKey(identity.controls.get(0).key, password, addr, walletFile.getScrypt().getN(), scheme);
+            storePrivateKey(identityPriKeyMap, identity.ontid, password, prikey);
         }
     }
 
@@ -132,8 +131,7 @@ public class WalletMgr {
     public Wallet getWallet() {
         return wallet;
     }
-
-
+    
     public Wallet writeWallet() throws Exception {
         writeFile(filePath, JSON.toJSONString(wallet));
         walletFile = wallet;
@@ -149,7 +147,7 @@ public class WalletMgr {
     }
 
     private void storePrivateKey(Map map, String key, String password, String prikey) {
-        if (PriKeyStoreInMem) {
+        if (priKeyStoreInMem) {
             map.put(key + "," + password, prikey);
         }
     }

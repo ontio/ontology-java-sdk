@@ -241,9 +241,18 @@ public class WalletMgr {
         storePrivateKey(acctPriKeyMap, info.addressBase58, password, Helper.toHexString(prikey));
         return info;
     }
-    public Account createAccountFromPriKey(String password, String prikey) throws Exception {
 
-        return createAccountFromPriKey(password, prikey);
+    public Account getDefaultAccount() {
+        for (Account e : wallet.getAccounts()) {
+            if (e.isDefault) {
+                return e;
+            }
+        }
+        return null;
+    }
+    public Account createAccountFromPriKey(String password, String prikey) throws Exception {
+        AccountInfo info = createAccount("",password, Helper.hexToBytes(prikey));
+        return getAccount(info.addressBase58);
     }
     public Account createAccountFromPriKey(String label,String password, String prikey) throws Exception {
         AccountInfo info = createAccount(label,password, Helper.hexToBytes(prikey));
@@ -365,14 +374,7 @@ public class WalletMgr {
         return null;
     }
 
-    public Account getDefaultAccount() {
-        for (Account e : wallet.getAccounts()) {
-            if (e.isDefault) {
-                return e;
-            }
-        }
-        return null;
-    }
+
 
     public Account getAccount(String address) {
         for (Account e : wallet.getAccounts()) {
@@ -417,10 +419,14 @@ public class WalletMgr {
             acct.key = Helper.toHexString(account.serializePrivateKey());
         }
         acct.address = Address.addressFromPubKey(account.serializePublicKey()).toBase58();
+        if (label == null || label.equals("")) {
+            String uuidStr = UUID.randomUUID().toString();
+            label = uuidStr.substring(0, 8);
+        }
         if (saveAccountFlag) {
             for (Account e : wallet.getAccounts()) {
                 if (e.address.equals(acct.address)) {
-                    return account;
+                    throw new SDKException(ErrorCode.ParamErr("wallet account exist"));
                 }
             }
             if (wallet.getAccounts().size() == 0) {

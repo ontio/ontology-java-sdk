@@ -164,8 +164,12 @@ public class OntSdk {
      */
     public void openWalletFile(String path) {
 
-        this.walletMgr = new WalletMgr(path,signatureScheme);
-        setSignatureScheme(signatureScheme);
+        try {
+            this.walletMgr = new WalletMgr(path,signatureScheme);
+            setSignatureScheme(signatureScheme);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

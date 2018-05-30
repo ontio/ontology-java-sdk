@@ -78,7 +78,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Identity sendRegister(Identity ident, String password,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+    public Identity sendRegister(Identity ident, String password,String payer,String payerpwd,long gaslimit,long gasprice,boolean isPreExec) throws Exception {
         if(ident ==null || password ==null || password.equals("")||payer==null || payer.equals("")||payerpwd ==null || payerpwd.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -90,9 +90,18 @@ public class OntId {
         }
         IdentityInfo info = sdk.getWalletMgr().getIdentityInfo(ident.ontid, password);
         Transaction tx = makeRegister(ident.ontid,password,payer,gaslimit,gasprice);
+        Identity identity = sdk.getWalletMgr().addOntIdController(ident.ontid, info.encryptedPrikey, info.ontid);
+        sdk.getWalletMgr().writeWallet();
+        if(isPreExec){
+            Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+            String result = ((JSONObject) obj).getString("Result");
+            if (Integer.parseInt(result) == 0) {
+                throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
+            }
+            return identity;
+        }
         sdk.signTx(tx, ident.ontid, password);
         sdk.addSign(tx,payer,payerpwd);
-        Identity identity = sdk.getWalletMgr().addOntIdController(ident.ontid, info.encryptedPrikey, info.ontid);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (!b) {
             throw new SDKException(ErrorCode.SendRawTxError);
@@ -101,6 +110,12 @@ public class OntId {
         return identity;
     }
 
+    public Identity sendRegisterPreExec(Identity ident, String password,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+        return sendRegister(ident, password, payer,payerpwd, gaslimit,gasprice, true);
+    }
+    public Identity sendRegister(Identity ident, String password,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+        return sendRegister(ident, password, payer,payerpwd, gaslimit,gasprice, false);
+    }
     /**
      *
      * @param ident

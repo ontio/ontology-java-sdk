@@ -92,21 +92,20 @@ public class OntId {
         Transaction tx = makeRegister(ident.ontid,password,payer,gaslimit,gasprice);
         Identity identity = sdk.getWalletMgr().addOntIdController(ident.ontid, info.encryptedPrikey, info.ontid);
         sdk.getWalletMgr().writeWallet();
+        sdk.signTx(tx, ident.ontid, password);
+        sdk.addSign(tx,payer,payerpwd);
         if(isPreExec){
             Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
             String result = ((JSONObject) obj).getString("Result");
             if (Integer.parseInt(result) == 0) {
                 throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
             }
-            return identity;
+        }else{
+            boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
+            if (!b) {
+                throw new SDKException(ErrorCode.SendRawTxError);
+            }
         }
-        sdk.signTx(tx, ident.ontid, password);
-        sdk.addSign(tx,payer,payerpwd);
-        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
-        if (!b) {
-            throw new SDKException(ErrorCode.SendRawTxError);
-        }
-        sdk.getWalletMgr().writeWallet();
         return identity;
     }
 

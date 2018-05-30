@@ -44,14 +44,6 @@ import java.util.List;
  */
 public class BuildParams {
 
-    public static byte[] Int2Bytes_LittleEndian(int iValue){
-        byte[] rst = new byte[4];
-        rst[0] = (byte)(iValue & 0xFF);
-        rst[1] = (byte)((iValue & 0xFF00) >> 8 );
-        rst[2] = (byte)((iValue & 0xFF0000) >> 16 );
-        rst[3] = (byte)((iValue & 0xFF000000) >> 24 );
-        return rst;
-    }
     /**
      * @param builder
      * @param list

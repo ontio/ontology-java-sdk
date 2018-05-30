@@ -127,7 +127,7 @@ public class Ont {
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"balanceOf", Address.decodeBase58(address).toArray(), VmType.Native.value(), null,0,0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
-        if (("").equals(res)) {
+        if (res==null || res.equals("")) {
             return 0;
         }
         return Long.valueOf(res,16);
@@ -143,11 +143,11 @@ public class Ont {
      * @throws IOException
      */
     public long queryAllowance(String fromAddr,String toAddr) throws SDKException, ConnectorException, IOException {
-        byte[] parabytes = buildParams(Address.decodeBase58(fromAddr),Address.decodeBase58(toAddr));
+        byte[] parabytes = BuildParams.buildParams(Address.decodeBase58(fromAddr),Address.decodeBase58(toAddr));
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"allowance", parabytes, VmType.Native.value(), null,0,0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
-        if (("").equals(res)) {
+        if (res == null || res.equals("")) {
             return 0;
         }
         return Long.valueOf(res,16);
@@ -254,7 +254,7 @@ public class Ont {
      * @return
      * @throws Exception
      */
-    public Transaction makeTransferFrom(String sendAddr, String password, String fromAddr, String toAddr, long amount,String payer,long gaslimit,long gasprice) throws Exception {
+    public Transaction makeTransferFrom(String sendAddr, String password, String fromAddr, String toAddr,long amount,String payer,long gaslimit,long gasprice) throws Exception {
         if(sendAddr==null || sendAddr.equals("")||password==null||password.equals("")||fromAddr==null||fromAddr.equals("")||toAddr==null||toAddr.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameters should not be null"));
         }
@@ -315,27 +315,10 @@ public class Ont {
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"totalSupply", "".getBytes(), VmType.Native.value(), null,0,0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
-        if (("").equals(res)) {
+        if (res == null || res.equals("")) {
             return 0;
         }
         return Long.valueOf(res,16);
-    }
-
-    private byte[] buildParams(Object... params) throws SDKException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        BinaryWriter writer = new BinaryWriter(byteArrayOutputStream);
-        try {
-            for (Object param : params) {
-                if(param instanceof Address){
-                    writer.writeSerializable((Address)param);
-                }else if(param instanceof byte[]){
-                    writer.writeVarBytes((byte[])param);
-                }
-            }
-        } catch (IOException e) {
-            throw new SDKException(ErrorCode.WriteVarBytesError);
-        }
-        return byteArrayOutputStream.toByteArray();
     }
 
     /**

@@ -127,7 +127,7 @@ public class Ong {
      * @throws IOException
      */
     public long queryAllowance(String fromAddr, String toAddr) throws SDKException, ConnectorException, IOException {
-        byte[] parabytes = buildParams(Address.decodeBase58(fromAddr).toArray(), Address.decodeBase58(toAddr).toArray());
+        byte[] parabytes = BuildParams.buildParams(Address.decodeBase58(fromAddr).toArray(), Address.decodeBase58(toAddr).toArray());
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "allowance", parabytes, VmType.Native.value(), null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
@@ -236,23 +236,6 @@ public class Ong {
             return 0;
         }
         return Long.valueOf(res, 16);
-    }
-
-    private byte[] buildParams(Object... params) throws SDKException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        BinaryWriter writer = new BinaryWriter(byteArrayOutputStream);
-        try {
-            for (Object param : params) {
-                if(param instanceof Address){
-                    writer.writeSerializable((Address)param);
-                }else if(param instanceof byte[]){
-                    writer.writeVarBytes((byte[])param);
-                }
-            }
-        } catch (IOException e) {
-            throw new SDKException(ErrorCode.WriteVarBytesError);
-        }
-        return byteArrayOutputStream.toByteArray();
     }
 
     /**

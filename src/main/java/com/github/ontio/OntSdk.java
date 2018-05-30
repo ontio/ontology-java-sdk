@@ -238,12 +238,12 @@ public class OntSdk {
      */
     public Transaction signTx(Transaction tx, Account[][] accounts, int[] M) throws Exception {
         if (M.length != accounts.length) {
-            throw new SDKException("M Error");
+            throw new SDKException(ErrorCode.ParamError);
         }
         tx = signTx(tx,accounts);
         for (int i = 0; i < tx.sigs.length; i++) {
             if (M[i] > tx.sigs[i].pubKeys.length || M[i] < 0) {
-                throw new SDKException("M Error");
+                throw new SDKException(ErrorCode.ParamError);
             }
             tx.sigs[i].M = M[i];
         }

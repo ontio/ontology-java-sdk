@@ -115,7 +115,7 @@ public class ConnectMgrTest {
     @Test
     public void sendRawTransactionPreExec() throws Exception {
 
-        byte[] parabytes = ontSdk.nativevm().ontId().buildParams(Address.decodeBase58(address).toArray());
+        byte[] parabytes = com.github.ontio.smartcontract.nativevm.BuildParams.buildParams(Address.decodeBase58(address).toArray());
         Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContract,"balanceOf", parabytes, VmType.Native.value(), null,ontSdk.DEFAULT_GAS_LIMIT,0);
         Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         Assert.assertNotEquals(null,obj);

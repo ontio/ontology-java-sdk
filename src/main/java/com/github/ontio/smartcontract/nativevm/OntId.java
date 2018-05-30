@@ -406,7 +406,7 @@ public class OntId {
      * @throws Exception
      */
     public Transaction makeAddPubKey(String ontid,String recoveryAddr,String password,String newpubkey,String payer,long gaslimit,long gasprice) throws Exception {
-        if(ontid==null || ontid.equals("")||password ==null || password.equals("")||payer==null || payer.equals("")||newpubkey==null||newpubkey.equals("")){
+        if(ontid==null || ontid.equals("")||payer==null || payer.equals("")||newpubkey==null||newpubkey.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
         if(gasprice < 0 || gaslimit<0){

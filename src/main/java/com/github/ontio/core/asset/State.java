@@ -46,7 +46,7 @@ public class State implements Serializable {
         try {
             from = reader.readSerializable(Address.class);
             to = reader.readSerializable(Address.class);
-            value = reader.readLong();
+            value = reader.readVarInt();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -58,7 +58,7 @@ public class State implements Serializable {
     public void serialize(BinaryWriter writer) throws IOException {
         writer.writeSerializable(from);
         writer.writeSerializable(to);
-        writer.writeLong(value);
+        writer.writeVarInt(value);
 
     }
 

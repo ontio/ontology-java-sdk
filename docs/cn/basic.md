@@ -22,46 +22,46 @@ ontSdk.openWalletFile("OntAssetDemo.json");
 
 * 获取当前区块高度
 ```
-int height = ontSdk.getConnectMgr().getBlockHeight();
+int height = ontSdk.getConnect().getBlockHeight();
 ```
 
 * 获取区块
 
 根据高度获取区块
 ```
-Block block = ontSdk.getConnectMgr().getBlock(9757);
+Block block = ontSdk.getConnect().getBlock(9757);
 ```
 
 根据区块hash获得区块
 
 ```
-Block block = ontSdk.getConnectMgr().getBlock(blockhash);
+Block block = ontSdk.getConnect().getBlock(blockhash);
 ```
 
 * 获得block json数据
 
 根据高度获取区块json
 ```
-Object block = ontSdk.getConnectMgr().getBlockJson(9757);
+Object block = ontSdk.getConnect().getBlockJson(9757);
 ```
 
 根据区块hash获得区块json
 
 ```
-Object block = ontSdk.getConnectMgr().getBlockJson(blockhash);
+Object block = ontSdk.getConnect().getBlockJson(blockhash);
 ```
 * 获得合约代码
 
 根据合约hash获得合约代码
 
 ```
-Object contract =  ontSdk.getConnectMgr().getContract(contractHash)
+Object contract =  ontSdk.getConnect().getContract(contractHash)
 ```
 
 根据合约hash获得合约代码json数据
 
 ```
-Object contractJson = ontSdk.getConnectMgr().getContractJson(hash)
+Object contractJson = ontSdk.getConnect().getContractJson(hash)
 ```
 
 * 查询余额
@@ -69,25 +69,25 @@ Object contractJson = ontSdk.getConnectMgr().getContractJson(hash)
 根据账户地址查询余额
 
 ```
-Object  balance = ontSdk.getConnectMgr().getBalance(address)
+Object  balance = ontSdk.getConnect().getBalance(address)
 ```
 
 * 获取区块链节点数
 
 ```
-int count = ontSdk.getConnectMgr().getNodeCount();
+int count = ontSdk.getConnect().getNodeCount();
 ```
 
 * 获取出块时间
 
 ```
-int time = ontSdk.getConnectMgr().getGenerateBlockTime();
+int time = ontSdk.getConnect().getGenerateBlockTime();
 ```
 
 * 获得区块高度
 
 ```
-int blockheight = ontSdk.getConnectMgr().getBlockHeight()
+int blockheight = ontSdk.getConnect().getBlockHeight()
 ```
 
 * 获得智能合约事件
@@ -95,25 +95,25 @@ int blockheight = ontSdk.getConnectMgr().getBlockHeight()
 根据高度获得智能合约事件
 
 ```
-Object  event = ontSdk.getConnectMgr().getSmartCodeEvent(height)
+Object  event = ontSdk.getConnect().getSmartCodeEvent(height)
 ```
 
 根据交易hash获得智能合约事件
 
 ```
-Object  event = ontSdk.getConnectMgr().getSmartCodeEvent(hash)
+Object  event = ontSdk.getConnect().getSmartCodeEvent(hash)
 ```
 
 * 根据交易hash获得区块高度
 
 ```
-int blockheight = ontSdk.getConnectMgr().getBlockHeightByTxHash(txhash)
+int blockheight = ontSdk.getConnect().getBlockHeightByTxHash(txhash)
 ```
 
 * 获得智能合约存储的数据
 
 ```
-String value = ontSdk.getConnectMgr().getStorage(codehash,key)
+String value = ontSdk.getConnect().getStorage(codehash,key)
 ```
 
 * 获得merkle证明
@@ -121,26 +121,26 @@ String value = ontSdk.getConnectMgr().getStorage(codehash,key)
 根据交易hash获得merkle证明
 
 ```
-Object proof =  ontSdk.getConnectMgr().getMerkleProof(String hash)
+Object proof =  ontSdk.getConnect().getMerkleProof(String hash)
 ```
 
 * 从区块链中获取交易
 
 根据交易hash获得交易对象
 ```
-Transaction info = ontSdk.getConnectMgr().getTransaction(txhash);
+Transaction info = ontSdk.getConnect().getTransaction(txhash);
 ```
 
 根据交易hash获得交易json数据
 
 ```
-Object info = ontSdk.getConnectMgr().getTransactionJson(txhash);
+Object info = ontSdk.getConnect().getTransactionJson(txhash);
 ```
 
 * 从区块链中获取InvokeCodeTransaction
 
 ```
-InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getTransaction(txhash);
+InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnect().getTransaction(txhash);
 ```
 ## 数据结构说明
 

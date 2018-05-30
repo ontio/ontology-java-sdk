@@ -26,7 +26,7 @@ System.out.println("CodeAddress:" + Helper.getCodeAddress(code, VmType.NEOVM.val
 ```
 //step1：构造交易
 //需先将智能合约参数转换成vm可识别的opcode
-Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), sender.toBase58(),0);
+Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), sender.toBase58(),gaslimit，gasprice);
 
 //step2：对交易签名
 ontSdk.signTx(tx, info1.address, password);
@@ -44,7 +44,7 @@ ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
 
 如智能合约get相关操作，从智能合约存储空间里读取数据，无需走节点共识，只在该节点执行即可返回结果。发送交易时调用预执行接口。
 ```
-String result = (String) sdk.getConnectMgr().sendRawTransactionPreExec(txHex);
+String result = (String) sdk.getConnect().sendRawTransactionPreExec(txHex);
 ```
 
 ## 智能合约部署和调用
@@ -62,12 +62,12 @@ code = Helper.toHexString(bys);
 ontSdk.setCodeAddress(Helper.getCodeAddress(code,VmType.NEOVM.value()));
 
 //部署合约
-Transaction tx = ontSdk.vm().makeDeployCodeTransaction(codeHexStr, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),payer,0);;
+Transaction tx = ontSdk.vm().makeDeployCodeTransaction(codeHexStr, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),payer,gaslimit,gasprice);;
 String txHex = Helper.toHexString(tx.toArray());
-ontSdk.getConnectMgr().sendRawTransaction(txHex);
+ontSdk.getConnect().sendRawTransaction(txHex);
 //等待出块
 Thread.sleep(6000);
-DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getTransaction(txHex);
+DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnect().getTransaction(txHex);
 ```
 
 | 参数      | 字段   | 类型  | 描述 |             说明 |
@@ -81,7 +81,8 @@ DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnectMgr().getTran
 |        | desp   | String | 描述信息     | 必选 |
 |        | VmType   | byte | 虚拟机类型     | 必选 |
 |        | payer   | String | 支付交易费用的账户地址     | 必选 |
-|        | gas   | long | gas费用     | 必选 |
+|        | gaslimit   | long | gaslimit    | 必选 |
+|        | gasprice   | long | gas价格   | 必选 |
 | 输出参数 | tx   | Transaction  | 交易实例  |  |
 
 ## 智能合约调用
@@ -126,7 +127,7 @@ System.out.println(func.getParameters());
 func.setParamsValue(did.ontid.getBytes(),"key".getBytes(),"bytes".getBytes(),"values02".getBytes(),Helper.hexToBytes(info.pubkey));
 System.out.println(func);
 //调用智能合约，sendInvokeSmartCodeWithSign方法封装好了构造交易，签名交易，发送交易步骤
-String hash = ontSdk.vm().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", func, (byte) VmType.NEOVM.value(),gas);
+String hash = ontSdk.vm().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", func, (byte) VmType.NEOVM.value(),gaslimit,gasprice);
 
 ```
 
@@ -170,7 +171,7 @@ String params = ontSdk.vm().buildWasmContractJsonParam(new Object[]{20,30});
 //指定虚拟机类型构造交易
 Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontSdk.getSmartcodeTx().getCodeAddress(),funcName,params.getBytes(),VmType.WASMVM.value(),payer,gas);
 //发送交易
-ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
+ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 
 ```
 

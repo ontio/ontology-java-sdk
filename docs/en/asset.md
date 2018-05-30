@@ -74,13 +74,11 @@ ontSdk.getWalletMgr().getWallet().setDefaultAccount("address");
 
 ont and ong asset list
 
- 1. sendTransfer(String assetName, String sendAddr, String password, String recvAddr, long amount,long gas)
+ 1. String sendTransfer(String sendAddr, String password, String recvAddr, long amount,String payer,String payerpwd,long gaslimit,long gasprice)
 
     function description： Transfer a certain amount of assets from the sender to the receiver's account
 
     parameter description：
-
-    assetName：asset name，ont or ong
 
     sendAddr： sender address
 
@@ -90,17 +88,17 @@ ont and ong asset list
 
     amount ： asset amount
 
-    gas ： gas amount
+    gaslimit：gaslimit
+
+    gasprice ： gas price
 
     return value： transaction hash
 
- 2. sendTransferToMany(String assetName, String sendAddr, String password, String[] recvAddr, long[] amount,long gas)
+ 2. String sendTransferToMany(String sendAddr, String password, String[] recvAddr, long[] amount,String payer,String payerpwd,long gaslimit,long gasprice)
 
     function description： transfer a certain amount of assets from the sender to multiple receiver accounts
 
     parameter description：
-
-    assetName：asset name，ont or ong
 
     sendAddr： sender address
 
@@ -110,17 +108,17 @@ ont and ong asset list
 
     amount ： asset amount array
 
-    gas ： gas amount
+    gaslimit：gaslimit
+
+    gasprice ： gas price
 
     return value：transaction hash
 
- 3. sendTransferFromMany(String assetName, String[] sendAddr, String[] password, String recvAddr, long[] amount,long gas)
+ 3. String sendTransferFromMany(String[] sendAddr, String[] password, String recvAddr, long[] amount,String payer,String payerpwd,long gaslimit,long gasprice)
 
      function description： transfer assets from multiple senders to one receiver
 
      parameter description：
-
-     assetName：asset name，ont or ong
 
      sendAddr： sender address array
 
@@ -130,7 +128,9 @@ ont and ong asset list
 
      amount ： array of transferred assets
 
-     gas ： gas amount
+     gaslimit：gaslimit
+
+     gasprice ： gas price
 
      return value：transaction hash
 
@@ -148,7 +148,9 @@ ont and ong asset list
 
       amount ： asset amount
 
-      gas ： gas amount
+      gaslimit：gaslimit
+
+      gasprice ： gas price
 
       return value：transaction hash
 
@@ -168,7 +170,9 @@ ont and ong asset list
 
        amount： asset amount
 
-       gas： gas amount
+       gaslimit：gaslimit
+
+       gasprice ： gas price
 
        return value：transaction hash
 
@@ -190,23 +194,23 @@ ont and ong asset list
 
         amount： asset amount
 
-        gas： gas amount
+        gaslimit：gaslimit
+
+        gasprice ： gas price
 
         return value：transaction hash
 
- 7. sendBalanceOf(String assetName, String address)
+ 7. long queryBalanceOf(String address)
 
          function description： Query the assetName asset balance of the account address
 
          parameter description：
 
-         assetName：asset name，ont or ong
-
-         address：
+         address：account address
 
          return value： balance of address
 
- 8. sendAllowance(String assetName,String fromAddr,String toAddr)
+ 8. long queryAllowance(String fromAddr,String toAddr)
 
          function description： query the assetName asset balance of the account address
 
@@ -220,43 +224,35 @@ ont and ong asset list
 
          return value： asset amount
 
- 9. queryName(String assetName)
+ 9. String queryName()
 
           function description： query assetName asset name information
 
           parameter description：
 
-          assetName：asset name
-
           return value：asset name detail information
 
- 10. querySymbol(String assetName)
+ 10. String querySymbol()
 
            function description： query AssetName Asset Symbol Information
 
            parameter description：
 
-           assetName：asset name
-
            return value：Symbol information
 
- 11. queryDecimals(String assetName)
+ 11. long queryDecimals()
 
             function description： query the accuracy of assetName assets
 
             parameter description：
 
-            assetName：asset name
-
             return value：decimal
 
- 12. queryTotalSupply(String assetName)
+ 12. long queryTotalSupply()
 
              function description： query the total supply of assetName assets
 
              parameter description：
-
-             assetName：asset name
 
              return value：total Supply
 
@@ -264,129 +260,15 @@ Example:
 
 ```
 //step1:get sdk instance
-OntSdk wm = OntSdk.getInstance();
-wm.setRpcConnection(url);
-wm.openWalletFile("OntAssetDemo.json");
+OntSdk sdk = OntSdk.getInstance();
+sdk.setRpcConnection(url);
+sdk.openWalletFile("OntAssetDemo.json");
 //step2:get ontAssetTx instance
 ont = sdk.nativevm().ont()
 //step3:transfer
-ont.sendTransfer("ont",info2.address,"passwordtest",info1.address,100000000L);
-ont.sendTransferToMany("ont",info1.address,"passwordtest",new String[]{info2.address,info3.address},new long[]{100L,200L});
-ont.sendTransferFromMany("ont", new String[]{info1.address, info2.address}, new String[]{"passwordtest", "passwordtest"}, info3.address, new long[]{1L, 2L});
-ont.sendOngTransferFrom(info1.address,"passwordtest",info2.address,100);
-```
-
-* Use Smart Contract
-
-You also use smart contract to deal with  native digital asset.
-
-Ontology smart contract ABI describes the functional interface of smart contract and supports parameter transfer:
-
-```
-{
-    "hash":"0xceab719b8baa2310f232ee0d277c061704541cfb",
-    "entrypoint":"Main",
-    "functions":
-    [
-        {
-            "name":"Main",
-            "parameters":
-            [
-                {
-                    "name":"operation",
-                    "type":"String"
-                },
-                {
-                    "name":"args",
-                    "type":"Array"
-                }
-            ],
-            "returntype":"Any"
-        },
-        {
-            "name":"Transfer",
-            "parameters":
-            [
-                {
-                    "name":"from",
-                    "type":"ByteArray"
-                },
-                {
-                    "name":"to",
-                    "type":"ByteArray"
-                },
-                {
-                    "name":"value",
-                    "type":"Integer"
-                }
-            ],
-            "returntype":"Boolean"
-        },
-        {
-            "name":"BalanceOf",
-            "parameters":
-            [
-                {
-                    "name":"address",
-                    "type":"ByteArray"
-                }
-            ],
-            "returntype":"Integer"
-        }
-    ],
-    "events":
-    [
-    ]
-}
-```
-
-How to transfer assets by invoking Ontology asset smart contract?
-
-
-```
-//step1: read smart contract ABI
-InputStream is = new FileInputStream("C:\\NeoContract1.abi.json");
-byte[] bys = new byte[is.available()];
-is.read(bys);
-is.close();
-String abi = new String(bys);
-
-//step2：parse ABI file
-AbiInfo abiinfo = JSON.parseObject(abi, AbiInfo.class);
-
-//step3：set smart contract codeAddress
-ontSdk.setCodeAddress(abiinfo.getHash());
-
-//step4：select a function and set parameter value
-AbiFunction func = abiinfo.getFunction("Transfer");
-System.out.println(func.getParameters());
-func.setParamsValue(param0.getBytes(),param1.getBytes(),param2.getBytes());
-
-//setp5：invoke contract
-String hash = ontSdk.getSmartcodeTx().sendInvokeSmartCodeWithSign("passwordtest",addr,func);
-```
-
-
-What would be the AbiInfo structure?
-
-
-```
-public class AbiInfo {
-    public String hash;
-    public String entrypoint;
-    public List<AbiFunction> functions;
-    public List<AbiEvent> events;
-}
-public class AbiFunction {
-    public String name;
-    public String returntype;
-    public List<Parameter> parameters;
-}
-public class Parameter {
-    public String name;
-    public String type;
-    public String value;
-}
+ont.sendTransfer(fromAddr,password,toAddr,100000000L,payer,payerpwd,gaslimit,gasprice);
+ont.sendTransferToMany(fromAddr,password,new String[]{toAddr1,toAddr2},new long[]{100L,200L},payer,payerpwd,gaslimit,gasprice);
+ont.sendTransferFromMany(new String[]{fromAddr1, fromAddr2}, new String[]{password1, password2}, toAddr, new long[]{1L, 2L},payer,payerpwd,gaslimit,gasprice);
 ```
 
 ## nep-5 smart contract digital assets

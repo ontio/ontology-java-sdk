@@ -50,7 +50,7 @@ public class TransferFrom implements Serializable {
             sender = reader.readSerializable(Address.class);
             from = reader.readSerializable(Address.class);
             to = reader.readSerializable(Address.class);
-            value = reader.readLong();
+            value = reader.readVarInt();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -63,7 +63,7 @@ public class TransferFrom implements Serializable {
         writer.writeSerializable(sender);
         writer.writeSerializable(from);
         writer.writeSerializable(to);
-        writer.writeLong(value);
+        writer.writeVarInt(value);
 
     }
 

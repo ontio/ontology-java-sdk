@@ -109,8 +109,7 @@ public class Ong {
      * @throws Exception
      */
     public long queryBalanceOf(String address) throws Exception {
-        byte[] parabytes = buildParams(Address.decodeBase58(address).toArray());
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "balanceOf", parabytes, VmType.Native.value(), null, 0, 0);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "balanceOf",Address.decodeBase58(address).toArray(), VmType.Native.value(), null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
         if (("").equals(res)) {
@@ -128,7 +127,7 @@ public class Ong {
      * @throws IOException
      */
     public long queryAllowance(String fromAddr, String toAddr) throws SDKException, ConnectorException, IOException {
-        byte[] parabytes = buildParams(Address.decodeBase58(fromAddr).toArray(), Address.decodeBase58(toAddr).toArray());
+        byte[] parabytes = BuildParams.buildParams(Address.decodeBase58(fromAddr).toArray(), Address.decodeBase58(toAddr).toArray());
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "allowance", parabytes, VmType.Native.value(), null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
@@ -237,19 +236,6 @@ public class Ong {
             return 0;
         }
         return Long.valueOf(res, 16);
-    }
-
-    private byte[] buildParams(byte[]... params) throws SDKException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        BinaryWriter writer = new BinaryWriter(byteArrayOutputStream);
-        try {
-            for (byte[] param : params) {
-                writer.writeVarBytes(param);
-            }
-        } catch (IOException e) {
-            throw new SDKException(ErrorCode.WriteVarBytesError);
-        }
-        return byteArrayOutputStream.toByteArray();
     }
 
     /**

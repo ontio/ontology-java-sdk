@@ -39,7 +39,7 @@ get block by block height
 
 
 ```
-Block block = ontSdk.getConnectMgr().getBlock(9757);
+Block block = ontSdk.getConnect().getBlock(9757);
 ```
 
 
@@ -47,7 +47,7 @@ get block by block hash
 
 
 ```
-Block block = ontSdk.getConnectMgr().getBlock(blockhash);
+Block block = ontSdk.getConnect().getBlock(blockhash);
 ```
 
 
@@ -57,7 +57,7 @@ Block block = ontSdk.getConnectMgr().getBlock(blockhash);
 get block by block height
 
 ```
-Object block = ontSdk.getConnectMgr().getBlockJson(9757);
+Object block = ontSdk.getConnect().getBlockJson(9757);
 ```
 
 
@@ -65,7 +65,7 @@ get block by block hash
 
 
 ```
-Object block = ontSdk.getConnectMgr().getBlockJson(blockhash);
+Object block = ontSdk.getConnect().getBlockJson(blockhash);
 ```
 
 * Get contarct code
@@ -74,7 +74,7 @@ get contract code by contract hash
 
 
 ```
-Object contract =  ontSdk.getConnectMgr().getContract(contractHash)
+Object contract =  ontSdk.getConnect().getContract(contractHash)
 ```
 
 
@@ -82,7 +82,7 @@ get contract json  by contract hash
 
 
 ```
-Object contractJson = ontSdk.getConnectMgr().getContractJson(hash)
+Object contractJson = ontSdk.getConnect().getContractJson(hash)
 ```
 
 * Get balance
@@ -92,25 +92,25 @@ query balance by address
 
 
 ```
-Object  balance = ontSdk.getConnectMgr().getBalance(address)
+Object  balance = ontSdk.getConnect().getBalance(address)
 ```
 
 * Get blockchain node count
 
 ```
-ontSdk.getConnectMgr().getNodeCount();
+ontSdk.getConnect().getNodeCount();
 ```
 
 * Get block time
 
 ```
-ontSdk.getConnectMgr().getGenerateBlockTime();
+ontSdk.getConnect().getGenerateBlockTime();
 ```
 
 * get block height
 
 ```
-int blockheight = ontSdk.getConnectMgr().getBlockHeight()
+int blockheight = ontSdk.getConnect().getBlockHeight()
 ```
 
 * get smartcontract event
@@ -118,25 +118,25 @@ int blockheight = ontSdk.getConnectMgr().getBlockHeight()
 get smartcontract event by block height
 
 ```
-Object  event = ontSdk.getConnectMgr().getSmartCodeEvent(height)
+Object  event = ontSdk.getConnect().getSmartCodeEvent(height)
 ```
 
 get smartcontract event by transaction hash
 
 ```
-Object  event = ontSdk.getConnectMgr().getSmartCodeEvent(hash)
+Object  event = ontSdk.getConnect().getSmartCodeEvent(hash)
 ```
 
 * get block height by transaction hash
 
 ```
-int blockheight = ontSdk.getConnectMgr().getBlockHeightByTxHash(txhash)
+int blockheight = ontSdk.getConnect().getBlockHeightByTxHash(txhash)
 ```
 
 * get data stored in smart contract by key
 
 ```
-String value = ontSdk.getConnectMgr().getStorage(codehash,key)
+String value = ontSdk.getConnect().getStorage(codehash,key)
 ```
 
 * get merkle proof
@@ -144,26 +144,26 @@ String value = ontSdk.getConnectMgr().getStorage(codehash,key)
 get merkle proof by transaction hash
 
 ```
-Object proof =  ontSdk.getConnectMgr().getMerkleProof(String hash)
+Object proof =  ontSdk.getConnect().getMerkleProof(String hash)
 ```
 
 
 * Get blockchain-based transaction
 
 ```
-Transaction info = ontSdk.getConnectMgr().getTransaction(hash);
+Transaction info = ontSdk.getConnect().getTransaction(hash);
 ```
 
 get transaction json by transaction hash
 
 ```
-Object info = ontSdk.getConnectMgr().getTransactionJson(txhash);
+Object info = ontSdk.getConnect().getTransactionJson(txhash);
 ```
 
 * Get InvokeTransaction
 
 ```
-InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnectMgr().getTransaction(hash);
+InvokeCodeTransaction t = (InvokeCodeTransaction) ontSdk.getConnect().getTransaction(hash);
 ```
 
 ## Data structure

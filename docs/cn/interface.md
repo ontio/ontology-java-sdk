@@ -96,23 +96,23 @@
 
       |                                         Main   Function                                                     |           Description            
  -----|-------------------------------------------------------------------------------------------------------------|---------------------------------------------
-    1 | String sendTransfer(String assetName, String sendAddr, String pwd, String recvAddr, long amount,long gas)   |  转账
-    2 | long queryBalanceOf(String assetName, String address)                                                       |  查询余额                              
-    3 | long queryAllowance(String assetName,String fromAddr,String toAddr)                                         |  查询Allowance
-    4 | String sendApprove(String assetName ,String sendAddr, String pwd, String recvAddr, long amount,long gas)    |  发送Approve    
-    5 | String sendTransferFrom(String asset,String sendAddr,String pwd,String from,String to,long amount,long gas) |  发送TransferFrom 
-    6 | String queryName(String assetName)                                                                          |  查询资产名
-    7 | String querySymbol(String assetName)                                                                        |  查询资产Symbol
-    8 | long queryDecimals(String assetName)                                                                        |  查询精度
-    9 | long queryTotalSupply(String assetName)                                                                     |  查询总供应量
-   10 | String cliamOng(String sendAddr, String password, String to, long amount,long gas)                          |  提取ong
+    1 | String sendTransfer(String sendAddr, String password, String recvAddr, long amount,String payer,String payerpwd,long gaslimit,long gasprice)   |  转账
+    2 | long queryBalanceOf(String address)                                                       |  查询余额
+    3 | long queryAllowance(String fromAddr,String toAddr)                                         |  查询Allowance
+    4 | String sendApprove(String sendAddr, String password, String recvAddr, long amount,String payer,String payerpwd,long gaslimit,long gasprice)    |  发送Approve
+    5 | String sendTransferFrom(String sendAddr, String password, String fromAddr, String toAddr,long amount,String payer,String payerpwd,long gaslimit,long gasprice) |  发送TransferFrom
+    6 | String queryName()                                                                          |  查询资产名
+    7 | String querySymbol()                                                                        |  查询资产Symbol
+    8 | long queryDecimals()                                                                        |  查询精度
+    9 | long queryTotalSupply()                                                                     |  查询总供应量
+   10 | String claimOng(String sendAddr, String password, String to, long amount, String payer, String payerpwd, long gaslimit, long gasprice)             |  提取ong
    11 | String unclaimOng(String address)                                                                           |  查询未提取的ong
       
       
       |                                         other   Function                                                       |           Description            
  -----|----------------------------------------------------------------------------------------------------------------|---------------------------------------------
-    1 | String sendTransferToMany(String asset,String sendAddr, String pwd,String[] recvAddr,long[] amount,long gas)   |  转给多个地址
-    2 | String sendTransferFromMany(String asset,String[] sendAddr,String[] pwd,String recvAddr,long[] amount,long gas)|  多个地址转给一个地址
+    1 | String sendTransferToMany(String sendAddr, String password, String[] recvAddr, long[] amount,String payer,String payerpwd,long gaslimit,long gasprice)   |  转给多个地址
+    2 | String sendTransferFromMany(String[] sendAddr, String[] password, String recvAddr, long[] amount,String payer,String payerpwd,long gaslimit,long gasprice)|  多个地址转给一个地址
 ```   
 
 * Nep-5智能合约数字资产:
@@ -141,20 +141,22 @@
 ```
       |                                         Main   Function                                                     |           Description            
  -----|-------------------------------------------------------------------------------------------------------------|---------------------------------------------
-    1 | String getContractAddress()                                                                                 |  查询合约地址
-    2 | Identity sendRegister(Identity ident, String password,String payer,String payerpassword,long gas)           |  注册ontid
-    3 | Identity sendRegisterPreExec(Identity ident, String password,String payerpassword,String payer, long gas)   |  预执行注册ontid                              
-    4 | Identity sendRegisterWithAttrs(Identity ident,String pwd,Map attrsMap,String payer,String payerpwd,long gas)|  注册ontid并添加属性
-    5 | String sendAddPubKey(String ontid, String password, String newpubkey,String payer,String payerpwd,long gas) |  添加公钥    
-    6 | String sendGetPublicKeys(String ontid)                                                                      |  获取公钥
-    7 | String sendRemovePubKey(String ontid, String pwd, String removePubkey,String payer,String payerpwd,long gas)|  删除公钥
-    8 | String sendGetKeyState(String ontid,int index)                                                              |  获取某公钥状态
-    9 | String sendAddAttributes(String ontid, String pswd, Map attrsMap,String payer,String payerpassword,long gas)|  添加属性
-   10 | String sendGetAttributes(String ontid)                                                                      |  查询属性
-   11 | String sendRemoveAttribute(String ontid,String password,String path,String payer,String payerpwd,long gas)  |  删除属性
-   12 | String sendAddRecovery(String ontid, String pwd, String recovery,String payer,String payerpwd,long gas)     |  添加恢复人
-   13 | String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery, String password,long gas)   |  修改恢复人
-   14 | String sendGetDDO(String ontid)                                                                             |  查询DDO  
+    1 | String getContractAddress()                                                                                                                             |  查询合约地址
+    2 | Identity sendRegister(Identity ident, String password,String payer,String payerpwd,long gaslimit,long gasprice)                                         |  注册ontid
+    3 | Identity sendRegisterPreExec(Identity ident, String password,String payer,String payerpwd,long gaslimit,long gasprice)                                  |  预执行注册ontid
+    4 | Identity sendRegisterWithAttrs(Identity ident, String password,Attribute[] attributes,String payer,String payerpwd,long gaslimit,long gasprice)         |  注册ontid并添加属性
+    5 | String sendAddPubKey(String ontid, String password, String newpubkey,String payer,String payerpwd,long gaslimit,long gasprice)                          |  添加公钥
+    6 | String sendAddPubKey(String ontid,String recoveryAddr, String password, String newpubkey,String payer,String payerpwd,long gaslimit,long gasprice)      |  添加公钥
+    7 | String sendGetPublicKeys(String ontid)                                                                                                                  |  获取公钥
+    8 | String sendRemovePubKey(String ontid, String password, String removePubkey,String payer,String payerpwd,long gaslimit,long gasprice)                    |  删除公钥
+    9 | String sendRemovePubKey(String ontid, String recoveryAddr,String password, String removePubkey,String payer,String payerpwd,long gaslimit,long gasprice)|  删除公钥
+   10 | String sendGetKeyState(String ontid,int index)                                                                                                          |  获取某公钥状态
+   11 | String sendAddAttributes(String ontid, String password, Attribute[] attributes,String payer,String payerpwd,long gaslimit,long gasprice)                |  添加属性
+   12 | String sendGetAttributes(String ontid)                                                                                                                  |  查询属性
+   13 | String sendRemoveAttribute(String ontid,String password,String path,String payer,String payerpwd,long gaslimit,long gasprice)                           |  删除属性
+   14 | String sendAddRecovery(String ontid, String password, String recoveryAddr,String payer,String payerpwd,long gaslimit,long gasprice)                     |  添加恢复人
+   15 | String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery, String password,long gaslimit,long gasprice)                            |  修改恢复人
+   16 | String sendGetDDO(String ontid)                                                                                                                         |  查询DDO
    
 ```
 
@@ -163,14 +165,15 @@
  ```  
      |                                           Make Transaction  Function                                                |     Description            
  ----|---------------------------------------------------------------------------------------------------------------------|------------------------ 
-   1 | Transaction makeRegister(String ontid,String password,String payer,long gas)                                        |   构造注册交易
-   2 | Transaction makeRegisterWithAttrs(String ontid,String password,Map<String, Object> attrsMap,String payer,long gas)  |   构造注册ontid并添加属性交易
-   3 | Transaction makeAddPubKey(String ontid,String password,String newpubkey,String payer,long gas)                      |   构造添加公钥交易
-   4 | Transaction makeRemovePubKey(String ontid, String password, String removePubkey,String payer,long gas)              |   构造删除公钥交易
-   5 | Transaction makeAddAttributes(String ontid, String password, Map<String, Object> attrsMap,String payer,long gas)    |   构造添加属性交易
-   6 | Transaction makeRemoveAttribute(String ontid,String password,String path,String payer,long gas)                     |   构造删除属性交易
-   7 | Transaction makeAddRecovery(String ontid, String password, String recovery,String payer,long gas)                   |   构造添加恢复人交易
-   
+   1 | Transaction makeRegister(String ontid,String password,String payer,long gaslimit,long gasprice)                                              | 构造注册交易
+   2 | Transaction makeRegisterWithAttrs(String ontid, String password, Attribute[] attributes, String payer, long gaslimit, long gasprice)         | 构造注册ontid并添加属性交易
+   3 | Transaction makeAddPubKey(String ontid,String password,String newpubkey,String payer,long gaslimit,long gasprice)                            | 构造添加公钥交易
+   4 | Transaction makeAddPubKey(String ontid,String recoveryAddr,String password,String newpubkey,String payer,long gaslimit,long gasprice)        | 构造添加公钥交易
+   5 | Transaction makeRemovePubKey(String ontid, String password, String removePubkey,String payer,long gaslimit,long gasprice)                    | 构造删除公钥交易
+   6 | Transaction makeRemovePubKey(String ontid,String recoveryAddr, String password, String removePubkey,String payer,long gaslimit,long gasprice)| 构造删除公钥交易
+   7 | Transaction makeAddAttributes(String ontid, String password, Attribute[] attributes,String payer,long gaslimit,long gasprice)                | 构造添加属性交易
+   8 | Transaction makeRemoveAttribute(String ontid,String password,String path,String payer,long gaslimit,long gasprice)                           | 构造删除属性交易
+   9 | Transaction makeAddRecovery(String ontid, String password, String recoveryAddr,String payer,long gaslimit,long gasprice)                     | 构造添加恢复人交易
   ```
   
 * Cliam相关接口：
@@ -201,8 +204,8 @@
   ```
       |                                            Function                                                                                                                             |     Description            
   ----|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------
-    1 | DeployCode makeDeployCodeTransaction(String code, boolean needStorage, String name, String version, String author, String email, String desp, byte vmtype,String payer,long gas)|   部署              
-    2 | InvokeCode makeInvokeCodeTransaction(String codeAddr,String method,byte[] params, byte vmtype, String payer,long gas)                                                           |   调用
+    1 | DeployCode makeDeployCodeTransaction(String code, boolean needStorage, String name, String version, String author, String email, String desp, byte vmtype,String payer,long gaslimit,long gasprice)|   部署
+    2 | InvokeCode makeInvokeCodeTransaction(String codeAddr,String method,byte[] params, byte vmtype, String payer,long gaslimit,long gasprice)                                                           |   调用
    
   ```
 

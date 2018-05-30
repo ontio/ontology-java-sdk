@@ -78,7 +78,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Identity sendRegister(Identity ident, String password,String payer,String payerpwd,long gaslimit,long gasprice,boolean isPreExec) throws Exception {
+    public String sendRegister(Identity ident, String password,String payer,String payerpwd,long gaslimit,long gasprice,boolean isPreExec) throws Exception {
         if(ident ==null || password ==null || password.equals("")||payer==null || payer.equals("")||payerpwd ==null || payerpwd.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -106,13 +106,13 @@ public class OntId {
                 throw new SDKException(ErrorCode.SendRawTxError);
             }
         }
-        return identity;
+        return tx.hash().toHexString();
     }
 
-    public Identity sendRegisterPreExec(Identity ident, String password,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+    public String sendRegisterPreExec(Identity ident, String password,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
         return sendRegister(ident, password, payer,payerpwd, gaslimit,gasprice, true);
     }
-    public Identity sendRegister(Identity ident, String password,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+    public String sendRegister(Identity ident, String password,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
         return sendRegister(ident, password, payer,payerpwd, gaslimit,gasprice, false);
     }
     /**
@@ -181,7 +181,7 @@ public class OntId {
      * @throws Exception
      */
 
-    public Identity sendRegisterWithAttrs(Identity ident, String password,Attribute[] attributes,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+    public String sendRegisterWithAttrs(Identity ident, String password,Attribute[] attributes,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
         if(ident ==null || password ==null || password.equals("")||payer==null || payer.equals("")||payerpwd ==null || payerpwd.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -200,7 +200,7 @@ public class OntId {
         sdk.getWalletMgr().writeWallet();
         boolean b = false;
         b = sdk.getConnect().sendRawTransaction(tx.toHexString());
-        return identity;
+        return tx.hash().toHexString();
     }
 
     /**

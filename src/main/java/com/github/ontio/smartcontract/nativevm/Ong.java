@@ -109,8 +109,7 @@ public class Ong {
      * @throws Exception
      */
     public long queryBalanceOf(String address) throws Exception {
-        byte[] parabytes = buildParams(Address.decodeBase58(address).toArray());
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "balanceOf", parabytes, VmType.Native.value(), null, 0, 0);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "balanceOf",Address.decodeBase58(address).toArray(), VmType.Native.value(), null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
         if (("").equals(res)) {
@@ -239,12 +238,16 @@ public class Ong {
         return Long.valueOf(res, 16);
     }
 
-    private byte[] buildParams(byte[]... params) throws SDKException {
+    private byte[] buildParams(Object... params) throws SDKException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         BinaryWriter writer = new BinaryWriter(byteArrayOutputStream);
         try {
-            for (byte[] param : params) {
-                writer.writeVarBytes(param);
+            for (Object param : params) {
+                if(param instanceof Address){
+                    writer.writeSerializable((Address)param);
+                }else if(param instanceof byte[]){
+                    writer.writeVarBytes((byte[])param);
+                }
             }
         } catch (IOException e) {
             throw new SDKException(ErrorCode.WriteVarBytesError);

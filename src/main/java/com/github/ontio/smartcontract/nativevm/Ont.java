@@ -81,7 +81,9 @@ public class Ont {
         }
         Transaction tx = makeTransfer(sendAddr, password, recvAddr, amount,payer,gaslimit,gasprice);
         sdk.signTx(tx, sendAddr, password);
-        sdk.addSign(tx,payer,payerpwd);
+        if(!sendAddr.equals(payer)){
+            sdk.addSign(tx,payer,payerpwd);
+        }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -124,6 +126,9 @@ public class Ont {
      * @throws Exception
      */
     public long queryBalanceOf(String address) throws Exception {
+        if(address == null|| address.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("address should not be null"));
+        }
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"balanceOf", Address.decodeBase58(address).toArray(), VmType.Native.value(), null,0,0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
@@ -143,6 +148,9 @@ public class Ont {
      * @throws IOException
      */
     public long queryAllowance(String fromAddr,String toAddr) throws SDKException, ConnectorException, IOException {
+        if(fromAddr==null||fromAddr.equals("")||toAddr==null||toAddr.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
         byte[] parabytes = BuildParams.buildParams(Address.decodeBase58(fromAddr),Address.decodeBase58(toAddr));
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"allowance", parabytes, VmType.Native.value(), null,0,0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
@@ -175,7 +183,9 @@ public class Ont {
         }
         Transaction tx = makeApprove(sendAddr,password,recvAddr,amount,payer,gaslimit,gasprice);
         sdk.signTx(tx,sendAddr,password);
-        sdk.addSign(tx,payer,payerpwd);
+        if(!sendAddr.equals(payer)){
+            sdk.addSign(tx,payer,payerpwd);
+        }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if(b){
             return tx.hash().toHexString();
@@ -233,7 +243,9 @@ public class Ont {
         }
         Transaction tx = makeTransferFrom(sendAddr,password,fromAddr,toAddr,amount,payer,gaslimit,gasprice);
         sdk.signTx(tx,sendAddr,password);
-        sdk.addSign(tx,payer,payerpwd);
+        if(!sendAddr.equals(payer)){
+            sdk.addSign(tx,payer,payerpwd);
+        }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if(b){
             return tx.hash().toHexString();
@@ -352,7 +364,9 @@ public class Ont {
         }
         Transaction tx = makeTransferToMany(sendAddr,password,recvAddr,amount,payer,gaslimit,gasprice);
         sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(sendAddr, password)}});
-        sdk.addSign(tx,payer,payerpwd);
+        if(!sendAddr.equals(payer)){
+            sdk.addSign(tx,payer,payerpwd);
+        }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -447,7 +461,9 @@ public class Ont {
             return null;
         }).toArray(Account[][]::new);
         sdk.signTx(tx, acct);
-        sdk.addSign(tx,payer,payerpwd);
+        if(!sendAddr.equals(payer)){
+            sdk.addSign(tx,payer,payerpwd);
+        }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();

@@ -22,6 +22,7 @@ package com.github.ontio.smartcontract.neovm;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
+import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.core.VmType;
@@ -60,52 +61,65 @@ public class Nep5 {
         return contractAddress;
     }
 
-    public String sendInit(String payer,String password,long gaslimit,long gas) throws Exception {
-        return (String)sendInit(payer,password,gaslimit,gas,false);
+    public String sendInit(Account acct, Account payerAcct,long gaslimit,long gasprice) throws Exception {
+        return (String)sendInit(acct,payerAcct,gaslimit,gasprice,false);
     }
 
     public long sendInitGetGasLimit() throws Exception {
         return (long)sendInit(null,null,0,0,true);
     }
 
-    private Object sendInit(String payer,String password,long gaslimit,long gas,boolean preExec) throws Exception {
+    private Object sendInit(Account acct, Account payerAcct,long gaslimit,long gasprice,boolean preExec) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         AbiInfo abiinfo = JSON.parseObject(nep5abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("Init");
         func.name = "init";
-        Object obj = sdk.neovm().sendTransaction(contractAddress,payer,password,gaslimit,gas,func,preExec);
         if(preExec) {
+            byte[] params = BuildParams.serializeAbiFunction(func);
+            Transaction tx = sdk.vm().makeInvokeCodeTransaction(getContractAddress(), null, params, VmType.NEOVM.value(), null,0, 0);
+            Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
             if (Integer.parseInt(((JSONObject) obj).getString("Result")) != 1){
                 throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
             }
             return ((JSONObject) obj).getLong("Gas");
         }
+        if(acct == null || payerAcct == null){
+            throw new SDKException(ErrorCode.ParamError);
+        }
+        Object obj = sdk.neovm().sendTransaction(contractAddress,acct,payerAcct,gaslimit,gasprice,func,preExec);
         return obj;
     }
 
 
     /**
-     * @param sendAddr
-     * @param password
-     * @param amount
+     *
+     * @param acct
      * @param recvAddr
+     * @param amount
+     * @param payerAcct
+     * @param gaslimit
+     * @param gasprice
      * @return
      * @throws Exception
      */
-    public String sendTransfer(String sendAddr, String password, String recvAddr, long amount,long gaslimit,long gas) throws Exception {
-        return (String)sendTransfer(sendAddr, password, recvAddr, amount,gaslimit,gas, false);
+    public String sendTransfer(Account acct, String recvAddr, long amount,Account payerAcct, long gaslimit,long gasprice) throws Exception {
+        return (String)sendTransfer(acct, recvAddr, amount,payerAcct,gaslimit,gasprice, false);
     }
 
-    public long sendTransferGetGasLimit(String sendAddr, String password, String recvAddr, long amount) throws Exception {
-        return (long)sendTransfer(sendAddr, password, recvAddr, amount,0,0, true);
+    public long sendTransferGetGasLimit(Account acct, String recvAddr, long amount) throws Exception {
+        return (long)sendTransfer(acct, recvAddr, amount,acct,0,0, true);
     }
 
-    private Object sendTransfer(String sendAddr, String password, String recvAddr, long amount,long gaslimit, long gas,boolean preExec) throws Exception {
+    private Object sendTransfer(Account acct, String recvAddr, long amount, Account payerAcct, long gaslimit, long gasprice, boolean preExec) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
+        if(acct == null || payerAcct == null){
+            throw new SDKException(ErrorCode.ParamError);
+        }
+        String sendAddr = acct.getAddressU160().toBase58();
         AbiInfo abiinfo = JSON.parseObject(nep5abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("Transfer");
         func.name = "transfer";
@@ -114,14 +128,14 @@ public class Nep5 {
             byte[] params = BuildParams.serializeAbiFunction(func);
 
             Transaction tx = sdk.vm().makeInvokeCodeTransaction(getContractAddress(), null, params, VmType.NEOVM.value(), null,0, 0);
-            sdk.signTx(tx, sendAddr, password);
+            sdk.signTx(tx, new Account[][]{{acct}});
             Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
             if (Integer.parseInt(((JSONObject) obj).getString("Result")) != 1){
                 throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
             }
             return ((JSONObject) obj).getLong("Gas");
         }
-        Object obj = sdk.neovm().sendTransaction(contractAddress,sendAddr,password,gaslimit,gas,func, preExec);
+        Object obj = sdk.neovm().sendTransaction(contractAddress,acct,payerAcct,gaslimit,gasprice,func, preExec);
         return obj;
     }
 

@@ -200,6 +200,26 @@ public class OntSdk {
         tx.sigs = sigs;
         return tx;
     }
+
+    public Transaction addMultiSign(Transaction tx,int M, Account[] acct) throws Exception {
+        if (tx.sigs == null) {
+            tx.sigs = new Sig[0];
+        }
+        Sig[] sigs = new Sig[tx.sigs.length + 1];
+        for (int i = 0; i < tx.sigs.length; i++) {
+            sigs[i] = tx.sigs[i];
+        }
+        sigs[tx.sigs.length] = new Sig();
+        sigs[tx.sigs.length].M = M;
+        sigs[tx.sigs.length].pubKeys = new byte[acct.length][];
+        sigs[tx.sigs.length].sigData = new byte[acct.length][];
+        for (int i = 0; i < acct.length; i++) {
+            sigs[tx.sigs.length].pubKeys[i] = acct[i].serializePublicKey();
+            sigs[tx.sigs.length].sigData[i] = tx.sign(acct[i], signatureScheme);
+        }
+        tx.sigs = sigs;
+        return tx;
+    }
     public Transaction signTx(Transaction tx, String address, String password) throws Exception{
         address = address.replace(Common.didont, "");
         signTx(tx, new Account[][]{{getWalletMgr().getAccount(address, password)}});

@@ -23,7 +23,7 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.transaction.Transaction;
-import com.github.ontio.sdk.wallet.Account;
+import com.github.ontio.account.Account;
 import com.github.ontio.sdk.wallet.Identity;
 
 import java.io.ByteArrayOutputStream;
@@ -39,6 +39,7 @@ import java.util.Map;
  *
  */
 public class Nep5Demo {
+    public static String privatekey0 = "c19f16785b8f3543bbaf5e1dbb5d398dfa6c85aaad54fc9d71203ce83e505c07";
     public static String privatekey1 = "49855b16636e70f100cc5f4f42bc20a6535d7414fb8845e7310f8dd065a97221";
     public static String privatekey2 = "1094e90dd7c4fdfd849c14798d725ac351ae0d924b29a279a9ffa77d5737bd96";
     public static String privatekey3 = "bc254cf8d3910bc615ba6bf09d4553846533ce4403bc24f58660ae150a6d64cf";
@@ -53,25 +54,24 @@ public class Nep5Demo {
             com.github.ontio.account.Account acct4 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey4), ontSdk.signatureScheme);
             com.github.ontio.account.Account acct5 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey5), ontSdk.signatureScheme);
 
-            Account acct = ontSdk.getWalletMgr().createAccountFromPriKey("passwordtest","c19f16785b8f3543bbaf5e1dbb5d398dfa6c85aaad54fc9d71203ce83e505c07");
-            ontSdk.getWalletMgr().writeWallet();
-            System.out.println("recv:"+acct.address);
+            Account acct = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey0), ontSdk.signatureScheme);
+            System.out.println("recv:"+acct.getAddressU160().toBase58());
             if(false) {
                 long gasLimit = ontSdk.neovm().nep5().sendInitGetGasLimit();
-                //System.out.println(gasLimit);
-                //String result = ontSdk.neovm().nep5().sendInit(acct.address,"passwordtest",gasLimit,gasLimit*1);
+                System.out.println(gasLimit);
+                //String result = ontSdk.neovm().nep5().sendInit(acct,acct,30000,0);
                 //System.out.println(result);
                 System.exit(0);
             }
-            long gasLimit =  ontSdk.neovm().nep5().sendTransferGetGasLimit(acct.address,"passwordtest",acct1.getAddressU160().toBase58(), 464400000000000L);
+            long gasLimit =  ontSdk.neovm().nep5().sendTransferGetGasLimit(acct,acct1.getAddressU160().toBase58(), 9000000000L);
             System.out.println(gasLimit);
-            //ontSdk.neovm().nep5().sendTransfer(acct.address,"passwordtest",acct1.getAddressU160().toBase58(),464400000000000L,gasLimit,gasLimit*1);
+            ontSdk.neovm().nep5().sendTransfer(acct,acct1.getAddressU160().toBase58(),9000000000L,acct,gasLimit,0);
             System.exit(0);
 
 
-            String balance = ontSdk.neovm().nep5().queryBalanceOf(acct.address);
+            String balance = ontSdk.neovm().nep5().queryBalanceOf(acct.getAddressU160().toBase58());
             System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(balance))).longValue());
-            //System.exit(0);
+            System.exit(0);
             String totalSupply = ontSdk.neovm().nep5().queryTotalSupply();
             System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(totalSupply))).longValue());
 
@@ -83,7 +83,7 @@ public class Nep5Demo {
             String symbol = ontSdk.neovm().nep5().querySymbol();
             System.out.println(new String(Helper.hexToBytes(symbol)));
 
-            System.out.println(Address.decodeBase58(acct.address).toHexString());
+            System.out.println(Address.decodeBase58(acct.getAddressU160().toBase58()).toHexString());
             System.out.println(acct1.getAddressU160().toHexString());
 
         } catch (Exception e) {

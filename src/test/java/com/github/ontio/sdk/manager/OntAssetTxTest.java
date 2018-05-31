@@ -95,7 +95,7 @@ public class OntAssetTxTest {
     @Test
     public void sendOngTransferFrom() throws Exception {
 
-        String res = ontSdk.nativevm().ong().claimOng(info1.address,password,info2.address,10L,payer.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
+        String res = ontSdk.nativevm().ong().claimOng(ontSdk.getWalletMgr().getAccount(info1.address,password),info2.address,10L,ontSdk.getWalletMgr().getAccount(payer.address,password),ontSdk.DEFAULT_GAS_LIMIT,0);
         Assert.assertNotNull(res);
     }
 

@@ -31,88 +31,61 @@ import com.github.ontio.sdk.wallet.Account;
  *
  */
 public class OntAssetDemo {
-
+    public static String privatekey1 = "49855b16636e70f100cc5f4f42bc20a6535d7414fb8845e7310f8dd065a97221";
+    public static String privatekey2 = "1094e90dd7c4fdfd849c14798d725ac351ae0d924b29a279a9ffa77d5737bd96";
+    public static String privatekey3 = "bc254cf8d3910bc615ba6bf09d4553846533ce4403bc24f58660ae150a6d64cf";
+    public static String privatekey4 = "06bda156eda61222693cc6f8488557550735c329bc7ca91bd2994c894cd3cbc8";
+    public static String privatekey5 = "f07d5a2be17bde8632ec08083af8c760b41b5e8e0b5de3703683c3bdcfb91549";
     public static void main(String[] args) {
 
         try {
-            OntSdk sdk = getOntSdk();
-            Account info1 = null;
-            Account info2 = null;
-            Account info3 = null;
-            String password = "passwordtest";
+            OntSdk ontSdk = getOntSdk();
 
-            sdk.getWalletMgr().setSignatureScheme(SignatureScheme.SHA256WITHECDSA);
-            if (sdk.getWalletMgr().getAccounts().size() < 3) {
-                String privatekey0 = "c19f16785b8f3543bbaf5e1dbb5d398dfa6c85aaad54fc9d71203ce83e505c07";
-//                String privatekey0 = "54ca4db481966046b15f8d15ff433e611c49ab8e68a279ebf579e4cfd108196d";
-                info1 = sdk.getWalletMgr().createAccountFromPriKey(password, privatekey0);
-                info2 = sdk.getWalletMgr().createAccount(password);
-                info3 = sdk.getWalletMgr().createAccountFromPriKey(password, "70789d4ac31576c61c5d12e38a66de605b18faf2c8d60a2c1952a6286b67318f");
-                info3.label = "myaccount";
-                sdk.getWalletMgr().writeWallet();
-            }
 
-            Account payerAccInfo = sdk.getWalletMgr().createAccount(password);
-            com.github.ontio.account.Account payerAcc = sdk.getWalletMgr().getAccount(payerAccInfo.address, password);
-            info1 = sdk.getWalletMgr().getAccounts().get(0);
-            info2 = sdk.getWalletMgr().getAccounts().get(1);
-            info3 = sdk.getWalletMgr().getAccounts().get(2);
-            System.out.println(info1.address);
-            System.out.println(info2.address);
-            System.out.println(info3.address);
-            System.out.println("info1:" + sdk.getConnect().getBalance(info1.address));
-            System.out.println("info2:" + sdk.getConnect().getBalance(info2.address));
-            System.out.println("info3:" + sdk.getConnect().getBalance(info3.address));
+            String privatekey0 = "c19f16785b8f3543bbaf5e1dbb5d398dfa6c85aaad54fc9d71203ce83e505c07";
+            com.github.ontio.account.Account payerAcct = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey0),ontSdk.signatureScheme);
+            com.github.ontio.account.Account acct0 = payerAcct;
+            com.github.ontio.account.Account acct1 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey1), ontSdk.signatureScheme);
+            com.github.ontio.account.Account acct2 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey2), ontSdk.signatureScheme);
+            com.github.ontio.account.Account acct3 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey3), ontSdk.signatureScheme);
+            com.github.ontio.account.Account acct4 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey4), ontSdk.signatureScheme);
+            com.github.ontio.account.Account acct5 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey5), ontSdk.signatureScheme);
+            System.out.println("acct0:" + acct0.getAddressU160().toBase58());
+            System.out.println("acct1:" + acct1.getAddressU160().toBase58());
+            System.out.println("acct2:" + acct2.getAddressU160().toBase58());
 
-//            sdk.nativevm().ong().sendTransfer(info3.address,password,info1.address,6991806657200L,payerAcc.address,password,sdk.DEFAULT_GAS_LIMIT,0);
+
 
             if (false) {
-//                sdk.nativevm().ong().sendApprove(info1.address,password,info2.address,100,payerAcc.address,password,sdk.DEFAULT_GAS_LIMIT,0);
-//                sdk.nativevm().ong().sendTransferFrom(info2.address,password,info1.address,info2.address,100,payerAcc.address,password,sdk.DEFAULT_GAS_LIMIT,0);
+                ontSdk.nativevm().ong().sendApprove(acct0,acct1.getAddressU160().toBase58(),100,payerAcct,30000,0);
+                ontSdk.nativevm().ont().sendTransferFrom(acct0,acct0.getAddressU160().toBase58(),acct1.getAddressU160().toBase58(),10,payerAcct,30000,0);
 
-
-//                sdk.nativevm().ong().sendTransferToMany(info1.address,password,new String[]{info2.address,info3.address},new long[]{10,20},payerAcc.address,password,sdk.DEFAULT_GAS_LIMIT,0);
-                Thread.sleep(6000);
-                System.out.println(sdk.nativevm().ong().queryAllowance(info1.address, info2.address));
-                System.out.println("info1:" + sdk.getConnect().getBalance(info1.address));
-                System.out.println("info2:" + sdk.getConnect().getBalance(info2.address));
-                System.out.println("info3:" + sdk.getConnect().getBalance(info3.address));
+                System.out.println(ontSdk.nativevm().ong().queryAllowance(acct0.getAddressU160().toBase58(), acct1.getAddressU160().toBase58()));
+                System.out.println("acct0:" + ontSdk.getConnect().getBalance(acct0.getAddressU160().toBase58()));
+                System.out.println("acct1:" + ontSdk.getConnect().getBalance(acct1.getAddressU160().toBase58()));
+                System.out.println("acct2:" + ontSdk.getConnect().getBalance(acct2.getAddressU160().toBase58()));
             }
+            if(false){
 
-//            System.exit(0);
-//            System.out.println(sdk.nativevm().ont().queryName("ont"));
-//            System.out.println(sdk.nativevm().ont().querySymbol("ont"));
-//            System.out.println(sdk.nativevm().ont().queryDecimals("ont"));
-//            System.out.println(sdk.nativevm().ont().queryTotalSupply("ont"));
-////
-//            System.out.println(sdk.nativevm().ont().queryName("ong"));
-//            System.out.println(sdk.nativevm().ont().querySymbol("ong"));
-//            System.out.println(sdk.nativevm().ont().queryDecimals("ong"));
-//            System.out.println(sdk.nativevm().ont().queryTotalSupply("ong"));
+                ontSdk.nativevm().ong().sendTransfer(acct0,acct1.getAddressU160().toBase58(),1000L,payerAcct,30000,0);
 
-//            String hh = Address.addressFromMultiPubKeys(1,ontSdk.getWalletMgr().getAccount(info2.address,"passwordtest").publicKey,ontSdk.getWalletMgr().getAccount(info1.address,"passwordtest").publicKey).toBase58();
-//            System.out.println(ontSdk.getWalletMgr().getAccountInfo(info1.address,"passwordtest").pubkey);
-//            System.out.println(ontSdk.getWalletMgr().getAccountInfo(info2.address,"passwordtest").pubkey);
-//            System.out.println(hh);
-//            System.out.println(Helper.getCodeHash("aa", VmType.NEOVM.value()));
-//            System.exit(0);
-            System.out.println("address address address");
-//            System.out.println(info1.address + " " + Address.addressFromPubKey(sdk.getWalletMgr().getAccount(info1.address, "111111").serializePublicKey()));
-//            System.out.println(info2.address + " " + Address.addressFromPubKey(sdk.getWalletMgr().getAccount(info2.address, "passwordtest").serializePublicKey()));
-//            System.out.println(info3.address + " " + Address.addressFromPubKey(sdk.getWalletMgr().getAccount(info3.address, "passwordtest").serializePublicKey()));
-//            System.out.println("balance balance balance balance");
-            System.out.println("info1 : ont :" + sdk.nativevm().ont().queryBalanceOf(info1.address));
-            System.out.println("info2 : ont :" + sdk.nativevm().ont().queryBalanceOf(info2.address));
-            System.out.println("info3 : ont :" + sdk.nativevm().ont().queryBalanceOf(info3.address));
-            System.out.println(sdk.nativevm().ong().unclaimOng(info1.address));
-//            String hash = sdk.nativevm().ong().claimOng(info1.address, "passwordtest", info1.address, 8960000000000L, info1.address, "passwordtest", 30000, 0);
-//            String hash0 = sdk.nativevm().ont().sendTransfer(sdk.getWalletMgr().getAccount(info1.address, password), info2.address, 30L, payerAcc, sdk.DEFAULT_GAS_LIMIT, 0);
-//            sdk.nativevm().ont().sendApprove(sdk.getWalletMgr().getAccount(info1.address,password),info2.address,10,payerAcc,sdk.DEFAULT_GAS_LIMIT,0);
-//
-//
-            long l = sdk.nativevm().ont().queryAllowance(info1.address, info2.address);
-            System.out.println(l);
-            sdk.nativevm().ont().sendTransferFrom(sdk.getWalletMgr().getAccount(info2.address,password),info1.address,info2.address,10,payerAcc,sdk.DEFAULT_GAS_LIMIT,0);
+                String hash0 = ontSdk.nativevm().ont().sendTransfer(acct0, acct1.getAddressU160().toBase58(), 30L, payerAcct, 30000, 0);
+            }
+            if(false){
+                System.out.println(ontSdk.nativevm().ong().unclaimOng(acct0.getAddressU160().toBase58()));
+                String hash = ontSdk.nativevm().ong().claimOng(acct0, acct1.getAddressU160().toBase58(), 8960000000000L, payerAcct, 30000, 0);
+            }
+            if(false) {
+                System.out.println(ontSdk.nativevm().ont().queryName());
+                System.out.println(ontSdk.nativevm().ont().querySymbol());
+                System.out.println(ontSdk.nativevm().ont().queryDecimals());
+                System.out.println(ontSdk.nativevm().ont().queryTotalSupply());
+
+                System.out.println(ontSdk.nativevm().ong().queryName());
+                System.out.println(ontSdk.nativevm().ong().querySymbol());
+                System.out.println(ontSdk.nativevm().ong().queryDecimals());
+                System.out.println(ontSdk.nativevm().ong().queryTotalSupply());
+            }
 
 
         } catch (Exception e) {

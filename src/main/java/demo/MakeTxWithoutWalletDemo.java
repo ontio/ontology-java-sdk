@@ -157,6 +157,12 @@ public class MakeTxWithoutWalletDemo {
                 //ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 
             }
+            if(false){
+                String claimer = acct0.getAddressU160().toBase58();
+                Transaction tx = ontSdk.nativevm().ong().makeClaimOng(claimer,claimer,10,claimer,30000,0);
+                ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct0}});
+                ontSdk.getConnect().sendRawTransaction(tx.toHexString());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

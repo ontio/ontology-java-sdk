@@ -334,29 +334,27 @@ public class Ong {
     }
 
     /**
-     * @param sendAddr
-     * @param password
+     *
+     * @param sendAcct
      * @param toAddr
      * @param amount
-     * @param payer
-     * @param payerpwd
+     * @param payerAcct
      * @param gaslimit
      * @param gasprice
      * @return
      * @throws Exception
      */
-    public String claimOng(String sendAddr, String password, String toAddr, long amount, String payer, String payerpwd, long gaslimit, long gasprice) throws Exception {
-        if (sendAddr == null || sendAddr.equals("") || password == null || password.equals("") || toAddr == null || toAddr.equals("") || payer == null ||
-                payer.equals("") || payerpwd == null || payerpwd.equals("")) {
+    public String claimOng(Account sendAcct, String toAddr, long amount, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+        if (sendAcct == null ||  payerAcct == null ) {
             throw new SDKException(ErrorCode.ParamError);
         }
         if (amount <= 0 || gaslimit<0||gasprice < 0) {
             throw new SDKException(ErrorCode.ParamErr("amount or gaslimit gasprice should not be less than 0"));
         }
-        Transaction tx = makeClaimOng(sendAddr, toAddr, amount, payer, gaslimit, gasprice);
-        sdk.signTx(tx, sendAddr, password);
-        if(!sendAddr.equals(payer)){
-            sdk.addSign(tx,payer,payerpwd);
+        Transaction tx = makeClaimOng(sendAcct.getAddressU160().toBase58(), toAddr, amount, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        sdk.signTx(tx, new Account[][]{{sendAcct}});
+        if(!sendAcct.equals(payerAcct)){
+            sdk.addSign(tx,payerAcct);
         }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {

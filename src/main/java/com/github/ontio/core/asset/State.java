@@ -23,6 +23,7 @@ import com.github.ontio.common.Address;
 import com.github.ontio.crypto.Digest;
 import com.github.ontio.io.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ public class State implements Serializable {
     public Address from;
     public Address to;
     public long value;
-
+    public State(){}
     public State(Address from, Address to, long amount){
         this.from = from;
         this.to = to;
@@ -62,7 +63,18 @@ public class State implements Serializable {
 
     }
 
-
+    public static State deserializeFrom(byte[] value) throws IOException {
+        try {
+            int offset = 0;
+            ByteArrayInputStream ms = new ByteArrayInputStream(value, offset, value.length - offset);
+            BinaryReader reader = new BinaryReader(ms);
+            State state = new State();
+            state.deserialize(reader);
+            return state;
+        } catch (IOException ex) {
+            throw new IOException(ex);
+        }
+    }
     public Object json() {
         Map json = new HashMap<>();
         json.put("from", from.toHexString());

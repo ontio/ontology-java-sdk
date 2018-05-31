@@ -23,8 +23,11 @@ import com.github.ontio.common.Address;
 import com.github.ontio.crypto.Digest;
 import com.github.ontio.io.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,13 +35,16 @@ import java.util.Map;
  */
 public class Transfers implements Serializable {
     public State[] states;
+    public Transfers(){
 
+    }
     public Transfers(State[] states){
         this.states = states;
     }
     @Override
     public void deserialize(BinaryReader reader) throws IOException {
         int len = (int)reader.readVarInt();
+        states = new State[len];
         for(int i = 0;i <len;i++){
             try {
                 states[i] = reader.readSerializable(State.class);
@@ -55,9 +61,25 @@ public class Transfers implements Serializable {
         writer.writeSerializableArray(states);
     }
 
-
+    public static Transfers deserializeFrom(byte[] value) throws IOException {
+        try {
+            int offset = 0;
+            ByteArrayInputStream ms = new ByteArrayInputStream(value, offset, value.length - offset);
+            BinaryReader reader = new BinaryReader(ms);
+            Transfers transfers = new Transfers();
+            transfers.deserialize(reader);
+            return transfers;
+        } catch (IOException ex) {
+            throw new IOException(ex);
+        }
+    }
     public Object json() {
         Map json = new HashMap<>();
+        List list = new ArrayList<>();
+        for(int i=0;i<states.length;i++){
+            list.add(states[i].json());
+        }
+        json.put("States",list);
         return json;
     }
 

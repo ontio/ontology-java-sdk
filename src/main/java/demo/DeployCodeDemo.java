@@ -76,7 +76,7 @@ public class DeployCodeDemo {
             ontSdk.vm().setCodeAddress(Helper.getContractAddress(code, VmType.NEOVM.value()));
 
             Transaction tx = ontSdk.vm().makeDeployCodeTransaction(code, true, "name",
-                    "v1.0", "author", "email", "desp", VmType.NEOVM.value(),acct0.getAddressU160().toBase58(),ontSdk.DEFAULT_GAS_LIMIT,1);
+                    "v1.0", "author", "email", "desp", VmType.NEOVM.value(),acct0.getAddressU160().toBase58(),10000000,0);
             ontSdk.signTx(tx, new Account[][]{{acct0}});
             String txHex = Helper.toHexString(tx.toArray());
             System.out.println(txHex);

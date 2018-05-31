@@ -88,9 +88,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        IdentityInfo info = sdk.getWalletMgr().getIdentityInfo(ident.ontid, password);
         Transaction tx = makeRegister(ident.ontid,password,payer,gaslimit,gasprice);
-        Identity identity = sdk.getWalletMgr().addOntIdController(ident.ontid, info.encryptedPrikey, info.ontid);
         sdk.getWalletMgr().writeWallet();
         sdk.signTx(tx, ident.ontid, password);
         sdk.addSign(tx,payer,payerpwd);

@@ -213,7 +213,7 @@ Transaction makeAddAttributes(String ontid, String password, Attribute[] attribu
 ```
 Transaction tx = ontSdk.nativevm().ontId().makeAddAttributes(ontid,password,attributes,payer,gaslimit,0);
 ontSdk.signTx(tx,identity.ontid,password);
-ontSdk.getConnectMgr().sendRawTransaction(tx);
+ontSdk.getConnect().sendRawTransaction(tx);
 ```
 
 * 9 移除链上DDO属性
@@ -247,7 +247,7 @@ Transaction makeRemoveAttribute(String ontid,String password,String path,String 
 ```
 Transaction tx = ontSdk.nativevm().ontId().makeRemoveAttribute(ontid,password,path,payer,gaslimit,0);
 ontSdk.signTx(tx,identity.ontid,password);
-ontSdk.getConnectMgr().sendRawTransaction(tx);
+ontSdk.getConnect().sendRawTransaction(tx);
 ```
 
 * 添加公钥
@@ -265,7 +265,7 @@ String sendAddPubKey(String ontid, String password, String newpubkey,String paye
 |        | ontid    | String | 数字身份ID   | 必选，身份Id |
 |        | newpubkey| String  |公钥       | 必选， newpubkey|
 |        | payer    | String  | payer       | 必选，payer |
-|        | payerpwd | String  | 支付交易费用的账户地址  | 必选 |
+|        | payerpwd | String  | 支付交易费用的账户地址密码  | 必选 |
 |        | gaslimit   | long | gaslimit     | 必选 |
 |        | gasprice   | long | gas价格     | 必选 |
 | 输出参数 | txhash   | String  | 交易hash  | 交易hash是64位字符串 |
@@ -284,7 +284,7 @@ Transaction makeAddPubKey(String ontid,String password,String newpubkey,String p
 ```
 Transaction tx = ontSdk.nativevm().ontId().makeAddPubKey(ontid,password,newpubkey,payer,gaslimit,gasprice);
 ontSdk.signTx(tx,identity.ontid,password);
-ontSdk.getConnectMgr().sendRawTransaction(tx);
+ontSdk.getConnect().sendRawTransaction(tx);
 ```
 
 方法三（recovery机制）
@@ -304,6 +304,7 @@ String sendAddPubKey(String ontid,String recoveryAddr, String password, String n
 |        | gaslimit   | long | gaslimit     | 必选 |
 |        | gasprice   | long | gas价格     | 必选 |
 | 输出参数 | txhash   | String  | 交易hash  | 交易hash是64位字符串 |
+
 
 方法四（recovery机制）
 
@@ -341,7 +342,7 @@ String sendRemovePubKey(String ontid, String password, String removePubkey,Strin
 ```
 Transaction tx = ontSdk.nativevm().ontId().makeRemovePubKey(ontid,password,removePubkey,payer,gas);
 ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
-ontSdk.getConnectMgr().sendRawTransaction(tx);
+ontSdk.getConnect().sendRawTransaction(tx);
 ```
 
 方法三（recovery机制）
@@ -400,7 +401,7 @@ Transaction makeAddRecovery(String ontid, String password, String recoveryAddr,S
 ```
 Transaction tx = ontSdk.nativevm().ontId().makeAddRecovery(ontid,password,recovery,payer,gas);
 ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
-ontSdk.getConnectMgr().sendRawTransaction(tx);
+ontSdk.getConnect().sendRawTransaction(tx);
 ```
 
 * 修改recovery

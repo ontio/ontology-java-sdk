@@ -257,7 +257,7 @@ public class WalletMgr {
         return getAccount(info.addressBase58);
     }
     public AccountInfo createAccountInfo(String password) throws Exception {
-        return createAccountInfo(password);
+        return createAccountInfo("",password);
     }
     public AccountInfo createAccountInfo(String label,String password) throws Exception {
         AccountInfo info = createAccount(label,password, ECC.generateKey());

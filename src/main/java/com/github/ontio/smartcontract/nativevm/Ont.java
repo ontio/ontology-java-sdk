@@ -81,7 +81,9 @@ public class Ont {
         }
         Transaction tx = makeTransfer(sendAddr, password, recvAddr, amount,payer,gaslimit,gasprice);
         sdk.signTx(tx, sendAddr, password);
-        sdk.addSign(tx,payer,payerpwd);
+        if(!sendAddr.equals(payer)){
+            sdk.addSign(tx,payer,payerpwd);
+        }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -181,7 +183,9 @@ public class Ont {
         }
         Transaction tx = makeApprove(sendAddr,password,recvAddr,amount,payer,gaslimit,gasprice);
         sdk.signTx(tx,sendAddr,password);
-        sdk.addSign(tx,payer,payerpwd);
+        if(!sendAddr.equals(payer)){
+            sdk.addSign(tx,payer,payerpwd);
+        }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if(b){
             return tx.hash().toHexString();
@@ -239,7 +243,9 @@ public class Ont {
         }
         Transaction tx = makeTransferFrom(sendAddr,password,fromAddr,toAddr,amount,payer,gaslimit,gasprice);
         sdk.signTx(tx,sendAddr,password);
-        sdk.addSign(tx,payer,payerpwd);
+        if(!sendAddr.equals(payer)){
+            sdk.addSign(tx,payer,payerpwd);
+        }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if(b){
             return tx.hash().toHexString();
@@ -358,7 +364,9 @@ public class Ont {
         }
         Transaction tx = makeTransferToMany(sendAddr,password,recvAddr,amount,payer,gaslimit,gasprice);
         sdk.signTx(tx, new Account[][]{{sdk.getWalletMgr().getAccount(sendAddr, password)}});
-        sdk.addSign(tx,payer,payerpwd);
+        if(!sendAddr.equals(payer)){
+            sdk.addSign(tx,payer,payerpwd);
+        }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -453,7 +461,9 @@ public class Ont {
             return null;
         }).toArray(Account[][]::new);
         sdk.signTx(tx, acct);
-        sdk.addSign(tx,payer,payerpwd);
+        if(!sendAddr.equals(payer)){
+            sdk.addSign(tx,payer,payerpwd);
+        }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();

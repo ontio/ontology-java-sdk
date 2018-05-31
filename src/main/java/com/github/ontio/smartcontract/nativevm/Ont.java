@@ -124,6 +124,9 @@ public class Ont {
      * @throws Exception
      */
     public long queryBalanceOf(String address) throws Exception {
+        if(address == null|| address.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("address should not be null"));
+        }
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"balanceOf", Address.decodeBase58(address).toArray(), VmType.Native.value(), null,0,0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
@@ -143,6 +146,9 @@ public class Ont {
      * @throws IOException
      */
     public long queryAllowance(String fromAddr,String toAddr) throws SDKException, ConnectorException, IOException {
+        if(fromAddr==null||fromAddr.equals("")||toAddr==null||toAddr.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
         byte[] parabytes = BuildParams.buildParams(Address.decodeBase58(fromAddr),Address.decodeBase58(toAddr));
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract,"allowance", parabytes, VmType.Native.value(), null,0,0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());

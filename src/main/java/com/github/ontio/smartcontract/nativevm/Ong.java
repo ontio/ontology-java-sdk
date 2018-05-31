@@ -366,7 +366,7 @@ public class Ong {
     }
 
     /**
-     * @param sendAddr
+     * @param claimer
      * @param toAddr
      * @param amount
      * @param payer
@@ -375,14 +375,14 @@ public class Ong {
      * @return
      * @throws Exception
      */
-    public Transaction makeClaimOng(String sendAddr, String toAddr, long amount, String payer, long gaslimit, long gasprice) throws Exception {
-        if(sendAddr==null||sendAddr.equals("")||toAddr==null||toAddr.equals("")||payer==null||payer.equals("")){
-
+    public Transaction makeClaimOng(String claimer, String toAddr, long amount, String payer, long gaslimit, long gasprice) throws Exception {
+        if(claimer==null||claimer.equals("")||toAddr==null||toAddr.equals("")||payer==null||payer.equals("")){
+            throw new SDKException(ErrorCode.ParamError);
         }
         if (amount <= 0 || gaslimit<0||gasprice < 0) {
             throw new SDKException(ErrorCode.ParamErr("amount or gaslimit gasprice should not be less than 0"));
         }
-        TransferFrom transferFrom = new TransferFrom(Address.decodeBase58(sendAddr), Address.parse(ontContract), Address.decodeBase58(toAddr), amount);
+        TransferFrom transferFrom = new TransferFrom(Address.decodeBase58(claimer), Address.parse(ontContract), Address.decodeBase58(toAddr), amount);
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "transferFrom", transferFrom.toArray(), VmType.Native.value(), payer, gaslimit, gasprice);
         return tx;
     }

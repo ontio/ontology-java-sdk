@@ -43,8 +43,8 @@ public class OntAssetDemo {
 
             sdk.getWalletMgr().setSignatureScheme(SignatureScheme.SHA256WITHECDSA);
             if (sdk.getWalletMgr().getAccounts().size() < 3) {
-//                String privatekey0 = "c19f16785b8f3543bbaf5e1dbb5d398dfa6c85aaad54fc9d71203ce83e505c07";
-                String privatekey0 = "54ca4db481966046b15f8d15ff433e611c49ab8e68a279ebf579e4cfd108196d";
+                String privatekey0 = "c19f16785b8f3543bbaf5e1dbb5d398dfa6c85aaad54fc9d71203ce83e505c07";
+//                String privatekey0 = "54ca4db481966046b15f8d15ff433e611c49ab8e68a279ebf579e4cfd108196d";
                 info1 = sdk.getWalletMgr().createAccountFromPriKey(password, privatekey0);
                 info2 = sdk.getWalletMgr().createAccount(password);
                 info3 = sdk.getWalletMgr().createAccountFromPriKey(password,"70789d4ac31576c61c5d12e38a66de605b18faf2c8d60a2c1952a6286b67318f");
@@ -54,16 +54,34 @@ public class OntAssetDemo {
 
             Account payerAcc = sdk.getWalletMgr().createAccount(password);
 
-            //System.exit(0);
             info1 = sdk.getWalletMgr().getAccounts().get(0);
             info2 = sdk.getWalletMgr().getAccounts().get(1);
             info3 = sdk.getWalletMgr().getAccounts().get(2);
             System.out.println(info1.address);
             System.out.println(info2.address);
             System.out.println(info3.address);
-            System.out.println(sdk.getConnect().getBalance(info1.address));
+            System.out.println("info1:"+sdk.getConnect().getBalance(info1.address));
+            System.out.println("info2:"+sdk.getConnect().getBalance(info2.address));
+            System.out.println("info3:"+sdk.getConnect().getBalance(info3.address));
 
-//            System.exit(0);
+//            sdk.nativevm().ong().sendTransfer(info3.address,password,info1.address,6991806657200L,payerAcc.address,password,sdk.DEFAULT_GAS_LIMIT,0);
+
+            if(true){
+//                sdk.nativevm().ong().sendApprove(info1.address,password,info2.address,100,payerAcc.address,password,sdk.DEFAULT_GAS_LIMIT,0);
+//                sdk.nativevm().ong().sendTransferFrom(info2.address,password,info1.address,info2.address,100,payerAcc.address,password,sdk.DEFAULT_GAS_LIMIT,0);
+
+
+//                sdk.nativevm().ong().sendTransferToMany(info1.address,password,new String[]{info2.address,info3.address},new long[]{10,20},payerAcc.address,password,sdk.DEFAULT_GAS_LIMIT,0);
+               sdk.nativevm().ong().sendTransferFromMany(new String[]{info1.address,info2.address},new String[]{password,password},info3.address,new long[]{1,2},payerAcc.address,password,sdk.DEFAULT_GAS_LIMIT,0);
+
+                Thread.sleep(6000);
+                System.out.println(sdk.nativevm().ong().queryAllowance(info1.address,info2.address));
+                System.out.println("info1:"+ sdk.getConnect().getBalance(info1.address));
+                System.out.println("info2:"+sdk.getConnect().getBalance(info2.address));
+                System.out.println("info3:"+sdk.getConnect().getBalance(info3.address));
+            }
+
+            System.exit(0);
 //            System.out.println(sdk.nativevm().ont().queryName("ont"));
 //            System.out.println(sdk.nativevm().ont().querySymbol("ont"));
 //            System.out.println(sdk.nativevm().ont().queryDecimals("ont"));
@@ -110,7 +128,7 @@ public class OntAssetDemo {
 
     public static OntSdk getOntSdk() throws Exception {
 
-        String ip = "http://127.0.0.1";
+        String ip = "http://139.219.129.26";
 //        String ip = "http://139.219.129.55";
 //        String ip = "http://101.132.193.149";
         String restUrl = ip + ":" + "20334";

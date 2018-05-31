@@ -62,7 +62,7 @@ code = Helper.toHexString(bys);
 ontSdk.setCodeAddress(Helper.getCodeAddress(code,VmType.NEOVM.value()));
 
 //部署合约
-Transaction tx = ontSdk.vm().makeDeployCodeTransaction(codeHexStr, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),payer,gaslimit,gasprice);;
+Transaction tx = ontSdk.vm().makeDeployCodeTransaction(codeHexStr, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),payer,gaslimit,gasprice);
 String txHex = Helper.toHexString(tx.toArray());
 ontSdk.getConnect().sendRawTransaction(txHex);
 //等待出块

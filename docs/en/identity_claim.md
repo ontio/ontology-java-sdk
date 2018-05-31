@@ -210,10 +210,13 @@ String sendAddAttributes(String ontid, String password, Attribute[] attributes,S
 method two
 
 Send the constructed transaction to the server and let the server sign the transaction fee account.
-
-
 ```
-Transaction tx = ontSdk.nativevm().ontId().makeAddAttributes(ontid,password,attrsMap,payer,0);
+Transaction makeAddAttributes(String ontid, String password, Attribute[] attributes,String payer,long gaslimit,long gasprice)
+```
+
+example:
+```
+Transaction tx = ontSdk.nativevm().ontId().makeAddAttributes(ontid,password,attributes,payer,gaslimit,0);
 ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
 ontSdk.getConnectMgr().sendRawTransaction(tx);
 ```
@@ -240,7 +243,12 @@ String sendRemoveAttribute(String ontid,String password,String path,String payer
 method two
 
 Send the constructed transaction to the server and let the server sign the transaction fee account.
+```
+Transaction makeRemoveAttribute(String ontid,String password,String path,String payer,long gaslimit,long gasprice)
+```
 
+
+example:
 ```
 Transaction tx = ontSdk.nativevm().ontId().makeRemoveAttribute(ontid,password,path,payer,gaslimit,0);
 ontSdk.signTx(tx,identity.ontid,password);
@@ -262,7 +270,7 @@ String sendAddPubKey(String ontid, String password, String newpubkey,String paye
 |        | ontid    | String | identity ID   | required，identity Id |
 |        | newpubkey| String  |public key       | required， newpubkey|
 |        | payer    | String  | payer       | required，payer |
-|        | payerpassword | String  | account address used to pay transaction fee  | required |
+|        | payerpwd | String  | payer password  | required |
 |        | gaslimit      | long | gaslimit     | required |
 |        | gasprice      | long | gas price    | required |
 | output param | txhash   | String  | transaction hash  | transaction hash |
@@ -296,7 +304,7 @@ String sendAddPubKey(String ontid,String recoveryAddr, String password, String n
 |        | password| String | recovery password | required |
 |        | newpubkey| String  |public key       | required， newpubkey|
 |        | payer    | String  | payer       | required，payer |
-|        | payerpassword | String  | account address used to pay transaction fee  | required |
+|        | payerpwd | String  | payer password  | required |
 |        | gaslimit      | long | gaslimit     | required |
 |        | gasprice      | long | gas price    | required |
 | output param | txhash   | String  | transaction hash  | transaction hash |
@@ -309,12 +317,13 @@ Transaction makeAddPubKey(String ontid,String recoveryAddr,String password,Strin
 
 parameter description,please refer to method three(recovery)
 
+
 * remove publicKey
 
 method one
 
 ```
-String sendRemovePubKey(String ontid, String password, String removePubkey,String payer,String payerpassword,long gas)
+String sendRemovePubKey(String ontid, String password, String removePubkey,String payer,String payerpwd,long gaslimit,long gasprice)
 ```
 
 
@@ -324,7 +333,7 @@ String sendRemovePubKey(String ontid, String password, String removePubkey,Strin
 |        | ontid    | String | identity ID   | required，identity Id |
 |        | removePubkey| String  |public key       | required， removePubkey|
 |        | payer    | String  | payer       | required，payer |
-|        | payerpassword | String  | account address used to pay transaction fee  | required |
+|        | payerpwd | String  | payer password| required |
 |   | gaslimit      | long | gaslimit     | required |
 |   | gasprice      | long | gas price    | required |
 | output param | txhash   | String  | transaction hash  | Transaction hash |
@@ -336,7 +345,7 @@ Send the constructed transaction to the server and let the server sign the trans
 
 ```
 Transaction tx = ontSdk.nativevm().ontId().makeRemovePubKey(ontid,password,removePubkey,payer,gas);
-ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
+ontSdk.signTx(tx,identity.ontid,password);
 ontSdk.getConnectMgr().sendRawTransaction(tx);
 ```
 
@@ -352,7 +361,7 @@ String sendRemovePubKey(String ontid, String recoveryAddr,String password, Strin
 |        | recoveryAddr| String | recovery password | required |
 |        | removePubkey| String  |public key       | required， removePubkey|
 |        | payer    | String  | payer       | required，payer |
-|        | payerpassword | String  | account address used to pay transaction fee  | required |
+|        | payerpwd | String  | payer password  | required |
 |   | gaslimit      | long | gaslimit     | required |
 |   | gasprice      | long | gas price    | required |
 | output param | txhash   | String  | transaction hash  | Transaction hash |
@@ -379,7 +388,7 @@ String sendAddRecovery(String ontid, String password, String recoveryAddr,String
 |        | ontid    | String | identity ID   | required，identity Id |
 |        | recovery| String  |recovery address | required，recovery|
 |        | payer    | String  | payer       | required，payer |
-|        | payerpassword | String  | account address used to pay transaction fee  | required |
+|        | payerpwd | String  | payer password | required |
 |   | gaslimit      | long | gaslimit     | required |
 |   | gasprice      | long | gas price    | required |
 | output param | txhash   | String  | transaction hash  | Transaction hash |
@@ -396,7 +405,7 @@ Transaction makeAddRecovery(String ontid, String password, String recoveryAddr,S
 example:
 ```
 Transaction tx = ontSdk.nativevm().ontId().makeAddRecovery(ontid,password,recovery,payer,gas);
-ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password);
+ontSdk.signTx(tx,identity.ontid,password);
 ontSdk.getConnectMgr().sendRawTransaction(tx);
 ```
 

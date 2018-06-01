@@ -43,7 +43,7 @@ public class Auth {
      * @return
      * @throws Exception
      */
-    public String sendTransfer(String adminOntId,String password,String contractAddr, String newAdminOntID,int keyNo,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+    public String sendTransfer(String adminOntId,String password,String contractAddr, String newAdminOntID,long keyNo,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
         if(adminOntId ==null || adminOntId.equals("") || contractAddr == null || contractAddr.equals("") || newAdminOntID==null || newAdminOntID.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -72,7 +72,7 @@ public class Auth {
      * @return
      * @throws SDKException
      */
-    public Transaction makeTransfer(String adminOntID,String contractAddr, String newAdminOntID,int keyNo,String payer,long gaslimit,long gasprice) throws SDKException {
+    public Transaction makeTransfer(String adminOntID,String contractAddr, String newAdminOntID,long keyNo,String payer,long gaslimit,long gasprice) throws SDKException {
         if(adminOntID ==null || adminOntID.equals("") || contractAddr == null || contractAddr.equals("") || newAdminOntID==null || newAdminOntID.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -98,7 +98,7 @@ public class Auth {
      * @return
      * @throws Exception
      */
-    public String verifyToken(String ontid,String password,String contractAddr,String funcName,int keyNo,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+    public String verifyToken(String ontid,String password,String contractAddr,String funcName,long keyNo,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
         if(ontid ==null || ontid.equals("") || password ==null || password.equals("")|| contractAddr == null || contractAddr.equals("") || funcName==null || funcName.equals("")
                 ||payer ==null||payer.equals("")||payerpwd==null||payerpwd.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
@@ -128,7 +128,7 @@ public class Auth {
      * @return
      * @throws SDKException
      */
-    public Transaction makeVerifyToken(String ontid,String contractAddr,String funcName,int keyNo,String payer,long gaslimit,long gasprice) throws SDKException {
+    public Transaction makeVerifyToken(String ontid,String contractAddr,String funcName,long keyNo,String payer,long gaslimit,long gasprice) throws SDKException {
         if(ontid ==null || ontid.equals("")|| contractAddr == null || contractAddr.equals("") || funcName==null || funcName.equals("")||payer==null ||payer.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -155,7 +155,7 @@ public class Auth {
      * @return
      * @throws Exception
      */
-    public String assignFuncsToRole(String adminOntID,String password,String contractAddr,String role,String[] funcName,int keyNo,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+    public String assignFuncsToRole(String adminOntID,String password,String contractAddr,String role,String[] funcName,long keyNo,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
         if(adminOntID ==null || adminOntID.equals("") || contractAddr == null || contractAddr.equals("") || role==null || role.equals("") || funcName == null || funcName.length == 0
                 || payer==null || payer.equals("") ||payerpwd==null || payerpwd.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
@@ -186,7 +186,7 @@ public class Auth {
      * @return
      * @throws SDKException
      */
-    public Transaction makeAssignFuncsToRole(String adminOntID,String contractAddr,String role,String[] funcName,int keyNo,String payer,long gaslimit,long gasprice) throws SDKException {
+    public Transaction makeAssignFuncsToRole(String adminOntID,String contractAddr,String role,String[] funcName,long keyNo,String payer,long gaslimit,long gasprice) throws SDKException {
         if(adminOntID ==null || adminOntID.equals("") || contractAddr == null || contractAddr.equals("") || role==null || role.equals("") || funcName == null || funcName.length == 0
                 || payer==null || payer.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
@@ -214,7 +214,7 @@ public class Auth {
      * @return
      * @throws Exception
      */
-    public String assignOntIDsToRole(String adminOntId,String password,String contractAddr,String role,String[] ontIDs, int keyNo,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+    public String assignOntIDsToRole(String adminOntId,String password,String contractAddr,String role,String[] ontIDs,long keyNo,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
         if(adminOntId == null || adminOntId.equals("") || password==null || password.equals("") || contractAddr== null || contractAddr.equals("") ||
                 role == null || role.equals("") || ontIDs==null || ontIDs.length == 0){
             throw  new SDKException(ErrorCode.ParamErr("parameter should not be null"));
@@ -245,7 +245,7 @@ public class Auth {
      * @return
      * @throws SDKException
      */
-    public Transaction makeAssignOntIDsToRole(String adminOntId,String contractAddr,String role,String[] ontIDs, int keyNo,String payer,long gaslimit,long gasprice) throws SDKException {
+    public Transaction makeAssignOntIDsToRole(String adminOntId,String contractAddr,String role,String[] ontIDs,long keyNo,String payer,long gaslimit,long gasprice) throws SDKException {
         if(adminOntId == null || adminOntId.equals("") || contractAddr== null || contractAddr.equals("") ||
                 role == null || role.equals("") || ontIDs==null || ontIDs.length == 0){
             throw  new SDKException(ErrorCode.ParamErr("parameter should not be null"));
@@ -279,7 +279,7 @@ public class Auth {
      * @return
      * @throws Exception
      */
-    public String delegate(String ontid,String password,String contractAddr,String toOntId,String role,int period,int level,int keyNo,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+    public String delegate(String ontid,String password,String contractAddr,String toOntId,String role,long period,long level,long keyNo,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
         if(ontid == null || ontid.equals("") ||password == null || password.equals("") || contractAddr == null || contractAddr.equals("") ||toOntId==null || toOntId.equals("")||
                 role== null || role.equals("") || payer ==null || payer.equals("")||payerpwd == null || payerpwd.equals("")){
             throw  new SDKException(ErrorCode.ParamErr("parameter should not be null"));
@@ -312,7 +312,7 @@ public class Auth {
      * @return
      * @throws SDKException
      */
-    public Transaction makeDelegate(String ontid,String contractAddr,String toAddr,String role,int period,int level,int keyNo,String payer,long gaslimit,long gasprice) throws SDKException {
+    public Transaction makeDelegate(String ontid,String contractAddr,String toAddr,String role,long period,long level,long keyNo,String payer,long gaslimit,long gasprice) throws SDKException {
         if(ontid == null || ontid.equals("")|| contractAddr == null || contractAddr.equals("") ||toAddr==null || toAddr.equals("")||
                 role== null || role.equals("") || payer ==null || payer.equals("")){
             throw  new SDKException(ErrorCode.ParamErr("parameter should not be null"));
@@ -340,7 +340,7 @@ public class Auth {
      * @return
      * @throws Exception
      */
-    public String withdraw(String initiatorOntid,String password,String contractAddr,String delegate, String role,int keyNo,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
+    public String withdraw(String initiatorOntid,String password,String contractAddr,String delegate, String role,long keyNo,String payer,String payerpwd,long gaslimit,long gasprice) throws Exception {
         if(initiatorOntid == null || initiatorOntid.equals("")|| password ==null|| password.equals("") || contractAddr == null || contractAddr.equals("") ||
                 role== null || role.equals("") || payer ==null || payer.equals("")){
             throw  new SDKException(ErrorCode.ParamErr("parameter should not be null"));
@@ -371,7 +371,7 @@ public class Auth {
      * @return
      * @throws SDKException
      */
-    public Transaction makeWithDraw(String ontid,String contractAddr,String delegate, String role,int keyNo,String payer,long gaslimit,long gasprice) throws SDKException {
+    public Transaction makeWithDraw(String ontid,String contractAddr,String delegate, String role,long keyNo,String payer,long gaslimit,long gasprice) throws SDKException {
         if(ontid == null || ontid.equals("")|| contractAddr == null || contractAddr.equals("") ||
                 role== null || role.equals("") || payer ==null || payer.equals("")){
             throw  new SDKException(ErrorCode.ParamErr("parameter should not be null"));
@@ -387,8 +387,8 @@ public class Auth {
 class TransferParam implements Serializable {
     byte[] contractAddr;
     byte[] newAdminOntID;
-    int KeyNo;
-    TransferParam(byte[] contractAddr,byte[] newAdminOntID,int keyNo){
+    long KeyNo;
+    TransferParam(byte[] contractAddr,byte[] newAdminOntID,long keyNo){
         this.contractAddr = contractAddr;
         this.newAdminOntID = newAdminOntID;
         KeyNo = keyNo;
@@ -398,22 +398,22 @@ class TransferParam implements Serializable {
     public void deserialize(BinaryReader reader) throws IOException {
         this.contractAddr = reader.readVarBytes();
         this.newAdminOntID = reader.readVarBytes();
-        KeyNo = reader.readInt();
+        KeyNo = reader.readVarInt();
     }
 
     @Override
     public void serialize(BinaryWriter writer) throws IOException {
         writer.writeVarBytes(this.contractAddr);
         writer.writeVarBytes(this.newAdminOntID);
-        writer.writeInt(KeyNo);
+        writer.writeVarInt(KeyNo);
     }
 }
 class VerifyTokenParam implements Serializable{
     byte[] contractAddr;
     byte[] caller;
     byte[] fn;
-    int keyNo;
-    VerifyTokenParam(byte[] contractAddr,byte[] caller,byte[] fn,int keyNo){
+    long keyNo;
+    VerifyTokenParam(byte[] contractAddr,byte[] caller,byte[] fn,long keyNo){
         this.contractAddr = contractAddr;
         this.caller = caller;
         this.fn = fn;
@@ -430,7 +430,7 @@ class VerifyTokenParam implements Serializable{
         writer.writeVarBytes(this.contractAddr);
         writer.writeVarBytes(this.caller);
         writer.writeVarBytes(this.fn);
-        writer.writeInt(keyNo);
+        writer.writeVarInt(keyNo);
     }
 }
 
@@ -439,9 +439,9 @@ class FuncsToRoleParam implements Serializable{
     byte[] adminOntID;
     byte[] role;
     String[] funcNames;
-    int keyNo;
+    long keyNo;
 
-    FuncsToRoleParam(byte[] contractAddr,byte[] adminOntID,byte[] role,String[] funcNames,int keyNo){
+    FuncsToRoleParam(byte[] contractAddr,byte[] adminOntID,byte[] role,String[] funcNames,long keyNo){
         this.contractAddr =contractAddr;
         this.adminOntID = adminOntID;
         this.role =role;
@@ -459,7 +459,7 @@ class FuncsToRoleParam implements Serializable{
         for(int i = 0;i< length;i++){
             this.funcNames[i] = reader.readVarString();
         }
-        this.keyNo = reader.readInt();
+        this.keyNo = reader.readVarInt();
     }
 
     @Override
@@ -471,7 +471,7 @@ class FuncsToRoleParam implements Serializable{
         for(String name:this.funcNames){
             writer.writeVarString(name);
         }
-        writer.writeInt(this.keyNo);
+        writer.writeVarInt(this.keyNo);
     }
 }
 class OntIDsToRoleParam implements Serializable{
@@ -479,8 +479,8 @@ class OntIDsToRoleParam implements Serializable{
     byte[] adminOntID;
     byte[] role;
     byte[][] persons;
-    int keyNo;
-    OntIDsToRoleParam( byte[] contractAddr,byte[] adminOntID,byte[] role,byte[][] persons,int keyNo){
+    long keyNo;
+    OntIDsToRoleParam( byte[] contractAddr,byte[] adminOntID,byte[] role,byte[][] persons,long keyNo){
         this.contractAddr = contractAddr;
         this.adminOntID = adminOntID;
         this.role = role;
@@ -498,7 +498,7 @@ class OntIDsToRoleParam implements Serializable{
         for(int i = 0; i< length;i++){
             this.persons[i] = reader.readVarBytes();
         }
-        this.keyNo = reader.readInt();
+        this.keyNo = reader.readVarInt();
     }
 
     @Override
@@ -510,7 +510,7 @@ class OntIDsToRoleParam implements Serializable{
         for(byte[] p: this.persons){
             writer.writeVarBytes(p);
         }
-        writer.writeInt(this.keyNo);
+        writer.writeVarInt(this.keyNo);
     }
 }
 
@@ -519,10 +519,10 @@ class DelegateParam implements  Serializable{
     byte[] from;
     byte[] to;
     byte[] role;
-    int period;
-    int level;
-    int keyNo;
-    DelegateParam(byte[] contractAddr,byte[] from,byte[] to,byte[] role, int period, int level,int keyNo){
+    long period;
+    long level;
+    long keyNo;
+    DelegateParam(byte[] contractAddr,byte[] from,byte[] to,byte[] role, long period, long level,long keyNo){
         this.contractAddr = contractAddr;
         this.from = from;
         this.to = to;
@@ -543,9 +543,9 @@ class DelegateParam implements  Serializable{
         writer.writeVarBytes(this.from);
         writer.writeVarBytes(this.to);
         writer.writeVarBytes(this.role);
-        writer.writeInt(this.period);
-        writer.writeInt(this.level);
-        writer.writeInt(this.keyNo);
+        writer.writeVarInt(this.period);
+        writer.writeVarInt(this.level);
+        writer.writeVarInt(this.keyNo);
     }
 }
 
@@ -554,8 +554,8 @@ class AuthWithdrawParam implements Serializable{
     byte[] initiator;
     byte[] delegate;
     byte[] role;
-    int keyNo;
-    public AuthWithdrawParam(byte[] contractAddr,byte[] initiator, byte[] delegate,byte[] role,int keyNo){
+    long keyNo;
+    public AuthWithdrawParam(byte[] contractAddr,byte[] initiator, byte[] delegate,byte[] role,long keyNo){
         this.contractAddr = contractAddr;
         this.initiator = initiator;
         this.delegate = delegate;
@@ -573,7 +573,7 @@ class AuthWithdrawParam implements Serializable{
         writer.writeVarBytes(this.initiator);
         writer.writeVarBytes(this.delegate);
         writer.writeVarBytes(this.role);
-        writer.writeInt(this.keyNo);
+        writer.writeVarInt(this.keyNo);
     }
 }
 

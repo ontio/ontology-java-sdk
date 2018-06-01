@@ -390,13 +390,12 @@ public class OntId {
             throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         byte[] parabytes;
-        String recoveryAddr = recoveryOntid.replace(Common.didont,"");
-        if (recoveryAddr == null) {
+        if (recoveryOntid == null) {
             AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid, password);
             byte[] pk = Helper.hexToBytes(info.pubkey);
             parabytes = BuildParams.buildParams(ontid.getBytes(), Helper.hexToBytes(newpubkey), pk);
         } else {
-            parabytes = BuildParams.buildParams(ontid, Helper.hexToBytes(newpubkey), Address.decodeBase58(recoveryAddr).toArray());
+            parabytes = BuildParams.buildParams(ontid, Helper.hexToBytes(newpubkey), Address.decodeBase58(recoveryOntid.replace(Common.didont,"")).toArray());
         }
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "addKey", parabytes, VmType.Native.value(), payer, gaslimit, gasprice);
         return tx;

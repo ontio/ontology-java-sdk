@@ -26,15 +26,15 @@ public class AuthDemo {
             String privatekey0 = "c19f16785b8f3543bbaf5e1dbb5d398dfa6c85aaad54fc9d71203ce83e505c07";
             com.github.ontio.account.Account acct0 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey0), ontSdk.signatureScheme);
             payer = ontSdk.getWalletMgr().createAccount(password);
-
+            com.github.ontio.account.Account payerAcct = ontSdk.getWalletMgr().getAccount(payer.address,password);
             if(ontSdk.getWalletMgr().getIdentitys().size() < 3){
                 Identity identity1 = ontSdk.getWalletMgr().importIdentity(acct0.exportCtrEncryptedPrikey(password,16384),password,acct0.getAddressU160().toBase58());
                 Identity identity = ontSdk.getWalletMgr().createIdentity(password);
 
-                ontSdk.nativevm().ontId().sendRegister(identity,password,payer.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
-                ontSdk.nativevm().ontId().sendRegister(identity1,password,payer.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
+                ontSdk.nativevm().ontId().sendRegister(identity,password,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
+                ontSdk.nativevm().ontId().sendRegister(identity1,password,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
                 Identity identity2 = ontSdk.getWalletMgr().createIdentity(password);
-                ontSdk.nativevm().ontId().sendRegister(identity2,password,payer.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
+                ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
                 ontSdk.getWalletMgr().writeWallet();
 
                 Thread.sleep(6000);

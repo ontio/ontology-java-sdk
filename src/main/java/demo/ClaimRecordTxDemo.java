@@ -23,17 +23,17 @@ public class ClaimRecordTxDemo {
 
             String password = "111111";
 
-            Account payerAcc = ontSdk.getWalletMgr().createAccount(password);
-
+            Account payerAccInfo = ontSdk.getWalletMgr().createAccount(password);
+            com.github.ontio.account.Account payerAcc = ontSdk.getWalletMgr().getAccount(payerAccInfo.address,password);
             List<Identity> dids = ontSdk.getWalletMgr().getIdentitys();
             if (dids.size() < 2) {
                 Identity identity = ontSdk.getWalletMgr().createIdentity(password);
 
-                ontSdk.nativevm().ontId().sendRegister(identity,password,payerAcc.address,password,0,0);
+                ontSdk.nativevm().ontId().sendRegister(identity,password,payerAcc,0,0);
 
                 Identity identity2 = ontSdk.getWalletMgr().createIdentity(password);
 
-                ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcc.address,password,0,0);
+                ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcc,0,0);
 
                 dids = ontSdk.getWalletMgr().getIdentitys();
                 Thread.sleep(6000);

@@ -20,6 +20,8 @@
 package demo;
 
 import com.github.ontio.OntSdk;
+import com.github.ontio.account.Account;
+import com.github.ontio.common.Helper;
 import com.github.ontio.common.UInt256;
 import com.github.ontio.merkle.MerkleVerifier;
 import com.github.ontio.network.rpc.*;
@@ -40,13 +42,14 @@ public class ClaimDemo {
 
         try {
             OntSdk ontSdk = getOntSdk();
-
+            String privatekey0 = "c19f16785b8f3543bbaf5e1dbb5d398dfa6c85aaad54fc9d71203ce83e505c07";
+            com.github.ontio.account.Account acct0 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey0), ontSdk.signatureScheme);
             List<Identity> dids = ontSdk.getWalletMgr().getIdentitys();
             if (dids.size() < 2) {
                 Identity identity = ontSdk.getWalletMgr().createIdentity("passwordtest");
-                ontSdk.nativevm().ontId().sendRegister(identity,"passwordtest",identity.ontid,"passwordtest",0,0);
+                ontSdk.nativevm().ontId().sendRegister(identity,"passwordtest",acct0,0,0);
                 identity = ontSdk.getWalletMgr().createIdentity("passwordtest");
-                ontSdk.nativevm().ontId().sendRegister(identity,"passwordtest",identity.ontid,"passwordtest",0,0);
+                ontSdk.nativevm().ontId().sendRegister(identity,"passwordtest",acct0,0,0);
                 dids = ontSdk.getWalletMgr().getIdentitys();
                 Thread.sleep(6000);
             }

@@ -72,16 +72,16 @@ public class OntAssetTxTest {
     @Test
     public void sendApprove() throws Exception {
         com.github.ontio.account.Account sendAcct1 = ontSdk.getWalletMgr().getAccount(info1.address,password);
-        com.github.ontio.account.Account sendAcct2 = ontSdk.getWalletMgr().getAccount(info1.address,password);
+        com.github.ontio.account.Account sendAcct2 = ontSdk.getWalletMgr().getAccount(info2.address,password);
         com.github.ontio.account.Account payerAcct = ontSdk.getWalletMgr().getAccount(payer.address,password);
-        ontSdk.nativevm().ont().sendApprove(sendAcct1,info2.address,10L,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
-        long info1balance = ontSdk.nativevm().ont().queryBalanceOf(info1.address);
-        long info2balance = ontSdk.nativevm().ont().queryBalanceOf(info2.address);
+        ontSdk.nativevm().ont().sendApprove(sendAcct1,sendAcct2.getAddressU160().toBase58(),10L,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
+        long info1balance = ontSdk.nativevm().ont().queryBalanceOf(sendAcct1.getAddressU160().toBase58());
+        long info2balance = ontSdk.nativevm().ont().queryBalanceOf(sendAcct2.getAddressU160().toBase58());
         Thread.sleep(6000);
 
-        long allo = ontSdk.nativevm().ont().queryAllowance(info1.address,info2.address);
-        Assert.assertTrue(allo > 0);
-        ontSdk.nativevm().ont().sendTransferFrom(sendAcct2,info1.address,info2.address,10L,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
+        long allo = ontSdk.nativevm().ont().queryAllowance(sendAcct1.getAddressU160().toBase58(),sendAcct2.getAddressU160().toBase58());
+        Assert.assertTrue(allo == 10);
+        ontSdk.nativevm().ont().sendTransferFrom(sendAcct2,info1.address,sendAcct2.getAddressU160().toBase58(),10L,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
         Thread.sleep(6000);
         long info1balance2 = ontSdk.nativevm().ont().queryBalanceOf(info1.address);
         long info2balance2 = ontSdk.nativevm().ont().queryBalanceOf(info2.address);

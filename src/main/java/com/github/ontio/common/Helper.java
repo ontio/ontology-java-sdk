@@ -19,6 +19,8 @@
 
 package com.github.ontio.common;
 
+import com.github.ontio.crypto.Digest;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
@@ -112,5 +114,11 @@ public class Helper {
     public static void print(Map<String, Object> map) {
         System.out.println(toString(map));
     }
-    
+
+    public static String getPrefix(String text) throws Exception {
+        byte[] sha256 = Digest.sha256(Digest.sha256(text.getBytes()));
+        byte[] addresshash = Arrays.copyOfRange(sha256, 0, 4);
+        String s = Helper.toHexString(addresshash);
+	    return s;
+    }
 }

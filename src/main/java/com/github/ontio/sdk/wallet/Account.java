@@ -52,33 +52,42 @@ public class Account {
         this.hash = hash;
         this.extra = null;
     }
-    public void setKey(String key){
+
+    public Object getExtra(){
+        return extra;
+    }
+
+    public void setExtra(Object extra){
+        this.extra = extra;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
         this.key = key;
     }
-    public String getKey(){
-        return key;
+
+    public String getEncAlg(){
+        return encAlg;
     }
     public void setEncAlg(String encAlg){
         this.encAlg = encAlg;
     }
-    public String getEncAlg(){
-        return encAlg;
-    }
-    public void setHash(String hash){
-        this.hash = hash;
-    }
     public String getHash(){
         return hash;
     }
-    public void setExtra(Object extra){
-        this.extra = extra;
+
+    public void setHash(String hash) {
+        this.hash = hash;
     }
-    public Object getExtra(){
-        return extra;
-    }
+
     @Override
     public String toString() {
         return JSON.toJSONString(this);
     }
+
+
 }
 

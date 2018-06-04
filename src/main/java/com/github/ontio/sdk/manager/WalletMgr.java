@@ -34,7 +34,6 @@ import com.github.ontio.common.Common;
 import com.github.ontio.core.DataSignature;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.util.IOUtils;
-import org.bouncycastle.math.ec.ECPoint;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -72,10 +71,10 @@ public class WalletMgr {
         wallet = JSON.parseObject(text, Wallet.class);
         walletFile = JSON.parseObject(text, Wallet.class);
         if (wallet.getIdentities() == null) {
-            wallet.setIdentities(new ArrayList<>());
+            wallet.setIdentities(new ArrayList<Identity>());
         }
         if (wallet.getAccounts() == null) {
-            wallet.setAccounts(new ArrayList<>());
+            wallet.setAccounts(new ArrayList<Account>());
         }
         writeWallet();
     }
@@ -97,10 +96,10 @@ public class WalletMgr {
         wallet = JSON.parseObject(text, Wallet.class);
         walletFile = JSON.parseObject(text, Wallet.class);
         if (wallet.getIdentities() == null) {
-            wallet.setIdentities(new ArrayList<>());
+            wallet.setIdentities(new ArrayList<Identity>());
         }
         if (wallet.getAccounts() == null) {
-            wallet.setAccounts(new ArrayList<>());
+            wallet.setAccounts(new ArrayList<Account>());
         }
         if (getIdentitys().size() == 0) {
             createIdentity(label, password);
@@ -161,6 +160,13 @@ public class WalletMgr {
         return getIdentity(info.ontid);
     }
 
+    public Identity importIdentity(String label, String encryptedPrikey, String password, byte[] prefix) throws Exception {
+        String prikey = com.github.ontio.account.Account.getCtrDecodedPrivateKey(encryptedPrikey, password, prefix, walletFile.getScrypt().getN(), scheme);
+        IdentityInfo info = createIdentity(label, password, Helper.hexToBytes(prikey));
+        storePrivateKey(identityPriKeyMap, info.ontid, password, prikey);
+        return getIdentity(info.ontid);
+    }
+
     public Identity createIdentity(String password) throws Exception {
         return createIdentity("",password);
     }
@@ -173,6 +179,12 @@ public class WalletMgr {
         IdentityInfo info = createIdentity(label,password, Helper.hexToBytes(prikey));
         return getIdentity(info.ontid);
     }
+
+    public Identity createIdentityFromPriKey(String password, String prikey) throws Exception {
+        IdentityInfo info = createIdentity("", password, Helper.hexToBytes(prikey));
+        return getIdentity(info.ontid);
+    }
+
     public IdentityInfo createIdentityInfo(String password) throws Exception {
         return createIdentityInfo("",password);
     }
@@ -217,9 +229,16 @@ public class WalletMgr {
         return getAccount(info.addressBase58);
     }
 
-    public Account createAccount(String password) throws Exception {
-        AccountInfo info = createAccount("",password, ECC.generateKey());
+    public Account importAccount(String label, String encryptedPrikey, String password, byte[] prefix) throws Exception {
+        String prikey = com.github.ontio.account.Account.getCtrDecodedPrivateKey(encryptedPrikey, password, prefix, walletFile.getScrypt().getN(), scheme);
+        AccountInfo info = createAccount(label, password, Helper.hexToBytes(prikey));
+        storePrivateKey(acctPriKeyMap, info.addressBase58, password, prikey);
         return getAccount(info.addressBase58);
+    }
+
+    public Account createAccount(String password) throws Exception {
+        Account account = createAccount("", password);
+        return account;
     }
     public Account createAccount(String label,String password) throws Exception {
         AccountInfo info = createAccount(label,password, ECC.generateKey());

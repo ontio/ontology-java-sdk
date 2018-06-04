@@ -29,37 +29,49 @@ public class Scrypt {
     private int p = 8;
     private int DkLen = 64;
     private String Salt;
-    public Scrypt(){
-    }
-    public Scrypt(int n,int r,int p){
-        this.n = n;
-        this.r = r;
-        this.p = p;
-    }
-    public void setN(int n){
-        this.n = n;
-    }
-    public int getN(){
-        return n;
-    }
-    public void setR(int r){
-        this.r = r;
-    }
-    public int getR(){
-        return r;
-    }
-    public void setP(int p){
-        this.p = p;
-    }
-    public int getP(){
-        return p;
-    }
-    public void setDkLen(int DkLen){
-        this.DkLen = DkLen;
-    }
-    public int getDkLen(){
+
+    public int getDkLen() {
         return DkLen;
     }
+
+    public void setDkLen(int dkLen) {
+        DkLen = dkLen;
+    }
+
+
+    public Scrypt() {
+    }
+
+    public Scrypt(int n, int r, int p) {
+        this.n = n;
+        this.r = r;
+        this.p = p;
+    }
+
+    public int getN() {
+        return n;
+    }
+
+    public void setN(int n) {
+        this.n = n;
+    }
+
+    public int getR() {
+        return r;
+    }
+
+    public void setR(int r) {
+        this.r = r;
+    }
+
+    public int getP() {
+        return p;
+    }
+
+    public void setP(int p) {
+        this.p = p;
+    }
+
     @Override
     public String toString() {
         return JSON.toJSONString(this);

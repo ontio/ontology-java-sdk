@@ -2,7 +2,7 @@
 <p align="center" class="version">Version 0.7.0 </p>
 
 # 权限管理
-具体请参考https://github.com/kunxian-xia/ontology/blob/auth_doc/docs/specifications/native_contract/auth_zh.md#%E5%BA%94%E7%94%A8%E5%90%88%E7%BA%A6%E8%B0%83%E7%94%A8%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86
+具体请参考https://github.com/ontio/ontology-smartcontract/blob/master/smartcontract/native/auth/auth.md
 
 * 背景
 

@@ -31,7 +31,6 @@ import com.github.ontio.core.asset.TransferFrom;
 import com.github.ontio.core.asset.Transfers;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.BinaryWriter;
-import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
 
@@ -143,11 +142,9 @@ public class Ong {
      * @param fromAddr
      * @param toAddr
      * @return
-     * @throws SDKException
-     * @throws ConnectorException
-     * @throws IOException
+     * @throws Exception
      */
-    public long queryAllowance(String fromAddr, String toAddr) throws SDKException, ConnectorException, IOException {
+    public long queryAllowance(String fromAddr, String toAddr) throws Exception {
         if(fromAddr==null||fromAddr.equals("")||toAddr==null||toAddr.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }

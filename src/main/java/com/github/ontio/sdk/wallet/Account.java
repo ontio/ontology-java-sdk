@@ -40,7 +40,6 @@ public class Account {
     public String encAlg = "aes-256-ctr";
     public String hash = "sha256";
     public String signatureScheme = "SHA256withECDSA";
-    public String passwordHash = "";
     public Object extra = null;
     public Account(){
 
@@ -59,23 +58,17 @@ public class Account {
     public String getKey(){
         return key;
     }
-//    public void setEncAlg(String encAlg){
-//        this.encAlg = encAlg;
-//    }
-//    public String getEncAlg(){
-//        return encAlg;
-//    }
+    public void setEncAlg(String encAlg){
+        this.encAlg = encAlg;
+    }
+    public String getEncAlg(){
+        return encAlg;
+    }
     public void setHash(String hash){
         this.hash = hash;
     }
     public String getHash(){
         return hash;
-    }
-    public void setPasswordHash(String passwordHash){
-        this.passwordHash = passwordHash;
-    }
-    public Object getPasswordHash(){
-        return passwordHash;
     }
     public void setExtra(Object extra){
         this.extra = extra;

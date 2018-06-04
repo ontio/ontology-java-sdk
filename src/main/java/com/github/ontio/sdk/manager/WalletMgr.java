@@ -131,7 +131,7 @@ public class WalletMgr {
     public Wallet getWallet() {
         return wallet;
     }
-    
+
     public Wallet writeWallet() throws Exception {
         writeFile(filePath, JSON.toJSONString(wallet));
         walletFile = wallet;
@@ -432,7 +432,6 @@ public class WalletMgr {
                 wallet.setDefaultAccountAddress(acct.address);
             }
             acct.label = label;
-            acct.passwordHash = Helper.toHexString(Digest.sha256(password.getBytes()));
             wallet.getAccounts().add(acct);
         } else {
             for (Identity e : wallet.getIdentities()) {
@@ -480,9 +479,9 @@ public class WalletMgr {
                 }
             }
         } catch (Exception e) {
-            throw e;
+            throw new SDKException(ErrorCode.GetAccountByAddressErr);
         }
-        throw new SDKRuntimeException(ErrorCode.GetAccountByAddressErr);
+        throw new SDKException(ErrorCode.OtherError("Account null"));
     }
 
 }

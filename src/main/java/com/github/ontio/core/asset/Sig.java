@@ -22,7 +22,6 @@ package com.github.ontio.core.asset;
 import com.github.ontio.common.Helper;
 import com.github.ontio.io.*;
 import com.github.ontio.crypto.ECC;
-import org.bouncycastle.math.ec.ECPoint;
 
 import java.io.IOException;
 import java.math.BigInteger;

@@ -182,7 +182,14 @@ class Interfaces {
             throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
         }
     }
-
+    public String getMemPoolTxState(String hash) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            return http.get(url + UrlConsts.Url_get_mem_pool_tx_state + hash, params);
+        } catch (Exception e) {
+            throw new RestfulException(ErrorCode.InvalidUrlErr + url + "," + e.getMessage(), e);
+        }
+    }
     public String getBalance(String address) throws RestfulException {
         Map<String, String> params = new HashMap<String, String>();
         try {

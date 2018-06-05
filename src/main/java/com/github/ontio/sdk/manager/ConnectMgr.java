@@ -225,6 +225,11 @@ public class ConnectMgr {
     public String getAllowance(String asset, String from, String to) throws ConnectorException, IOException {
         return connector.getAllowance(asset, from, to);
     }
+
+    public Object getMemPoolTxState(String hash) throws ConnectorException, IOException {
+        hash = hash.replace("0x", "");
+        return connector.getMemPoolTxState(hash);
+    }
 }
 
 

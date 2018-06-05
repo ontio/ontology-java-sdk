@@ -38,5 +38,6 @@ public class UrlConsts {
 	public static String Url_get_block_height_by_txhash = "/api/v1/block/height/txhash/";
 	public static String Url_get_storage = "/api/v1/storage/";
 	public static String Url_get_merkleproof = "/api/v1/merkleproof/";
+	public static String Url_get_mem_pool_tx_state = "/api/v1/mempool/txstate/";
 	public static String Url_get_allowance = "/api/v1/allowance/";
 }

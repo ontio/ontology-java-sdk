@@ -230,5 +230,14 @@ public class RpcClient extends AbstractConnector {
             throw new RuntimeException(e);
         }
     }
+    @Override
+    public Object getMemPoolTxState(String hash) throws ConnectorException, IOException {
+        Object result = rpc.call("getmempooltxstate", hash);
+        try {
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 

@@ -30,6 +30,8 @@ import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.io.Serializable;
 import com.github.ontio.sdk.exception.SDKException;
+import com.github.ontio.sdk.info.IdentityInfo;
+import com.github.ontio.sdk.wallet.Identity;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -47,12 +49,13 @@ public class Governance {
         this.sdk = sdk;
     }
 
-    public String registerCandidate(Account account, String peerPubkey, int initPos, Account payerAcct, long gaslimit, long gasprice) throws Exception{
-        byte[] params = new RegisterCandidateParam(peerPubkey,account.getAddressU160(),initPos).toArray();
+    public String registerCandidate(Account account, String peerPubkey, int initPos, String ontid,String ontidpwd, long keyNo, Account payerAcct, long gaslimit, long gasprice) throws Exception{
+        byte[] params = new RegisterCandidateParam(peerPubkey,account.getAddressU160(),initPos,ontid.getBytes(),keyNo).toArray();
         System.out.println(peerPubkey);
         System.out.println(Helper.toHexString(params));
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"registerCandidate",params, VmType.Native.value(),payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
         sdk.signTx(tx,new Account[][]{{account}});
+        sdk.addSign(tx,ontid,ontidpwd);
         if(!account.getAddressU160().toBase58().equals(payerAcct.getAddressU160().toBase58())){
             sdk.addSign(tx,payerAcct);
         }
@@ -281,10 +284,14 @@ class RegisterCandidateParam implements Serializable {
     public String peerPubkey;
     public Address address;
     public int initPos;
-    public RegisterCandidateParam(String peerPubkey,Address address,int initPos){
+    public byte[] caller;
+    public long keyNo;
+    public RegisterCandidateParam(String peerPubkey,Address address,int initPos,byte[] caller,long keyNo){
         this.peerPubkey = peerPubkey;
         this.address = address;
         this.initPos = initPos;
+        this.caller = caller;
+        this.keyNo = keyNo;
     }
     @Override
     public void deserialize(BinaryReader reader) throws IOException {}
@@ -293,6 +300,8 @@ class RegisterCandidateParam implements Serializable {
         writer.writeVarString(peerPubkey);
         writer.writeSerializable(address);
         writer.writeInt(initPos);
+        writer.writeVarBytes(caller);
+        writer.writeLong(keyNo);
     }
 }
 class VoteForPeerParam implements Serializable {

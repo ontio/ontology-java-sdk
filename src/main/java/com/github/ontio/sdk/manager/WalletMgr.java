@@ -49,7 +49,7 @@ public class WalletMgr {
     private Wallet walletFile;
     private SignatureScheme scheme = null;
     private String filePath = null;
-    public static boolean priKeyStoreInMem = true;//for dont need decode every time
+    public static boolean priKeyStoreInMem = false;//for dont need decode every time
     public WalletMgr(Wallet wallet,SignatureScheme scheme) throws Exception {
         this.scheme = scheme;
         this.wallet = wallet;

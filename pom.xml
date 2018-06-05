@@ -75,6 +75,7 @@
                         <exclude>**/OntAssetTxTest.java</exclude>
                         <exclude>**/MerkleVerifierTest.java</exclude>
                         <exclude>**/NativeOntIdTxTest.java</exclude>
+                        <exclude>**/OngTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>

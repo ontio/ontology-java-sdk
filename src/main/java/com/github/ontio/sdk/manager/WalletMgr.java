@@ -102,12 +102,6 @@ public class WalletMgr {
         if (getIdentitys().size() == 0) {
             createIdentity(label, password);
             writeWallet();
-            return;
-        }
-        Identity identity = getDefaultIdentity();
-        if (identity != null) {
-            String addr = identity.ontid.replace(Common.didont, "");
-            String prikey = com.github.ontio.account.Account.getCtrDecodedPrivateKey(identity.controls.get(0).key, password, addr, walletFile.getScrypt().getN(), scheme);
         }
     }
 

@@ -50,5 +50,6 @@ public interface IConnector {
 	String getStorage(String codehash,String key) throws ConnectorException, IOException;
 	Object getMerkleProof(String hash) throws ConnectorException, IOException;
 	String getAllowance(String asset,String from,String to) throws ConnectorException, IOException;
+	Object getMemPoolTxCount() throws ConnectorException, IOException;
 	Object getMemPoolTxState(String hash) throws ConnectorException, IOException;
 }

@@ -312,6 +312,7 @@ public class Account {
         }
         this.privateKey = null;
         this.publicKey = null;
+        this.keyType = KeyType.fromLabel(data[0]);
         switch (this.keyType) {
             case ECDSA:
 			    this.keyType = KeyType.ECDSA;

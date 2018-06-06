@@ -261,6 +261,16 @@ public class RestClient extends AbstractConnector {
         throw new RestfulException(to(rr));
     }
     @Override
+    public Object getMemPoolTxCount() throws ConnectorException, IOException{
+        String rs = api.getMemPoolTxCount();
+        Result rr = JSON.parseObject(rs, Result.class);
+        if (rr.Error == 0) {
+            return rr.Result;
+        }
+        throw new RestfulException(to(rr));
+    }
+
+    @Override
     public Object getMemPoolTxState(String hash) throws ConnectorException, IOException{
         String rs = api.getMemPoolTxState(hash);
         Result rr = JSON.parseObject(rs, Result.class);

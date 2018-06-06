@@ -50,7 +50,7 @@ public class OntSdk {
 
 
     private static OntSdk instance = null;
-    public SignatureScheme signatureScheme = SignatureScheme.SHA256WITHECDSA;
+    public SignatureScheme defaultSignScheme = SignatureScheme.SHA256WITHECDSA;
     public long DEFAULT_GAS_LIMIT = 30000;
     public static synchronized OntSdk getInstance(){
         if(instance == null){
@@ -142,7 +142,7 @@ public class OntSdk {
      * @param scheme
      */
     public void setSignatureScheme(SignatureScheme scheme) {
-        signatureScheme = scheme;
+        defaultSignScheme = scheme;
         walletMgr.setSignatureScheme(scheme);
     }
 
@@ -165,8 +165,8 @@ public class OntSdk {
     public void openWalletFile(String path) {
 
         try {
-            this.walletMgr = new WalletMgr(path,signatureScheme);
-            setSignatureScheme(signatureScheme);
+            this.walletMgr = new WalletMgr(path,defaultSignScheme);
+            setSignatureScheme(defaultSignScheme);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -196,7 +196,7 @@ public class OntSdk {
         sigs[tx.sigs.length].pubKeys = new byte[1][];
         sigs[tx.sigs.length].sigData = new byte[1][];
         sigs[tx.sigs.length].pubKeys[0] = acct.serializePublicKey();
-        sigs[tx.sigs.length].sigData[0] = tx.sign(acct,signatureScheme);
+        sigs[tx.sigs.length].sigData[0] = tx.sign(acct,defaultSignScheme);
         tx.sigs = sigs;
         return tx;
     }
@@ -215,7 +215,7 @@ public class OntSdk {
         sigs[tx.sigs.length].sigData = new byte[acct.length][];
         for (int i = 0; i < acct.length; i++) {
             sigs[tx.sigs.length].pubKeys[i] = acct[i].serializePublicKey();
-            sigs[tx.sigs.length].sigData[i] = tx.sign(acct[i], signatureScheme);
+            sigs[tx.sigs.length].sigData[i] = tx.sign(acct[i], defaultSignScheme);
         }
         tx.sigs = sigs;
         return tx;
@@ -239,7 +239,7 @@ public class OntSdk {
             sigs[i].sigData = new byte[accounts[i].length][];
             for (int j = 0; j < accounts[i].length; j++) {
                 sigs[i].M++;
-                byte[] signature = tx.sign(accounts[i][j], signatureScheme);
+                byte[] signature = tx.sign(accounts[i][j], defaultSignScheme);
                 sigs[i].pubKeys[j] = accounts[i][j].serializePublicKey();
                 sigs[i].sigData[j] = signature;
             }

@@ -23,8 +23,10 @@ import com.github.ontio.account.Account;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
+import com.github.ontio.core.DataSignature;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.core.asset.Sig;
+import com.github.ontio.crypto.Digest;
 import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.manager.*;
@@ -268,5 +270,25 @@ public class OntSdk {
             tx.sigs[i].M = M[i];
         }
         return tx;
+    }
+
+    public byte[] signatureData(com.github.ontio.account.Account acct, byte[] data) throws SDKException {
+        DataSignature sign = null;
+        try {
+            sign = new DataSignature(defaultSignScheme, acct, new String(Digest.sha256(Digest.sha256(data))));
+            return sign.signature();
+        } catch (Exception e) {
+            throw new SDKException(e);
+        }
+    }
+
+    public boolean verifySignature(String pubkeyStr, byte[] data, byte[] signature) throws SDKException {
+        DataSignature sign = null;
+        try {
+            sign = new DataSignature();
+            return sign.verifySignature(new com.github.ontio.account.Account(false, Helper.hexToBytes(pubkeyStr)), Digest.sha256(Digest.sha256(data)), signature);
+        } catch (Exception e) {
+            throw new SDKException(e);
+        }
     }
 }

@@ -289,28 +289,6 @@ public class WalletMgr {
         return act.exportWif();
     }
 
-
-    public byte[] signatureData(com.github.ontio.account.Account acct, String str) throws SDKException {
-        DataSignature sign = null;
-        try {
-            sign = new DataSignature(getSignatureScheme(), acct, str);
-            return sign.signature();
-        } catch (Exception e) {
-            throw new SDKException(e);
-        }
-    }
-
-    public boolean verifySign(String pubkeyStr, byte[] data, byte[] signature) throws SDKException {
-        DataSignature sign = null;
-        try {
-            sign = new DataSignature();
-            return sign.verifySignature(new com.github.ontio.account.Account(false, Helper.hexToBytes(pubkeyStr)), data, signature);
-        } catch (Exception e) {
-            throw new SDKException(e);
-        }
-    }
-
-
     public com.github.ontio.account.Account getAccount(String address, String password) throws Exception {
         address = address.replace(Common.didont, "");
         return getAccountByAddress(Address.decodeBase58(address), password);

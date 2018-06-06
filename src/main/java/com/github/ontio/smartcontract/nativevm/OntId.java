@@ -251,11 +251,9 @@ public class OntId {
     /**
      * @param ontid
      * @return
-     * @throws SDKException
-     * @throws ConnectorException
-     * @throws IOException
+     * @throws Exception
      */
-    public String sendGetKeyState(String ontid, int index) throws SDKException, ConnectorException, IOException {
+    public String sendGetKeyState(String ontid, int index) throws Exception {
         if (ontid == null || ontid.equals("") || index < 0) {
             throw new SDKException(ErrorCode.ParamErr("parameter is wrong"));
         }
@@ -272,7 +270,7 @@ public class OntId {
         return new String(Helper.hexToBytes(res));
     }
 
-    public String sendGetAttributes(String ontid) throws SDKException, ConnectorException, IOException {
+    public String sendGetAttributes(String ontid) throws Exception {
         if (ontid == null || ontid.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("ontid should not be null"));
         }
@@ -701,6 +699,7 @@ public class OntId {
         }
         String addr = ontid.replace(Common.didont, "");
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
+        password = null;
         byte[] pk = Helper.hexToBytes(info.pubkey);
         byte[] parabytes = BuildParams.buildParams(ontid, attributes, pk);
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "addAttributes", parabytes, VmType.Native.value(), payer, gaslimit, gasprice);

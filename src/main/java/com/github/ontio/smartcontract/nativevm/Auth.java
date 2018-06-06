@@ -30,6 +30,24 @@ public class Auth {
         return contractAddress;
     }
 
+    public String sendInit(String adminOntId,String password,String contractAddr,Account payerAcct,long gaslimit,long gasprice) throws Exception {
+        if(adminOntId ==null || adminOntId.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        BinaryWriter bw = new BinaryWriter(bos);
+        bw.writeVarBytes(adminOntId.getBytes());
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr,"initContractAdmin",null, VmType.NEOVM.value(), payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
+        sdk.signTx(tx,adminOntId,password);
+        sdk.addSign(tx,payerAcct);
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
+        if (!b) {
+            throw new SDKException(ErrorCode.SendRawTxError);
+        }
+        return tx.hash().toHexString();
+    }
+
+
     /**
      *
      * @param adminOntId

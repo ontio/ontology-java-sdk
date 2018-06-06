@@ -112,6 +112,7 @@ public class ErrorCode {
     public static String SendRawTransactionPreExec = getError(58016, "OntIdTx Error, sendRawTransaction PreExec error");
     public static String SenderAmtNotEqPasswordAmt = getError(58017, "OntIdTx Error, senders amount is not equal password amount");
     public static String ExpireErr = getError(58017, "OntIdTx Error, expire is wrong");
+    public static String GetStatusErr(String msg){return getError(58017, "GetStatus Error," + msg);} ;
 
 
     //OntAsset Error

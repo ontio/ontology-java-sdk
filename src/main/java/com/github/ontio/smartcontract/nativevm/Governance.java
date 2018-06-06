@@ -19,20 +19,23 @@
 
 package com.github.ontio.smartcontract.nativevm;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
-import com.github.ontio.common.Address;
-import com.github.ontio.common.ErrorCode;
-import com.github.ontio.common.Helper;
+import com.github.ontio.common.*;
 import com.github.ontio.core.VmType;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.io.Serializable;
+import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.IdentityInfo;
 import com.github.ontio.sdk.wallet.Identity;
+import com.sun.xml.internal.bind.v2.util.ByteArrayOutputStreamEx;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +67,35 @@ public class Governance {
             return tx.hash().toString();
         }
         return null;
+    }
+
+    public String getPeerPoolMap() throws ConnectorException, IOException {
+        String view = sdk.getConnect().getStorage(contractAddress,Helper.toHexString("governanceView".getBytes()));
+        GovernanceView governanceView = new GovernanceView();
+        ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(view));
+        BinaryReader br = new BinaryReader(bais);
+        governanceView.deserialize(br);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        BinaryWriter bw = new BinaryWriter(baos);
+        bw.writeInt(governanceView.view);
+
+        byte[] t = baos.toByteArray();
+        byte[] t1 = "peerPool".getBytes();
+        byte[] t2 = new byte[t1.length + t.length];
+        System.arraycopy(t1,0,t2,0,t1.length);
+        System.arraycopy(t,0,t2,t1.length,t.length);
+        String value = sdk.getConnect().getStorage(contractAddress,Helper.toHexString(t2));
+        ByteArrayInputStream bais2 = new ByteArrayInputStream(Helper.hexToBytes(value));
+        BinaryReader reader = new BinaryReader(bais2);
+        int length = reader.readInt();
+        Map map = new HashMap<String,PeerPoolItem>();
+        for(int i = 0;i < length;i++){
+            PeerPoolItem item = new PeerPoolItem();
+            item.deserialize(reader);
+            map.put(item.peerPubkey,item);
+        }
+        return JSONObject.toJSONString(map);
     }
     public String approveCandidate(String peerPubkey,Account payerAcct,long gaslimit,long gasprice) throws Exception{
         byte[] params = new ApproveCandidateParam(peerPubkey).toArray();
@@ -233,6 +265,80 @@ public class Governance {
         return null;
     }
 }
+class PeerPoolItem implements Serializable{
+    int index;
+    String peerPubkey;
+    Address address;
+    int status;
+    long initPos;
+    long totalPos;
+    PeerPoolItem(){}
+    PeerPoolItem(int index,String peerPubkey,Address address,int status,long initPos,long totalPos){
+        this.index = index;
+        this.peerPubkey = peerPubkey;
+        this.address = address;
+        this.status = status;
+        this.initPos = initPos;
+        this.totalPos = totalPos;
+    }
+
+    @Override
+    public void deserialize(BinaryReader reader) throws IOException {
+        this.index = reader.readInt();
+        this.peerPubkey = reader.readVarString();
+        try {
+            this.address = reader.readSerializable(Address.class);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        this.status = reader.readByte();
+        this.initPos = reader.readLong();
+        this.totalPos = reader.readLong();
+    }
+
+    @Override
+    public void serialize(BinaryWriter writer) throws IOException {
+        writer.writeInt(index);
+        writer.writeVarString(peerPubkey);
+        writer.writeSerializable(address);
+        writer.writeByte((byte)status);
+        writer.writeLong(initPos);
+        writer.writeLong(totalPos);
+    }
+}
+class GovernanceView implements Serializable{
+    int view;
+    int height;
+    UInt256 txhash;
+    GovernanceView(){
+    }
+    GovernanceView(int view,int height,UInt256 txhash){
+        this.view = view;
+        this.height = height;
+        this.txhash = txhash;
+    }
+    @Override
+    public void deserialize(BinaryReader reader) throws IOException {
+        this.view = reader.readInt();
+        this.height = reader.readInt();
+        try {
+            this.txhash = reader.readSerializable(UInt256.class);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void serialize(BinaryWriter writer) throws IOException {
+        writer.writeInt(view);
+        writer.writeInt(height);
+        writer.writeSerializable(txhash);
+    }
+}
 class RegisterSyncNodeParam implements Serializable {
     public String peerPubkey;
     public String address;
@@ -339,7 +445,8 @@ class WithdrawParam implements Serializable {
         this.withdrawList = withdrawList;
     }
     @Override
-    public void deserialize(BinaryReader reader) throws IOException{};
+    public void deserialize(BinaryReader reader) throws IOException{
+    };
 
     @Override
     public void serialize(BinaryWriter writer) throws IOException {

@@ -41,7 +41,7 @@ public class AbiEvent {
     }
     public void setParamsValue(Object... objs) throws Exception{
         if(objs.length != parameters.size()){
-            throw new SDKException(ErrorCode.SetParamsValueValueNumError);
+            throw new SDKException(ErrorCode.ParamError);
         }
         for (int i = 0; i < objs.length; i++) {
             parameters.get(i).setValue(objs[i]);

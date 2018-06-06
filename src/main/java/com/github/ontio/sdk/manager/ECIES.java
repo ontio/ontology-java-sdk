@@ -72,7 +72,6 @@ public class ECIES {
         try {
             com.github.ontio.account.Account account = new com.github.ontio.account.Account(false, Helper.hexToBytes(pubkey));
 
-            Object[] curveParaSpec = new Object[]{"P-256"};
             ECNamedCurveParameterSpec spec = ECNamedCurveTable.getParameterSpec((String) curveParaSpec[0]);
             ECDomainParameters ecDomain = new ECDomainParameters(spec.getCurve(), spec.getG(), spec.getN());
             AsymmetricCipherKeyPair keys = new AsymmetricCipherKeyPair(

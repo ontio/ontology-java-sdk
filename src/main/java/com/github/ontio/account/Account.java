@@ -103,6 +103,9 @@ public class Account {
                 this.privateKey = kf.generatePrivate(priSpec);
 
                 org.bouncycastle.math.ec.ECPoint Q = spec.getG().multiply(d).normalize();
+                if (Q == null || Q.getAffineXCoord() == null || Q.getAffineYCoord() == null) {
+                    throw new SDKException(ErrorCode.OtherError("normalize error"));
+                }
                 ECPublicKeySpec pubSpec = new ECPublicKeySpec(
                         new ECPoint(Q.getAffineXCoord().toBigInteger(), Q.getAffineYCoord().toBigInteger()),
                         paramSpec);
@@ -166,7 +169,7 @@ public class Account {
      */
     public static String getEcbDecodedPrivateKey(String encryptedPriKey, String passphrase, int n, SignatureScheme scheme) throws Exception {
         if (encryptedPriKey == null) {
-            throw new NullPointerException();
+            throw new SDKException(ErrorCode.ParamError);
         }
         byte[] decoded = Base58.decodeChecked(encryptedPriKey);
         if (decoded.length != 43 || decoded[0] != (byte) 0x01 || decoded[1] != (byte) 0x42 || decoded[2] != (byte) 0xe0) {
@@ -212,7 +215,7 @@ public class Account {
 
     private static byte[] XOR(byte[] x, byte[] y) throws Exception {
         if (x.length != y.length) {
-            throw new SDKException(ErrorCode.PrikeyLengthError);
+            throw new SDKException(ErrorCode.ParamError);
         }
         byte[] ret = new byte[x.length];
         for (int i = 0; i < x.length; i++) {
@@ -275,12 +278,16 @@ public class Account {
 
     public byte[] serializePublicKey() {
         ByteArrayOutputStream bs = new ByteArrayOutputStream();
-        bs.write(this.keyType.getLabel());
+        BCECPublicKey pub = (BCECPublicKey) publicKey;
         try {
             switch (this.keyType) {
                 case ECDSA:
+                    bs.write(this.keyType.getLabel());
+                    bs.write(Curve.valueOf(pub.getParameters().getCurve()).getLabel());
+                    bs.write(pub.getQ().getEncoded(true));
+                    break;
                 case SM2:
-                    BCECPublicKey pub = (BCECPublicKey) publicKey;
+                    bs.write(this.keyType.getLabel());
                     bs.write(Curve.valueOf(pub.getParameters().getCurve()).getLabel());
                     bs.write(pub.getQ().getEncoded(true));
                     break;
@@ -305,10 +312,22 @@ public class Account {
         }
         this.privateKey = null;
         this.publicKey = null;
-        this.keyType = KeyType.fromLabel(data[0]);
         switch (this.keyType) {
             case ECDSA:
+			    this.keyType = KeyType.ECDSA;
+                this.curveParams = new Object[]{Curve.P256.toString()};
+                ECNamedCurveParameterSpec spec0 = ECNamedCurveTable.getParameterSpec(Curve.P256.toString());
+                ECParameterSpec param0 = new ECNamedCurveSpec(spec0.getName(), spec0.getCurve(), spec0.getG(), spec0.getN());
+                ECPublicKeySpec pubSpec0 = new ECPublicKeySpec(
+                        ECPointUtil.decodePoint(
+                                param0.getCurve(),
+                                Arrays.copyOfRange(data, 2, data.length)),
+                        param0);
+                KeyFactory kf0 = KeyFactory.getInstance("EC", "BC");
+                this.publicKey = kf0.generatePublic(pubSpec0);
+                break;
             case SM2:
+                this.keyType = KeyType.fromLabel(data[0]);
                 Curve c = Curve.fromLabel(data[1]);
                 this.curveParams = new Object[]{c.toString()};
                 ECNamedCurveParameterSpec spec = ECNamedCurveTable.getParameterSpec(c.toString());
@@ -442,6 +461,9 @@ public class Account {
     public static String getCtrDecodedPrivateKey(String encryptedPriKey, String passphrase, byte[] salt, int n, SignatureScheme scheme) throws Exception {
         if (encryptedPriKey == null) {
             throw new SDKException(ErrorCode.EncryptedPriKeyError);
+        }
+        if (salt.length == 0) {
+            throw new SDKException(ErrorCode.ParamError);
         }
         byte[] encryptedkey = Base64.getDecoder().decode(encryptedPriKey);
 

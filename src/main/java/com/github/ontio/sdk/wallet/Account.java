@@ -38,6 +38,7 @@ public class Account {
     public String key = "";
     @JSONField(name = "enc-alg")
     public String encAlg = "aes-256-ctr";
+    public String salt = "";
     public String hash = "sha256";
     public String signatureScheme = "SHA256withECDSA";
     public Object extra = null;
@@ -81,6 +82,14 @@ public class Account {
 
     public void setHash(String hash) {
         this.hash = hash;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 
     @Override

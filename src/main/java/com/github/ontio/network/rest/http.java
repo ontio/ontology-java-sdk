@@ -72,7 +72,8 @@ public class http {
         	try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, DEFAULT_CHARSET))) {
         		String str = null;
         		while((str = reader.readLine()) != null) {
-        			sb.append(str);str = null;
+        			sb.append(str);
+					str = null;
         		}
         	}
         }
@@ -106,7 +107,8 @@ public class http {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, DEFAULT_CHARSET))) {
                 String str = null;
                 while((str = reader.readLine()) != null) {
-                    sb.append(str);str = null;
+                    sb.append(str);
+					str = null;
                 }
             }
         }
@@ -154,7 +156,8 @@ public class http {
         	try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, DEFAULT_CHARSET))) {
         		String str = null;
         		while((str = reader.readLine()) != null) {
-        			sb.append(str);str = null;
+        			sb.append(str);
+					str = null;
         		}
         	}
         }

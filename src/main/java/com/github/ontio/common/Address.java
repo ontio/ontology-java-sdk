@@ -28,6 +28,7 @@ import com.github.ontio.sdk.exception.SDKException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Arrays;
 
 /**
@@ -81,10 +82,36 @@ public class Address extends UIntBase implements Comparable<Address> {
         byte[] bys = Digest.hash160(publicKey);
         bys[0] = 0x01;
         return new Address(bys);
-//        ScriptBuilder sb = new ScriptBuilder();
-//        sb.push(publicKey);
-//        sb.add(ScriptOp.OP_CHECKSIG);
-//        return new Address(Digest.hash160(sb.toArray()));
+
+    }
+
+    public static Address addressFromPubKeyNeo(byte[] publicKey) {
+        ScriptBuilder sb = new ScriptBuilder();
+        sb.push(publicKey);
+        sb.add(ScriptOp.OP_CHECKSIG);
+        return new Address(Digest.hash160(sb.toArray()));
+    }
+
+    public static Address addressFromMultiPubKeysNeo(int m, byte[]... publicKeys) throws Exception {
+        if (m <= 0 || m > publicKeys.length || publicKeys.length > 24) {
+            throw new SDKException(ErrorCode.ParamError);
+        }
+        try (ScriptBuilder sb = new ScriptBuilder()) {
+            sb.push(BigInteger.valueOf(m));
+            publicKeys = Arrays.stream(publicKeys).sorted((o1, o2) -> {
+                return Helper.toHexString(o1).compareTo(Helper.toHexString(o2));
+            }).toArray(byte[][]::new);
+
+            for (byte[] publicKey : publicKeys) {
+                System.out.println(Helper.toHexString(publicKey));
+                sb.push(publicKey);
+            }
+            System.out.println(Helper.toHexString(sb.toArray()));
+            sb.push(BigInteger.valueOf(publicKeys.length));
+            sb.add(ScriptOp.OP_CHECKMULTISIG);
+            System.out.println(Helper.toHexString(sb.toArray()));
+            return new Address(Digest.hash160(sb.toArray()));
+        }
     }
 
     public static Address addressFromMultiPubKeys(int m, byte[]... publicKeys) throws Exception {

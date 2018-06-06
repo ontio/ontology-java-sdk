@@ -97,6 +97,7 @@ public class ECIES {
             //(IV, out, ciphertext)
             return new String[]{Helper.toHexString(IV), Helper.toHexString(out), Helper.toHexString(ciphertext)};
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -147,6 +148,7 @@ public class ECIES {
             }
             return plaintext;
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }

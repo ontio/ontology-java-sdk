@@ -69,6 +69,7 @@ public class BuildParams {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return builder.toArray();
     }
@@ -96,6 +97,7 @@ public class BuildParams {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return sb.toArray();
     }

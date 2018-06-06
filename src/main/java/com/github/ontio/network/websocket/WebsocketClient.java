@@ -354,6 +354,7 @@ public class WebsocketClient extends AbstractConnector {
                         lock.notify();
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 

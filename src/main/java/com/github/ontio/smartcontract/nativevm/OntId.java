@@ -829,6 +829,7 @@ public class OntId {
             List nodes = (List) proof.get("Nodes");
             return MerkleVerifier.Verify(txsroot, nodes, merkleRoot);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new SDKException(e);
         }
     }

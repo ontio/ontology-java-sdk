@@ -30,9 +30,6 @@ import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.io.Serializable;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.sdk.info.IdentityInfo;
-import com.github.ontio.sdk.wallet.Identity;
-import com.sun.xml.internal.bind.v2.util.ByteArrayOutputStreamEx;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

@@ -7,6 +7,8 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.block.Block;
+import com.github.ontio.crypto.SignatureScheme;
+import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Identity;
 
@@ -25,19 +27,28 @@ public class ClaimRecordTxDemo {
 
             Account payerAccInfo = ontSdk.getWalletMgr().createAccount(password);
             com.github.ontio.account.Account payerAcc = ontSdk.getWalletMgr().getAccount(payerAccInfo.address,password);
-            List<Identity> dids = ontSdk.getWalletMgr().getIdentitys();
-            if (dids.size() < 2) {
+
+
+            Account account = ontSdk.getWalletMgr().importAccount("ET5m04btJ/bhRvSomqfqSY05M1mlmePU74mY+yvpIjY=","111111","TA4nUbnjX5UGVxkumhfndc7wyemrxdMtn8");
+            AccountInfo info = ontSdk.getWalletMgr().getAccountInfo(account.address,"111111");
+            com.github.ontio.account.Account account1 = new com.github.ontio.account.Account(Helper.hexToBytes(com.github.ontio.account.Account.getCtrDecodedPrivateKey("ET5m04btJ/bhRvSomqfqSY05M1mlmePU74mY+yvpIjY=","111111","TA4nUbnjX5UGVxkumhfndc7wyemrxdMtn8",16384,SignatureScheme.SHA256WITHECDSA)),SignatureScheme.SHA256WITHECDSA);
+
+            if (ontSdk.getWalletMgr().getIdentitys().size() < 2) {
                 Identity identity = ontSdk.getWalletMgr().createIdentity(password);
 
-                ontSdk.nativevm().ontId().sendRegister(identity,password,payerAcc,0,0);
+                ontSdk.nativevm().ontId().sendRegister(identity,password,payerAcc,ontSdk.DEFAULT_GAS_LIMIT,0);
 
                 Identity identity2 = ontSdk.getWalletMgr().createIdentity(password);
 
-                ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcc,0,0);
+                ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcc,ontSdk.DEFAULT_GAS_LIMIT,0);
 
-                dids = ontSdk.getWalletMgr().getIdentitys();
+                ontSdk.getWalletMgr().writeWallet();
+
                 Thread.sleep(6000);
             }
+
+            List<Identity> dids = ontSdk.getWalletMgr().getIdentitys();
+
 
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("Issuer", dids.get(0).ontid);
@@ -61,24 +72,32 @@ public class ClaimRecordTxDemo {
 
             System.out.println("ClaimId:" + payload.getString("jti"));
 
-            ontSdk.neovm().claimRecord().setContractAddress("806256c36653d4091a3511d308aac5c414b2a444");
+            ontSdk.neovm().claimRecord().setContractAddress("80eb179e8ce06f61613a11ee108f068fdf158af4");
 
-            String commitRes = ontSdk.neovm().claimRecord().sendCommit(dids.get(0).ontid,dids.get(1).ontid,password,payload.getString("jti"),0,0);
-            System.out.println("commitRes:" + commitRes);
+            String commitHash = ontSdk.neovm().claimRecord().sendCommit(dids.get(0).ontid,password,dids.get(1).ontid,payload.getString("jti"),account1,ontSdk.DEFAULT_GAS_LIMIT,0);
+            System.out.println("commitRes:" + commitHash);
+            Thread.sleep(6000);
+            Object obj = ontSdk.getConnect().getSmartCodeEvent(commitHash);
+            System.out.println(obj);
+
+            System.out.println(dids.get(0).ontid);
+            System.out.println(dids.get(1).ontid);
+            System.out.println(payload.getString("jti"));
+
+
+            String getstatusRes = ontSdk.neovm().claimRecord().sendGetStatus(payload.getString("jti"));
+            System.out.println("getstatusResBytes:" + getstatusRes);
             Thread.sleep(6000);
 
-            String getstatusRes = ontSdk.neovm().claimRecord().sendGetStatus(dids.get(1).ontid,password,payload.getString("jti"));
-            byte[] getstatusResBytes = Helper.hexToBytes(getstatusRes);
-            System.out.println("getstatusResBytes:" + new String(getstatusResBytes));
+            String revokeHash = ontSdk.neovm().claimRecord().sendRevoke(dids.get(0).ontid,password,payload.getString("jti"),account1,ontSdk.DEFAULT_GAS_LIMIT,0);
+            System.out.println("revokeRes:" + revokeHash);
             Thread.sleep(6000);
+            System.out.println(ontSdk.getConnect().getSmartCodeEvent(revokeHash));
 
-            String revokeRes = ontSdk.neovm().claimRecord().sendRevoke(dids.get(1).ontid,password,payload.getString("jti"),0,0);
-            System.out.println("revokeRes:" + revokeRes);
-            Thread.sleep(6000);
 
-            String getstatusRes2 = ontSdk.neovm().claimRecord().sendGetStatus(dids.get(1).ontid,password,payload.getString("jti"));
-            byte[] getstatusResBytes2 = Helper.hexToBytes(getstatusRes2);
-            System.out.println("getstatusResBytes2:" + new String(getstatusResBytes2));
+            String getstatusRes2 = ontSdk.neovm().claimRecord().sendGetStatus(payload.getString("jti"));
+
+            System.out.println("getstatusResBytes2:" + getstatusRes2);
 
             System.exit(0);
 

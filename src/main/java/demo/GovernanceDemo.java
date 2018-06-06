@@ -30,11 +30,10 @@ public class GovernanceDemo {
             }
             if(false){
                 sdk.nativevm().ont().sendTransfer(account,payerAcct.getAddressU160().toBase58(),10,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
-
                 Thread.sleep(6000);
                 System.out.println(sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
                 System.out.println(sdk.nativevm().ong().unclaimOng(account.getAddressU160().toBase58()));
-                sdk.nativevm().ong().claimOng(account,account.getAddressU160().toBase58(),100000,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+                sdk.nativevm().ong().claimOng(account,account.getAddressU160().toBase58(),1360000000000L,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
             }
 
             if(false){
@@ -56,13 +55,15 @@ public class GovernanceDemo {
             }
             if(true){
                 sdk.getWalletMgr().importAccount("ET5m04btJ/bhRvSomqfqSY05M1mlmePU74mY+yvpIjY=",password,"TA4nUbnjX5UGVxkumhfndc7wyemrxdMtn8");
-                String txhash = sdk.nativevm().governance().registerCandidate(account,Helper.toHexString(account.serializePublicKey()),100000,identity.ontid,password,1,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+//                String txhash = sdk.nativevm().governance().registerCandidate(account,Helper.toHexString(account.serializePublicKey()),100000,identity.ontid,password,1,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
 //            String txhash = sdk.nativevm().governance().approveCandidate(Helper.toHexString(account.serializePublicKey()),payerAcct.getAddressU160().toBase58(),password,sdk.DEFAULT_GAS_LIMIT,0);
+//
+//                Thread.sleep(6000);
+//                Object obj = sdk.getConnect().getSmartCodeEvent(txhash);
+//                System.out.println(obj);
 
-                Thread.sleep(6000);
-                Object obj = sdk.getConnect().getSmartCodeEvent(txhash);
-                System.out.println(obj);
-
+                String res = sdk.nativevm().governance().getPeerPoolMap();
+                System.out.println(res);
             }
 
         } catch (Exception e) {

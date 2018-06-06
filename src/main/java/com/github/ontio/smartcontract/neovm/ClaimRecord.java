@@ -21,14 +21,17 @@ package com.github.ontio.smartcontract.neovm;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
+import com.github.ontio.account.Account;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.VmType;
 import com.github.ontio.core.transaction.Transaction;
+import com.github.ontio.io.BinaryReader;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +52,7 @@ public class ClaimRecord {
         return contractAddress;
     }
 
-    public String sendCommit(String issuerOntid,String password,String subjectOntid,String claimId,long gaslimit,long gas) throws Exception {
+    public String sendCommit(String issuerOntid, String password, String subjectOntid, String claimId, Account payerAcct, long gaslimit, long gas) throws Exception {
         if(gas < 0){
             throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
         }
@@ -60,23 +63,23 @@ public class ClaimRecord {
             throw new SDKException(ErrorCode.NullKeyOrValue);
         }
         String addr = issuerOntid.replace(Common.didont,"");
-        byte[] did = (issuerOntid + "&" + subjectOntid).getBytes();
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
         List list = new ArrayList<Object>();
         list.add("Commit".getBytes());
         List tmp = new ArrayList<Object>();
-        tmp.add(Helper.hexToBytes(claimId));
-        tmp.add(did);
+        tmp.add(claimId.getBytes());
+        tmp.add(issuerOntid.getBytes());
+        tmp.add(subjectOntid.getBytes());
         list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list,info.addressBase58,gaslimit,gas);
+        Transaction tx = makeInvokeTransaction(list,payerAcct.getAddressU160().toBase58(),gaslimit,gas);
         sdk.signTx(tx, addr, password);
+        sdk.addSign(tx,payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
         return null;
     }
-    public String sendRevoke(String ontid,String password,String claimId,long gaslimit,long gas) throws Exception {
+    public String sendRevoke(String ontid,String password,String claimId,Account payerAcct,long gaslimit,long gas) throws Exception {
         if(gas < 0){
             throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
         }
@@ -87,13 +90,12 @@ public class ClaimRecord {
             throw new SDKException(ErrorCode.NullKeyOrValue);
         }
         String addr = ontid.replace(Common.didont,"");
-        byte[] did = (Common.didont + addr).getBytes();
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
         List list = new ArrayList<Object>();
         list.add("Revoke".getBytes());
         List tmp = new ArrayList<Object>();
-        tmp.add(Helper.hexToBytes(claimId));
-        tmp.add(did);
+        tmp.add(claimId.getBytes());
+        tmp.add(ontid.getBytes());
         list.add(tmp);
         Transaction tx = makeInvokeTransaction(list,info.addressBase58,gaslimit,gas);
         sdk.signTx(tx, addr, password);
@@ -103,25 +105,30 @@ public class ClaimRecord {
         }
         return null;
     }
-    public String sendGetStatus(String ontid,String password,String claimId) throws Exception {
+    public String sendGetStatus(String claimId) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         if (claimId == null || claimId == ""){
             throw new SDKException(ErrorCode.NullKeyOrValue);
         }
-        String addr = ontid.replace(Common.didont,"");
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
         List list = new ArrayList<Object>();
         list.add("GetStatus".getBytes());
         List tmp = new ArrayList<Object>();
-        tmp.add(Helper.hexToBytes(claimId));
+        tmp.add(claimId.getBytes());
         list.add(tmp);
         Transaction tx = makeInvokeTransaction(list,null,0,0);
-        sdk.signTx(tx, addr, password);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         if (obj != null ) {
-            return ((JSONObject)obj).getString("Result");
+            String res = ((JSONObject)obj).getString("Result");
+            String temp = new String(Helper.hexToBytes(res));
+            ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(res));
+            BinaryReader br = new BinaryReader(bais);
+            byte[] status = br.readVarBytes();
+            byte[] claimIdBytes = br.readVarBytes();
+            byte[] isserOntid = br.readVarBytes();
+            byte[] subjectOnid = br.readVarBytes();
+            return new String(claimIdBytes)+new String(status)+new String(isserOntid)+new String(subjectOnid);
         }
         return null;
     }

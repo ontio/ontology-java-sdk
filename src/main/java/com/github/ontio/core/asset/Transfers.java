@@ -49,9 +49,7 @@ public class Transfers implements Serializable {
             try {
                 states[i] = reader.readSerializable(State.class);
             } catch (InstantiationException e) {
-                e.printStackTrace();
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
             }
         }
     }

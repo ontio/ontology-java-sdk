@@ -52,9 +52,7 @@ public class TransferFrom implements Serializable {
             to = reader.readSerializable(Address.class);
             value = reader.readVarInt();
         } catch (InstantiationException e) {
-            e.printStackTrace();
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
         }
     }
 

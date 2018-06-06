@@ -170,7 +170,6 @@ public class OntSdk {
             this.walletMgr = new WalletMgr(path,defaultSignScheme);
             setSignatureScheme(defaultSignScheme);
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

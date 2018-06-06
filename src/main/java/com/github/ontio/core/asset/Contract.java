@@ -58,9 +58,7 @@ public class Contract implements Serializable {
             method = new String(reader.readVarBytes());
             args = reader.readVarBytes();
         } catch (InstantiationException e) {
-            e.printStackTrace();
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
         }
 
     }

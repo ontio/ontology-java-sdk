@@ -38,7 +38,6 @@ public class RpcClient extends AbstractConnector {
         try {
             this.rpc = new Interfaces(url);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
         }
     }
 

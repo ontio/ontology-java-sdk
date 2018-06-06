@@ -286,9 +286,7 @@ class PeerPoolItem implements Serializable{
         try {
             this.address = reader.readSerializable(Address.class);
         } catch (InstantiationException e) {
-            e.printStackTrace();
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
         }
         this.status = reader.readByte();
         this.initPos = reader.readLong();
@@ -323,9 +321,7 @@ class GovernanceView implements Serializable{
         try {
             this.txhash = reader.readSerializable(UInt256.class);
         } catch (InstantiationException e) {
-            e.printStackTrace();
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
         }
     }
 

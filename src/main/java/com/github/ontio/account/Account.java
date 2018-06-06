@@ -297,7 +297,6 @@ public class Account {
             }
         } catch (Exception e) {
             // Should not reach here
-            e.printStackTrace();
             return null;
         }
         return bs.toByteArray();
@@ -422,7 +421,6 @@ public class Account {
             System.arraycopy(encryptedkey, 0, buffer, 7, encryptedkey.length);
             return Base58.checkSumEncode(buffer);
         } catch (Exception e) {
-            e.printStackTrace();
         }
         return null;
     }

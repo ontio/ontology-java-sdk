@@ -47,7 +47,7 @@ public class Enrollment extends Transaction {
             pubKey = ECC.secp256r1.getCurve().createPoint(
                     new BigInteger(1, reader.readVarBytes()), new BigInteger(1, reader.readVarBytes()));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         }
     }
 

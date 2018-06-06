@@ -61,7 +61,6 @@ public class Signature {
             bs.write(value);
         }
         catch (IOException e) {
-            e.printStackTrace();
         }
 
         return bs.toByteArray();

@@ -102,9 +102,7 @@ public abstract class Transaction extends Inventory {
         try {
             payer = reader.readSerializable(Address.class);
         } catch (InstantiationException e) {
-            e.printStackTrace();
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
         }
         deserializeUnsignedWithoutType(reader);
     }

@@ -124,8 +124,6 @@ public class ClaimRecord {
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         if (obj != null && !res.equals("")) {
-            String temp = new String(Helper.hexToBytes(res));
-            byte[] tt = Helper.hexToBytes(res);
             ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(res));
             BinaryReader br = new BinaryReader(bais);
             ClaimTx claimTx = new ClaimTx();

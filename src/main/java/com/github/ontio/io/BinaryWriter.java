@@ -136,7 +136,7 @@ public class BinaryWriter implements AutoCloseable {
         } else if (v <= 0xFFFF) {
             writeByte((byte)0xFD);
             writeShort((short)v);
-        } else if (v <= 0xFFFFFFFF) {
+        } else if (v <= 0xFFFFFFFFL) {
         	writeByte((byte)0xFE);
             writeInt((int)v);
         } else {

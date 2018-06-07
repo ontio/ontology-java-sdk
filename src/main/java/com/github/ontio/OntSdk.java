@@ -275,18 +275,20 @@ public class OntSdk {
     public byte[] signatureData(com.github.ontio.account.Account acct, byte[] data) throws SDKException {
         DataSignature sign = null;
         try {
-            sign = new DataSignature(defaultSignScheme, acct, new String(Digest.sha256(Digest.sha256(data))));
+            data = Digest.sha256(Digest.sha256(data));
+            sign = new DataSignature(defaultSignScheme, acct, data);
             return sign.signature();
         } catch (Exception e) {
             throw new SDKException(e);
         }
     }
 
-    public boolean verifySignature(String pubkeyStr, byte[] data, byte[] signature) throws SDKException {
+    public boolean verifySignature(byte[] pubkey, byte[] data, byte[] signature) throws SDKException {
         DataSignature sign = null;
         try {
             sign = new DataSignature();
-            return sign.verifySignature(new com.github.ontio.account.Account(false, Helper.hexToBytes(pubkeyStr)), Digest.sha256(Digest.sha256(data)), signature);
+            data = Digest.sha256(Digest.sha256(data));
+            return sign.verifySignature(new com.github.ontio.account.Account(false, pubkey), data, signature);
         } catch (Exception e) {
             throw new SDKException(e);
         }

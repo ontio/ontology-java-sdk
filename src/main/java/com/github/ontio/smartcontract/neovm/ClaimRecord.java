@@ -32,7 +32,6 @@ import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.io.Serializable;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
-import sun.jvm.hotspot.HelloWorld;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

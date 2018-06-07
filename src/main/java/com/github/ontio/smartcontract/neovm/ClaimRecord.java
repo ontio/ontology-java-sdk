@@ -55,25 +55,31 @@ public class ClaimRecord {
         return contractAddress;
     }
 
-    public String sendCommit(String issuerOntid, String password, String subjectOntid, String claimId, Account payerAcct, long gaslimit, long gas) throws Exception {
-        if(gas < 0){
-            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+    /**
+     *
+     * @param issuerOntid
+     * @param password
+     * @param subjectOntid
+     * @param claimId
+     * @param payerAcct
+     * @param gaslimit
+     * @param gasprice
+     * @return
+     * @throws Exception
+     */
+    public String sendCommit(String issuerOntid, String password, String subjectOntid, String claimId, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+        if(issuerOntid==null||issuerOntid.equals("")||password==null||password.equals("")||subjectOntid==null||subjectOntid.equals("")
+                || claimId==null||claimId.equals("")||payerAcct == null){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gaslimit < 0 || gasprice < 0){
+            throw new SDKException(ErrorCode.ParamErr("gaslimit or gasprice is less than 0"));
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        if (claimId == null || claimId == ""){
-            throw new SDKException(ErrorCode.NullKeyOrValue);
-        }
         String addr = issuerOntid.replace(Common.didont,"");
-        List list = new ArrayList<Object>();
-        list.add("Commit".getBytes());
-        List tmp = new ArrayList<Object>();
-        tmp.add(claimId.getBytes());
-        tmp.add(issuerOntid.getBytes());
-        tmp.add(subjectOntid.getBytes());
-        list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list,payerAcct.getAddressU160().toBase58(),gaslimit,gas);
+        Transaction tx = makeCommit(issuerOntid,subjectOntid,claimId,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
         sdk.signTx(tx, addr, password);
         sdk.addSign(tx,payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -82,9 +88,55 @@ public class ClaimRecord {
         }
         return null;
     }
-    public String sendRevoke(String ontid,String password,String claimId,Account payerAcct,long gaslimit,long gas) throws Exception {
-        if(gas < 0){
-            throw new SDKException(ErrorCode.ParamErr("gas is less than 0"));
+
+    /**
+     *
+     * @param issuerOntid
+     * @param subjectOntid
+     * @param claimId
+     * @param payer
+     * @param gaslimit
+     * @param gasprice
+     * @return
+     * @throws Exception
+     */
+    public Transaction makeCommit(String issuerOntid, String subjectOntid, String claimId,String payer, long gaslimit, long gasprice) throws Exception {
+        if(issuerOntid==null||issuerOntid.equals("")||subjectOntid==null||subjectOntid.equals("")||payer==null||payer.equals("")
+                || claimId==null||claimId.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gaslimit < 0 || gasprice < 0){
+            throw new SDKException(ErrorCode.ParamErr("gaslimit or gasprice is less than 0"));
+        }
+        List list = new ArrayList<Object>();
+        list.add("Commit".getBytes());
+        List tmp = new ArrayList<Object>();
+        tmp.add(claimId.getBytes());
+        tmp.add(issuerOntid.getBytes());
+        tmp.add(subjectOntid.getBytes());
+        list.add(tmp);
+        Transaction tx = makeInvokeTransaction(list,payer,gaslimit,gasprice);
+        return tx;
+    }
+
+    /**
+     *
+     * @param issuerOntid
+     * @param password
+     * @param claimId
+     * @param payerAcct
+     * @param gaslimit
+     * @param gasprice
+     * @return
+     * @throws Exception
+     */
+    public String sendRevoke(String issuerOntid,String password,String claimId,Account payerAcct,long gaslimit,long gasprice) throws Exception {
+        if(issuerOntid==null||issuerOntid.equals("")||password==null||password.equals("")
+                || claimId==null||claimId.equals("")||payerAcct == null){
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if(gaslimit < 0 || gasprice < 0){
+            throw new SDKException(ErrorCode.ParamErr("gaslimit or gasprice is less than 0"));
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
@@ -92,21 +144,26 @@ public class ClaimRecord {
         if (claimId == null || claimId == ""){
             throw new SDKException(ErrorCode.NullKeyOrValue);
         }
-        String addr = ontid.replace(Common.didont,"");
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
-        List list = new ArrayList<Object>();
-        list.add("Revoke".getBytes());
-        List tmp = new ArrayList<Object>();
-        tmp.add(claimId.getBytes());
-        tmp.add(ontid.getBytes());
-        list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list,info.addressBase58,gaslimit,gas);
+        String addr = issuerOntid.replace(Common.didont,"");
+        Transaction tx = makeRevoke(issuerOntid,claimId,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
         sdk.signTx(tx, addr, password);
+        sdk.addSign(tx,payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
         return null;
+    }
+
+    public Transaction makeRevoke(String issuerOntid,String claimId,String payer,long gaslimit,long gasprice) throws Exception {
+        List list = new ArrayList<Object>();
+        list.add("Revoke".getBytes());
+        List tmp = new ArrayList<Object>();
+        tmp.add(claimId.getBytes());
+        tmp.add(issuerOntid.getBytes());
+        list.add(tmp);
+        Transaction tx = makeInvokeTransaction(list,payer,gaslimit,gasprice);
+        return tx;
     }
     public String sendGetStatus(String claimId) throws Exception {
         if (contractAddress == null) {
@@ -124,8 +181,6 @@ public class ClaimRecord {
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         if (obj != null && !res.equals("")) {
-            String temp = new String(Helper.hexToBytes(res));
-            byte[] tt = Helper.hexToBytes(res);
             ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(res));
             BinaryReader br = new BinaryReader(bais);
             ClaimTx claimTx = new ClaimTx();

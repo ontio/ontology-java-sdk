@@ -42,10 +42,7 @@
 * Create digital asset account
 
 ```
-String url = "http://127.0.0.1:20386";
 OntSdk ontSdk = OntSdk.getInstance();
-ontSdk.setRpcConnection(url);
-ontSdk.openWalletFile("wallet.json");
 Account acct = ontSdk.getWalletMgr().createAccount("password");
 //any account or identity, once created, are stored in the memory only. A write api should be invoked when writing to a wallet file.
 ontSdk.getWalletMgr().writeWallet();
@@ -74,19 +71,19 @@ ontSdk.getWalletMgr().getWallet().setDefaultAccount("address");
 
 ont and ong asset list
 
- 1. String sendTransfer(String sendAddr, String password, String recvAddr, long amount,String payer,String payerpwd,long gaslimit,long gasprice)
+ 1. String sendTransfer(Account sendAcct, String recvAddr, long amount, Account payerAcct, long gaslimit, long gasprice)
 
     function description： Transfer a certain amount of assets from the sender to the receiver's account
 
     parameter description：
 
-    sendAddr： sender address
-
-    password ： sender password
+    sendAcct： sender account
 
     recvAddr ： receive address
 
     amount ： asset amount
+
+    payerAcct: Payment transaction account
 
     gaslimit：gaslimit
 
@@ -94,81 +91,19 @@ ont and ong asset list
 
     return value： transaction hash
 
- 2. String sendTransferToMany(String sendAddr, String password, String[] recvAddr, long[] amount,String payer,String payerpwd,long gaslimit,long gasprice)
+ 2. String sendApprove(Account sendAcct, String recvAddr, long amount, Account payerAcct, long gaslimit, long gasprice)
 
-    function description： transfer a certain amount of assets from the sender to multiple receiver accounts
-
-    parameter description：
-
-    sendAddr： sender address
-
-    password ： sender password
-
-    recvAddr ： receive address array
-
-    amount ： asset amount array
-
-    gaslimit：gaslimit
-
-    gasprice ： gas price
-
-    return value：transaction hash
-
- 3. String sendTransferFromMany(String[] sendAddr, String[] password, String recvAddr, long[] amount,String payer,String payerpwd,long gaslimit,long gasprice)
-
-     function description： transfer assets from multiple senders to one receiver
-
-     parameter description：
-
-     sendAddr： sender address array
-
-     password ： sender password array
-
-     recvAddr ： receive address
-
-     amount ： array of transferred assets
-
-     gaslimit：gaslimit
-
-     gasprice ： gas price
-
-     return value：transaction hash
-
- 4. sendOngTransferFrom(String sendAddr, String password, String to, long amount,long gas)
-
-      function description： extract ong to to account from sendAddr account
-
-      parameter description：
-
-      sendAddr： sender address
-
-      password ： sender password
-
-      to ： receive address
-
-      amount ： asset amount
-
-      gaslimit：gaslimit
-
-      gasprice ： gas price
-
-      return value：transaction hash
-
- 5. sendApprove(String assetName ,String sendAddr, String password, String recvAddr, long amount,long gas)
-
-       function description： sendAddr account allows recvAddr to transfer amount of assets
+       function description： sendAcct account allows recvAddr to transfer amount of assets
 
        parameter description：
 
-       assetName：asset name，ont or ong
-
-       sendAddr： sender address
-
-       password： sender password
+       sendAcct： sender account
 
        recvAddr： receive address
 
        amount： asset amount
+
+       payerAcct: Payment transaction account
 
        gaslimit：gaslimit
 
@@ -176,23 +111,21 @@ ont and ong asset list
 
        return value：transaction hash
 
- 6. sendTransferFrom(String assetName ,String sendAddr, String password, String fromAddr, String toAddr, long amount,long gas)
+ 3. String sendTransferFrom(Account sendAcct, String fromAddr, String toAddr, long amount, Account payerAcct, long gaslimit, long gasprice)
 
-        function description： The sendAddr account transfers the amount of assets from the fromAddr account to the toAddr account
+        function description： The sendAcct account transfers the amount of assets from the fromAddr account to the toAddr account
 
         parameter description：
 
-        assetName：asset name，ont or ong
+        sendAcct： sender account
 
-        sendAddr： sender address
-
-        password： sender password
-
-        fromAddr： sender address
+        fromAddr： from address
 
         toAddr： receive address
 
         amount： asset amount
+
+        payerAcct: Payment transaction account
 
         gaslimit：gaslimit
 
@@ -215,8 +148,6 @@ ont and ong asset list
          function description： query the assetName asset balance of the account address
 
          ont = sdk.nativevm().ont()：
-
-         assetName：asset name，ont or ong
 
          fromAddr： Authorized party address
 
@@ -266,9 +197,8 @@ sdk.openWalletFile("OntAssetDemo.json");
 //step2:get ontAssetTx instance
 ont = sdk.nativevm().ont()
 //step3:transfer
-ont.sendTransfer(fromAddr,password,toAddr,100000000L,payer,payerpwd,gaslimit,gasprice);
-ont.sendTransferToMany(fromAddr,password,new String[]{toAddr1,toAddr2},new long[]{100L,200L},payer,payerpwd,gaslimit,gasprice);
-ont.sendTransferFromMany(new String[]{fromAddr1, fromAddr2}, new String[]{password1, password2}, toAddr, new long[]{1L, 2L},payer,payerpwd,gaslimit,gasprice);
+com.github.ontio.account.Account account1 = new com.github.ontio.account.Account(privateKey,SignatureScheme.SHA256WITHECDSA);
+ontSdk.nativevm().ont().sendTransfer(account1,"TA4pCAb4zUifHyxSx32dZRjTrnXtxEWKZr",10000,account1,ontSdk.DEFAULT_GAS_LIMIT,0);
 ```
 
 ## nep-5 smart contract digital assets

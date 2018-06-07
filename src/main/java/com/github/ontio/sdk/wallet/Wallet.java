@@ -25,13 +25,14 @@ import com.github.ontio.sdk.exception.SDKException;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 /**
  *
  */
-public class Wallet {
+public class Wallet implements Cloneable {
     private String name = "com.github.ontio";
     private String version = "1.0";
     private String createTime = "";
@@ -40,7 +41,7 @@ public class Wallet {
     private Scrypt scrypt = new Scrypt();
     private Object extra = null;
     private List<Identity> identities = new ArrayList<Identity>();
-    private List<Account> accounts = new ArrayList<>();
+    private List<Account> accounts = new ArrayList<Account>();
 
     public Wallet() {
         identities.clear();
@@ -121,11 +122,16 @@ public class Wallet {
     public boolean removeAccount(String address) {
         for (Account e : accounts) {
             if (e.address.equals(address)) {
+                accounts = new ArrayList(accounts);
                 accounts.remove(e);
                 return true;
             }
         }
         return false;
+    }
+    public boolean clearAccount() {
+        accounts = new ArrayList<Account>();
+        return true;
     }
 
     public Account getAccount(String address) {
@@ -140,11 +146,17 @@ public class Wallet {
     public boolean removeIdentity(String ontid) {
         for (Identity e : identities) {
             if (e.ontid.equals(ontid)) {
+                identities = new ArrayList(identities);
                 identities.remove(e);
                 return true;
             }
         }
         return false;
+    }
+
+    public boolean clearIdentity() {
+        identities = new ArrayList<Identity>();
+        return true;
     }
 
     public Identity getIdentity(String ontid) {
@@ -200,6 +212,28 @@ public class Wallet {
         }
     }
 
+    @Override
+    public Wallet clone() {
+        Wallet o = null;
+        try {
+            o = (Wallet) super.clone();
+            Account[] srcAccounts = o.accounts.toArray(new Account[0]);
+            Account[] destAccounts = new Account[srcAccounts.length];
+            System.arraycopy(srcAccounts, 0, destAccounts, 0, srcAccounts.length);
+            o.accounts = Arrays.asList(destAccounts);
+
+            Identity[] srcIdentitys = o.identities.toArray(new Identity[0]);
+            Identity[] destIdentitys = new Identity[srcIdentitys.length];
+            System.arraycopy(srcIdentitys, 0, destIdentitys, 0, srcIdentitys.length);
+            o.identities = Arrays.asList(destIdentitys);
+
+            o.scrypt = (Scrypt)o.scrypt.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+
+        return o;
+    }
     @Override
     public String toString() {
         return JSON.toJSONString(this);

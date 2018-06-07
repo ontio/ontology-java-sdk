@@ -76,7 +76,7 @@ public class Demo {
 
             ontSdk.getWalletMgr().createAccount("123456");
             System.out.println(ontSdk.getWalletMgr().getWallet());
-            System.out.println(ontSdk.getWalletMgr().openWallet());
+            System.out.println(ontSdk.getWalletMgr().getWalletFile());
             System.exit(0);
             System.out.println(ontSdk.getWalletMgr().getWallet().getAccounts().get(0));
             ontSdk.getWalletMgr().getWallet().removeAccount(ontSdk.getWalletMgr().getWallet().getAccounts().get(0).address);

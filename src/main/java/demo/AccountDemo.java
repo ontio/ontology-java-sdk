@@ -1,6 +1,8 @@
 package demo;
 
 import com.github.ontio.OntSdk;
+import com.github.ontio.common.Helper;
+import com.github.ontio.crypto.Digest;
 import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Identity;
@@ -18,6 +20,7 @@ public class AccountDemo {
 
         try {
             OntSdk ontSdk = getOntSdk();
+            AccountInfo info0 = ontSdk.getWalletMgr().createAccountInfo("passwordtest");
             AccountInfo info = ontSdk.getWalletMgr().createAccountInfoFromPriKey("passwordtest","e467a2a9c9f56b012c71cf2270df42843a9d7ff181934068b4a62bcdd570e8be");
             System.out.println(info.addressBase58);
             Account accountInfo = ontSdk.getWalletMgr().importAccount("3JZLD/X45qSFjmRRvRVhcEjKgCJQDPWOsjx2dcTEj58=", "passwordtest",info.addressBase58);

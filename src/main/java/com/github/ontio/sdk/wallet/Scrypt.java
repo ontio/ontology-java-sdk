@@ -23,7 +23,7 @@ import com.alibaba.fastjson.JSON;
 
 /**
  */
-public class Scrypt {
+public class Scrypt implements Cloneable{
     private int n = 16384;
     private int r = 8;
     private int p = 8;
@@ -72,6 +72,16 @@ public class Scrypt {
         this.p = p;
     }
 
+    @Override
+    public Scrypt clone() {
+        Scrypt o = null;
+        try {
+            o = (Scrypt) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return o;
+    }
     @Override
     public String toString() {
         return JSON.toJSONString(this);

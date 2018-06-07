@@ -31,7 +31,6 @@ import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.io.Serializable;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.sdk.info.AccountInfo;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -140,9 +139,6 @@ public class ClaimRecord {
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
-        }
-        if (claimId == null || claimId == ""){
-            throw new SDKException(ErrorCode.NullKeyOrValue);
         }
         String addr = issuerOntid.replace(Common.didont,"");
         Transaction tx = makeRevoke(issuerOntid,claimId,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);

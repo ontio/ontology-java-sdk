@@ -59,7 +59,7 @@ class Interfaces {
         Map req = makeRequest(method, params);
         Map response = (Map) send(req);
         if (response == null) {
-            throw new RpcException(0,ErrorCode.InvalidUrl(  url + "response is null. maybe is connect error"));
+            throw new RpcException(0,ErrorCode.ConnectUrlErr(  url + "response is null. maybe is connect error"));
         } else if ((int) response.get("error") == 0) {
             return response.get("result");
         } else {

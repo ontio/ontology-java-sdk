@@ -135,10 +135,10 @@ public class ErrorCode {
 
     //abi error
     public static String SetParamsValueValueNumError = getError(58401, "AbiFunction Error,setParamsValue value num error");
-    public static String InvalidUrlErr = getError(58402, "Interfaces Error,Invalid url:");
+    public static String ConnectUrlErr = getError(58402, "Interfaces Error,connect error:");
 
-    public static String InvalidUrl(String msg) {
-        return getError(58403, "Invalid url:" + msg);
+    public static String ConnectUrlErr(String msg) {
+        return getError(58403, "connect error:" + msg);
     }
 
     //WalletManager Error

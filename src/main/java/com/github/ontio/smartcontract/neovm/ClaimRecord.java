@@ -28,10 +28,13 @@ import com.github.ontio.common.Helper;
 import com.github.ontio.core.VmType;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.BinaryReader;
+import com.github.ontio.io.BinaryWriter;
+import com.github.ontio.io.Serializable;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -119,16 +122,18 @@ public class ClaimRecord {
         list.add(tmp);
         Transaction tx = makeInvokeTransaction(list,null,0,0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
-        if (obj != null ) {
-            String res = ((JSONObject)obj).getString("Result");
+        String res = ((JSONObject)obj).getString("Result");
+        if (obj != null && !res.equals("")) {
             String temp = new String(Helper.hexToBytes(res));
+            byte[] tt = Helper.hexToBytes(res);
             ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(res));
             BinaryReader br = new BinaryReader(bais);
-            byte[] status = br.readVarBytes();
-            byte[] claimIdBytes = br.readVarBytes();
-            byte[] isserOntid = br.readVarBytes();
-            byte[] subjectOnid = br.readVarBytes();
-            return new String(claimIdBytes)+new String(status)+new String(isserOntid)+new String(subjectOnid);
+            ClaimTx claimTx = new ClaimTx();
+            claimTx.deserialize(br);
+            if(claimTx.status.length == 0){
+                return new String(claimTx.claimId)+"."+"00"+"."+new String(claimTx.issuerOntId)+"."+new String(claimTx.subjectOntId);
+            }
+            return new String(claimTx.claimId)+"."+Helper.toHexString(claimTx.status)+"."+new String(claimTx.issuerOntId)+"."+new String(claimTx.subjectOntId);
         }
         return null;
     }
@@ -136,5 +141,38 @@ public class ClaimRecord {
         byte[] params = BuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,null,params, VmType.NEOVM.value(), payer,gaslimit,gas);
         return tx;
+    }
+}
+
+class ClaimTx implements Serializable {
+    public byte[] claimId;
+    public byte[] issuerOntId;
+    public byte[] subjectOntId;
+    public byte[] status;
+    ClaimTx(){}
+    ClaimTx(byte[] claimId,byte[] issuerOntId,byte[] subjectOntId,byte[] status){
+        this.claimId = claimId;
+        this.issuerOntId = issuerOntId;
+        this.subjectOntId = subjectOntId;
+        this.status = status;
+    }
+
+    @Override
+    public void deserialize(BinaryReader reader) throws IOException {
+        byte dataType = reader.readByte();
+        long length = reader.readVarInt();
+        byte dataType2 = reader.readByte();
+        this.claimId = reader.readVarBytes();
+        byte dataType3 = reader.readByte();
+        this.issuerOntId = reader.readVarBytes();
+        byte dataType4 = reader.readByte();
+        this.subjectOntId = reader.readVarBytes();
+        byte dataType5 = reader.readByte();
+        this.status = reader.readVarBytes();
+    }
+
+    @Override
+    public void serialize(BinaryWriter writer) throws IOException {
+
     }
 }

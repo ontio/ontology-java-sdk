@@ -206,11 +206,11 @@ ong:
 * Cliam存证接口：
   
  ```
-     |                                            Function                                           |     Description            
- ----|-----------------------------------------------------------------------------------------------|------------------------
-   1 | String sendCommit(String issuerOntid,String pwd,String subjectOntid,String claimId,long gas)  |   存储claim              
-   2 | String sendRevoke(String ontid,String password,String claimId,long gas)                       |   吊销
-   3 | String sendGetStatus(String ontid,String password,String claimId)                             |   获取状态
+     |                                            Function                                                         |     Description
+ ----|-------------------------------------------------------------------------------------------------------------|------------------------
+   1 | String sendCommit(String issuerOntid,String pwd,String subjectOntid,String claimId,Account payerAcct,long gaslimit,long gasprice)  |   存储claim
+   2 | String sendRevoke(String issuerOntid,String password,String claimId,Account payerAcct,long gaslimit,long gasprice)                 |   吊销
+   3 | String sendGetStatus(String claimId)                                                                                               |   获取状态
   
  ```
  

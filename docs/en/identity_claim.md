@@ -63,22 +63,7 @@ public class Control {
 
 * 2 Create a digital identity
 
-
-ontsdk instance init
-
-
-```
-String url = "http://127.0.0.1:20384";
-OntSdk wm = OntSdk.getInstance();
-wm.setRpc(rpcUrl);
-wm.setRestful(restUrl);
-wm.setDefaultConnect(wm.getRestful());
-wm.openWalletFile("InvokeSmartCodeDemo.json");
-```
-
-
 Digital identity creation refers to generation of a digital identity with identity data structure and writing it to wallet file.
-
 
 ```
 Identity identity = ontSdk.getWalletMgr().createIdentity("password");
@@ -87,7 +72,7 @@ ontSdk.getWalletMgr().writeWallet();
 ```
 
 
-* 3 Register blockchain-based identity
+- 3 Register blockchain-based identity
 
 Only after successfully registering an identity with the block chain can the identity be truly used.
 
@@ -101,7 +86,6 @@ Registrant specifies the account address for payment of transaction fees
 Identity identity = ontSdk.getWalletMgr().createIdentity(password);
 ontSdk.nativevm().ontId().sendRegister(identity,password,payer,payerpwd,gaslimit,gasprice);
 ```
-
 
 method two
 
@@ -191,7 +175,7 @@ specifies the account address for payment of transaction fees
 
 ```
 //update an attribute
-String sendAddAttributes(String ontid, String password, Attribute[] attributes,String payer,String payerpwd,long gaslimit,long gasprice)
+String sendAddAttributes(String ontid, String password, Attribute[] attributes,Account payerAcct,long gaslimit,long gasprice)
 ```
 
 
@@ -200,8 +184,7 @@ String sendAddAttributes(String ontid, String password, Attribute[] attributes,S
 | input param | password| String | publisher's address | required, password to decrypt private key|
 |   | ontid    | String | name of asset | required, ID |
 |        | attributes | Attribute[]|  Attribute array | required |
-|        | payer    | String | type     |  required |
-|        | payerpassword   | String | payer password     | required|
+|        | payerAcct    | Account | Payment transaction account    |  required |
 |           | gaslimit      | long | gaslimit     | required |
 |           | gasprice      | long | gas price    | required |
 | output param | txhash   | String  | transaction hash | 64-bit string |
@@ -226,7 +209,7 @@ ontSdk.getConnectMgr().sendRawTransaction(tx);
 method one
 
 ```
-String sendRemoveAttribute(String ontid,String password,String path,String payer,String payerpwd,long gaslimit,long gasprice)
+String sendRemoveAttribute(String ontid,String password,String path,Account payerAcct,long gaslimit,long gasprice)
 ```
 
 | Param        | Field   | Type   | Descriptions  |       Remarks       |
@@ -234,8 +217,7 @@ String sendRemoveAttribute(String ontid,String password,String path,String payer
 | input param  | password| String | publisher's address | required, password to decrypt private key |
 |   | ontid    | String | name of asset | required, ID |
 |   | path    | String | path       | required |
-|   | payer    | String  | payer       | required，payer |
-|   | payerpwd | String  | account address used to pay transaction fee | required |
+|   | payerAcct    | Account  |Payment transaction account  | required，payer |
 |   | gaslimit      | long | gaslimit     | required |
 |   | gasprice      | long | gas price    | required |
 | output param | txhash   | String  | transaction hash | 64-bit string |
@@ -261,7 +243,7 @@ ontSdk.getConnectMgr().sendRawTransaction(tx);
 method one
 
 ```
-String sendAddPubKey(String ontid, String password, String newpubkey,String payer,String payerpwd,long gaslimit,long gasprice)
+String sendAddPubKey(String ontid, String password, String newpubkey,Account payerAcct,long gaslimit,long gasprice)
 ```
 
 | Param      | Field   | Type  | Descriptions |             Remarks |
@@ -269,8 +251,7 @@ String sendAddPubKey(String ontid, String password, String newpubkey,String paye
 | input param| password| String | identity password | required |
 |        | ontid    | String | identity ID   | required，identity Id |
 |        | newpubkey| String  |public key       | required， newpubkey|
-|        | payer    | String  | payer       | required，payer |
-|        | payerpwd | String  | payer password  | required |
+|        | payerAcct    | Account  | payerAcct       | required，payer |
 |        | gaslimit      | long | gaslimit     | required |
 |        | gasprice      | long | gas price    | required |
 | output param | txhash   | String  | transaction hash  | transaction hash |
@@ -293,7 +274,7 @@ ontSdk.getConnectMgr().sendRawTransaction(tx);
 method three(recovery)
 
 ```
-String sendAddPubKey(String ontid,String recoveryAddr, String password, String newpubkey,String payer,String payerpwd,long gaslimit,long gasprice)
+String sendAddPubKey(String ontid,String recoveryAddr, String password, String newpubkey,Account payerAcct,long gaslimit,long gasprice)
 ```
 
 
@@ -303,8 +284,7 @@ String sendAddPubKey(String ontid,String recoveryAddr, String password, String n
 |        | recoveryAddr| String | recovery address | required |
 |        | password| String | recovery password | required |
 |        | newpubkey| String  |public key       | required， newpubkey|
-|        | payer    | String  | payer       | required，payer |
-|        | payerpwd | String  | payer password  | required |
+|        | payerAcct | String  | payer       | required，payer |
 |        | gaslimit      | long | gaslimit     | required |
 |        | gasprice      | long | gas price    | required |
 | output param | txhash   | String  | transaction hash  | transaction hash |
@@ -323,7 +303,7 @@ parameter description,please refer to method three(recovery)
 method one
 
 ```
-String sendRemovePubKey(String ontid, String password, String removePubkey,String payer,String payerpwd,long gaslimit,long gasprice)
+String sendRemovePubKey(String ontid, String password, String removePubkey,Account payerAcct,long gaslimit,long gasprice)
 ```
 
 
@@ -332,8 +312,7 @@ String sendRemovePubKey(String ontid, String password, String removePubkey,Strin
 | input param | password| String | identity password | required |
 |        | ontid    | String | identity ID   | required，identity Id |
 |        | removePubkey| String  |public key       | required， removePubkey|
-|        | payer    | String  | payer       | required，payer |
-|        | payerpwd | String  | payer password| required |
+|        | payerAcct    | Account  | payerAcct       | required，payer |
 |   | gaslimit      | long | gaslimit     | required |
 |   | gasprice      | long | gas price    | required |
 | output param | txhash   | String  | transaction hash  | Transaction hash |
@@ -351,7 +330,7 @@ ontSdk.getConnectMgr().sendRawTransaction(tx);
 
 method three(recovery)
 ```
-String sendRemovePubKey(String ontid, String recoveryAddr,String password, String removePubkey,String payer,String payerpwd,long gaslimit,long gasprice)
+String sendRemovePubKey(String ontid, String recoveryAddr,String password, String removePubkey,Account payerAcct,long gaslimit,long gasprice)
 ```
 
 | Param      | Field   | Type  | Descriptions |             Remarks |
@@ -379,7 +358,7 @@ parameter description,please refer to method four(recovery)
 method one
 
 ```
-String sendAddRecovery(String ontid, String password, String recoveryAddr,String payer,String payerpwd,long gaslimit,long gasprice)
+String sendAddRecovery(String ontid, String password, String recoveryAddr,Account payerAcct,long gaslimit,long gasprice)
 ```
 
 | Param      | Field   | Type  | Descriptions |             Remarks |
@@ -387,8 +366,7 @@ String sendAddRecovery(String ontid, String password, String recoveryAddr,String
 | input param | password| String | identity password | required |
 |        | ontid    | String | identity ID   | required，identity Id |
 |        | recovery| String  |recovery address | required，recovery|
-|        | payer    | String  | payer       | required，payer |
-|        | payerpwd | String  | payer password | required |
+|        | payerAcct    | Account  | payer       | required，payer |
 |   | gaslimit      | long | gaslimit     | required |
 |   | gasprice      | long | gas price    | required |
 | output param | txhash   | String  | transaction hash  | Transaction hash |

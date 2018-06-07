@@ -27,24 +27,30 @@ wm.setCodeAddress("803ca638069742da4b6871fe3d7f78718eeee78a");
 
 The specification of the following interface document is https://github.com/kunxian-xia/ontology-DID/blob/master/docs/en/claim_spec.md。
 
-* 2. String sendCommit(String ontid,String password,String claimId,long gas)
+* 2. String sendCommit(String issuerOntid, String password, String subjectOntid, String claimId, Account payerAcct, long gaslimit, long gasprice)
 
         function description： Save data to the chain
 
         parameter description：
 
-        ontid：identity ontid
+        issuerOntid：issuer ontid
+
+        subjectOntid：subject ontid
 
         password： identity password
 
         claimId ： trusted claims claim uniqueness mark, ie Jti field in Claim
 
-        gas ： gas amount
+        payerAcct: Payment transaction account
 
-        return value：交易hash
+        gaslimit ： gaslimit
+
+        gasprice: gas price
+
+        return value：transaction hash
 
 
-示例代码
+example
 
 ```
 String[] claims = claim.split("\\.");
@@ -52,41 +58,38 @@ JSONObject payload = JSONObject.parseObject(new String(Base64.getDecoder().decod
 ontSdk.neovm().claimRecord().sendCommit(ontid,password,payload.getString("jti"),0)
 ```
 
-* 3. String sendGetStatus(String ontid,String password,String claimId)
+* 3. String sendGetStatus(String claimId)
 
         function description：query status of trusted claim
 
         parameter description：
 
-        ontid：identity ontid
-
-        password： identity password
-
         claimId ： trusted claims claim uniqueness mark, ie Jti field in Claim
-
-        gas ： gas amount
 
         return value：There are two parts: In the first part, the status of the claim: "Not attested", "Attested", "Attest has been revoked"; the second part is the certificate's ontid
 
-
-
+example
 ```
-String res = ontSdk.getRecordTx().sendGet("TA9WXpq7GNAc2D6gX9NZtCdybRq8ehGUxw","passwordtest","key");
+String getstatusRes2 = ontSdk.neovm().claimRecord().sendGetStatus(payload.getString("jti"));
 ```
 
 
-* 4. String sendRevoke(String ontid,String password,String claimId,long gas)
+* 4. String sendRevoke(String issuerOntid,String password,String claimId,Account payerAcct,long gaslimit,long gas)
 
         function description：Repeal of a trust claim
 
         parameter description：
 
-        ontid：attester's ontid
+        issuerOntid：issuer ontid
 
         password： attester's ontid password
 
         claimId ： Trusted claims claim uniqueness mark, ie Jti field in Claim
 
-        gas ： gas amount
+        payerAcct: Payment transaction account
+
+        gaslimit ： gaslimit
+
+        gasprice: gas price
 
         return value：This function will return true if and only if the claim is attested, and the revokerOntId is equal to the attester's ONT identity; Otherwise, it will return false.

@@ -44,10 +44,7 @@ public class Account {
 * 创建数字资产账号
 
 ```
-String url = "http://127.0.0.1:20386";
 OntSdk ontSdk = OntSdk.getInstance();
-ontSdk.setRpc(url);
-ontSdk.openWalletFile("wallet.json");
 Account acct = ontSdk.getWalletMgr().createAccount("password");
 //创建的账号或身份只在内存中，如果要写入钱包文件，需调用写入接口
 ontSdk.getWalletMgr().writeWallet();
@@ -75,23 +72,19 @@ ontSdk.getWalletMgr().getWallet().setDefaultAccount("address");
 
 ont和ong资产接口列表
 
-1. String sendTransfer(String sendAddr, String password, String recvAddr, long amount,String payer,String payerpwd,long gaslimit,long gasprice)
+1. String sendTransfer(Account sendAcct, String recvAddr, long amount, Account payerAcct, long gaslimit, long gasprice)
 
     功能说明： 从发送方转移一定数量的资产到接收方账户
 
     参数说明：
 
-    sendAddr： 发送方地址
-
-    password ： 发送方密码
+    sendAcct： 发送方账户
 
     recvAddr ： 接收方地址
 
     amount ： 转移的资产数量
 
-    payer：支付交易费用的账号
-
-    payerpwd：支付交易费用账号密码
+    payerAcct：支付交易费用的账户
 
     gaslimit：用于计算gas,gaslimit * gasprice = gas
 
@@ -99,73 +92,20 @@ ont和ong资产接口列表
 
     返回值：交易hash
 
-2. String sendTransferToMany(String sendAddr, String password, String[] recvAddr, long[] amount,String payer,String payerpwd,long gaslimit,long gasprice)
 
-    功能说明： 从发送方转移一定数量的资产到多个接收方账户
-
-    参数说明：
-
-    sendAddr： 发送方地址
-
-    password ： 发送方密码
-
-    recvAddr ： 接收方地址数组
-
-    amount ： 转移的资产数量数组
-
-    payer：支付交易费用的账号
-
-    payerpwd：支付交易费用账号密码
-
-    gaslimit：用于计算gas,gaslimit * gasprice = gas
-
-    gasprice ： gas价格
-
-    返回值：交易hash
-
-3. String sendTransferFromMany(String[] sendAddr, String[] password, String recvAddr, long[] amount,String payer,String payerpwd,long gaslimit,long gasprice)
-
-     功能说明： 从多个发送发转移资产到某个接收方
-
-     参数说明：
-
-     sendAddr： 发送方地址数组
-
-     password ： 发送方密码数组
-
-     recvAddr ： 接收方地址
-
-     amount ： 转移的资产数量数组
-
-     payer：支付交易费用的账号
-
-     payerpwd：支付交易费用账号密码
-
-     gaslimit：用于计算gas,gaslimit * gasprice = gas
-
-     gasprice ： gas价格
-
-     返回值：交易hash
-
-4. String sendApprove(String sendAddr, String password, String recvAddr, long amount,String payer,String payerpwd,long gaslimit,long gasprice)
+2. String sendApprove(Account sendAcct, String recvAddr, long amount, Account payerAcct, long gaslimit, long gasprice)
 
        功能说明： sendAddr账户允许recvAddr转移amount数量的资产
 
        参数说明：
 
-       assetName：资产名
-
-       sendAddr： 发送方地址
-
-       password： 发送方密码
+       sendAcct： 发送方账户
 
        recvAddr： 接收方地址
 
        amount： 转移的资产数量
 
-       payer：支付交易费用的账号
-
-       payerpwd：支付交易费用账号密码
+       payerAcct：支付交易费用的账号
 
        gaslimit：用于计算gas,gaslimit * gasprice = gas
 
@@ -173,15 +113,13 @@ ont和ong资产接口列表
 
        返回值：交易hash
 
-6. String sendTransferFrom(String sendAddr, String password, String fromAddr, String toAddr,long amount,String payer,String payerpwd,long gaslimit,long gasprice)
+3. String sendTransferFrom(Account sendAcct, String fromAddr, String toAddr, long amount, Account payerAcct, long gaslimit, long gasprice)
 
-        功能说明： sendAddr账户从fromAddr账户转移amount数量的资产到toAddr账户
+        功能说明： sendAcct账户从fromAddr账户转移amount数量的资产到toAddr账户
 
         参数说明：
 
-        assetName：资产名
-
-        sendAddr： 发送方地址
+        sendAcct： 发送方账户
 
         password： 发送方密码
 
@@ -191,9 +129,7 @@ ont和ong资产接口列表
 
         amount： 转移的资产数量
 
-        payer：支付交易费用的账号
-
-        payerpwd：支付交易费用账号密码
+        payerAcct：支付交易费用的账号
 
         gaslimit：用于计算gas,gaslimit * gasprice = gas
 
@@ -201,7 +137,7 @@ ont和ong资产接口列表
 
         返回值：交易hash
 
-7. long queryBalanceOf(String address)
+4. long queryBalanceOf(String address)
 
          功能说明： 查询账户address的assetName资产余额
 
@@ -211,9 +147,9 @@ ont和ong资产接口列表
 
          返回值：账户余额
 
-8. long queryAllowance(String fromAddr,String toAddr)
+5. long queryAllowance(String fromAddr,String toAddr)
 
-         功能说明： 查询账户address的assetName资产余额
+         功能说明： 查询fromAddr授权toAddr转移的数量
 
          参数说明：
 
@@ -223,7 +159,7 @@ ont和ong资产接口列表
 
          返回值：授权转移的数量
 
-9. String queryName()
+6. String queryName()
 
           功能说明： 查询资产名信息
 
@@ -231,7 +167,7 @@ ont和ong资产接口列表
 
           返回值：资产名称
 
-10. String querySymbol()
+7. String querySymbol()
 
            功能说明： 查询资产Symbol信息
 
@@ -239,7 +175,7 @@ ont和ong资产接口列表
 
            返回值：Symbol信息
 
-11. long queryDecimals()
+8. long queryDecimals()
 
             功能说明： 查询资产的精确度
 
@@ -247,7 +183,7 @@ ont和ong资产接口列表
 
             返回值：精确度
             
-12. long queryTotalSupply()
+9. long queryTotalSupply()
 
              功能说明： 查询资产的总供应量
 
@@ -266,9 +202,8 @@ sdk.openWalletFile("OntAssetDemo.json");
 //step2:获得ont实例
 ont = sdk.nativevm().ont()
 //step3:调用转账方法
-ont.sendTransfer(fromAddr,password,toAddr,100000000L,payer,payerpwd,gaslimit,gasprice);
-ont.sendTransferToMany(fromAddr,password,new String[]{toAddr1,toAddr2},new long[]{100L,200L},payer,payerpwd,gaslimit,gasprice);
-ont.sendTransferFromMany(new String[]{fromAddr1, fromAddr2}, new String[]{password1, password2}, toAddr, new long[]{1L, 2L},payer,payerpwd,gaslimit,gasprice);
+com.github.ontio.account.Account account1 = new com.github.ontio.account.Account(privateKey,SignatureScheme.SHA256WITHECDSA);
+ontSdk.nativevm().ont().sendTransfer(account1,"TA4pCAb4zUifHyxSx32dZRjTrnXtxEWKZr",10000,account1,ontSdk.DEFAULT_GAS_LIMIT,0);
 ```
 
 ## nep-5智能合约数字资产

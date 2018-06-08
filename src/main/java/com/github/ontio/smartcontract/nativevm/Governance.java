@@ -338,29 +338,6 @@ public class Governance {
         return null;
     }
 
-    /**
-     *
-     * @param account
-     * @param pos
-     * @param payerAcct
-     * @param gaslimit
-     * @param gasprice
-     * @return
-     * @throws Exception
-     */
-    public String voteCommitDpos(Account account,long pos,Account payerAcct,long gaslimit,long gasprice) throws Exception{
-        byte[] params = new VoteCommitDposParam(account.getAddressU160().toBase58(),pos).toArray();
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"voteCommitDpos",params, VmType.Native.value(),payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
-        sdk.signTx(tx,new Account[][]{{account}});
-        if(!account.equals(payerAcct)){
-            sdk.addSign(tx,payerAcct);
-        }
-        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
-        if (b) {
-            return tx.hash().toString();
-        }
-        return null;
-    }
 
     /**
      *
@@ -599,7 +576,7 @@ class VoteForPeerParam implements Serializable {
         for(String peerPubkey: peerPubkeys){
             writer.writeVarString(peerPubkey);
         }
-        writer.writeInt(posList.length);
+        writer.writeVarInt(posList.length);
         for(long pos: posList){
             writer.writeVarInt(pos);
         }
@@ -621,11 +598,11 @@ class WithdrawParam implements Serializable {
     @Override
     public void serialize(BinaryWriter writer) throws IOException {
         writer.writeSerializable(address);
-        writer.writeInt(peerPubkeys.length);
+        writer.writeVarInt(peerPubkeys.length);
         for(String peerPubkey : peerPubkeys){
             writer.writeVarString(peerPubkey);
         }
-        writer.writeInt(withdrawList.length);
+        writer.writeVarInt(withdrawList.length);
         for(long withdraw : withdrawList){
             writer.writeVarInt(withdraw);
         }

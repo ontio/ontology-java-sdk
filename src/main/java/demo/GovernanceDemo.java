@@ -1,6 +1,7 @@
 package demo;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Common;
@@ -22,10 +23,15 @@ public class GovernanceDemo {
             Account payerAcct = new Account(Helper.hexToBytes(privatekey1),SignatureScheme.SHA256WITHECDSA);
 
             String privatekey9 = "1383ed1fe570b6673351f1a30a66b21204918ef8f673e864769fa2a653401114";
+            String privatekey8 = "87a209d232d6b4f3edfcf5c34434aa56871c2cb204c263f6b891b95bc5837cac";
+            String privatekey7 = "24ab4d1d345be1f385c75caf2e1d22bdb58ef4b650c0308d9d69d21242ba8618";
 
-            String prikey = com.github.ontio.account.Account.getCtrDecodedPrivateKey("ET5m04btJ/bhRvSomqfqSY05M1mlmePU74mY+yvpIjY=", password, "TA4nUbnjX5UGVxkumhfndc7wyemrxdMtn8", 16384, SignatureScheme.SHA256WITHECDSA);
+            Account account9 = new Account(Helper.hexToBytes(privatekey9),SignatureScheme.SHA256WITHECDSA);
+
+            String prikey = "f1442d5e7f4e2061ff9a6884d6d05212e2aa0f6a6284f0a28ae82a29cdb3d656";
             Account account = new Account(Helper.hexToBytes(prikey),SignatureScheme.SHA256WITHECDSA);
-
+            Account account8 = new Account(Helper.hexToBytes(privatekey8),SignatureScheme.SHA256WITHECDSA);
+            Account account7 = new Account(Helper.hexToBytes(privatekey7),SignatureScheme.SHA256WITHECDSA);
             if(sdk.getWalletMgr().getIdentitys().size() < 2){
                 Identity identity = sdk.getWalletMgr().createIdentity(password);
                 String txhash = sdk.nativevm().ontId().sendRegister(identity,password,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
@@ -38,7 +44,7 @@ public class GovernanceDemo {
                 sdk.getWalletMgr().writeWallet();
             }
             if(false){
-                sdk.nativevm().ont().sendTransfer(account,payerAcct.getAddressU160().toBase58(),10,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+                sdk.nativevm().ont().sendTransfer(account,account9.getAddressU160().toBase58(),10000000,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
                 Thread.sleep(6000);
                 System.out.println(sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
                 System.out.println(sdk.nativevm().ong().unclaimOng(account.getAddressU160().toBase58()));
@@ -54,11 +60,11 @@ public class GovernanceDemo {
             }
             List<Identity> dids = sdk.getWalletMgr().getIdentitys();
             Identity identity = dids.get(0);
-            System.out.println(sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
+            System.out.println("account:" + sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
             if(false){
                 String contractAddr = "ff00000000000000000000000000000000000007";
                 Identity adminOntid = sdk.getWalletMgr().importIdentity("ET5m04btJ/bhRvSomqfqSY05M1mlmePU74mY+yvpIjY=",password,account.getAddressU160().toBase58());
-//                String txhash = sdk.nativevm().auth().assignFuncsToRole(Common.didont+account.getAddressU160().toBase58(),password,contractAddr,"role",new String[]{"registerCandidate"},1,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+//                String txhash = sdk.nativevm().auth().assignFuncsToRole(adminOntid.ontid,password,contractAddr,"role",new String[]{"registerCandidate"},1,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
                 String txhash = sdk.nativevm().auth().assignOntIDsToRole(adminOntid.ontid,password,contractAddr,"role",new String[]{identity.ontid,dids.get(1).ontid},1,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
                 Thread.sleep(6000);
                 Object obj = sdk.getConnect().getSmartCodeEvent(txhash);
@@ -68,7 +74,7 @@ public class GovernanceDemo {
             if(false){
                 sdk.getWalletMgr().importAccount("ET5m04btJ/bhRvSomqfqSY05M1mlmePU74mY+yvpIjY=",password,"TA4nUbnjX5UGVxkumhfndc7wyemrxdMtn8");
 
-                String txhash = sdk.nativevm().governance().registerCandidate(account,Helper.toHexString(account1.serializePublicKey()),100000,identity.ontid,password,1,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+                String txhash = sdk.nativevm().governance().registerCandidate(account,Helper.toHexString(account7.serializePublicKey()),100000,identity.ontid,password,1,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
 
                 Thread.sleep(6000);
                 Object obj = sdk.getConnect().getSmartCodeEvent(txhash);
@@ -76,19 +82,22 @@ public class GovernanceDemo {
 
 
             }
-            if(false){
+            if(true){
                 Identity adminOntid = sdk.getWalletMgr().importIdentity("ET5m04btJ/bhRvSomqfqSY05M1mlmePU74mY+yvpIjY=",password,account.getAddressU160().toBase58());
-//                String txhash = sdk.nativevm().governance().approveCandidate(adminOntid.ontid,password,Helper.toHexString(account1.serializePublicKey()),payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
-//                String txhash = sdk.nativevm().governance().quitNode(account,Helper.toHexString(account1.serializePublicKey()),payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
-                String txhash = sdk.nativevm().governance().withdraw(account,new String[]{Helper.toHexString(account1.serializePublicKey())},new long[]{100000},payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+//                String txhash = sdk.nativevm().governance().approveCandidate(adminOntid.ontid,password,Helper.toHexString(account7.serializePublicKey()),payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+//                String txhash = sdk.nativevm().governance().voteForPeer(account,new String[]{Helper.toHexString(account7.serializePublicKey())},new long[]{100},payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+//String txhash = sdk.nativevm().governance().unVoteForPeer(account,new String[]{Helper.toHexString(account7.serializePublicKey())},new long[]{100},payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+//                  String txhash = sdk.nativevm().governance().quitNode(account,Helper.toHexString(account8.serializePublicKey()),payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+                String txhash = sdk.nativevm().governance().withdraw(account,new String[]{Helper.toHexString(account7.serializePublicKey())},new long[]{100},payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
 //                String txhash = sdk.nativevm().governance().commitDpos(adminOntid.ontid,password,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
                 Thread.sleep(6000);
                 System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
                 System.out.println(sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
             }
-            System.out.println(Helper.toHexString(account1.serializePublicKey()));
+            System.out.println("account:" + sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
             String res = sdk.nativevm().governance().getPeerPoolMap();
-            System.out.println(JSON.toJSONString(res));
+            JSONObject jsr = JSONObject.parseObject(res);
+            System.out.println(jsr.getString(Helper.toHexString(account7.serializePublicKey())));
         } catch (Exception e) {
             e.printStackTrace();
         }

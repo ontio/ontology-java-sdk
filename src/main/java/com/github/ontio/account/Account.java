@@ -465,13 +465,14 @@ public class Account {
 
         byte[] derivedkey = SCrypt.generate(passphrase.getBytes(StandardCharsets.UTF_8), salt, N, r, p, dkLen);
         byte[] derivedhalf2 = new byte[32];
-        byte[] iv = new byte[16];
-        System.arraycopy(derivedkey, 0, iv, 0, 16);
+        byte[] iv = new byte[12];
+        System.arraycopy(derivedkey, 0, iv, 0, 12);
         System.arraycopy(derivedkey, 32, derivedhalf2, 0, 32);
         try {
             SecretKeySpec skeySpec = new SecretKeySpec(derivedhalf2, "AES");
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec, new IvParameterSpec(iv));
+            cipher.updateAAD(getAddressU160().toBase58().getBytes());
             byte[] encryptedkey = cipher.doFinal(serializePrivateKey());
             return new String(Base64.getEncoder().encode(encryptedkey));
         } catch (Exception e) {
@@ -517,7 +518,7 @@ public class Account {
         return Helper.toHexString(rawkey);
     }
 
-    public static String getGcmDecodedPrivateKey(String encryptedPriKey, String passphrase, byte[] salt, int n, SignatureScheme scheme) throws Exception {
+    public static String getGcmDecodedPrivateKey(String encryptedPriKey, String passphrase,String address, byte[] salt, int n, SignatureScheme scheme) throws Exception {
         if (encryptedPriKey == null) {
             throw new SDKException(ErrorCode.EncryptedPriKeyError);
         }
@@ -533,18 +534,23 @@ public class Account {
 
         byte[] derivedkey = SCrypt.generate(passphrase.getBytes(StandardCharsets.UTF_8), salt, N, r, p, dkLen);
         byte[] derivedhalf2 = new byte[32];
-        byte[] iv = new byte[16];
-        System.arraycopy(derivedkey, 0, iv, 0, 16);
+        byte[] iv = new byte[12];
+        System.arraycopy(derivedkey, 0, iv, 0, 12);
         System.arraycopy(derivedkey, 32, derivedhalf2, 0, 32);
 
         SecretKeySpec skeySpec = new SecretKeySpec(derivedhalf2, "AES");
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(Cipher.DECRYPT_MODE, skeySpec, new IvParameterSpec(iv));
-        byte[] rawkey = cipher.doFinal(encryptedkey);
-        String address = new Account(rawkey, scheme).getAddressU160().toBase58();
-        byte[] addresshashTmp = Digest.sha256(Digest.sha256(address.getBytes()));
-        byte[] addresshash = Arrays.copyOfRange(addresshashTmp, 0, 4);
-        if (!Arrays.equals(addresshash,salt)) {
+        cipher.updateAAD(address.getBytes());
+
+        byte[] rawkey = new byte[0];
+        try {
+            rawkey = cipher.doFinal(encryptedkey);
+        } catch (Exception e) {
+            throw new SDKException(ErrorCode.encryptedPriKeyAddressPasswordErr);
+        }
+        Account account = new Account(rawkey, scheme);
+        if (!address.equals(account.getAddressU160().toBase58())) {
             throw new SDKException(ErrorCode.encryptedPriKeyAddressPasswordErr);
         }
         return Helper.toHexString(rawkey);

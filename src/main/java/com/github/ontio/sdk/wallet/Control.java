@@ -29,6 +29,8 @@ public class Control {
     public Map parameters = new HashMap() ;
     public String id = "";
     public String key = "";
+    public String salt = "";
+    public String address = "";
     public Control(){
 
     }
@@ -38,7 +40,18 @@ public class Control {
         this.id = id;
         this.parameters.put("curve","secp256r1");
     }
-
+    public String getSalt(){
+        return salt;
+    }
+    public void setSalt(String salt){
+        this.salt = salt;
+    }
+    public String getAddress(){
+        return address;
+    }
+    public void setAddress(String address){
+        this.address = address;
+    }
     @Override
     public String toString() {
         return JSON.toJSONString(this);

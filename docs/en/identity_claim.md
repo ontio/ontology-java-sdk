@@ -284,7 +284,7 @@ String sendAddPubKey(String ontid,String recoveryAddr, String password, String n
 |        | recoveryAddr| String | recovery address | required |
 |        | password| String | recovery password | required |
 |        | newpubkey| String  |public key       | required， newpubkey|
-|        | payerAcct | String  | payer       | required，payer |
+|        | payerAcct | Account  | payer       | required，payer |
 |        | gaslimit      | long | gaslimit     | required |
 |        | gasprice      | long | gas price    | required |
 | output param | txhash   | String  | transaction hash  | transaction hash |
@@ -339,8 +339,7 @@ String sendRemovePubKey(String ontid, String recoveryAddr,String password, Strin
 |        | password| String | identity password | required |
 |        | recoveryAddr| String | recovery password | required |
 |        | removePubkey| String  |public key       | required， removePubkey|
-|        | payer    | String  | payer       | required，payer |
-|        | payerpwd | String  | payer password  | required |
+|        | payerAcct    | Account  | payer       | required，payer |
 |   | gaslimit      | long | gaslimit     | required |
 |   | gasprice      | long | gas price    | required |
 | output param | txhash   | String  | transaction hash  | Transaction hash |

@@ -133,7 +133,7 @@ ont and ong asset list
 
         return value：transaction hash
 
- 7. long queryBalanceOf(String address)
+ 4. long queryBalanceOf(String address)
 
          function description： Query the assetName asset balance of the account address
 
@@ -143,35 +143,33 @@ ont and ong asset list
 
          return value： balance of address
 
- 8. long queryAllowance(String fromAddr,String toAddr)
+ 5. long queryAllowance(String fromAddr,String toAddr)
 
-         function description： query the assetName asset balance of the account address
+         function description： query balance of the account address
 
-         ont = sdk.nativevm().ont()：
+         fromAddr： from address
 
-         fromAddr： Authorized party address
-
-         toAddr：authorized party address
+         toAddr：to address
 
          return value： asset amount
 
- 9. String queryName()
+ 6. String queryName()
 
-          function description： query assetName asset name information
+          function description： query  asset name information
 
           parameter description：
 
           return value：asset name detail information
 
- 10. String querySymbol()
+ 7. String querySymbol()
 
-           function description： query AssetName Asset Symbol Information
+           function description： query  asset symbol Information
 
            parameter description：
 
            return value：Symbol information
 
- 11. long queryDecimals()
+ 8. long queryDecimals()
 
             function description： query the accuracy of assetName assets
 
@@ -179,13 +177,14 @@ ont and ong asset list
 
             return value：decimal
 
- 12. long queryTotalSupply()
+ 9. long queryTotalSupply()
 
              function description： query the total supply of assetName assets
 
              parameter description：
 
              return value：total Supply
+
 
 Example:
 
@@ -198,7 +197,7 @@ sdk.openWalletFile("OntAssetDemo.json");
 ont = sdk.nativevm().ont()
 //step3:transfer
 com.github.ontio.account.Account account1 = new com.github.ontio.account.Account(privateKey,SignatureScheme.SHA256WITHECDSA);
-ontSdk.nativevm().ont().sendTransfer(account1,"TA4pCAb4zUifHyxSx32dZRjTrnXtxEWKZr",10000,account1,ontSdk.DEFAULT_GAS_LIMIT,0);
+ont.sendTransfer(account1,"TA4pCAb4zUifHyxSx32dZRjTrnXtxEWKZr",10000,account1,ontSdk.DEFAULT_GAS_LIMIT,0);
 ```
 
 ## nep-5 smart contract digital assets

@@ -31,7 +31,6 @@ import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.io.Serializable;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.sdk.info.AccountInfo;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -141,9 +140,6 @@ public class ClaimRecord {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        if (claimId == null || claimId == ""){
-            throw new SDKException(ErrorCode.NullKeyOrValue);
-        }
         String addr = issuerOntid.replace(Common.didont,"");
         Transaction tx = makeRevoke(issuerOntid,claimId,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
         sdk.signTx(tx, addr, password);
@@ -180,17 +176,17 @@ public class ClaimRecord {
         Transaction tx = makeInvokeTransaction(list,null,0,0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
-        if (obj != null && !res.equals("")) {
-            ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(res));
-            BinaryReader br = new BinaryReader(bais);
-            ClaimTx claimTx = new ClaimTx();
-            claimTx.deserialize(br);
-            if(claimTx.status.length == 0){
-                return new String(claimTx.claimId)+"."+"00"+"."+new String(claimTx.issuerOntId)+"."+new String(claimTx.subjectOntId);
-            }
-            return new String(claimTx.claimId)+"."+Helper.toHexString(claimTx.status)+"."+new String(claimTx.issuerOntId)+"."+new String(claimTx.subjectOntId);
+        if(res.equals("")){
+            return "";
         }
-        return null;
+        ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(res));
+        BinaryReader br = new BinaryReader(bais);
+        ClaimTx claimTx = new ClaimTx();
+        claimTx.deserialize(br);
+        if(claimTx.status.length == 0){
+            return new String(claimTx.claimId)+"."+"00"+"."+new String(claimTx.issuerOntId)+"."+new String(claimTx.subjectOntId);
+        }
+        return new String(claimTx.claimId)+"."+Helper.toHexString(claimTx.status)+"."+new String(claimTx.issuerOntId)+"."+new String(claimTx.subjectOntId);
     }
     public Transaction makeInvokeTransaction(List<Object> list,String payer,long gaslimit,long gas) throws Exception {
         byte[] params = BuildParams.createCodeParamsScript(list);

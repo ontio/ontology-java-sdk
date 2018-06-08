@@ -79,7 +79,7 @@ ontSdk.getWalletMgr().writeWallet();
 
 ```
 Identity identity = ontSdk.getWalletMgr().createIdentity(password);
-ontSdk.nativevm().ontId().sendRegister(identity2,password,payer,payerpwd,gaslimit,gasprice);
+ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcct,gaslimit,gasprice);
 ```
 
 

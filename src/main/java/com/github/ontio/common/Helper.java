@@ -21,6 +21,7 @@ package com.github.ontio.common;
 
 import com.github.ontio.crypto.Digest;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
@@ -46,6 +47,39 @@ public class Helper {
             result[i] = v[v.length - i - 1];
         }
         return result;
+    }
+
+    public static byte[] BigInt2Bytes(BigInteger bi){
+        if(bi.longValue() == 0) {
+            return new byte[]{};
+        }
+        byte[] bs = bi.toByteArray();
+        byte b = bs[0];
+        if(bi.intValue() < 0) {
+            for(int i= 0;i < bs.length;i++){
+                bs[i] = (byte)~b;
+            }
+            BigInteger temp = new BigInteger(bs);
+            BigInteger temp2 = temp.add(BigInteger.valueOf(1));
+            bs = temp2.toByteArray();
+            byte[] res = reverse(bs);
+            if(b >> 7 ==1){
+                byte[] t = new byte[res.length + 1];
+                System.arraycopy(res,0,t,0,res.length);
+                t[res.length] = (byte)0;
+                return t;
+            }
+            return res;
+        }else{
+            byte[] res = reverse(bs);
+            if(b >> 7 == 1){
+                byte[] t = new byte[res.length + 1];
+                System.arraycopy(res,0,t,0,res.length);
+                t[res.length] = (byte)0;
+                return t;
+            }
+            return res;
+        }
     }
 
     public static byte[] hexToBytes(String value) {
@@ -81,14 +115,6 @@ public class Helper {
             return Arrays.copyOfRange(bt, 1, 33);
         }
         return bt;
-    }
-
-    public static String getContractAddress(String codeHexStr, byte vmtype) {
-        Address code = Address.toScriptHash(Helper.hexToBytes(codeHexStr));
-        byte[] hash = code.toArray();
-        hash[0] = vmtype;
-        String codeHash = Helper.toHexString(hash);
-        return codeHash;
     }
 
     public static byte[] addBytes(byte[] data1, byte[] data2) {

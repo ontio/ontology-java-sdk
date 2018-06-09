@@ -88,6 +88,8 @@ public class BuildParams {
                     sb.push((Boolean) val);
                 } else if (val instanceof Long) {
                     sb.push(BigInteger.valueOf((Long) val));
+                } else if(val instanceof BigInteger){
+                    sb.push((BigInteger)val);
                 } else if (val instanceof List) {
                     List tmp = (List) val;
                     createCodeParamsScript(sb, tmp);

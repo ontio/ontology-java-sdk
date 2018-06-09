@@ -109,7 +109,7 @@ public class Ont {
         amount = amount * precision;
         State state = new State(Address.decodeBase58(sender), Address.decodeBase58(recvAddr), amount);
         Transfers transfers = new Transfers(new State[]{state});
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "transfer", transfers.toArray(), VmType.Native.value(), payer, gaslimit, gasprice);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "transfer", transfers.toArray(), payer, gaslimit, gasprice);
         return tx;
     }
 
@@ -121,7 +121,7 @@ public class Ont {
             throw new SDKException(ErrorCode.ParamError);
         }
         Transfers transfers = new Transfers(states);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "transfer", transfers.toArray(), VmType.Native.value(), payer, gaslimit, gasprice);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "transfer", transfers.toArray(), payer, gaslimit, gasprice);
         return tx;
     }
 
@@ -134,7 +134,8 @@ public class Ont {
         if (address == null || address.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("address should not be null"));
         }
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "balanceOf", Address.decodeBase58(address).toArray(), VmType.Native.value(), null, 0, 0);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ontContract)),"balanceOf",Address.decodeBase58(address).toArray(),null,0,0);
+//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "balanceOf", Address.decodeBase58(address).toArray(), VmType.Native.value(), null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
         if (res == null || res.equals("")) {
@@ -154,7 +155,7 @@ public class Ont {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
         byte[] parabytes = BuildParams.buildParams(Address.decodeBase58(fromAddr), Address.decodeBase58(toAddr));
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "allowance", parabytes, VmType.Native.value(), null, 0, 0);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "allowance", parabytes,  null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
         if (res == null || res.equals("")) {
@@ -211,7 +212,7 @@ public class Ont {
             throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
         }
         State state = new State(Address.decodeBase58(sender), Address.decodeBase58(recvAddr), amount);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "approve", state.toArray(), VmType.Native.value(), payer, gaslimit, gasprice);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "approve", state.toArray(), payer, gaslimit, gasprice);
         return tx;
     }
 
@@ -265,7 +266,7 @@ public class Ont {
             throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
         }
         TransferFrom transferFrom = new TransferFrom(Address.decodeBase58(sender), Address.decodeBase58(fromAddr), Address.decodeBase58(toAddr), amount);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "transferFrom", transferFrom.toArray(), VmType.Native.value(), payer, gaslimit, gasprice);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "transferFrom", transferFrom.toArray(), payer, gaslimit, gasprice);
         return tx;
     }
 
@@ -274,7 +275,7 @@ public class Ont {
      * @throws Exception
      */
     public String queryName() throws Exception {
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "name", "".getBytes(), VmType.Native.value(), null, 0, 0);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "name", "".getBytes(), null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
         return new String(Helper.hexToBytes(res));
@@ -285,7 +286,7 @@ public class Ont {
      * @throws Exception
      */
     public String querySymbol() throws Exception {
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "symbol", "".getBytes(), VmType.Native.value(), null, 0, 0);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "symbol", "".getBytes(), null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
         return new String(Helper.hexToBytes(res));
@@ -296,7 +297,7 @@ public class Ont {
      * @throws Exception
      */
     public long queryDecimals() throws Exception {
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "decimals", "".getBytes(), VmType.Native.value(), null, 0, 0);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "decimals", "".getBytes(), null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
         if (("").equals(res)) {
@@ -310,7 +311,8 @@ public class Ont {
      * @throws Exception
      */
     public long queryTotalSupply() throws Exception {
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "totalSupply", "".getBytes(), VmType.Native.value(), null, 0, 0);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ontContract)),"totalSupply","".getBytes(),null,0,0);
+//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "totalSupply", "".getBytes(), VmType.Native.value(), null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
         if (res == null || res.equals("")) {

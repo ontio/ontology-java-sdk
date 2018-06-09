@@ -34,7 +34,7 @@ public class AccountDemo {
             if(true){
 
                 byte[] salt = new byte[]{(byte)251,(byte)155,(byte)65,(byte)228,(byte)3,(byte)251,(byte)77,(byte)136,(byte)106,(byte)44,(byte)2,(byte)255,(byte)194,(byte)185,(byte)234,(byte)196};
-                salt = ECC.generateKey(16);
+//                salt = ECC.generateKey(16);
                 com.github.ontio.account.Account acct = new com.github.ontio.account.Account(Helper.hexToBytes("3e47428fd73f915a7937bf1f8d3bffc27a45dbb6ef4e57bd9513c1a8bfbcbfd4"),ontSdk.defaultSignScheme);
                 String key = acct.exportGcmEncryptedPrikey("passwordtest",salt,16384);
                 String prikey = com.github.ontio.account.Account.getGcmDecodedPrivateKey(key, "passwordtest",acct.getAddressU160().toBase58(),salt,16384,ontSdk.defaultSignScheme);

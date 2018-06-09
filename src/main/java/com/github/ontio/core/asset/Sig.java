@@ -58,7 +58,9 @@ public class Sig implements Serializable {
     	for(int i=0;i<pubKeys.length;i++) {
             writer.writeVarBytes(pubKeys[i]);
         }
-        writer.writeVarInt(M);
+        byte[] temp = new byte[1];
+    	temp[0] = (byte)M;
+        writer.write(temp);
         writer.writeVarInt(sigData.length);
         for (int i = 0; i < sigData.length; i++) {
             writer.writeVarBytes(sigData[i]);

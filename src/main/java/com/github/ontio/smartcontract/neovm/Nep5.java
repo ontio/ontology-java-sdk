@@ -78,7 +78,7 @@ public class Nep5 {
         func.name = "init";
         if(preExec) {
             byte[] params = BuildParams.serializeAbiFunction(func);
-            Transaction tx = sdk.vm().makeInvokeCodeTransaction(getContractAddress(), null, params, VmType.NEOVM.value(), null,0, 0);
+            Transaction tx = sdk.vm().makeInvokeCodeTransaction(getContractAddress(), null, params,null,0, 0);
             Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
             if (Integer.parseInt(((JSONObject) obj).getString("Result")) != 1){
                 throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
@@ -127,7 +127,7 @@ public class Nep5 {
         if(preExec) {
             byte[] params = BuildParams.serializeAbiFunction(func);
 
-            Transaction tx = sdk.vm().makeInvokeCodeTransaction(getContractAddress(), null, params, VmType.NEOVM.value(), null,0, 0);
+            Transaction tx = sdk.vm().makeInvokeCodeTransaction(getContractAddress(), null, params,null,0, 0);
             sdk.signTx(tx, new Account[][]{{acct}});
             Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
             if (Integer.parseInt(((JSONObject) obj).getString("Result")) != 1){

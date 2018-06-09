@@ -56,6 +56,7 @@ public class OntAssetDemo {
             System.out.println("acct2:" + acct2.getAddressU160().toBase58());
 
 
+            Address.decodeBase58("TA9MXtwAcXkUMuujJh2iNRaWoXrvzfrmZb");
 
             if (false) {
                 ontSdk.nativevm().ong().sendApprove(acct0,acct1.getAddressU160().toBase58(),100,payerAcct,30000,0);
@@ -69,11 +70,13 @@ public class OntAssetDemo {
             if(true){
                 String encriptPrivate = "ET5m04btJ/bhRvSomqfqSY05M1mlmePU74mY+yvpIjY=";
                 com.github.ontio.account.Account account1 = new com.github.ontio.account.Account(Helper.hexToBytes(com.github.ontio.account.Account.getCtrDecodedPrivateKey(encriptPrivate,"111111","TA4nUbnjX5UGVxkumhfndc7wyemrxdMtn8",16384,SignatureScheme.SHA256WITHECDSA)),SignatureScheme.SHA256WITHECDSA);
+                System.out.println(ontSdk.nativevm().ont().queryBalanceOf("TA9MXtwAcXkUMuujJh2iNRaWoXrvzfrmZb"));
+//                System.out.println(ontSdk.nativevm().ont().queryTotalSupply());
+                System.exit(0);
                 ontSdk.nativevm().ont().sendTransfer(account1,acct0.getAddressU160().toBase58(),10,account1,ontSdk.DEFAULT_GAS_LIMIT,0);
                 Thread.sleep(6000);
                 System.out.println(ontSdk.nativevm().ong().unclaimOng(account1.getAddressU160().toBase58()));
                 ontSdk.nativevm().ong().claimOng(account1,account1.getAddressU160().toBase58(),49520000000000L,account1,ontSdk.DEFAULT_GAS_LIMIT,0);
-
             }
             if(false){
 

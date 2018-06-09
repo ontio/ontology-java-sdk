@@ -91,7 +91,7 @@ public class ConnectMgrTest {
         tmp.add(identity.ontid.getBytes());
         list.add(tmp);
         byte[] params = BuildParams.createCodeParamsScript(list);
-        Transaction tx2 = ontSdk.vm().makeInvokeCodeTransaction(codeAddress,null,params, VmType.NEOVM.value(), identity.ontid,ontSdk.DEFAULT_GAS_LIMIT,0);
+        Transaction tx2 = ontSdk.vm().makeInvokeCodeTransaction(codeAddress,null,params,identity.ontid,ontSdk.DEFAULT_GAS_LIMIT,0);
         ontSdk.signTx(tx2, identity.ontid, password);
         boolean b2 = ontSdk.getConnect().sendRawTransaction(tx2.toHexString());
         Assert.assertEquals(true,b);
@@ -116,7 +116,7 @@ public class ConnectMgrTest {
     public void sendRawTransactionPreExec() throws Exception {
 
         byte[] parabytes = com.github.ontio.smartcontract.nativevm.BuildParams.buildParams(Address.decodeBase58(address).toArray());
-        Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContract,"balanceOf", parabytes, VmType.Native.value(), null,ontSdk.DEFAULT_GAS_LIMIT,0);
+        Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContract,"balanceOf", parabytes,null,ontSdk.DEFAULT_GAS_LIMIT,0);
         Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         Assert.assertNotEquals(null,obj);
     }

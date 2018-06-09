@@ -24,7 +24,6 @@ public class DeployCodeTest {
         deployCode.description = "test";
         deployCode.email = "test";
         deployCode.needStorage = true;
-        deployCode.vmType = VmType.NEOVM.value();
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         BinaryWriter binaryWriter = new BinaryWriter(byteArrayOutputStream);

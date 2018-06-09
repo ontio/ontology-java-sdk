@@ -45,10 +45,9 @@ public class State implements Serializable {
     }
     @Override
     public void deserialize(BinaryReader reader) throws IOException {
-
         from = new Address(reader.readVarBytes());
         to = new Address(reader.readVarBytes());
-        value = new BigInteger(reader.readVarBytes()).longValue();
+        value = Helper.BigIntFromBytes(reader.readVarBytes()).longValue();
     }
 
     @Override

@@ -21,7 +21,7 @@ public class VmTest {
 
     @Test
     public void buildNativeParams() throws SDKException {
-        Address addr = Address.decodeBase58("TGruRo3KP82jGRHzfQRLzyyhd1EGajdS1z");
-        vm.buildNativeParams(addr,"init","1".getBytes(),"",0,0);
+        Address addr = Address.decodeBase58("TA9MXtwAcXkUMuujJh2iNRaWoXrvzfrmZb");
+        vm.buildNativeParams(addr,"init","1".getBytes(),null,0,0);
     }
 }

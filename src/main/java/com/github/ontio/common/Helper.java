@@ -82,6 +82,22 @@ public class Helper {
         }
     }
 
+    public static BigInteger BigIntFromBytes(byte[] ba){
+        if(ba.length == 0){
+            return BigInteger.valueOf(0);
+        }
+        byte[] bs = reverse(ba);
+        if(bs[0] >> 7 == 1) {
+            for(int i = 0;i < bs.length;i++) {
+                bs[i] = (byte)~bs[i];
+            }
+            BigInteger temp = new BigInteger(bs);
+            temp.add(BigInteger.valueOf(1));
+            return temp.negate();
+        }
+        return new BigInteger(bs);
+    }
+
     public static byte[] hexToBytes(String value) {
         if (value == null || value.length() == 0) {
             return new byte[0];

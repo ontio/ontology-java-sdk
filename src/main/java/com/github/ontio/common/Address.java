@@ -74,6 +74,11 @@ public class Address extends UIntBase implements Comparable<Address> {
         }
     }
 
+    public static Address AddressFromVmCode(String codeHexStr) {
+        Address code = Address.toScriptHash(Helper.hexToBytes(codeHexStr));
+        return code;
+    }
+
     public static Address addressFromPubKey(String publicKey) {
         return addressFromPubKey(Helper.hexToBytes(publicKey));
     }

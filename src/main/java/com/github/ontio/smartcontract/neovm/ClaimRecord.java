@@ -190,7 +190,7 @@ public class ClaimRecord {
     }
     public Transaction makeInvokeTransaction(List<Object> list,String payer,long gaslimit,long gas) throws Exception {
         byte[] params = BuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,null,params, VmType.NEOVM.value(), payer,gaslimit,gas);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,null,params,payer,gaslimit,gas);
         return tx;
     }
 }

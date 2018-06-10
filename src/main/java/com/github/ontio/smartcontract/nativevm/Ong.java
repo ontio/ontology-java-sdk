@@ -105,7 +105,7 @@ public class Ong {
         }
         State state = new State(Address.decodeBase58(sendAddr), Address.decodeBase58(recvAddr), amount);
         Transfers transfers = new Transfers(new State[]{state});
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "transfer", transfers.toArray(), VmType.Native.value(), payer, gaslimit, gasprice);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "transfer", transfers.toArray(), payer, gaslimit, gasprice);
         return tx;
     }
 
@@ -117,7 +117,7 @@ public class Ong {
             throw new SDKException(ErrorCode.ParamError);
         }
         Transfers transfers = new Transfers(states);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "transfer", transfers.toArray(), VmType.Native.value(), payer, gaslimit, gasprice);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "transfer", transfers.toArray(),payer, gaslimit, gasprice);
         return tx;
     }
     /**
@@ -129,7 +129,7 @@ public class Ong {
         if(address == null|| address.equals("")){
             throw new SDKException(ErrorCode.ParamErr("address should not be null"));
         }
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "balanceOf",Address.decodeBase58(address).toArray(), VmType.Native.value(), null, 0, 0);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "balanceOf",Address.decodeBase58(address).toArray(), null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
         if (res==null||res.equals("")) {
@@ -149,7 +149,7 @@ public class Ong {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
         byte[] parabytes = BuildParams.buildParams(Address.decodeBase58(fromAddr), Address.decodeBase58(toAddr));
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "allowance", parabytes, VmType.Native.value(), null, 0, 0);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "allowance", parabytes,null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
         if (res==null||res.equals("")) {
@@ -208,7 +208,7 @@ public class Ong {
             throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
         }
         State state = new State(Address.decodeBase58(sendAddr), Address.decodeBase58(recvAddr), amount);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract,"approve", state.toArray(), VmType.Native.value(), payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract,"approve", state.toArray(),payer,gaslimit,gasprice);
         return tx;
     }
 
@@ -263,7 +263,7 @@ public class Ong {
             throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
         }
         TransferFrom transferFrom = new TransferFrom(Address.decodeBase58(sendAddr),Address.decodeBase58(fromAddr), Address.decodeBase58(toAddr), amount);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract,"transferFrom", transferFrom.toArray(), VmType.Native.value(), payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract,"transferFrom", transferFrom.toArray(), payer,gaslimit,gasprice);
         return tx;
     }
 
@@ -272,7 +272,7 @@ public class Ong {
      * @throws Exception
      */
     public String queryName() throws Exception {
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "name", "".getBytes(), VmType.Native.value(), null, 0, 0);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "name", "".getBytes(), null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
         return new String(Helper.hexToBytes(res));
@@ -283,7 +283,7 @@ public class Ong {
      * @throws Exception
      */
     public String querySymbol() throws Exception {
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "symbol", "".getBytes(), VmType.Native.value(), null, 0, 0);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "symbol", "".getBytes(), null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
         return new String(Helper.hexToBytes(res));
@@ -294,7 +294,7 @@ public class Ong {
      * @throws Exception
      */
     public long queryDecimals() throws Exception {
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "decimals", "".getBytes(), VmType.Native.value(), null, 0, 0);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "decimals", "".getBytes(), null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
         if (("").equals(res)) {
@@ -308,7 +308,7 @@ public class Ong {
      * @throws Exception
      */
     public long queryTotalSupply() throws Exception {
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "totalSupply", "".getBytes(), VmType.Native.value(), null, 0, 0);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "totalSupply", "".getBytes(), null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
         if (res==null||res.equals("")) {
@@ -378,7 +378,7 @@ public class Ong {
             throw new SDKException(ErrorCode.ParamErr("amount or gaslimit gasprice should not be less than 0"));
         }
         TransferFrom transferFrom = new TransferFrom(Address.decodeBase58(claimer), Address.parse(ontContract), Address.decodeBase58(toAddr), amount);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "transferFrom", transferFrom.toArray(), VmType.Native.value(), payer, gaslimit, gasprice);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "transferFrom", transferFrom.toArray(), payer, gaslimit, gasprice);
         return tx;
     }
 }

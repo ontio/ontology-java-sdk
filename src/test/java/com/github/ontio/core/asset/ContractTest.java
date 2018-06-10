@@ -25,7 +25,7 @@ public class ContractTest {
 
     @Test
     public void serialize() throws IOException {
-        Contract contract = new Contract((byte)1,"test".getBytes(),address,"test","t".getBytes());
+        Contract contract = new Contract((byte)1,address,"test","t".getBytes());
         ByteArrayOutputStream bs = new ByteArrayOutputStream();
         BinaryWriter binaryWriter = new BinaryWriter(bs);
         contract.serialize(binaryWriter);
@@ -33,7 +33,7 @@ public class ContractTest {
         byte[] seril = bs.toByteArray();
         assertNotNull(seril);
 
-        Contract contract1 = new Contract((byte)1,"test2".getBytes(),address,"test2","t2".getBytes());
+        Contract contract1 = new Contract((byte)1,address,"test2","t2".getBytes());
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(seril);
         BinaryReader binaryReader = new BinaryReader(byteArrayInputStream);
         contract1.deserialize(binaryReader);

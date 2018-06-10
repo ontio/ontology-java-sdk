@@ -51,8 +51,8 @@ public class OntAssetSM2Demo {
 
             State state = new State(acct0.getAddressU160(), recvAddr123, amount);
             Transfers transfers = new Transfers(new State[]{state});
-            Contract contract = new Contract((byte) 0, null, Address.parse(ontContractAddr), "transfer", transfers.toArray());
-            Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), sender.toBase58(),0,0);
+            Contract contract = new Contract((byte) 0, Address.parse(ontContractAddr), "transfer", transfers.toArray());
+            Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), sender.toBase58(),0,0);
             System.out.println(tx.json());
             ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct0}});
 
@@ -76,9 +76,9 @@ public class OntAssetSM2Demo {
 
             State state = new State(multiAddr, recvAddr, amount);
             Transfers transfers = new Transfers(new State[]{state});
-            Contract contract = new Contract((byte) 0, null, Address.parse(ontContractAddr), "transfer", transfers.toArray());
+            Contract contract = new Contract((byte) 0, Address.parse(ontContractAddr), "transfer", transfers.toArray());
             String addr = Address.addressFromMultiPubKeys(2, acct1.serializePublicKey(),acct3.serializePublicKey()).toBase58();
-            Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(),addr,0,0 );
+            Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), addr,0,0 );
 //            System.out.println(tx.json());
             ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct1, acct3}});
             System.out.println("tx.sigs.length:" + tx.sigs.length);
@@ -108,9 +108,9 @@ public class OntAssetSM2Demo {
             State state2 = new State(sender2, recvAddr, amount2);
 
             Transfers transfers = new Transfers(new State[]{state, state2});
-            Contract contract = new Contract((byte) 0, null, Address.parse(ontContractAddr), "transfer", transfers.toArray());
+            Contract contract = new Contract((byte) 0, Address.parse(ontContractAddr), "transfer", transfers.toArray());
 
-            Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), sender1.toBase58(),0,0);
+            Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(),sender1.toBase58(),0,0);
             System.out.println(tx.json());
             ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct0}, {acct1, acct2}});
 

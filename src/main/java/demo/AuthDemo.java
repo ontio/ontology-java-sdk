@@ -86,7 +86,7 @@ public class AuthDemo {
                 byte[] params = BuildParams.createCodeParamsScript(list);
 
                 ontSdk.vm().setCodeAddress(codeaddress);
-                Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(codeaddress,null,params, VmType.NEOVM.value(), payer.address,1000000000,0);
+                Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(codeaddress,null,params,payer.address,1000000000,0);
                 ontSdk.signTx(tx,payer.address,password);
                 boolean b = ontSdk.getConnect().sendRawTransaction(tx.toHexString());
                 if(b){
@@ -105,7 +105,7 @@ public class AuthDemo {
                 list.add(tmp);
                 byte[] params = BuildParams.createCodeParamsScript(list);
 
-                Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(codeaddress,null,params, VmType.NEOVM.value(), payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
+                Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(codeaddress,null,params,payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
 
                 Object res = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
 

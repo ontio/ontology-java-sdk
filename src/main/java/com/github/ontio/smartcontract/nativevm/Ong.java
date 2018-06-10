@@ -46,7 +46,6 @@ public class Ong {
     private OntSdk sdk;
     private final String ontContract = "ff00000000000000000000000000000000000001";
     private final String ongContract = "ff00000000000000000000000000000000000002";
-    private int precision = 1;
 
     public Ong(OntSdk sdk) {
         this.sdk = sdk;

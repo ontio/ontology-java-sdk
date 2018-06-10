@@ -25,9 +25,9 @@ import com.github.ontio.crypto.ECC;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+import static com.github.ontio.core.program.Program.*;
 
 /**
  *
@@ -39,6 +39,7 @@ public class Sig implements Serializable {
 
     @Override
     public void deserialize(BinaryReader reader) throws IOException {
+        //TODO fix below
     	int len = (int)reader.readVarInt();
         pubKeys = new byte[len][];
         for(int i=0;i<pubKeys.length;i++) {
@@ -54,24 +55,33 @@ public class Sig implements Serializable {
 
     @Override
     public void serialize(BinaryWriter writer) throws IOException {
-    	writer.writeVarInt(pubKeys.length);
-    	for(int i=0;i<pubKeys.length;i++) {
-            writer.writeVarBytes(pubKeys[i]);
+        writer.writeVarBytes(ProgramFromParams(sigData));
+        try {
+            if(pubKeys.length == 1){
+                writer.writeVarBytes(ProgramFromPubKey(pubKeys[0]));
+            }else if(pubKeys.length > 1){
+                writer.writeVarBytes(ProgramFromMultiPubKey(M,pubKeys));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        byte[] temp = new byte[1];
-    	temp[0] = (byte)M;
-        writer.write(temp);
-        writer.writeVarInt(sigData.length);
-        for (int i = 0; i < sigData.length; i++) {
-            writer.writeVarBytes(sigData[i]);
-        }
-    }
 
+    }
     public Object json() {
         Map json = new HashMap<>();
         json.put("M", M);
-        json.put("PubKeys", Arrays.stream(pubKeys).map(p->Helper.toHexString(p)).toArray(Object[]::new));
-        json.put("sigData", Arrays.stream(sigData).map(p->Helper.toHexString(p)).toArray(Object[]::new));
+        List list = new ArrayList();
+        for(int i=0;i<pubKeys.length;i++){
+            list.add(Helper.toHexString(pubKeys[i]));
+        }
+        List list2 = new ArrayList();
+        for(int i=0;i<sigData.length;i++){
+            list2.add(Helper.toHexString(sigData[i]));
+        }
+        json.put("PubKeys",list);
+        json.put("SigData",list2);
+        //json.put("PubKeys", Arrays.stream(pubKeys).map(p->Helper.toHexString(p)).toArray(String[]::new));
+        //json.put("SigData", Arrays.stream(sigData).map(p->Helper.toHexString(p)).toArray(String[]::new));
         return json;
     }
 

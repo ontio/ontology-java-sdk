@@ -48,7 +48,6 @@ import java.util.UUID;
 public class Ont {
     private OntSdk sdk;
     private final String ontContract = "ff00000000000000000000000000000000000001";
-    private int precision = 1;
 
     public Ont(OntSdk sdk) {
         this.sdk = sdk;
@@ -77,11 +76,14 @@ public class Ont {
         if (amount <= 0 || gasprice < 0 || gaslimit < 0) {
             throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
         }
+
         Transaction tx = makeTransfer(sendAcct.getAddressU160().toBase58(), recvAddr, amount, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.signTx(tx, new Account[][]{{sendAcct}});
         if (!sendAcct.equals(payerAcct)) {
             sdk.addSign(tx, payerAcct);
         }
+        System.out.println(tx.sigs[0].json());
+//        sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -106,10 +108,9 @@ public class Ont {
         if (amount <= 0 || gasprice < 0 || gaslimit < 0) {
             throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
         }
-        amount = amount * precision;
         State state = new State(Address.decodeBase58(sender), Address.decodeBase58(recvAddr), amount);
         Transfers transfers = new Transfers(new State[]{state});
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "transfer", transfers.toArray(), payer, gaslimit, gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ontContract)),"transfer",transfers.toArray(),payer,gaslimit, gasprice);
         return tx;
     }
 
@@ -134,7 +135,11 @@ public class Ont {
         if (address == null || address.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("address should not be null"));
         }
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ontContract)),"balanceOf",Address.decodeBase58(address).toArray(),null,0,0);
+        System.out.println(address);
+        System.out.println("balanceOf:"+Helper.toHexString(Address.decodeBase58(address).toArray()));
+        byte[] arg = BuildParams.buildParams(Address.decodeBase58(address).toArray());
+
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ontContract)),"balanceOf",arg,null,0,0);
 //        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "balanceOf", Address.decodeBase58(address).toArray(), VmType.Native.value(), null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");

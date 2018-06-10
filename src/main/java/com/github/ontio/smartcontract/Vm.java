@@ -143,9 +143,7 @@ public class Vm {
 //        }
         InvokeCode tx = new InvokeCode();
         tx.attributes = new Attribute[0];
-//        tx.attributes[0] = new Attribute();
-//        tx.attributes[0].usage = AttributeUsage.Nonce;
-//        tx.attributes[0].data = UUID.randomUUID().toString().getBytes();
+        tx.nonce = new Random().nextInt();
         tx.code = params;
         tx.gasLimit = gaslimit;
         tx.gasPrice = gasprice;

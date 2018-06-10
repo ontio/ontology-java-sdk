@@ -19,6 +19,7 @@
 
 package com.github.ontio.smartcontract.nativevm;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
@@ -26,20 +27,16 @@ import com.github.ontio.common.Address;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.transaction.Transaction;
-import com.github.ontio.core.transaction.Attribute;
-import com.github.ontio.core.transaction.AttributeUsage;
-import com.github.ontio.core.VmType;
 import com.github.ontio.core.asset.*;
-import com.github.ontio.core.payload.Vote;
-import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.sdk.info.AccountInfo;
+import com.github.ontio.smartcontract.nativevm.abi.AbiFunction;
+import com.github.ontio.smartcontract.nativevm.abi.AbiInfo;
+import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
+import com.github.ontio.smartcontract.nativevm.abi.Struct;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -48,7 +45,7 @@ import java.util.UUID;
 public class Ont {
     private OntSdk sdk;
     private final String ontContract = "ff00000000000000000000000000000000000001";
-
+    private String nativeAbi = "{\"hash\":\"0000000000000000000000000000000000000001\",\"functions\":[{\"name\":\"init\",\"parameters\":[],\"returntype\":\"Bool\"},{\"name\":\"transfer\",\"parameters\":[{\"name\":\"transfers\",\"type\":\"Struct\",\"subType\":[{\"name\":\"from\",\"type\":\"Address\"},{\"name\":\"to\",\"type\":\"Address\"},{\"name\":\"value\",\"type\":\"Int\"}]}],\"returntype\":\"Bool\"},{\"name\":\"approve\",\"parameters\":[{\"name\":\"from\",\"type\":\"Address\"},{\"name\":\"to\",\"type\":\"Address\"},{\"name\":\"value\",\"type\":\"Int\"}],\"returntype\":\"Bool\"},{\"name\":\"transferFrom\",\"parameters\":[{\"name\":\"sender\",\"type\":\"Address\"},{\"name\":\"from\",\"type\":\"Address\"},{\"name\":\"to\",\"type\":\"Address\"},{\"name\":\"value\",\"type\":\"Int\"}],\"returntype\":\"Bool\"},{\"name\":\"name\",\"parameters\":[],\"returntype\":\"String\"},{\"name\":\"symbol\",\"parameters\":[],\"returntype\":\"String\"},{\"name\":\"decimals\",\"parameters\":[],\"returntype\":\"Int\"},{\"name\":\"totalSupply\",\"parameters\":[],\"returntype\":\"Int\"},{\"name\":\"balanceOf\",\"parameters\":[{\"name\":\"account\",\"type\":\"Address\"}],\"returntype\":\"Int\"},{\"name\":\"allowance\",\"parameters\":[{\"name\":\"account\",\"type\":\"Address\"}],\"returntype\":\"Int\"}],\"events\":[{\"name\":\"transfer\",\"parameters\":[{\"name\":\"from\",\"type\":\"Address\"},{\"name\":\"to\",\"type\":\"Address\"},{\"name\":\"value\",\"type\":\"Int\"}]}]}";
     public Ont(OntSdk sdk) {
         this.sdk = sdk;
     }
@@ -82,8 +79,6 @@ public class Ont {
         if (!sendAcct.equals(payerAcct)) {
             sdk.addSign(tx, payerAcct);
         }
-        System.out.println(tx.sigs[0].json());
-//        sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -110,7 +105,19 @@ public class Ont {
         }
         State state = new State(Address.decodeBase58(sender), Address.decodeBase58(recvAddr), amount);
         Transfers transfers = new Transfers(new State[]{state});
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ontContract)),"transfer",transfers.toArray(),payer,gaslimit, gasprice);
+
+//        AbiInfo abiinfo = JSON.parseObject(nativeAbi, AbiInfo.class);
+//        AbiFunction func = abiinfo.getFunction("transfer");
+//        func.name = "transfer";
+//        func.setParamsValue(new Struct[]{new Struct(Address.decodeBase58(sender), Address.decodeBase58(recvAddr),amount)});
+//        byte[] params = NativeBuildParams.serializeAbiFunction(func);
+
+        List list = new ArrayList();
+        Struct[] states = new Struct[]{new Struct().add(Address.decodeBase58(sender),Address.decodeBase58(recvAddr),amount)};
+        list.add(states);
+        byte[] args = NativeBuildParams.createCodeParamsScript(list);
+        System.out.println("args:"+Helper.toHexString(args));
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ontContract)),"transfer",args,payer,gaslimit, gasprice);
         return tx;
     }
 
@@ -137,7 +144,7 @@ public class Ont {
         }
         System.out.println(address);
         System.out.println("balanceOf:"+Helper.toHexString(Address.decodeBase58(address).toArray()));
-        byte[] arg = BuildParams.buildParams(Address.decodeBase58(address).toArray());
+        byte[] arg = NativeBuildParams.buildParams(Address.decodeBase58(address).toArray());
 
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ontContract)),"balanceOf",arg,null,0,0);
 //        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "balanceOf", Address.decodeBase58(address).toArray(), VmType.Native.value(), null, 0, 0);
@@ -159,7 +166,7 @@ public class Ont {
         if (fromAddr == null || fromAddr.equals("") || toAddr == null || toAddr.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
-        byte[] parabytes = BuildParams.buildParams(Address.decodeBase58(fromAddr), Address.decodeBase58(toAddr));
+        byte[] parabytes = NativeBuildParams.buildParams(Address.decodeBase58(fromAddr), Address.decodeBase58(toAddr));
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "allowance", parabytes,  null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");

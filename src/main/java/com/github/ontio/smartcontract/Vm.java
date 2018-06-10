@@ -155,7 +155,7 @@ public class Vm {
 
     public Transaction buildNativeParams(Address codeAddr,String initMethod,byte[] args,String payer,long gaslimit,long gasprice) throws SDKException {
         ScriptBuilder sb = new ScriptBuilder();
-        sb.push(args);
+        sb.add(args);
         sb.push(initMethod.getBytes());
         sb.push(codeAddr.toArray());
         sb.push(BigInteger.valueOf(0));

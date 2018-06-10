@@ -1,8 +1,5 @@
 package com.github.ontio.sdk.manager;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.util.IOUtils;
 import com.github.ontio.OntSdk;
 import com.github.ontio.OntSdkTest;
 import com.github.ontio.common.Address;
@@ -14,22 +11,17 @@ import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
-import com.github.ontio.sdk.info.IdentityInfo;
 import com.github.ontio.sdk.wallet.Identity;
+import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
 import com.github.ontio.smartcontract.neovm.BuildParams;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.xml.crypto.dsig.TransformService;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
-
-import static org.junit.Assert.*;
 
 public class ConnectMgrTest {
 
@@ -115,7 +107,7 @@ public class ConnectMgrTest {
     @Test
     public void sendRawTransactionPreExec() throws Exception {
 
-        byte[] parabytes = com.github.ontio.smartcontract.nativevm.BuildParams.buildParams(Address.decodeBase58(address).toArray());
+        byte[] parabytes = NativeBuildParams.buildParams(Address.decodeBase58(address).toArray());
         Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContract,"balanceOf", parabytes,null,ontSdk.DEFAULT_GAS_LIMIT,0);
         Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         Assert.assertNotEquals(null,obj);

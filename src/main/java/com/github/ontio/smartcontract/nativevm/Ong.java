@@ -25,18 +25,12 @@ import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
-import com.github.ontio.core.VmType;
 import com.github.ontio.core.asset.State;
 import com.github.ontio.core.asset.TransferFrom;
 import com.github.ontio.core.asset.Transfers;
 import com.github.ontio.core.transaction.Transaction;
-import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.sdk.info.AccountInfo;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
+import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
 
 
 /**
@@ -147,7 +141,7 @@ public class Ong {
         if(fromAddr==null||fromAddr.equals("")||toAddr==null||toAddr.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
-        byte[] parabytes = BuildParams.buildParams(Address.decodeBase58(fromAddr), Address.decodeBase58(toAddr));
+        byte[] parabytes = NativeBuildParams.buildParams(Address.decodeBase58(fromAddr), Address.decodeBase58(toAddr));
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "allowance", parabytes,null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");

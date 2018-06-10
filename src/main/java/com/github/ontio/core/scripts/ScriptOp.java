@@ -59,7 +59,7 @@ public enum ScriptOp {
     OP_APPCALL(0x67),
     OP_SYSCALL(0x68),
     OP_VERIFY(0x69), // Marks transaction as invalid if top stack value is not true. True is removed, but false is not.
-    OP_HALT(0x6A), // Marks transaction as invalid.
+    OP_DUPFROMALTSTACK(0x6A), // Marks transaction as invalid.
 
 
     // Stack
@@ -150,17 +150,17 @@ public enum ScriptOp {
     OP_ARRAYSIZE(0xC0),
     OP_PACK(0xC1),
     OP_UNPACK(0xC2),
-    OP_DISTINCT(0xC3),
-    OP_SORT(0xC4),
-    OP_REVERSE(0xC5),
-    OP_CONCAT(0xC6),
-    OP_UNION(0xC7),
-    OP_INTERSECT(0xC8),
-    OP_EXCEPT(0xC9),
-    OP_TAKE(0xCA),
-    OP_SKIP(0xCB),
-    OP_PICKITEM(0xCC),
-    OP_ALL(0xCD),
+    OP_PICKITEM(0xC3),
+    OP_SETITEM(0xC4),
+    OP_NEWARRAY(0xC5),
+    OP_NEWSTRUCT(0xC6),
+    OP_NEWMAP(0xC7),
+    OP_APPEND(0xC8),
+    OP_REVERSE(0xC9),
+    OP_REMOVE(0xCA),
+    OP_HASKEY(0xCB),
+    OP_KEYS(0xCC),
+    OP_VALUES(0xCD),
     OP_ANY(0xCE),
     OP_SUM(0xCF),
     OP_AVERAGE(0xD0),

@@ -26,16 +26,13 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.*;
 import com.github.ontio.core.DataSignature;
-import com.github.ontio.core.VmType;
 import com.github.ontio.core.block.Block;
 import com.github.ontio.core.ontid.Attribute;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.Curve;
 import com.github.ontio.crypto.KeyType;
-import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
-import com.github.ontio.io.Serializable;
 import com.github.ontio.merkle.MerkleVerifier;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.claim.Claim;
@@ -43,15 +40,12 @@ import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.info.IdentityInfo;
 import com.github.ontio.sdk.wallet.Identity;
+import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
 
-import java.awt.color.CMMException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.*;
-
-import static java.awt.SystemColor.info;
 
 public class OntId {
     private OntSdk sdk;
@@ -135,7 +129,7 @@ public class OntId {
         }
         IdentityInfo info = sdk.getWalletMgr().getIdentityInfo(ontid, password);
         byte[] pk = Helper.hexToBytes(info.pubkey);
-        byte[] parabytes = BuildParams.buildParams(info.ontid, pk);
+        byte[] parabytes = NativeBuildParams.buildParams(info.ontid, pk);
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "regIDWithPublicKey", parabytes, payer, gaslimit, gasprice);
         return tx;
     }
@@ -196,7 +190,7 @@ public class OntId {
         }
         IdentityInfo info = sdk.getWalletMgr().getIdentityInfo(ontid, password);
         byte[] pk = Helper.hexToBytes(info.pubkey);
-        byte[] parabytes = BuildParams.buildParams(ontid, pk, attributes);
+        byte[] parabytes = NativeBuildParams.buildParams(ontid, pk, attributes);
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "regIDWithAttributes", parabytes, payer, gaslimit, gasprice);
         return tx;
     }
@@ -222,7 +216,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        byte[] parabytes = BuildParams.buildParams(ontid.getBytes());
+        byte[] parabytes = NativeBuildParams.buildParams(ontid.getBytes());
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "getPublicKeys", parabytes, null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
@@ -260,7 +254,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        byte[] parabytes = BuildParams.buildParams(ontid.getBytes(), index);
+        byte[] parabytes = NativeBuildParams.buildParams(ontid.getBytes(), index);
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "getKeyState", parabytes, null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
@@ -277,7 +271,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        byte[] parabytes = BuildParams.buildParams(ontid.getBytes());
+        byte[] parabytes = NativeBuildParams.buildParams(ontid.getBytes());
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "getAttributes", parabytes, null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
@@ -391,9 +385,9 @@ public class OntId {
         if (recoveryOntid == null) {
             AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid, password);
             byte[] pk = Helper.hexToBytes(info.pubkey);
-            parabytes = BuildParams.buildParams(ontid.getBytes(), Helper.hexToBytes(newpubkey), pk);
+            parabytes = NativeBuildParams.buildParams(ontid.getBytes(), Helper.hexToBytes(newpubkey), pk);
         } else {
-            parabytes = BuildParams.buildParams(ontid, Helper.hexToBytes(newpubkey), Address.decodeBase58(recoveryOntid.replace(Common.didont,"")).toArray());
+            parabytes = NativeBuildParams.buildParams(ontid, Helper.hexToBytes(newpubkey), Address.decodeBase58(recoveryOntid.replace(Common.didont,"")).toArray());
         }
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "addKey", parabytes,payer, gaslimit, gasprice);
         return tx;
@@ -490,9 +484,9 @@ public class OntId {
         if (recoveryAddr == null) {
             AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid.replace(Common.didont, ""), password);
             byte[] pk = Helper.hexToBytes(info.pubkey);
-            parabytes = BuildParams.buildParams(ontid, Helper.hexToBytes(removePubkey), pk);
+            parabytes = NativeBuildParams.buildParams(ontid, Helper.hexToBytes(removePubkey), pk);
         } else {
-            parabytes = BuildParams.buildParams(ontid, Helper.hexToBytes(removePubkey), Address.decodeBase58(recoveryAddr).toArray());
+            parabytes = NativeBuildParams.buildParams(ontid, Helper.hexToBytes(removePubkey), Address.decodeBase58(recoveryAddr).toArray());
         }
 
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "removeKey", parabytes, payer, gaslimit, gasprice);
@@ -553,7 +547,7 @@ public class OntId {
         String addr = ontid.replace(Common.didont, "");
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
         byte[] pk = Helper.hexToBytes(info.pubkey);
-        byte[] parabytes = BuildParams.buildParams(ontid, Address.decodeBase58(recoveryAddr), pk);
+        byte[] parabytes = NativeBuildParams.buildParams(ontid, Address.decodeBase58(recoveryAddr), pk);
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "addRecovery", parabytes, payer, gaslimit, gasprice);
         return tx;
     }
@@ -607,7 +601,7 @@ public class OntId {
         }
         Address newAddr = Address.decodeBase58(newRecoveryOntId.replace(Common.didont,""));
         Address oldAddr = Address.decodeBase58(oldRecoveryOntId.replace(Common.didont,""));
-        byte[] parabytes = BuildParams.buildParams(ontid, newAddr, oldAddr);
+        byte[] parabytes = NativeBuildParams.buildParams(ontid, newAddr, oldAddr);
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "changeRecovery", parabytes, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         return tx;
     }
@@ -636,7 +630,7 @@ public class OntId {
         }
         Address newAddr = Address.decodeBase58(newRecoveryOntId.replace(Common.didont,""));
         Address oldAddr = Address.decodeBase58(oldRecoveryOntId.replace(Common.didont,""));
-        byte[] parabytes = BuildParams.buildParams(ontid.getBytes(),newAddr.toArray(),oldAddr.toArray());
+        byte[] parabytes = NativeBuildParams.buildParams(ontid.getBytes(),newAddr.toArray(),oldAddr.toArray());
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "changeRecovery", parabytes, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.signTx(tx, new com.github.ontio.account.Account[][]{accounts});
         sdk.addSign(tx, payerAcct);
@@ -701,7 +695,7 @@ public class OntId {
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
         password = null;
         byte[] pk = Helper.hexToBytes(info.pubkey);
-        byte[] parabytes = BuildParams.buildParams(ontid, attributes, pk);
+        byte[] parabytes = NativeBuildParams.buildParams(ontid, attributes, pk);
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "addAttributes", parabytes, payer, gaslimit, gasprice);
         return tx;
     }
@@ -759,7 +753,7 @@ public class OntId {
         String addr = ontid.replace(Common.didont, "");
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
         byte[] pk = Helper.hexToBytes(info.pubkey);
-        byte[] parabytes = BuildParams.buildParams(ontid.getBytes(), path.getBytes(), pk);
+        byte[] parabytes = NativeBuildParams.buildParams(ontid.getBytes(), path.getBytes(), pk);
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "removeAttribute", parabytes,addr, gaslimit, gasprice);
         return tx;
     }
@@ -945,7 +939,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        byte[] parabytes = BuildParams.buildParams(ontid.getBytes());
+        byte[] parabytes = NativeBuildParams.buildParams(ontid.getBytes());
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "getDDO", parabytes, null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");

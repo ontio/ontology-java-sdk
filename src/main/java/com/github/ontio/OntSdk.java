@@ -49,6 +49,7 @@ public class OntSdk {
     private NativeVm nativevm = null;
     private NeoVm neovm = null;
     private WasmVm wasmvm = null;
+    private SignServer signServer = null;
 
 
     private static OntSdk instance = null;
@@ -62,7 +63,12 @@ public class OntSdk {
     }
     private OntSdk(){
     }
-
+    public SignServer getSignServer() throws SDKException{
+        if(signServer == null){
+            throw new SDKException(ErrorCode.OtherError("signServer null"));
+        }
+        return signServer;
+    }
     public NativeVm nativevm() throws SDKException{
         if(nativevm == null){
             vm();
@@ -148,7 +154,9 @@ public class OntSdk {
         walletMgr.setSignatureScheme(scheme);
     }
 
-
+    public void setSignServer(String url) throws Exception{
+        this.signServer = new SignServer(url);
+    }
     public void setRpc(String url) {
         this.connRpc = new ConnectMgr(url, "rpc");
     }

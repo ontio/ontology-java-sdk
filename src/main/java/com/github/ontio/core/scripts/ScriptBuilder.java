@@ -23,6 +23,7 @@ import java.io.*;
 import java.math.BigInteger;
 import java.nio.*;
 
+import com.github.ontio.common.Helper;
 import com.github.ontio.common.UIntBase;
 
 /**
@@ -77,6 +78,17 @@ public class ScriptBuilder implements AutoCloseable {
         byteBuffer.putLong(number.longValue());
         return push(byteBuffer.array());
     }
+
+    public ScriptBuilder pushNum(short num) {
+        if(num == 0) {
+            return add(ScriptOp.OP_0);
+        }else if(num < 16){
+            return add(ScriptOp.valueOf(num - 1 + ScriptOp.OP_1.getByte()));
+        }
+        BigInteger bint = BigInteger.valueOf(num);
+        return push(Helper.BigInt2Bytes(bint));
+    }
+
 
     public ScriptBuilder push(byte[] data) {
         if (data == null) {

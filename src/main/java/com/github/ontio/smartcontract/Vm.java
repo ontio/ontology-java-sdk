@@ -109,10 +109,11 @@ public class Vm {
         Contract contract = new Contract((byte) 0, Address.parse(codeAddr), method, params);
         params = Helper.addBytes(new byte[]{0x67}, contract.toArray());
         InvokeCode tx = new InvokeCode();
-        tx.attributes = new Attribute[1];
-        tx.attributes[0] = new Attribute();
-        tx.attributes[0].usage = AttributeUsage.Nonce;
-        tx.attributes[0].data = UUID.randomUUID().toString().getBytes();
+        tx.attributes = new Attribute[0];
+        tx.nonce = new Random().nextInt();
+//        tx.attributes[0] = new Attribute();
+//        tx.attributes[0].usage = AttributeUsage.Nonce;
+//        tx.attributes[0].data = UUID.randomUUID().toString().getBytes();
         tx.code = params;
         tx.gasLimit = gaslimit;
         tx.gasPrice = gasprice;
@@ -155,7 +156,9 @@ public class Vm {
 
     public Transaction buildNativeParams(Address codeAddr,String initMethod,byte[] args,String payer,long gaslimit,long gasprice) throws SDKException {
         ScriptBuilder sb = new ScriptBuilder();
-        sb.add(args);
+        if(args.length >0) {
+            sb.add(args);
+        }
         sb.push(initMethod.getBytes());
         sb.push(codeAddr.toArray());
         sb.push(BigInteger.valueOf(0));

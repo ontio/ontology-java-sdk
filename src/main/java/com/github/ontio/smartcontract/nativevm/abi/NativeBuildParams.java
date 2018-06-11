@@ -82,7 +82,6 @@ public class NativeBuildParams {
                     builder.push((byte[]) val);
                 } else if (val instanceof Boolean) {
                     builder.push((Boolean) val);
-                    System.out.println(Helper.toHexString(builder.toArray()));
                 } else if (val instanceof Long) {
                     builder.push(BigInteger.valueOf((long)val));
                 } else if(val instanceof Address){
@@ -91,7 +90,6 @@ public class NativeBuildParams {
                 } else if (val instanceof List) {
                     List tmp = (List) val;
                     createCodeParamsScript(builder, tmp);
-                    System.out.println(Helper.toHexString(builder.toArray()));
                     builder.push(new BigInteger(String.valueOf(tmp.size())));
                     builder.pushPack();
 
@@ -110,12 +108,10 @@ public class NativeBuildParams {
                 builder.push((byte[]) val);
             } else if (val instanceof Boolean) {
                 builder.push((Boolean) val);
-                System.out.println(Helper.toHexString(builder.toArray()));
             } else if (val instanceof Long) {
                 builder.push(BigInteger.valueOf((long) val));
             } else if (val instanceof Address) {
                 builder.push(((Address) val).toArray());
-                System.out.println(Helper.toHexString(builder.toArray()));
             } else if(val instanceof Struct){
                 for(int k =0;k<((Struct) val).list.size();k++) {
                     Object o = ((Struct) val).list.get(k);
@@ -142,7 +138,6 @@ public class NativeBuildParams {
                 Object val = list.get(i);
                 if (val instanceof byte[]) {
                     sb.push((byte[]) val);
-                    System.out.println(Helper.toHexString(sb.toArray()));
                 } else if (val instanceof Boolean) {
                     sb.push((Boolean) val);
                 } else if (val instanceof Long) {
@@ -151,9 +146,11 @@ public class NativeBuildParams {
                     sb.push((BigInteger)val);
                 } else if(val instanceof Address){
                     sb.push(((Address) val).toArray());
-                    System.out.println(Helper.toHexString(sb.toArray()));
                 }
                 else if(val instanceof Struct){
+                    sb.push(BigInteger.valueOf(0));
+                    sb.add(ScriptOp.OP_NEWSTRUCT);
+                    sb.add(ScriptOp.OP_TOALTSTACK);
                     for(int k =0;k<((Struct) val).list.size();k++) {
                         Object o = ((Struct) val).list.get(k);
                         createCodeParamsScript(sb, o);
@@ -161,6 +158,7 @@ public class NativeBuildParams {
                         sb.add(ScriptOp.OP_SWAP);
                         sb.add(ScriptOp.OP_APPEND);
                     }
+                    sb.add(ScriptOp.OP_FROMALTSTACK);
                 }
                 else if(val instanceof Struct[]){
                     sb.push(BigInteger.valueOf(0));
@@ -173,11 +171,9 @@ public class NativeBuildParams {
                     sb.add(ScriptOp.OP_FROMALTSTACK);
                     sb.push(new BigInteger(String.valueOf(structs.length)));
                     sb.pushPack();
-                    System.out.println("Struct:"+Helper.toHexString(sb.toArray()));
                 } else if (val instanceof List) {
                     List tmp = (List) val;
                     createCodeParamsScript(sb, tmp);
-                    System.out.println(Helper.toHexString(sb.toArray()));
                     sb.push(new BigInteger(String.valueOf(tmp.size())));
                     sb.pushPack();
                 } else {
@@ -193,19 +189,21 @@ public class NativeBuildParams {
         list.add(abiFunction.getName().getBytes());
         List tmp = new ArrayList<Object>();
         for (Parameter obj : abiFunction.getParameters()) {
-            if ("ByteArray".equals(obj.getType())) {
+            if ("Byte".equals(obj.getType())) {
+                tmp.add(JSON.parseObject(obj.getValue(), byte.class));
+            } else if ("ByteArray".equals(obj.getType())) {
                 tmp.add(JSON.parseObject(obj.getValue(), byte[].class));
             } else if ("String".equals(obj.getType())) {
                 tmp.add(obj.getValue());
-            } else if ("Boolean".equals(obj.getType())) {
+            } else if ("Bool".equals(obj.getType())) {
                 tmp.add(JSON.parseObject(obj.getValue(), boolean.class));
-            } else if ("Integer".equals(obj.getType())) {
+            } else if ("Int".equals(obj.getType())) {
                 tmp.add(JSON.parseObject(obj.getValue(), Long.class));
             } else if ("Array".equals(obj.getType())) {
                 tmp.add(JSON.parseObject(obj.getValue(), Array.class));
-            } else if ("InteropInterface".equals(obj.getType())) {
-                tmp.add(JSON.parseObject(obj.getValue(), Object.class));
-            } else if ("Void".equals(obj.getType())) {
+            } else if ("Struct".equals(obj.getType())) {
+                //tmp.add(JSON.parseObject(obj.getValue(), Object.class));
+            } else if ("Uint256".equals(obj.getType())) {
 
             } else if ("Address".equals(obj.getType())) {
 

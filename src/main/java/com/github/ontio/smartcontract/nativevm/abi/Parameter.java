@@ -31,7 +31,7 @@ import java.util.List;
 public class Parameter {
     public String name;
     public String type;
-    public Object[] subType;
+    public SubType[] subType;
     public String value;
 
     public String getName() {
@@ -45,12 +45,18 @@ public class Parameter {
     public String getValue() {
         return value;
     }
+    public SubType[] getSubType() {
+        return subType;
+    }
 
     public boolean setValue(Object value) {
         try {
             if(value == null) {
                 this.value = null;
-            }else if ("ByteArray".equals(type)) {
+            }else if ("Byte".equals(type)) {
+                byte tmp = (byte) value;
+                this.value = JSON.toJSONString(tmp);
+            } else if ("ByteArray".equals(type)) {
                 byte[] tmp = (byte[]) value;
                 this.value = JSON.toJSONString(tmp);
             } else if ("String".equals(type)) {
@@ -64,12 +70,14 @@ public class Parameter {
             } else if ("Array".equals(type)) {
                 List tmp = (List) value;
                 this.value = JSON.toJSONString(tmp);
-            } else if ("InteropInterface".equals(type)) {
-                Object tmp = (Object) value;
-                this.value = JSON.toJSONString(tmp);
-            } else if ("Void".equals(type)) {
+            } else if ("Uint256".equals(type)) {
             } else if ("Address".equals(type)) {
             } else if ("Struct".equals(type)) {
+                Struct tmp = (Struct) value;
+                for(int i=0;i<tmp.list.size();i++){
+                    subType[i] = new SubType();
+                    subType[i].setParamsValue(tmp.list);
+                }
             } else {
                 throw new SDKException(ErrorCode.TypeError);
             }

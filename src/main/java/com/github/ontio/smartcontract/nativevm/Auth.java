@@ -14,6 +14,7 @@ import com.github.ontio.sdk.exception.SDKException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 
 /**
  * @Description:
@@ -409,14 +410,14 @@ class TransferParam implements Serializable {
     public void deserialize(BinaryReader reader) throws IOException {
         this.contractAddr = reader.readVarBytes();
         this.newAdminOntID = reader.readVarBytes();
-        KeyNo = reader.readVarInt();
+        KeyNo = Helper.BigIntFromBytes(reader.readVarBytes()).longValue();
     }
 
     @Override
     public void serialize(BinaryWriter writer) throws IOException {
         writer.writeVarBytes(this.contractAddr);
         writer.writeVarBytes(this.newAdminOntID);
-        writer.writeVarInt(KeyNo);
+        writer.writeVarBytes(Helper.BigInt2Bytes(BigInteger.valueOf(KeyNo)));
     }
 }
 class VerifyTokenParam implements Serializable{
@@ -509,7 +510,7 @@ class OntIDsToRoleParam implements Serializable{
         for(int i = 0; i< length;i++){
             this.persons[i] = reader.readVarBytes();
         }
-        this.keyNo = reader.readVarInt();
+        this.keyNo = Helper.BigIntFromBytes(reader.readVarBytes()).longValue();
     }
 
     @Override
@@ -521,7 +522,7 @@ class OntIDsToRoleParam implements Serializable{
         for(byte[] p: this.persons){
             writer.writeVarBytes(p);
         }
-        writer.writeVarInt(this.keyNo);
+        writer.writeVarBytes(Helper.BigInt2Bytes(BigInteger.valueOf(this.keyNo)));
     }
 }
 
@@ -554,9 +555,9 @@ class DelegateParam implements  Serializable{
         writer.writeVarBytes(this.from);
         writer.writeVarBytes(this.to);
         writer.writeVarBytes(this.role);
-        writer.writeVarInt(this.period);
-        writer.writeVarInt(this.level);
-        writer.writeVarInt(this.keyNo);
+        writer.writeVarBytes(Helper.BigInt2Bytes(BigInteger.valueOf(this.period)));
+        writer.writeVarBytes(Helper.BigInt2Bytes(BigInteger.valueOf(this.level)));
+        writer.writeVarBytes(Helper.BigInt2Bytes(BigInteger.valueOf(this.keyNo)));
     }
 }
 
@@ -584,7 +585,7 @@ class AuthWithdrawParam implements Serializable{
         writer.writeVarBytes(this.initiator);
         writer.writeVarBytes(this.delegate);
         writer.writeVarBytes(this.role);
-        writer.writeVarInt(this.keyNo);
+        writer.writeVarBytes(Helper.BigInt2Bytes(BigInteger.valueOf(this.keyNo)));
     }
 }
 

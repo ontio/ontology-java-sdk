@@ -20,6 +20,8 @@
 package com.github.ontio.core.asset;
 
 import com.github.ontio.common.Helper;
+import com.github.ontio.core.program.Program;
+import com.github.ontio.core.program.ProgramInfo;
 import com.github.ontio.io.*;
 import com.github.ontio.crypto.ECC;
 
@@ -39,18 +41,12 @@ public class Sig implements Serializable {
 
     @Override
     public void deserialize(BinaryReader reader) throws IOException {
-        //TODO fix below
-    	int len = (int)reader.readVarInt();
-        pubKeys = new byte[len][];
-        for(int i=0;i<pubKeys.length;i++) {
-            pubKeys[i] = reader.readVarBytes();
-        }
-        M = (int)reader.readVarInt();
-        len = (int)reader.readVarInt();
-        sigData = new byte[len][];
-        for(int i=0;i<sigData.length;i++) {
-            sigData[i] = reader.readVarBytes();
-        }
+        byte[] invocationScript = reader.readVarBytes();
+        byte[] verificationScript = reader.readVarBytes();
+        sigData = Program.getParamInfo(invocationScript);
+        ProgramInfo info = Program.getProgramInfo(verificationScript);
+        pubKeys = info.publicKey;
+        M = info.m;
     }
 
     @Override

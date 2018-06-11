@@ -23,11 +23,15 @@ import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.scripts.ScriptBuilder;
 import com.github.ontio.core.scripts.ScriptOp;
+import com.github.ontio.io.BinaryReader;
 import com.github.ontio.sdk.exception.SDKException;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @Description:
@@ -71,4 +75,162 @@ public class Program {
             return sb.toArray();
         }
     }
+
+    public static byte[][] getParamInfo(byte[] program) {
+        ByteArrayInputStream bais = new ByteArrayInputStream(program);
+        BinaryReader br = new BinaryReader(bais);
+        List<byte[]> list = new ArrayList();
+        while(true){
+            try {
+                list.add(readBytes(br));
+            } catch (IOException e) {
+                break;
+            }
+        }
+        byte[][] res = new byte[list.size()][];
+        for(int i=0;i < list.size(); i++){
+            res[i] = list.get(i);
+        }
+        return res;
+    }
+
+    public static byte[] readBytes(BinaryReader br) throws IOException {
+
+        byte code = br.readByte();
+        long keyLen;
+        if(code == ScriptOp.OP_PUSHDATA4.getByte()){
+            int temp;
+            temp = br.readInt();
+            keyLen = Long.valueOf(temp);
+        } else if(code == ScriptOp.OP_PUSHDATA2.getByte()){
+            int temp;
+            temp = br.readShort();
+            keyLen = Long.valueOf(temp);
+        }else if(code == ScriptOp.OP_PUSHDATA1.getByte()) {
+            int temp;
+            temp = br.readByte();
+            keyLen = Long.valueOf(temp);
+        }else if(code <= ScriptOp.OP_PUSHBYTES75.getByte() && code >= ScriptOp.OP_PUSHBYTES1.getByte()){
+            keyLen = Long.valueOf(code) - Long.valueOf(ScriptOp.OP_PUSHBYTES1.getByte()) + 1;
+        }else{
+            keyLen = 0;
+        }
+        byte[] res = br.readBytes((int) keyLen);
+        return res;
+    }
+
+    public static ProgramInfo getProgramInfo(byte[] program) throws IOException {
+        ProgramInfo info = new ProgramInfo();
+        if(program.length <= 2) {
+
+        }
+        byte end = program[program.length - 1];
+        byte[] temp = new byte[program.length - 1];
+        System.arraycopy(program,0,temp,0,program.length - 1);
+        ByteArrayInputStream bais = new ByteArrayInputStream(temp);
+        BinaryReader reader = new BinaryReader(bais);
+        if(end == ScriptOp.OP_CHECKSIG.getByte()){
+            try {
+                byte[] publicKey = readBytes(reader);
+                info.setPublicKey(new byte[][]{publicKey});
+                info.setM((short)1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else if(end == ScriptOp.OP_CHECKMULTISIG.getByte()) {
+            short m = 0;
+            try {
+                m = readNum(reader);
+            } catch (SDKException e) {
+                e.printStackTrace();
+            }
+            byte[][] pub = new byte[m][];
+            for(int i =0; i<(int)m; i++){
+                pub[i] = readBytes(reader);
+            }
+            info.setPublicKey(pub);
+            List<byte[]> buffer = new ArrayList();
+            while(true){
+                ScriptOp code = readOpCode(reader);
+                if(code == ScriptOp.OP_CHECKMULTISIG){
+                    readOpCode(reader);
+                    break;
+                }else if(code == ScriptOp.OP_0){
+                    readOpCode(reader);
+                    BigInteger bint = BigInteger.valueOf(0);
+                    buffer.add(Helper.BigInt2Bytes(bint));
+                }else{
+                    int num = (int)code.getByte() - (int)ScriptOp.OP_1.getByte() + 1;
+                    if(num >= 1 && num <= 16){
+                        readOpCode(reader);
+                        BigInteger bint = BigInteger.valueOf(num);
+                        buffer.add(Helper.BigInt2Bytes(bint));
+                    }else{
+                        buffer.add(readBytes(reader));
+                    }
+                }
+            }
+            byte[][] buffers = new byte[buffer.size()][];
+            for(int i = 0;i < buffer.size();i++){
+                buffers[i] = buffer.get(i);
+            }
+            BigInteger bint = new BigInteger(buffers[buffers.length - 1]);
+            long n = bint.longValue();
+            if(1 <= m && m<=n && n<= 1024){
+//                throw new SDKException(ErrorCode.OtherError(""));
+            }
+            info.setPublicKey(buffers);
+        }
+        return info;
+    }
+
+    public static short readNum(BinaryReader reader) throws IOException, SDKException {
+        ScriptOp code = readOpCode(reader);
+        if(code == ScriptOp.OP_0){
+            readOpCode(reader);
+            return 0;
+        }else {
+            int num = (int)code.getByte() - (int)ScriptOp.OP_1.getByte() + 1;
+            if(num >= 1 && num <= 16) {
+                readOpCode(reader);
+                return (short)num;
+            }
+        }
+        byte[] buff = readBytes(reader);
+        BigInteger bint = Helper.BigIntFromBytes(buff);
+        long num = bint.longValue();
+        if(num > Short.MAX_VALUE || num < 16){
+            throw new SDKException(ErrorCode.ParamErr("num is wrong"));
+        }
+        return (short)num;
+    }
+    public static ScriptOp readOpCode(BinaryReader reader) throws IOException {
+        return ScriptOp.valueOf(reader.readByte());
+    }
+
+    public static byte[] programFromParams(byte[][] sigs) {
+        ScriptBuilder builder = new ScriptBuilder();
+        for(byte[] sigdata : sigs){
+            builder.push(sigdata);
+        }
+        return builder.toArray();
+    }
+    public static byte[] programFromPubKey(byte[] publicKey) {
+        ScriptBuilder builder = new ScriptBuilder();
+        builder.push(publicKey);
+        builder.add(ScriptOp.OP_CHECKSIG);
+        return builder.toArray();
+    }
+
+    public static byte[] programFromMultiPubKey(byte[][] publicKey,short m) throws SDKException {
+        int n = publicKey.length;
+        if (m >= 1 && m <= n && n <= 1024) {
+            throw new SDKException(ErrorCode.ParamErr("m is wrong"));
+        }
+        ScriptBuilder builder = new ScriptBuilder();
+        builder.pushNum(m);
+        builder.add(ScriptOp.OP_CHECKSIG);
+        return builder.toArray();
+    }
 }
+

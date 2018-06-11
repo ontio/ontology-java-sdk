@@ -88,10 +88,8 @@ public class Vm {
         if(payer != null){
             tx.payer = Address.decodeBase58(payer.replace(Common.didont,""));
         }
-        tx.attributes = new Attribute[1];
-        tx.attributes[0] = new Attribute();
-        tx.attributes[0].usage = AttributeUsage.Nonce;
-        tx.attributes[0].data = UUID.randomUUID().toString().getBytes();
+        tx.attributes = new Attribute[0];
+        tx.nonce = new Random().nextInt();
         tx.code = Helper.hexToBytes(codeStr);
         tx.version = codeVersion;
         tx.needStorage = needStorage;

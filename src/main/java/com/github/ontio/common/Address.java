@@ -187,8 +187,4 @@ public class Address extends UIntBase implements Comparable<Address> {
         return Base58.encode(data);
     }
 
-    @Override
-    public String toHexString() {
-        return Helper.toHexString(this.toArray());
-    }
 }

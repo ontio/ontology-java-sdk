@@ -37,12 +37,11 @@ public class OntAssetDemo {
     public static String privatekey3 = "bc254cf8d3910bc615ba6bf09d4553846533ce4403bc24f58660ae150a6d64cf";
     public static String privatekey4 = "06bda156eda61222693cc6f8488557550735c329bc7ca91bd2994c894cd3cbc8";
     public static String privatekey5 = "f07d5a2be17bde8632ec08083af8c760b41b5e8e0b5de3703683c3bdcfb91549";
+    public static String privatekey6 = "0bc8c1f75a028672cd42c221bf81709dfc7abbbaf0d87cb6fdeaf9a20492c194";
     public static void main(String[] args) {
 
         try {
             OntSdk ontSdk = getOntSdk();
-
-
             String privatekey0 = "c19f16785b8f3543bbaf5e1dbb5d398dfa6c85aaad54fc9d71203ce83e505c07";
             privatekey0 = "59e68b0cc387dd4e36e50c0562ff589f1d9289d32fc694b8918a3859faba6c67";
             com.github.ontio.account.Account payerAcct = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey0),ontSdk.defaultSignScheme);
@@ -52,6 +51,7 @@ public class OntAssetDemo {
             com.github.ontio.account.Account acct3 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey3), ontSdk.defaultSignScheme);
             com.github.ontio.account.Account acct4 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey4), ontSdk.defaultSignScheme);
             com.github.ontio.account.Account acct5 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey5), ontSdk.defaultSignScheme);
+            com.github.ontio.account.Account acct6 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey6), ontSdk.defaultSignScheme);
             System.out.println("acct0:" + acct0.getAddressU160().toBase58());
             System.out.println("acct1:" + acct1.getAddressU160().toBase58());
             System.out.println("acct2:" + acct2.getAddressU160().toBase58());
@@ -59,20 +59,22 @@ public class OntAssetDemo {
 
             Address.decodeBase58("TA9MXtwAcXkUMuujJh2iNRaWoXrvzfrmZb");
 
-            if (true) {
-                ontSdk.nativevm().ont().sendApprove(acct0,acct1.getAddressU160().toBase58(),100,payerAcct,30000,0);
-
-                System.out.println(ontSdk.nativevm().ont().queryAllowance(acct0.getAddressU160().toBase58(), acct1.getAddressU160().toBase58()));
-                System.out.println("acct0:" + ontSdk.getConnect().getBalance(acct0.getAddressU160().toBase58()));
-                System.out.println("acct1:" + ontSdk.getConnect().getBalance(acct1.getAddressU160().toBase58()));
-                System.out.println("acct2:" + ontSdk.getConnect().getBalance(acct2.getAddressU160().toBase58()));
-                System.out.println(ontSdk.getConnect().getAllowance("ont",acct0.getAddressU160().toBase58(), acct1.getAddressU160().toBase58()));
+            if (false) {
+//                ontSdk.nativevm().ong().sendApprove(acct6,acct1.getAddressU160().toBase58(),100,payerAcct,30000,0);
+//                Thread.sleep(6000);
+                System.out.println(ontSdk.nativevm().ong().queryAllowance(acct6.getAddressU160().toBase58(), acct1.getAddressU160().toBase58()));
+//                System.out.println("acct0:" + ontSdk.getConnect().getBalance(acct0.getAddressU160().toBase58()));
+//                System.out.println("acct1:" + ontSdk.getConnect().getBalance(acct1.getAddressU160().toBase58()));
+//                System.out.println("acct2:" + ontSdk.getConnect().getBalance(acct2.getAddressU160().toBase58()));
+//                System.out.println(ontSdk.getConnect().getAllowance("ont",acct0.getAddressU160().toBase58(), acct1.getAddressU160().toBase58()));
             }
-            if (true) {
-                ontSdk.nativevm().ont().sendTransferFrom(acct1,acct0.getAddressU160().toBase58(),acct2.getAddressU160().toBase58(),10,payerAcct,30000,0);
+            if (false) {
+                String hash = ontSdk.nativevm().ong().sendTransferFrom(acct1,acct6.getAddressU160().toBase58(),acct1.getAddressU160().toBase58(),100,payerAcct,30000,0);
+                Thread.sleep(6000);
+                System.out.println(ontSdk.getConnect().getSmartCodeEvent(Helper.reverse(hash)));
             }
-            if(true){
-//                System.out.println(ontSdk.nativevm().ont().queryBalanceOf("TU5exRFVqjRi5wnMVzNoWKBq9WFncLXEjK"));
+            if(false){
+                System.out.println(ontSdk.nativevm().ong().queryBalanceOf(acct6.getAddressU160().toBase58()));
                 //System.out.println(ontSdk.nativevm().ont().queryTotalSupply());
 //                System.exit(0);
                 //String hash = ontSdk.nativevm().ont().sendTransfer(acct0,acct1.getAddressU160().toBase58(),11,acct0,ontSdk.DEFAULT_GAS_LIMIT,0);
@@ -82,7 +84,7 @@ public class OntAssetDemo {
                // ontSdk.nativevm().ong().claimOng(acct0,acct0.getAddressU160().toBase58(),49520000000000L,acct0,ontSdk.DEFAULT_GAS_LIMIT,0);
             }
             if(false){
-                System.out.println(ontSdk.nativevm().ong().unclaimOng(acct0.getAddressU160().toBase58()));
+                System.out.println(ontSdk.nativevm().ong().unclaimOng(acct6.getAddressU160().toBase58()));
                 System.out.println(ontSdk.nativevm().ong().queryName());
                 System.out.println(ontSdk.nativevm().ong().querySymbol());
                 System.out.println(ontSdk.nativevm().ong().queryDecimals());
@@ -90,13 +92,17 @@ public class OntAssetDemo {
             }
             if(false){
 
-                ontSdk.nativevm().ong().sendTransfer(acct0,acct1.getAddressU160().toBase58(),1000L,payerAcct,30000,0);
+                String hash = ontSdk.nativevm().ont().sendTransfer(acct6,acct1.getAddressU160().toBase58(),1000L,payerAcct,30000,0);
 
-                String hash0 = ontSdk.nativevm().ont().sendTransfer(acct0, acct1.getAddressU160().toBase58(), 30L, payerAcct, 30000, 0);
+//                String hash = ontSdk.nativevm().ont().sendTransfer(acct0, acct1.getAddressU160().toBase58(), 30L, payerAcct, 30000, 0);
+                Thread.sleep(6000);
+                System.out.println(ontSdk.getConnect().getSmartCodeEvent(Helper.reverse(hash)));
             }
-            if(false){
-                System.out.println(ontSdk.nativevm().ong().unclaimOng(acct0.getAddressU160().toBase58()));
-                String hash = ontSdk.nativevm().ong().claimOng(acct0, acct1.getAddressU160().toBase58(), 8960000000000L, payerAcct, 30000, 0);
+            if(true){
+                System.out.println(ontSdk.nativevm().ong().unclaimOng(acct6.getAddressU160().toBase58()));
+                String hash = ontSdk.nativevm().ong().claimOng(acct6, acct6.getAddressU160().toBase58(), 195107356000000000L, payerAcct, 30000, 0);
+                Thread.sleep(6000);
+                System.out.println(ontSdk.getConnect().getSmartCodeEvent(Helper.reverse(hash)));
             }
             if(false) {
                 System.out.println(ontSdk.nativevm().ont().queryName());

@@ -177,10 +177,10 @@ public abstract class Transaction extends Inventory {
         Map json = new HashMap();
         json.put("Hash", hash().toString());
         json.put("Version", (int) version);
-        json.put("Nonce", nonce& (Integer.MAX_VALUE*2-1));
-        json.put("TxType", txType.value() & (Byte.MAX_VALUE*2-1));
-        json.put("GasPrice",gasPrice& (Long.MAX_VALUE*2-1));
-        json.put("GasLimit",gasLimit& (Long.MAX_VALUE*2-1));
+        json.put("Nonce", nonce& 0xFFFFFFFF);
+        json.put("TxType", txType.value() & 0xFF);
+        json.put("GasPrice",gasPrice);
+        json.put("GasLimit",gasLimit);
         json.put("Payer",payer.toBase58());
         json.put("Attributes", Arrays.stream(attributes).map(p -> p.json()).toArray(Object[]::new));
         json.put("Sigs", Arrays.stream(sigs).map(p -> p.json()).toArray(Object[]::new));

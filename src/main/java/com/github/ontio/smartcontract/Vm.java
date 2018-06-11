@@ -164,7 +164,6 @@ public class Vm {
         sb.push(BigInteger.valueOf(0));
         sb.add(ScriptOp.OP_SYSCALL);
         sb.push(NATIVE_INVOKE_NAME.getBytes());
-        System.out.println(Helper.toHexString(sb.toArray()));
         Transaction tx = makeInvokeCodeTransaction(sb.toArray(),payer,gaslimit,gasprice);
         return tx;
     }

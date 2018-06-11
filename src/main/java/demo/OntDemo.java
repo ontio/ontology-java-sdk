@@ -31,7 +31,7 @@ import com.github.ontio.sdk.wallet.Account;
 /**
  *
  */
-public class OntAssetDemo {
+public class OntDemo {
     public static String privatekey1 = "49855b16636e70f100cc5f4f42bc20a6535d7414fb8845e7310f8dd065a97221";
     public static String privatekey2 = "1094e90dd7c4fdfd849c14798d725ac351ae0d924b29a279a9ffa77d5737bd96";
     public static String privatekey3 = "bc254cf8d3910bc615ba6bf09d4553846533ce4403bc24f58660ae150a6d64cf";
@@ -59,22 +59,23 @@ public class OntAssetDemo {
 
             Address.decodeBase58("TA9MXtwAcXkUMuujJh2iNRaWoXrvzfrmZb");
 
-            if (false) {
-//                ontSdk.nativevm().ong().sendApprove(acct6,acct1.getAddressU160().toBase58(),100,payerAcct,30000,0);
+            if (true) {
+                String hash = ontSdk.nativevm().ont().sendApprove(acct0,acct1.getAddressU160().toBase58(),100,payerAcct,30000,0);
+                System.out.println(hash);
 //                Thread.sleep(6000);
-                System.out.println(ontSdk.nativevm().ong().queryAllowance(acct6.getAddressU160().toBase58(), acct1.getAddressU160().toBase58()));
+                System.out.println(ontSdk.nativevm().ont().queryAllowance(acct6.getAddressU160().toBase58(), acct1.getAddressU160().toBase58()));
 //                System.out.println("acct0:" + ontSdk.getConnect().getBalance(acct0.getAddressU160().toBase58()));
 //                System.out.println("acct1:" + ontSdk.getConnect().getBalance(acct1.getAddressU160().toBase58()));
 //                System.out.println("acct2:" + ontSdk.getConnect().getBalance(acct2.getAddressU160().toBase58()));
 //                System.out.println(ontSdk.getConnect().getAllowance("ont",acct0.getAddressU160().toBase58(), acct1.getAddressU160().toBase58()));
             }
             if (false) {
-                String hash = ontSdk.nativevm().ong().sendTransferFrom(acct1,acct6.getAddressU160().toBase58(),acct1.getAddressU160().toBase58(),100,payerAcct,30000,0);
+                String hash = ontSdk.nativevm().ont().sendTransferFrom(acct1,acct6.getAddressU160().toBase58(),acct1.getAddressU160().toBase58(),100,payerAcct,30000,0);
                 Thread.sleep(6000);
-                System.out.println(ontSdk.getConnect().getSmartCodeEvent(Helper.reverse(hash)));
+                System.out.println(ontSdk.getConnect().getSmartCodeEvent(hash));
             }
             if(false){
-                System.out.println(ontSdk.nativevm().ong().queryBalanceOf(acct6.getAddressU160().toBase58()));
+                System.out.println(ontSdk.nativevm().ont().queryBalanceOf(acct6.getAddressU160().toBase58()));
                 //System.out.println(ontSdk.nativevm().ont().queryTotalSupply());
 //                System.exit(0);
                 //String hash = ontSdk.nativevm().ont().sendTransfer(acct0,acct1.getAddressU160().toBase58(),11,acct0,ontSdk.DEFAULT_GAS_LIMIT,0);
@@ -83,27 +84,16 @@ public class OntAssetDemo {
 
                // ontSdk.nativevm().ong().claimOng(acct0,acct0.getAddressU160().toBase58(),49520000000000L,acct0,ontSdk.DEFAULT_GAS_LIMIT,0);
             }
-            if(false){
-                System.out.println(ontSdk.nativevm().ong().unclaimOng(acct6.getAddressU160().toBase58()));
-                System.out.println(ontSdk.nativevm().ong().queryName());
-                System.out.println(ontSdk.nativevm().ong().querySymbol());
-                System.out.println(ontSdk.nativevm().ong().queryDecimals());
-                System.out.println(ontSdk.nativevm().ong().queryTotalSupply());
-            }
+
             if(false){
 
                 String hash = ontSdk.nativevm().ont().sendTransfer(acct6,acct1.getAddressU160().toBase58(),1000L,payerAcct,30000,0);
 
 //                String hash = ontSdk.nativevm().ont().sendTransfer(acct0, acct1.getAddressU160().toBase58(), 30L, payerAcct, 30000, 0);
                 Thread.sleep(6000);
-                System.out.println(ontSdk.getConnect().getSmartCodeEvent(Helper.reverse(hash)));
+                System.out.println(ontSdk.getConnect().getSmartCodeEvent(hash));
             }
-            if(true){
-                System.out.println(ontSdk.nativevm().ong().unclaimOng(acct6.getAddressU160().toBase58()));
-                String hash = ontSdk.nativevm().ong().claimOng(acct6, acct6.getAddressU160().toBase58(), 195107356000000000L, payerAcct, 30000, 0);
-                Thread.sleep(6000);
-                System.out.println(ontSdk.getConnect().getSmartCodeEvent(Helper.reverse(hash)));
-            }
+
             if(false) {
                 System.out.println(ontSdk.nativevm().ont().queryName());
                 System.out.println(ontSdk.nativevm().ont().querySymbol());

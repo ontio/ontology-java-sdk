@@ -209,6 +209,7 @@ public class Ont {
         if (!sendAcct.equals(payerAcct)) {
             sdk.addSign(tx, payerAcct);
         }
+        sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toHexString();

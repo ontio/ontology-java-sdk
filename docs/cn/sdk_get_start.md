@@ -2,45 +2,63 @@
 
 ONT中有两种资产：原生资产和合约资产。原生资产如ont和ong。交易所对接时，主要处理这两种类型资产的充值、提现等操作。
 
-* 创建账号
-
-* 原生资产ont和ong转账
-
-* Nep-5资产转账
-
 sdk文档：[sdk文档](https://github.com/ontio/ontology-java-sdk/tree/master/docs) 
 
-## 1. 创建账号
+本文大纲如下：
+* [Java sdk 使用说明](#java-sdk-使用说明)
+	* [1. 公私钥和地址](#1-公私钥和地址)
+		* [1.1 创建公私钥](#11-创建公私钥)
+			* [1.1.1 不使用钱包管理：](#111-不使用钱包管理)
+				* [随机创建账号：](#随机创建账号)
+				* [根据私钥创建账号](#根据私钥创建账号)
+			* [1.1.2 使用钱包管理：](#112-使用钱包管理)
+		* [1.2 地址生成](#12-地址生成)
+	* [2. 原生资产ont和ong转账](#2-原生资产ont和ong转账)
+		* [2.1 初始化](#21-初始化)
+		* [2.2 查询](#22-查询)
+			* [ 查询ont，ong余额](#查询ontong余额)
+			* [ 查询交易是否在交易池中](#查询交易是否在交易池中)
+			* [ 查询交易是否调用成功](#查询交易是否调用成功)
+			* [其他与链交互接口列表：](#其他与链交互接口列表)
+		* [2.3 ont转账](#23-ont转账)
+			* [ 构造转账交易并发送](#构造转账交易并发送)
+			* [ 多次签名](#多次签名)
+			* [ 一转多或多转多](#一转多或多转多)
+			* [使用签名机签名](#使用签名机签名)
+		* [2.4 ong转账](#24-ong转账)
+			* [ ong转账](#ong转账)
+			* [ 提取ong](#提取ong)
+	* [3. NEP5转账](#3-nep5转账)
+		* [3.1 查询](#31-查询)
+		* [3.2 转账](#32-转账)
 
-* **创建账号**
+## 1. 公私钥和地址
 
-不使用钱包：
+###  1.1 **创建公私钥**
 
+#### 1.1.1 不使用钱包管理：
+#####  随机创建账号：
 ```
-
-随机创建账号：
 com.github.ontio.account.Account acct = new com.github.ontio.account.Account(ontSdk.defaultSignScheme);
 acct.serializePrivateKey();//私钥
 acct.serializePublicKey();//公钥
 acct.getAddressU160().toBase58();//base58地址
-            
-            
-//根据私钥创建账号            
+```            
+##### 根据私钥创建账号            
+```          
 com.github.ontio.account.Account acct0 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey0), ontSdk.defaultSignScheme);
 com.github.ontio.account.Account acct1 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey1), ontSdk.defaultSignScheme);
 com.github.ontio.account.Account acct2 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey2), ontSdk.defaultSignScheme);
 
+```
 
+#### 1.1.2 使用钱包管理：
+[例子](https://github.com/ontio/ontology-java-sdk/blob/master/src/main/java/demo/WalletDemo.java) 
 
 ```
 
 
-使用钱包：[例子](https://github.com/ontio/ontology-java-sdk/blob/master/src/main/java/demo/WalletDemo.java) 
-
-```
-
-
-在钱包中批量创建账号:
+#### 在钱包中批量创建账号:
 ontSdk.getWalletMgr().createAccounts(10, "passwordtest");
 ontSdk.getWalletMgr().writeWallet();
 
@@ -58,7 +76,7 @@ com.github.ontio.account.Account acct0 = ontSdk.getWalletMgr().getAccount(info.a
 
 
 
-* **地址生成**
+###  1.2 **地址生成**
 
 
 包括单签地址和多签地址,生成方式与NEO地址相同。
@@ -93,7 +111,7 @@ Address recvAddr = Address.addressFromMultiPubKeys(2, acct1.serializePublicKey()
 参考例子：[例子](https://github.com/ontio/ontology-java-sdk/blob/master/src/main/java/demo/MakeTxWithoutWalletDemo.java)
 
 
-#### 2.1 初始化
+### 2.1 初始化
 
 
 ```
@@ -104,13 +122,23 @@ OntSdk ontSdk = OntSdk.getInstance();
 ontSdk.setRpc(rpcUrl);
 ontSdk.setDefaultConnect(wm.getRpc());
 
+或使用restful：
+String restUrl = ip + ":" + "20334";
+ontSdk.setRestful(restUrl);
+ontSdk.setDefaultConnect(wm.getRestful());
+
+也可以选择websocket：
+String wsUrl = ip + ":" + "20335";
+ontSdk.setWesocket(wsUrl, lock);
+ontSdk.setDefaultConnect(wm.getWebSocket());
+
 ```
 
 
-#### 2.2 查询
+### 2.2 查询
 
 
-* **查询ont，ong余额**
+####  **查询ont，ong余额**
 
 ```
 ontSdk.getConnect().getBalance("AVcv8YBABi9m6vH7faq3t8jWNamDXYytU2");
@@ -131,7 +159,7 @@ System.out.println(ontSdk.nativevm().ong().queryTotalSupply());
 
 ```
 
-* **查询交易是否在交易池中**
+#### **查询交易是否在交易池中**
 
 
 ```
@@ -175,7 +203,7 @@ response 交易池存在此交易:
 ```
 
 
-* **查询交易是否调用成功**
+#### **查询交易是否调用成功**
 
 查询智能合约推送内容
 
@@ -194,7 +222,7 @@ response:
         "GasConsumed": 0,
         "Notify": [
             {
-                "ContractAddress": "0000000000000000000000000000000000000001",
+                "ContractAddress": "ff00000000000000000000000000000000000001",
                 "States": [
                     "transfer",
                     "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb",
@@ -233,7 +261,7 @@ response:
 ```
 
 
-与链交互接口列表：
+#### 其他与链交互接口列表：
 
 ```
 
@@ -262,11 +290,11 @@ response:
    21 | ontSdk.getConnect().getMemPoolTxState()                  |  查询交易池中交易状态
 ```  
 
-#### 2.3 ont转账
+### 2.3 ont转账
 
 
 
-* **构造转账交易并发送**
+#### **构造转账交易并发送**
 
 ```
 转出方与收款方地址：
@@ -301,7 +329,7 @@ ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 | makeTransfer | State\[\] states,String payer,long gaslimit,long gasprice | 一笔交易包含多个转账。 |
 
 
-* **多次签名**
+#### **多次签名**
 
 如果转出方与网络费付款人不是同一个地址，需要添加网络费付款人的签名
 
@@ -317,10 +345,11 @@ ontSdk.addMultiSign(tx,2,new com.github.ontio.account.Account[]{acct0,acct1});
 
 
  
-* **一笔交易包含多个转账**
+#### **一转多或多转多**
 
 1. 构造多个state的交易
 2. 签名
+3. 一笔交易上限为1024笔转账
 
 
 ```
@@ -340,7 +369,9 @@ ontSdk.addMultiSign(tx,2,new com.github.ontio.account.Account[]{acct1, acct2});
 
 ```
 
-* **签名机签名**
+#### 使用签名机签名
+
+ **构造交易并签名**
 
 1. 构造交易，序列化交易，发送交易给签名机
 2. 签名机接收到交易，反序列化，检查交易，添加签名
@@ -362,7 +393,38 @@ System.out.println(Transfers.deserializeFrom(Contract.deserializeFrom(txRx.code)
 ontSdk.addSign(txRx,acct0);
 ```
 
-* **对数据做签名**
+**SDK与签名机交互**：
+
+[例子](https://github.com/ontio/ontology-java-sdk/blob/dev/src/main/java/demo/SignServerDemo.java)
+
+```
+节点启动时打开签名机服务：
+./ontology --clirpc
+
+
+设置签名机URL：
+String url = ip + ":" + "20000/cli";
+OntSdk ontSdk = OntSdk.getInstance();
+ontSdk.setSignServer(url);
+        
+
+String txHex = tx.toHexString();
+
+请求单签交易：
+ontSdk.getSignServer().sendSigRawTx(txHex);
+ 
+请求多签交易： 
+String[] signs = new String[]{"1202039b196d5ed74a4d771ade78752734957346597b31384c3047c1946ce96211c2a7",
+                    "120203428daa06375b8dd40a5fc249f1d8032e578b5ebb5c62368fc6c5206d8798a966"};
+ontSdk.getSignServer().sendMultiSigRawTx(txHex,2,signs);
+
+请求构造转账交易并签名：
+ontSdk.getSignServer().sendSigTransferTx("ont","TU5exRFVqjRi5wnMVzNoWKBq9WFncLXEjK","TA5SgQXTeKWyN4GNfWGoXqioEQ4eCDFMqE",10,30000,0);
+            
+
+```
+
+ **对数据做签名**
 
 
 [例子](https://github.com/ontio/ontology-java-sdk/blob/master/src/main/java/demo/SignatureDemo.java) 
@@ -380,10 +442,10 @@ System.out.println(ontSdk.verifySignature(acct.serializePublicKey(), data, signa
 
 
 
-#### 2.4 ong转账
+### 2.4 ong转账
 
 
-* **ong转账**
+####  **ong转账**
 
 接口与ont类似：
 
@@ -391,7 +453,7 @@ System.out.println(ontSdk.verifySignature(acct.serializePublicKey(), data, signa
 ontSdk.nativevm().ong().makeTransfer...
 ```
 
-* **提取ong**
+####  **提取ong**
 
 1. 查询是否有ong可以提取
 2. 创建账号
@@ -422,7 +484,7 @@ ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 
 参考例子：[例子](https://github.com/ontio/ontology-java-sdk/blob/master/src/main/java/demo/Nep5Demo.java)
 
-#### 3.1 查询
+### 3.1 查询
 
 ```
 String balance = ontSdk.neovm().nep5().queryBalanceOf(acct.address);
@@ -443,7 +505,7 @@ System.out.println(new String(Helper.hexToBytes(symbol)));
 System.out.println(Address.decodeBase58(acct.address).toHexString());
 ```
 
-#### 3.2 转账
+### 3.2 转账
 
 ```
 ontSdk.neovm().nep5().sendTransfer(acct,"AVcv8YBABi9m6vH7faq3t8jWNamDXYytU2",46440000L,acct,gasLimit,0);

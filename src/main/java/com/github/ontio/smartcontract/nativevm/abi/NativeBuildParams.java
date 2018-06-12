@@ -86,8 +86,10 @@ public class NativeBuildParams {
                     builder.push((byte[]) val);
                 } else if (val instanceof Boolean) {
                     builder.push((Boolean) val);
+                } else if(val instanceof Integer){
+                    builder.push(BigInteger.valueOf((int) val));
                 } else if (val instanceof Long) {
-                    builder.push(BigInteger.valueOf((long)val));
+                    builder.push(BigInteger.valueOf((Long)val));
                 } else if(val instanceof Address){
                     builder.push(((Address) val).toArray());
                 } else if (val instanceof List) {
@@ -111,8 +113,10 @@ public class NativeBuildParams {
                 builder.push((byte[]) val);
             } else if (val instanceof Boolean) {
                 builder.push((Boolean) val);
+            } else if(val instanceof Integer){
+                builder.push(BigInteger.valueOf((int) val));
             } else if (val instanceof Long) {
-                builder.push(BigInteger.valueOf((long) val));
+                builder.push(BigInteger.valueOf((Long) val));
             } else if (val instanceof Address) {
                 builder.push(((Address) val).toArray());
             }else if(val instanceof String){
@@ -145,6 +149,8 @@ public class NativeBuildParams {
                     sb.push((byte[]) val);
                 } else if (val instanceof Boolean) {
                     sb.push((Boolean) val);
+                } else if(val instanceof Integer){
+                    sb.push(BigInteger.valueOf((int)val));
                 } else if (val instanceof Long) {
                     sb.push(BigInteger.valueOf((Long) val));
                 } else if(val instanceof BigInteger){

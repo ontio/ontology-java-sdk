@@ -201,7 +201,7 @@ public class OntId {
 
         List list = new ArrayList();
         Struct struct = new Struct().add(ontid.getBytes(), pk);
-        struct.add(Long.valueOf(attributes.length));
+        struct.add(attributes.length);
         for (int i = 0; i < attributes.length; i++) {
             struct.add(attributes[i].key, attributes[i].valueType, attributes[i].value);
         }

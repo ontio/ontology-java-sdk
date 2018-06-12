@@ -75,6 +75,8 @@ public class BuildParams {
                     builder.push((byte[]) val);
                 } else if (val instanceof Boolean) {
                     builder.push((Boolean) val);
+                } else if(val instanceof Integer){
+                    builder.push(BigInteger.valueOf((int)val));
                 } else if (val instanceof Long) {
                     builder.push(BigInteger.valueOf((long)val));
                 } else if(val instanceof Map){
@@ -109,12 +111,12 @@ public class BuildParams {
                 } else if(e.getValue() instanceof String){
                     sb.add(Type.ByteArrayType.getValue());
                     sb.push(((String) e.getValue()).getBytes());
-                } else if(e.getValue() instanceof Long){
-                    sb.add(Type.IntegerType.getValue());
-                    sb.push(Helper.BigInt2Bytes(BigInteger.valueOf((Long) e.getValue())));
                 } else if(e.getValue() instanceof Integer){
                     sb.add(Type.IntegerType.getValue());
-                    sb.push(Helper.BigInt2Bytes(BigInteger.valueOf((Integer) e.getValue())));
+                    sb.push(BigInteger.valueOf((Integer) e.getValue()));
+                } else if(e.getValue() instanceof Long){
+                    sb.add(Type.IntegerType.getValue());
+                    sb.push(BigInteger.valueOf((Long) e.getValue()));
                 } else {
                     throw new SDKException(ErrorCode.ParamError);
                 }
@@ -137,8 +139,10 @@ public class BuildParams {
                     sb.push((byte[]) val);
                 } else if (val instanceof Boolean) {
                     sb.push((Boolean) val);
+                } else if(val instanceof Integer){
+                    sb.push(BigInteger.valueOf((int)val));
                 } else if (val instanceof Long) {
-                    sb.push(Helper.BigInt2Bytes(BigInteger.valueOf((Long) val)));
+                    sb.push(BigInteger.valueOf((Long) val));
                 } else if(val instanceof BigInteger){
                     sb.push((BigInteger)val);
                 } else if(val instanceof Map){

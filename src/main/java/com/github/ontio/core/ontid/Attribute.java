@@ -7,9 +7,9 @@ import com.github.ontio.io.Serializable;
 import java.io.IOException;
 
 public class Attribute implements Serializable {
-    byte[] key;
-    byte[] valueType;
-    byte[] value;
+    public byte[] key;
+    public byte[] valueType;
+    public byte[] value;
     public Attribute(byte[] key,byte[] valueType,byte[] value){
         this.key = key;
         this.valueType = valueType;

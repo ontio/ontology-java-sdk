@@ -11,9 +11,14 @@ import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.io.Serializable;
 import com.github.ontio.sdk.exception.SDKException;
+import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
+import com.github.ontio.smartcontract.nativevm.abi.Struct;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Description:
@@ -97,8 +102,13 @@ public class Auth {
         if(keyNo <0 || gaslimit <0 || gasprice <0){
             throw new SDKException(ErrorCode.ParamErr("keyNo or gaslimit or gasprice should not be less than 0"));
         }
-        byte[] parabytes = new TransferParam(Helper.hexToBytes(contractAddr),newAdminOntID.getBytes(),keyNo).toArray();
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"transfer",parabytes,payer,gaslimit,gasprice);
+//        byte[] parabytes = new TransferParam(Helper.hexToBytes(contractAddr),newAdminOntID.getBytes(),keyNo).toArray();
+//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"transfer",parabytes,payer,gaslimit,gasprice);
+
+        List list = new ArrayList();
+        list.add(new Struct().add(Helper.hexToBytes(contractAddr),newAdminOntID.getBytes(),keyNo));
+        byte[] arg = NativeBuildParams.createCodeParamsScript(list);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"transfer",arg,payer,gaslimit,gasprice);
         return tx;
     }
 
@@ -151,8 +161,12 @@ public class Auth {
         if(keyNo < 0 || gaslimit < 0 || gasprice < 0){
             throw new SDKException(ErrorCode.ParamErr("key or gaslimit or gas price should not be less than 0"));
         }
-        byte[] parabytes = new VerifyTokenParam(Helper.hexToBytes(contractAddr),ontid.getBytes(),funcName.getBytes(),keyNo).toArray();
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"verifyToken",parabytes,payer,gaslimit,gasprice);
+//        byte[] parabytes = new VerifyTokenParam(Helper.hexToBytes(contractAddr),ontid.getBytes(),funcName.getBytes(),keyNo).toArray();
+//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"verifyToken",parabytes,payer,gaslimit,gasprice);
+        List list = new ArrayList();
+        list.add(new Struct().add(Helper.hexToBytes(contractAddr),ontid.getBytes(),funcName.getBytes(),keyNo));
+        byte[] arg = NativeBuildParams.createCodeParamsScript(list);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"verifyToken",arg,payer,gaslimit,gasprice);
         return tx;
     }
 
@@ -208,8 +222,13 @@ public class Auth {
         if(keyNo < 0 || gaslimit < 0 || gasprice < 0){
             throw new SDKException(ErrorCode.ParamErr("keyNo or gaslimit or gas price should not be less than 0"));
         }
-        byte[] parabytes = new FuncsToRoleParam(Helper.hexToBytes(contractAddr),adminOntID.getBytes(),role.getBytes(),funcName,keyNo).toArray();
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"assignFuncsToRole",parabytes,payer,gaslimit,gasprice);
+//        byte[] parabytes = new FuncsToRoleParam(Helper.hexToBytes(contractAddr),adminOntID.getBytes(),role.getBytes(),funcName,keyNo).toArray();
+//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"assignFuncsToRole",parabytes,payer,gaslimit,gasprice);
+
+        List list = new ArrayList();
+        list.add(new Struct().add(Helper.hexToBytes(contractAddr),adminOntID.getBytes(),role.getBytes(),funcName,keyNo));
+        byte[] arg = NativeBuildParams.createCodeParamsScript(list);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"assignFuncsToRole",arg,payer,gaslimit,gasprice);
         return tx;
     }
 
@@ -270,8 +289,13 @@ public class Auth {
         for(int i=0; i< ontIDs.length ; i++){
             ontId[i] = ontIDs[i].getBytes();
         }
-        byte[] parabytes = new OntIDsToRoleParam(Helper.hexToBytes(contractAddr),adminOntId.getBytes(),role.getBytes(),ontId,keyNo).toArray();
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"assignOntIDsToRole",parabytes, payer,gaslimit,gasprice);
+//        byte[] parabytes = new OntIDsToRoleParam(Helper.hexToBytes(contractAddr),adminOntId.getBytes(),role.getBytes(),ontId,keyNo).toArray();
+//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"assignOntIDsToRole",parabytes, payer,gaslimit,gasprice);
+
+        List list = new ArrayList();
+        list.add(new Struct().add(Helper.hexToBytes(contractAddr),adminOntId.getBytes(),role.getBytes(),ontId,keyNo));
+        byte[] arg = NativeBuildParams.createCodeParamsScript(list);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"assignOntIDsToRole",arg,payer,gaslimit,gasprice);
         return tx;
     }
 
@@ -332,8 +356,13 @@ public class Auth {
         if(period<0 || level <0 || keyNo <0 || gaslimit < 0 || gasprice < 0){
             throw new SDKException(ErrorCode.ParamErr("period level keyNo gaslimit or gasprice should not be less than 0"));
         }
-        byte[] parabytes = new DelegateParam(Helper.hexToBytes(contractAddr),ontid.getBytes(),toAddr.getBytes(),role.getBytes(),period,level,keyNo).toArray();
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"delegate",parabytes, payer,gaslimit,gasprice);
+//        byte[] parabytes = new DelegateParam(Helper.hexToBytes(contractAddr),ontid.getBytes(),toAddr.getBytes(),role.getBytes(),period,level,keyNo).toArray();
+//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"delegate",parabytes, payer,gaslimit,gasprice);
+
+        List list = new ArrayList();
+        list.add(new Struct().add(Helper.hexToBytes(contractAddr),ontid.getBytes(),toAddr.getBytes(),role.getBytes(),period,level,keyNo));
+        byte[] arg = NativeBuildParams.createCodeParamsScript(list);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"delegate",arg,payer,gaslimit,gasprice);
         return tx;
     }
 
@@ -390,8 +419,13 @@ public class Auth {
         if(keyNo <0 || gaslimit < 0 || gasprice < 0){
             throw new SDKException(ErrorCode.ParamErr("key gaslimit or gasprice should not be less than 0"));
         }
-        byte[] parabytes = new AuthWithdrawParam(Helper.hexToBytes(contractAddr),ontid.getBytes(),delegate.getBytes(),role.getBytes(),keyNo).toArray();
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"withdraw",parabytes, payer,gaslimit,gasprice);
+//        byte[] parabytes = new AuthWithdrawParam(Helper.hexToBytes(contractAddr),ontid.getBytes(),delegate.getBytes(),role.getBytes(),keyNo).toArray();
+//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"withdraw",parabytes, payer,gaslimit,gasprice);
+
+        List list = new ArrayList();
+        list.add(new Struct().add(Helper.hexToBytes(contractAddr),ontid.getBytes(),delegate.getBytes(),role.getBytes(),keyNo));
+        byte[] arg = NativeBuildParams.createCodeParamsScript(list);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"withdraw",arg,payer,gaslimit,gasprice);
         return tx;
     }
 }
@@ -409,14 +443,14 @@ class TransferParam implements Serializable {
     public void deserialize(BinaryReader reader) throws IOException {
         this.contractAddr = reader.readVarBytes();
         this.newAdminOntID = reader.readVarBytes();
-        KeyNo = reader.readVarInt();
+        KeyNo = Helper.BigIntFromBytes(reader.readVarBytes()).longValue();
     }
 
     @Override
     public void serialize(BinaryWriter writer) throws IOException {
         writer.writeVarBytes(this.contractAddr);
         writer.writeVarBytes(this.newAdminOntID);
-        writer.writeVarInt(KeyNo);
+        writer.writeVarBytes(Helper.BigInt2Bytes(BigInteger.valueOf(KeyNo)));
     }
 }
 class VerifyTokenParam implements Serializable{
@@ -509,7 +543,7 @@ class OntIDsToRoleParam implements Serializable{
         for(int i = 0; i< length;i++){
             this.persons[i] = reader.readVarBytes();
         }
-        this.keyNo = reader.readVarInt();
+        this.keyNo = Helper.BigIntFromBytes(reader.readVarBytes()).longValue();
     }
 
     @Override
@@ -521,7 +555,7 @@ class OntIDsToRoleParam implements Serializable{
         for(byte[] p: this.persons){
             writer.writeVarBytes(p);
         }
-        writer.writeVarInt(this.keyNo);
+        writer.writeVarBytes(Helper.BigInt2Bytes(BigInteger.valueOf(this.keyNo)));
     }
 }
 
@@ -554,9 +588,9 @@ class DelegateParam implements  Serializable{
         writer.writeVarBytes(this.from);
         writer.writeVarBytes(this.to);
         writer.writeVarBytes(this.role);
-        writer.writeVarInt(this.period);
-        writer.writeVarInt(this.level);
-        writer.writeVarInt(this.keyNo);
+        writer.writeVarBytes(Helper.BigInt2Bytes(BigInteger.valueOf(this.period)));
+        writer.writeVarBytes(Helper.BigInt2Bytes(BigInteger.valueOf(this.level)));
+        writer.writeVarBytes(Helper.BigInt2Bytes(BigInteger.valueOf(this.keyNo)));
     }
 }
 
@@ -584,7 +618,7 @@ class AuthWithdrawParam implements Serializable{
         writer.writeVarBytes(this.initiator);
         writer.writeVarBytes(this.delegate);
         writer.writeVarBytes(this.role);
-        writer.writeVarInt(this.keyNo);
+        writer.writeVarBytes(Helper.BigInt2Bytes(BigInteger.valueOf(this.keyNo)));
     }
 }
 

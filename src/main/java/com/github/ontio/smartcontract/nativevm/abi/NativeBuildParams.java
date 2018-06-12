@@ -36,6 +36,7 @@ import com.github.ontio.sdk.exception.SDKException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -173,11 +174,6 @@ public class NativeBuildParams {
                     }
                     sb.add(ScriptOp.OP_FROMALTSTACK);
                     sb.push(new BigInteger(String.valueOf(structs.length)));
-                    sb.pushPack();
-                } else if (val instanceof List) {
-                    List tmp = (List) val;
-                    createCodeParamsScript(sb, tmp);
-                    sb.push(new BigInteger(String.valueOf(tmp.size())));
                     sb.pushPack();
                 } else {
                 }

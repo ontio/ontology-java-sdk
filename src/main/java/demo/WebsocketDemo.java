@@ -103,7 +103,7 @@ public class WebsocketDemo {
                     info1 = ontSdk.getWalletMgr().getAccounts().get(0);
                     info2 = ontSdk.getWalletMgr().getAccounts().get(1);
                     Transaction tx = ontSdk.nativevm().ont().makeTransfer( info1.address, info2.address, 100L,payer.address, ontSdk.DEFAULT_GAS_LIMIT,0);
-                    ontSdk.signTx(tx, info1.address, password);
+                    ontSdk.signTx(tx, info1.address, password,new byte[]{});
                     System.out.println(tx.toHexString());
                     ontSdk.getConnect().sendRawTransaction(tx.toHexString());
                 }

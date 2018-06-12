@@ -45,7 +45,7 @@ public class WasmVm {
         this.sdk = sdk;
     }
 
-    public String sendTransaction(String contractAddr,String payer, String password,long gaslimit, long gas, AbiFunction func, boolean preExec) throws Exception {
+    public String sendTransaction(String contractAddr,String payer, String password,byte[] salt, long gaslimit, long gas, AbiFunction func, boolean preExec) throws Exception {
         byte[] params = BuildParams.serializeAbiFunction(func);
         if (preExec) {
             Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, payer, gaslimit,gas);
@@ -57,7 +57,7 @@ public class WasmVm {
             return result;
         } else {
             Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, payer, gaslimit,gas);
-            sdk.signTx(tx, payer, password);
+            sdk.signTx(tx, payer, password,salt);
             boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
             if (!b) {
                 throw new SDKException(ErrorCode.SendRawTxError);

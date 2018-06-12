@@ -22,7 +22,7 @@ public class WalletMgrTest {
     private OntId ontIdTx;
 
     String password = "111111";
-
+    byte[] salt = new byte[]{};
     Account payer;
 
     String walletFile = "wallet.json";
@@ -71,7 +71,7 @@ public class WalletMgrTest {
     @Test
     public void createIdentity() throws Exception {
          Identity identity = walletMgr.createIdentity(password);
-         com.github.ontio.account.Account account = walletMgr.getAccount(identity.ontid,password);
+         com.github.ontio.account.Account account = walletMgr.getAccount(identity.ontid,password,salt);
          assertNotNull(account);
          assertNotNull(identity);
          assertNotNull(identity.ontid);
@@ -86,7 +86,7 @@ public class WalletMgrTest {
         assertEquals(identities.size(), 0);
 
         Identity identity = walletMgr.createIdentity(password);
-        com.github.ontio.account.Account account = walletMgr.getAccount(identity.ontid,password);
+        com.github.ontio.account.Account account = walletMgr.getAccount(identity.ontid,password,salt);
         String prikeyStr = account.exportCtrEncryptedPrikey(password,16384);
         assertTrue(identities.size() == 1);
         identities.clear();
@@ -94,7 +94,7 @@ public class WalletMgrTest {
         assertTrue(identities.size() == 0);
 
         String addr = identity.ontid.substring(8);
-        walletMgr.importIdentity(prikeyStr,password,addr);
+        walletMgr.importIdentity(prikeyStr,password,salt,addr);
         assertTrue(identities.size() == 1);
         Identity identity1 = identities.get(0);
         assertEquals(identity.ontid,identity1.ontid);
@@ -107,14 +107,14 @@ public class WalletMgrTest {
         assertEquals(accounts.size(), 0);
         walletMgr.writeWallet();
         Account account = walletMgr.createAccount(password);
-        com.github.ontio.account.Account accountDiff = walletMgr.getAccount(account.address,password);
+        com.github.ontio.account.Account accountDiff = walletMgr.getAccount(account.address,password,salt);
         String prikeyStr = accountDiff.exportCtrEncryptedPrikey(password,16384);
        assertTrue(accounts.size() == 1);
        accounts.clear();
        assertTrue(accounts.size() == 0);
        walletMgr.writeWallet();
 
-       Account account1 = walletMgr.importAccount(prikeyStr,password,account.address);
+       Account account1 = walletMgr.importAccount(prikeyStr,password,account.address,salt);
        assertTrue(accounts.size() == 1);
        assertEquals(account.address, account1.address);
 

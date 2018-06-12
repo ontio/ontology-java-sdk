@@ -66,7 +66,7 @@ public class ClaimRecord {
      * @return
      * @throws Exception
      */
-    public String sendCommit(String issuerOntid, String password, String subjectOntid, String claimId, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendCommit(String issuerOntid, String password, byte[] salt, String subjectOntid, String claimId, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if(issuerOntid==null||issuerOntid.equals("")||password==null||password.equals("")||subjectOntid==null||subjectOntid.equals("")
                 || claimId==null||claimId.equals("")||payerAcct == null){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
@@ -79,7 +79,7 @@ public class ClaimRecord {
         }
         String addr = issuerOntid.replace(Common.didont,"");
         Transaction tx = makeCommit(issuerOntid,subjectOntid,claimId,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
-        sdk.signTx(tx, addr, password);
+        sdk.signTx(tx, addr, password,salt);
         sdk.addSign(tx,payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -129,7 +129,7 @@ public class ClaimRecord {
      * @return
      * @throws Exception
      */
-    public String sendRevoke(String issuerOntid,String password,String claimId,Account payerAcct,long gaslimit,long gasprice) throws Exception {
+    public String sendRevoke(String issuerOntid,String password,byte[] salt, String claimId,Account payerAcct,long gaslimit,long gasprice) throws Exception {
         if(issuerOntid==null||issuerOntid.equals("")||password==null||password.equals("")
                 || claimId==null||claimId.equals("")||payerAcct == null){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
@@ -142,7 +142,7 @@ public class ClaimRecord {
         }
         String addr = issuerOntid.replace(Common.didont,"");
         Transaction tx = makeRevoke(issuerOntid,claimId,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
-        sdk.signTx(tx, addr, password);
+        sdk.signTx(tx, addr, password,salt);
         sdk.addSign(tx,payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {

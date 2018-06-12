@@ -21,23 +21,34 @@ public class AccountDemo {
 
         try {
             OntSdk ontSdk = getOntSdk();
+
+
+            byte[] salt0 = java.util.Base64.getDecoder().decode("+AX/Aa8VXp0h74PZySZ9RA==");
+            String key0 = "+TDw5opWl5HfGEWUpxblVa5BqVKF2962DoCwi1GYidwWMKvOj7mqaUVx3k/utGLx";
+            System.out.println(Helper.toHexString(salt0)+" "+salt0.length);
+            System.out.println(Helper.toHexString(java.util.Base64.getDecoder().decode(key0)));
+            String prikey0 = com.github.ontio.account.Account.getGcmDecodedPrivateKey(key0,"1","APrfMuKrAQB5sSb5GF8tx96ickZQJjCvwG", salt0,16384,ontSdk.defaultSignScheme);
+            com.github.ontio.account.Account acct11 = new com.github.ontio.account.Account(Helper.hexToBytes(prikey0), ontSdk.defaultSignScheme);
+            System.out.println(acct11.getAddressU160().toBase58());
+           // System.exit(0);
             if (false){
                 AccountInfo info0 = ontSdk.getWalletMgr().createAccountInfo("passwordtest");
                 AccountInfo info = ontSdk.getWalletMgr().createAccountInfoFromPriKey("passwordtest","e467a2a9c9f56b012c71cf2270df42843a9d7ff181934068b4a62bcdd570e8be");
                 System.out.println(info.addressBase58);
-                Account accountInfo = ontSdk.getWalletMgr().importAccount("3JZLD/X45qSFjmRRvRVhcEjKgCJQDPWOsjx2dcTEj58=", "passwordtest",info.addressBase58);
+                Account accountInfo = ontSdk.getWalletMgr().importAccount("3JZLD/X45qSFjmRRvRVhcEjKgCJQDPWOsjx2dcTEj58=", "passwordtest",info.addressBase58,new byte[]{});
 
-                com.github.ontio.account.Account acct0 = ontSdk.getWalletMgr().getAccount(info.addressBase58, "passwordtest");
+                com.github.ontio.account.Account acct0 = ontSdk.getWalletMgr().getAccount(info.addressBase58, "passwordtest",new byte[]{});
             }
-
-
+            System.out.println();
             if(true){
 
-                byte[] salt = new byte[]{(byte)251,(byte)155,(byte)65,(byte)228,(byte)3,(byte)251,(byte)77,(byte)136,(byte)106,(byte)44,(byte)2,(byte)255,(byte)194,(byte)185,(byte)234,(byte)196};
+                byte[] salt = salt0;
 //                salt = ECC.generateKey(16);
-                com.github.ontio.account.Account acct = new com.github.ontio.account.Account(Helper.hexToBytes("3e47428fd73f915a7937bf1f8d3bffc27a45dbb6ef4e57bd9513c1a8bfbcbfd4"),ontSdk.defaultSignScheme);
-                String key = acct.exportGcmEncryptedPrikey("passwordtest",salt,16384);
-                String prikey = com.github.ontio.account.Account.getGcmDecodedPrivateKey(key, "passwordtest",acct.getAddressU160().toBase58(),salt,16384,ontSdk.defaultSignScheme);
+                com.github.ontio.account.Account acct = new com.github.ontio.account.Account(Helper.hexToBytes("a1a38ccff49fa6476e737d66ef9f18c7507b50eb4804ed8e077744a4a2a74bb6"),ontSdk.defaultSignScheme);
+                String key = acct.exportGcmEncryptedPrikey("1",salt,16384);
+                System.out.println(key);
+                System.out.println(acct.getAddressU160().toBase58());
+                String prikey = com.github.ontio.account.Account.getGcmDecodedPrivateKey(key, "1",acct.getAddressU160().toBase58(),salt,16384,ontSdk.defaultSignScheme);
                 System.out.println(prikey);
             }
 

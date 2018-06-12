@@ -21,6 +21,7 @@ package com.github.ontio.sdk.wallet;
 
 import com.alibaba.fastjson.JSON;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,11 +41,11 @@ public class Control {
         this.id = id;
         this.parameters.put("curve","secp256r1");
     }
-    public String getSalt(){
-        return salt;
+    public byte[] getSalt(){
+        return Base64.getDecoder().decode(salt);
     }
-    public void setSalt(String salt){
-        this.salt = salt;
+    public void setSalt(byte[] salt){
+        this.salt = new String(Base64.getEncoder().encode(salt));
     }
     public String getAddress(){
         return address;

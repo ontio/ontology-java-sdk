@@ -34,9 +34,9 @@ public class AuthDemo {
             com.github.ontio.account.Account account = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey1), ontSdk.defaultSignScheme);
 
             payer = ontSdk.getWalletMgr().createAccount(password);
-            com.github.ontio.account.Account payerAcct = ontSdk.getWalletMgr().getAccount(payer.address,password);
+            com.github.ontio.account.Account payerAcct = ontSdk.getWalletMgr().getAccount(payer.address,password,new byte[]{});
             if(ontSdk.getWalletMgr().getIdentitys().size() < 3){
-                Identity identity1 = ontSdk.getWalletMgr().importIdentity(acct0.exportCtrEncryptedPrikey(password,16384),password,acct0.getAddressU160().toBase58());
+                Identity identity1 = ontSdk.getWalletMgr().importIdentity(acct0.exportCtrEncryptedPrikey(password,16384),password,new byte[]{},acct0.getAddressU160().toBase58());
                 Identity identity = ontSdk.getWalletMgr().createIdentity(password);
 
                 ontSdk.nativevm().ontId().sendRegister(identity,password,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
@@ -95,16 +95,34 @@ public class AuthDemo {
 //                String txhash = ontSdk.nativevm().auth().assignOntIDsToRole(dids.get(0).ontid,password,contractAddr,"role",new String[]{dids.get(1).ontid},1,payer.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
 //                String txhash = ontSdk.nativevm().auth().delegate(dids.get(1).ontid,password,contractAddr,dids.get(2).ontid,"role",6000,1,1,payer.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
 //String txhash = ontSdk.nativevm().auth().withdraw(dids.get(1).ontid,password,contractAddr,dids.get(2).ontid,"role",1,payer.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
-//                String txhash = ontSdk.nativevm().auth().verifyToken(dids.get(2).ontid,password,codeaddress,"foo",1,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
-//                Thread.sleep(6000);
-//                Object object = ontSdk.getConnect().getSmartCodeEvent(txhash);
-//                System.out.println(object);
+
+                String txhash = ontSdk.nativevm().auth().verifyToken(dids.get(2).ontid,password,new byte[]{},codeaddress,"foo",1,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
+                Thread.sleep(6000);
+                Object object = ontSdk.getConnect().getSmartCodeEvent(txhash);
+                System.out.println(object);
 
 
 //     String txhash2 = ontSdk.nativevm().auth().withdraw(dids.get(0).ontid,password,contractAddr,dids.get(1).ontid,"role",1,payer.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
-                Thread.sleep(6000);
-                Object object2 = ontSdk.getConnect().getSmartCodeEvent(txhash);
-                System.out.println(object2);
+//                Thread.sleep(6000);
+//                Object object2 = ontSdk.getConnect().getSmartCodeEvent(txhash2);
+//                System.out.println(object2);
+            }
+            if(true){
+                List list = new ArrayList<Object>();
+                list.add("init".getBytes());
+                List temp = new ArrayList();
+                temp.add(acct0.getAddressU160().toBase58().getBytes());
+                list.add(temp);
+                byte[] params = BuildParams.createCodeParamsScript(list);
+
+                ontSdk.vm().setCodeAddress(codeaddress);
+                Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(codeaddress,null,params,payer.address,1000000000,0);
+                ontSdk.signTx(tx,payer.address,password,new byte[]{});
+                boolean b = ontSdk.getConnect().sendRawTransaction(tx.toHexString());
+                if(b){
+                    System.out.println(b);
+                }
+
             }
 
         } catch (Exception e) {

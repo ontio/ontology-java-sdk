@@ -101,17 +101,13 @@ public class Vm {
         tx.description = desp;
         return tx;
     }
-
+    //NEO makeInvokeCodeTransaction
     public InvokeCode makeInvokeCodeTransaction(String codeAddr,String method,byte[] params, String payer,long gaslimit,long gasprice) throws SDKException {
-
-        Contract contract = new Contract((byte) 0, Address.parse(codeAddr), method, params);
-        params = Helper.addBytes(new byte[]{0x67}, contract.toArray());
+        params = Helper.addBytes(params,new byte[]{0x67});
+        params = Helper.addBytes(params, Address.parse(codeAddr).toArray());
         InvokeCode tx = new InvokeCode();
         tx.attributes = new Attribute[0];
         tx.nonce = new Random().nextInt();
-//        tx.attributes[0] = new Attribute();
-//        tx.attributes[0].usage = AttributeUsage.Nonce;
-//        tx.attributes[0].data = UUID.randomUUID().toString().getBytes();
         tx.code = params;
         tx.gasLimit = gaslimit;
         tx.gasPrice = gasprice;
@@ -121,7 +117,7 @@ public class Vm {
         return tx;
     }
     /**
-     *
+     * Native makeInvokeCodeTransaction
      * @param params
      * @param payer
      * @param gaslimit
@@ -130,16 +126,7 @@ public class Vm {
      * @throws SDKException
      */
     public InvokeCode makeInvokeCodeTransaction(byte[] params,String payer,long gaslimit,long gasprice) throws SDKException {
-//        if(vmtype == VmType.NEOVM.value()) {
-//            Contract contract = new Contract((byte) 0,Address.parse(codeAddr), "", params);
-//            params = Helper.addBytes(new byte[]{0x67}, contract.toArray());
-//        }else if(vmtype == VmType.WASMVM.value()) {
-//            Contract contract = new Contract((byte) 1,Address.parse(codeAddr), method, params);
-//            params = contract.toArray();
-//        } else if(vmtype == VmType.Native.value()) {
-//            Contract contract = new Contract((byte) 0,Address.parse(codeAddr), method, params);
-//            params = contract.toArray();
-//        }
+
         InvokeCode tx = new InvokeCode();
         tx.attributes = new Attribute[0];
         tx.nonce = new Random().nextInt();

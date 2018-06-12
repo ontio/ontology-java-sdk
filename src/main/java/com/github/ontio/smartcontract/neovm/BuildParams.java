@@ -26,6 +26,7 @@ import com.github.ontio.common.Common;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.scripts.ScriptBuilder;
+import com.github.ontio.core.scripts.ScriptOp;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.abi.AbiFunction;
 import com.github.ontio.sdk.abi.Parameter;
@@ -37,13 +38,30 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description:
  * @date 2018/5/23
  */
 public class BuildParams {
+    public enum Type {
+        ByteArrayType(0x00),
+        BooleanType(0x01),
+        IntegerType(0x02),
+        InterfaceType(0x40),
+        ArrayType(0x80),
+        StructType(0x81),
+        MapType(0x82);
+        private byte type;
 
+        private Type(int t) {
+            this.type = (byte)t;
+        }
+        public byte getValue(){
+            return type;
+        }
+    }
     /**
      * @param builder
      * @param list
@@ -59,6 +77,8 @@ public class BuildParams {
                     builder.push((Boolean) val);
                 } else if (val instanceof Long) {
                     builder.push(BigInteger.valueOf((long)val));
+                } else if(val instanceof Map){
+                    builder.push(getMapBytes(val));
                 } else if (val instanceof List) {
                     List tmp = (List) val;
                     createCodeParamsScript(builder, tmp);
@@ -72,6 +92,37 @@ public class BuildParams {
             e.printStackTrace();
         }
         return builder.toArray();
+    }
+    public static byte[] getMapBytes(Object val){
+        ScriptBuilder sb = null;
+        try {
+            sb = new ScriptBuilder();
+            Map<String,Object> map = (Map)val;
+            sb.add(Type.MapType.getValue());
+            sb.add(Helper.BigInt2Bytes(BigInteger.valueOf( map.size())));
+            for(Map.Entry e:map.entrySet()){
+                sb.add(Type.ByteArrayType.getValue());
+                sb.push(((String) e.getKey()).getBytes());
+                if(e.getValue() instanceof byte[]){
+                    sb.add(Type.ByteArrayType.getValue());
+                    sb.push((byte[]) e.getValue());
+                } else if(e.getValue() instanceof String){
+                    sb.add(Type.ByteArrayType.getValue());
+                    sb.push(((String) e.getValue()).getBytes());
+                } else if(e.getValue() instanceof Long){
+                    sb.add(Type.IntegerType.getValue());
+                    sb.push(Helper.BigInt2Bytes(BigInteger.valueOf((Long) e.getValue())));
+                } else if(e.getValue() instanceof Integer){
+                    sb.add(Type.IntegerType.getValue());
+                    sb.push(Helper.BigInt2Bytes(BigInteger.valueOf((Integer) e.getValue())));
+                } else {
+                    throw new SDKException(ErrorCode.ParamError);
+                }
+            }
+        } catch (SDKException e) {
+            e.printStackTrace();
+        }
+        return sb.toArray();
     }
     /**
      * @param list
@@ -87,9 +138,11 @@ public class BuildParams {
                 } else if (val instanceof Boolean) {
                     sb.push((Boolean) val);
                 } else if (val instanceof Long) {
-                    sb.push(BigInteger.valueOf((Long) val));
+                    sb.push(Helper.BigInt2Bytes(BigInteger.valueOf((Long) val)));
                 } else if(val instanceof BigInteger){
                     sb.push((BigInteger)val);
+                } else if(val instanceof Map){
+                    sb.push(getMapBytes(val));
                 } else if (val instanceof List) {
                     List tmp = (List) val;
                     createCodeParamsScript(sb, tmp);
@@ -128,6 +181,8 @@ public class BuildParams {
                 tmp.add(JSON.parseObject(obj.getValue(), Object.class));
             } else if ("Void".equals(obj.getType())) {
 
+            } else if ("Map".equals(obj.getType())) {
+                tmp.add(JSON.parseObject(obj.getValue(), Map.class));
             } else {
                 throw new SDKException(ErrorCode.TypeError);
             }

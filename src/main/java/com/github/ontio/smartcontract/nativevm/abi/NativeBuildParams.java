@@ -86,7 +86,6 @@ public class NativeBuildParams {
                     builder.push(BigInteger.valueOf((long)val));
                 } else if(val instanceof Address){
                     builder.push(((Address) val).toArray());
-                    System.out.println(Helper.toHexString(builder.toArray()));
                 } else if (val instanceof List) {
                     List tmp = (List) val;
                     createCodeParamsScript(builder, tmp);

@@ -42,8 +42,8 @@ import java.util.List;
  */
 public class Ong {
     private OntSdk sdk;
-    private final String ontContract = "ff00000000000000000000000000000000000001";
-    private final String ongContract = "ff00000000000000000000000000000000000002";
+    private final String ontContract = "0000000000000000000000000000000000000001";
+    private final String ongContract = "0000000000000000000000000000000000000002";
 
     public Ong(OntSdk sdk) {
         this.sdk = sdk;

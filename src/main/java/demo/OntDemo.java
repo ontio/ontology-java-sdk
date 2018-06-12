@@ -43,7 +43,7 @@ public class OntDemo {
         try {
             OntSdk ontSdk = getOntSdk();
             String privatekey0 = "c19f16785b8f3543bbaf5e1dbb5d398dfa6c85aaad54fc9d71203ce83e505c07";
-            privatekey0 = "59e68b0cc387dd4e36e50c0562ff589f1d9289d32fc694b8918a3859faba6c67";
+            privatekey0 = "a1a38ccff49fa6476e737d66ef9f18c7507b50eb4804ed8e077744a4a2a74bb6";
             com.github.ontio.account.Account payerAcct = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey0),ontSdk.defaultSignScheme);
             com.github.ontio.account.Account acct0 = payerAcct;
             com.github.ontio.account.Account acct1 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey1), ontSdk.defaultSignScheme);
@@ -57,9 +57,8 @@ public class OntDemo {
             System.out.println("acct2:" + acct2.getAddressU160().toBase58());
 
 
-            Address.decodeBase58("TA9MXtwAcXkUMuujJh2iNRaWoXrvzfrmZb");
 
-            if (true) {
+            if (false) {
                 String hash = ontSdk.nativevm().ont().sendApprove(acct0,acct1.getAddressU160().toBase58(),100,payerAcct,30000,0);
                 System.out.println(hash);
 //                Thread.sleep(6000);
@@ -74,11 +73,11 @@ public class OntDemo {
                 Thread.sleep(6000);
                 System.out.println(ontSdk.getConnect().getSmartCodeEvent(hash));
             }
-            if(false){
+            if(true){
                 System.out.println(ontSdk.nativevm().ont().queryBalanceOf(acct6.getAddressU160().toBase58()));
                 //System.out.println(ontSdk.nativevm().ont().queryTotalSupply());
 //                System.exit(0);
-                //String hash = ontSdk.nativevm().ont().sendTransfer(acct0,acct1.getAddressU160().toBase58(),11,acct0,ontSdk.DEFAULT_GAS_LIMIT,0);
+                String hash = ontSdk.nativevm().ont().sendTransfer(acct0,acct1.getAddressU160().toBase58(),11,acct0,ontSdk.DEFAULT_GAS_LIMIT,0);
                 //System.out.println(hash);
                 //Thread.sleep(6000);
 
@@ -94,13 +93,13 @@ public class OntDemo {
                 System.out.println(ontSdk.getConnect().getSmartCodeEvent(hash));
             }
 
-            if(false) {
+            if(true) {
                 System.out.println(ontSdk.nativevm().ont().queryName());
                 System.out.println(ontSdk.nativevm().ont().querySymbol());
                 System.out.println(ontSdk.nativevm().ont().queryDecimals());
                 System.out.println(ontSdk.nativevm().ont().queryTotalSupply());
-                System.out.println(ontSdk.nativevm().ont().queryBalanceOf("TU5exRFVqjRi5wnMVzNoWKBq9WFncLXEjK"));
-                System.out.println(ontSdk.nativevm().ont().queryAllowance("TZDXJyYhSjM8T4cUYqGj2yib718E7ZmGQc","TA4WVfUB1ipHL8s3PRSYgeV1HhAU3KcKTq"));
+                System.out.println(ontSdk.nativevm().ont().queryBalanceOf(acct0.getAddressU160().toBase58()));
+                System.out.println(ontSdk.nativevm().ont().queryAllowance(acct0.getAddressU160().toBase58(),acct1.getAddressU160().toBase58()));
 
             }
 

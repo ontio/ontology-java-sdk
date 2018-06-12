@@ -189,7 +189,7 @@ public class NativeOntIdTxTest {
 
         AccountInfo info2 = ontSdk.getWalletMgr().createAccountInfo(password);
 
-        Transaction tx2 = ontSdk.nativevm().ontId().makeChangeRecovery(identity.ontid,info2.addressBase58,info.addressBase58,password,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
+        Transaction tx2 = ontSdk.nativevm().ontId().makeChangeRecovery(identity.ontid,info2.addressBase58,info.addressBase58,password,payerAcct.getAddressU160().toBase58(),ontSdk.DEFAULT_GAS_LIMIT,0);
         ontSdk.signTx(tx2,info.addressBase58,password);
 
         ontSdk.nativevm().ontId().sendChangeRecovery(identity2.ontid,info2.addressBase58,info.addressBase58,password,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);

@@ -142,6 +142,8 @@ ontSdk.setDefaultConnect(wm.getWebSocket());
 
 ```
 ontSdk.getConnect().getBalance("AVcv8YBABi9m6vH7faq3t8jWNamDXYytU2");
+ontSdk.nativevm().ont().queryBalanceOf("AVcv8YBABi9m6vH7faq3t8jWNamDXYytU2")
+ontSdk.nativevm().ong().queryBalanceOf("AVcv8YBABi9m6vH7faq3t8jWNamDXYytU2")
 
 查ont信息：
 System.out.println(ontSdk.nativevm().ont().queryName());

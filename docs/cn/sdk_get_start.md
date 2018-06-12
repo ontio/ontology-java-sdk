@@ -251,12 +251,33 @@ response:
     "Action": "getsmartcodeeventbyheight",
     "Desc": "SUCCESS",
     "Error": 0,
-    "Result": [
-        "20046da68ef6a91f6959caa798a5ac7660cc80cf4098921bc63604d93208a8ac",
-        "38e88c4f3e566737d45f25acbbfeaaebd226cc71aef16ba266c55bf6f8333966",
-        "724c6f7645e489e9405e6a9745e89a27c13e3a8563b71e71197fc80fe94023ab",
-        "923320009925c6468a483e5dad2989f590d21a9f8bc1230b8fc31e7459da32c8"
-    ],
+    "Result": [{
+	"GasConsumed": 0,
+	"Notify": [{
+		"States": ["transfer", "AFmseVrdL9f9oyCzZefL9tG6UbvhPbdYzM", "APrfMuKrAQB5sSb5GF8tx96ickZQJjCvwG", 1000000000],
+		"ContractAddress": "0100000000000000000000000000000000000000"
+	}],
+	"TxHash": "b8a4f77e19fcae04faa576fbc71fa5a9775166d4485ce13f1ba5ff30ce264c52",
+	"State": 1
+     }, {
+	"GasConsumed": 0,
+	"Notify": [{
+		"States": ["transfer", "AFmseVrdL9f9oyCzZefL9tG6UbvhPbdYzM", "AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV", 1000000000000000000],
+		"ContractAddress": "0200000000000000000000000000000000000000"
+	}],
+	"TxHash": "7e8c19fdd4f9ba67f95659833e336eac37116f74ea8bf7be4541ada05b13503e",
+	"State": 1
+     }, {
+	"GasConsumed": 0,
+	"Notify": [],
+	"TxHash": "80617b4a97eb4266e5e38886f234f324d57587362b5039a01c45cf413461f53b",
+	"State": 1
+     }, {
+	"GasConsumed": 0,
+	"Notify": [],
+	"TxHash": "ede7ecc6e4e7e699b8ba1f07f2e5f8af3b65e70f126d82f7765d20a506080d2d",
+	"State": 0
+}],
     "Version": "1.0.0"
 }
 

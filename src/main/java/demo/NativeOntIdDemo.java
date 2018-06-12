@@ -27,7 +27,8 @@ public class NativeOntIdDemo {
             OntSdk ontSdk = getOntSdk();
 
             Account payer = ontSdk.getWalletMgr().createAccount(password);
-            com.github.ontio.account.Account payerAcct = ontSdk.getWalletMgr().getAccount(payer.address,password,new byte[]{});
+
+            com.github.ontio.account.Account payerAcct = ontSdk.getWalletMgr().getAccount(payer.address,password,ontSdk.getWalletMgr().getAccount(payer.address).getSalt());
             String privatekey0 = "c19f16785b8f3543bbaf5e1dbb5d398dfa6c85aaad54fc9d71203ce83e505c07";
             String privatekey1 = "2ab720ff80fcdd31a769925476c26120a879e235182594fbb57b67c0743558d7";
 
@@ -38,9 +39,9 @@ public class NativeOntIdDemo {
                 attributes[0] = new Attribute("key1".getBytes(),"String".getBytes(),"value1".getBytes());
                 ontSdk.nativevm().ontId().sendRegisterWithAttrs(identity3,password,attributes,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
                 ontSdk.getWalletMgr().writeWallet();
-                //Thread.sleep(6000);
-               // String ddo = ontSdk.nativevm().ontId().sendGetDDO(identity3.ontid);
-                //System.out.println(ddo);
+                Thread.sleep(6000);
+                String ddo = ontSdk.nativevm().ontId().sendGetDDO(identity3.ontid);
+                System.out.println(ddo);
                 System.exit(0);
             }
             Account account = ontSdk.getWalletMgr().createAccountFromPriKey(password,privatekey0);

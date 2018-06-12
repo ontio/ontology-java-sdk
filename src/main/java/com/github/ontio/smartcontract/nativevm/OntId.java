@@ -198,34 +198,15 @@ public class OntId {
         }
         IdentityInfo info = sdk.getWalletMgr().getIdentityInfo(ontid, password,salt);
         byte[] pk = Helper.hexToBytes(info.pubkey);
-        System.out.println("pk:"+Helper.toHexString(pk));
-//        byte[] parabytes = NativeBuildParams.buildParams(ontid, pk, attributes);
-//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "regIDWithAttributes", parabytes, payer, gaslimit, gasprice);
-//00c66b2a6469643a6f6e743a41594b794b5a4672384351676661413469474e374b777674537a3235394a4c746a6d 6a7cc823 120203e6e991265b240508a74265e9e5871ec23539db244d772b6839c32a16ef61d6a6 6a7cc8006a7cc86c
-//      2a6469643a6f6e743a41594b794b5a4672384351676661413469474e374b777674537a3235394a4c746a6d 23       120203e6e991265b240508a74265e9e5871ec23539db244d772b6839c32a16ef61d6a6 00
-        //00c66b2a6469643a6f6e743a415a6766534a355876527637524a70453977526f4b3863364376593343506d564c756a7cc823120202f9e1846f375683d9e7f258c188c2aa7ea5f4202f40832cdeaf0ff49b73bd68716a7cc86c
-        //      2a6469643a6f6e743a415a6766534a355876527637524a70453977526f4b3863364376593343506d564c7523      120202f9e1846f375683d9e7f258c188c2aa7ea5f4202f40832cdeaf0ff49b73bd6871
 
-    //00c66b2a6469643a6f6e743a414a4e684a655856654c426632666a6b4b456b4b5a326e573674594d664a703777576a7cc823120203fe23c737f2943bc0f969baae1cfa0f4e5908b1997799143503492367419fa0086a7cc86a7cc86c
-    //
         List list = new ArrayList();
-        //list.add(new Struct().add(,attributes,pk));
-        Struct[] structs = new Struct[attributes.length];
-        for(int i=0;i < attributes.length;i++){
-
-            structs[i] = new Struct().add(attributes[i].key,attributes[i].valueType,attributes[i].value);
+        Struct struct = new Struct().add(ontid.getBytes(), pk);
+        struct.add(Long.valueOf(attributes.length));
+        for (int i = 0; i < attributes.length; i++) {
+            struct.add(attributes[i].key, attributes[i].valueType, attributes[i].value);
         }
-        System.out.println(ontid+" "+Helper.toHexString(ontid.getBytes()));
-        list.add(new Struct().add(ontid.getBytes(),pk,NativeBuildParams.buildParams(attributes)));
-        System.out.println("ATTR:"+Helper.toHexString(NativeBuildParams.buildParams(attributes)));
-        //list.add(pk);
-//2103ab2341d4e932c680deee8d130a7523fece74c89acaaf8556ee8eaf9dcfcb30d8 2a6469643a6f6e743a41584b3151424e784c4d75466a454d6163626f354d586f34436e3239745a445a4134
-//  03ab2341d4e932c680deee8d130a7523fece74c89acaaf8556ee8eaf9dcfcb30d8   6469643a6f6e743a41584b3151424e784c4d75466a454d6163626f354d586f34436e3239745a445a4134
-//        list.add(ontid.getBytes());
-        System.out.println(Helper.toHexString(ontid.getBytes()));
-        System.out.println(Helper.toHexString(pk));
+        list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        System.out.println("args:"+Helper.toHexString(args));
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"regIDWithAttributes",args,payer,gaslimit, gasprice);
         return tx;
     }

@@ -59,10 +59,8 @@ public class NativeBuildParams {
                 }else if(param instanceof String){
                     bw.writeVarString((String) param);
                 }else if(param instanceof Attribute[]){
-                    System.out.println("################");
                     bw.writeSerializableArray((Attribute[])param);
                 }else if(param instanceof Attribute){
-                    System.out.println("##########w######");
                     bw.writeSerializable((Attribute)param);
                 }else if(param instanceof Address){
                     bw.writeSerializable((Address)param);

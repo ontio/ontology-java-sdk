@@ -492,6 +492,7 @@ public class Account {
         if (salt.length != 4) {
             throw new SDKException(ErrorCode.ParamError);
         }
+        Security.addProvider(new BouncyCastleProvider());
         byte[] encryptedkey = Base64.getDecoder().decode(encryptedPriKey);
 
         int N = n;
@@ -525,6 +526,7 @@ public class Account {
         if (salt.length != 16) {
             throw new SDKException(ErrorCode.ParamError);
         }
+        Security.addProvider(new BouncyCastleProvider());
         byte[] encryptedkey = Base64.getDecoder().decode(encryptedPriKey);
 
         int N = n;

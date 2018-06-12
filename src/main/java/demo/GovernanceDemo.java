@@ -52,7 +52,7 @@ public class GovernanceDemo {
             }
 
             if(false){
-                Identity identity = sdk.getWalletMgr().importIdentity("ET5m04btJ/bhRvSomqfqSY05M1mlmePU74mY+yvpIjY=",password,account.getAddressU160().toBase58());
+                Identity identity = sdk.getWalletMgr().importIdentity("ET5m04btJ/bhRvSomqfqSY05M1mlmePU74mY+yvpIjY=",password,new byte[]{},account.getAddressU160().toBase58());
                 String txhash = sdk.nativevm().ontId().sendRegister(identity,password,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
                 Thread.sleep(6000);
                 Object obj = sdk.getConnect().getSmartCodeEvent(txhash);
@@ -63,18 +63,18 @@ public class GovernanceDemo {
             System.out.println("account:" + sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
             if(false){
                 String contractAddr = "ff00000000000000000000000000000000000007";
-                Identity adminOntid = sdk.getWalletMgr().importIdentity("ET5m04btJ/bhRvSomqfqSY05M1mlmePU74mY+yvpIjY=",password,account.getAddressU160().toBase58());
+                Identity adminOntid = sdk.getWalletMgr().importIdentity("ET5m04btJ/bhRvSomqfqSY05M1mlmePU74mY+yvpIjY=",password,new byte[]{},account.getAddressU160().toBase58());
 //                String txhash = sdk.nativevm().auth().assignFuncsToRole(adminOntid.ontid,password,contractAddr,"role",new String[]{"registerCandidate"},1,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
-                String txhash = sdk.nativevm().auth().assignOntIDsToRole(adminOntid.ontid,password,contractAddr,"role",new String[]{identity.ontid,dids.get(1).ontid},1,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+                String txhash = sdk.nativevm().auth().assignOntIDsToRole(adminOntid.ontid,password,new byte[]{},contractAddr,"role",new String[]{identity.ontid,dids.get(1).ontid},1,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
                 Thread.sleep(6000);
                 Object obj = sdk.getConnect().getSmartCodeEvent(txhash);
                 System.out.println(obj);
             }
             Account account1 = new Account(Helper.hexToBytes(privatekey9),SignatureScheme.SHA256WITHECDSA);
             if(false){
-                sdk.getWalletMgr().importAccount("ET5m04btJ/bhRvSomqfqSY05M1mlmePU74mY+yvpIjY=",password,"TA4nUbnjX5UGVxkumhfndc7wyemrxdMtn8");
+                sdk.getWalletMgr().importAccount("ET5m04btJ/bhRvSomqfqSY05M1mlmePU74mY+yvpIjY=",password,"TA4nUbnjX5UGVxkumhfndc7wyemrxdMtn8",new byte[]{});
 
-                String txhash = sdk.nativevm().governance().registerCandidate(account,Helper.toHexString(account7.serializePublicKey()),100000,identity.ontid,password,1,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+                String txhash = sdk.nativevm().governance().registerCandidate(account,Helper.toHexString(account7.serializePublicKey()),100000,identity.ontid,password,new byte[]{},1,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
 
                 Thread.sleep(6000);
                 Object obj = sdk.getConnect().getSmartCodeEvent(txhash);
@@ -83,7 +83,7 @@ public class GovernanceDemo {
 
             }
             if(true){
-                Identity adminOntid = sdk.getWalletMgr().importIdentity("ET5m04btJ/bhRvSomqfqSY05M1mlmePU74mY+yvpIjY=",password,account.getAddressU160().toBase58());
+                Identity adminOntid = sdk.getWalletMgr().importIdentity("ET5m04btJ/bhRvSomqfqSY05M1mlmePU74mY+yvpIjY=",password,new byte[]{},account.getAddressU160().toBase58());
 //                String txhash = sdk.nativevm().governance().approveCandidate(adminOntid.ontid,password,Helper.toHexString(account7.serializePublicKey()),payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
 //                String txhash = sdk.nativevm().governance().voteForPeer(account,new String[]{Helper.toHexString(account7.serializePublicKey())},new long[]{100},payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
 //String txhash = sdk.nativevm().governance().unVoteForPeer(account,new String[]{Helper.toHexString(account7.serializePublicKey())},new long[]{100},payerAcct,sdk.DEFAULT_GAS_LIMIT,0);

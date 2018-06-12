@@ -108,7 +108,7 @@ public class Address extends UIntBase implements Comparable<Address> {
             return new Address(Digest.hash160(sb.toArray()));
         }
     }
-    
+
     public static Address decodeBase58(String address) throws SDKException {
         byte[] data = Base58.decode(address);
         if (data.length != 25) {

@@ -25,6 +25,7 @@ import static org.junit.Assert.*;
 public class MerkleVerifierTest {
     OntSdk ontSdk;
     String password = "111111";
+    byte[] salt = new byte[]{};
     String walletFile = "MerkleVerifierTest.json";
 
     @Before
@@ -75,9 +76,9 @@ public class MerkleVerifierTest {
         Identity identity = ontSdk.getWalletMgr().createIdentity(password);
         Account payer = ontSdk.getWalletMgr().createAccount(password);
 
-        Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
-        ontSdk.signTx(tx,identity.ontid,password);
-        ontSdk.addSign(tx,payer.address,password);
+        Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,salt,payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
+        ontSdk.signTx(tx,identity.ontid,password,salt);
+        ontSdk.addSign(tx,payer.address,password,salt);
         ontSdk.getConnect().sendRawTransaction(tx);
         Thread.sleep(6000);
 

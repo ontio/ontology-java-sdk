@@ -56,24 +56,25 @@ public class Nep5Demo {
 
             Account acct = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey0), ontSdk.defaultSignScheme);
             System.out.println("recv:"+acct.getAddressU160().toBase58());
-            if(false) {
+            if(true) {
                 long gasLimit = ontSdk.neovm().nep5().sendInitGetGasLimit();
                 System.out.println(gasLimit);
                 //String result = ontSdk.neovm().nep5().sendInit(acct,acct,30000,0);
                 //System.out.println(result);
                 System.exit(0);
             }
-            long gasLimit =  ontSdk.neovm().nep5().sendTransferGetGasLimit(acct,acct1.getAddressU160().toBase58(), 9000000000L);
-            System.out.println(gasLimit);
-            ontSdk.neovm().nep5().sendTransfer(acct,acct1.getAddressU160().toBase58(),9000000000L,acct,gasLimit,0);
-            System.exit(0);
-
-
-            String balance = ontSdk.neovm().nep5().queryBalanceOf(acct.getAddressU160().toBase58());
-            System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(balance))).longValue());
-            System.exit(0);
+//            long gasLimit =  ontSdk.neovm().nep5().sendTransferGetGasLimit(acct,acct1.getAddressU160().toBase58(), 9000000000L);
+//            System.out.println(gasLimit);
+//            ontSdk.neovm().nep5().sendTransfer(acct,acct1.getAddressU160().toBase58(),9000000000L,acct,gasLimit,0);
+//            System.exit(0);
+//
+//
+//            String balance = ontSdk.neovm().nep5().queryBalanceOf(acct.getAddressU160().toBase58());
+//            System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(balance))).longValue());
+//            System.exit(0);
             String totalSupply = ontSdk.neovm().nep5().queryTotalSupply();
             System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(totalSupply))).longValue());
+            System.exit(0);
 
             String decimals = ontSdk.neovm().nep5().queryDecimals();
             System.out.println(decimals);
@@ -104,7 +105,7 @@ public class Nep5Demo {
         wm.setRpc(rpcUrl);
         wm.setRestful(restUrl);
         wm.setDefaultConnect(wm.getRestful());
-        wm.neovm().nep5().setContractAddress("8097b70f436f225c42b14c2afc1d3bc582abd141");
+        wm.neovm().nep5().setContractAddress("41d1ab82c53b1dfc2a4cb1425c226f430fb7974b");
         wm.openWalletFile("nep5.json");
 
 

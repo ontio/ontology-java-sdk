@@ -43,12 +43,12 @@ public class Demo {
             System.out.println(ontSdk.getConnect().getGenerateBlockTime());
             System.out.println(ontSdk.getConnect().getBlockHeight());
             System.out.println(ontSdk.getConnect().getBlockJson(15));
-            System.out.println(ontSdk.getConnect().getBlockJson("ee2d842fe7cdf48bc39b34d616a9e8f7f046970ed0a988dde3fe05c9126cce74"));
+//            System.out.println(ontSdk.getConnect().getBlockJson("ee2d842fe7cdf48bc39b34d616a9e8f7f046970ed0a988dde3fe05c9126cce74"));
             System.out.println(ontSdk.getConnect().getGenerateBlockTime());
             System.out.println(ontSdk.getConnect().getNodeCount());
 //            System.out.println(((InvokeCodeTransaction)ontSdk.getConnect().getRawTransaction("c2592940837c2347f6a7b391d4940abb7171dd5dd156b7c031d20a5940142b5a")));
 //            System.out.println((ontSdk.getConnect().getTransaction("d441a967315989116bf0afad498e4016f542c1e7f8605da943f07633996c24cc")));
-//            System.out.println(ontSdk.getConnect().getSmartCodeEvent(59));
+            System.out.println(ontSdk.getConnect().getSmartCodeEvent(0));
 //            System.out.println(ontSdk.getConnect().getContractJson("803ca638069742da4b6871fe3d7f78718eeee78a"));
 //            System.out.println(ontSdk.getConnect().getMerkleProof("0087217323d87284d21c3539f216dd030bf9da480372456d1fa02eec74c3226d"));
             //System.out.println(ontSdk.getConnect().getBlockHeightByTxHash("7c3e38afb62db28c7360af7ef3c1baa66aeec27d7d2f60cd22c13ca85b2fd4f3"));

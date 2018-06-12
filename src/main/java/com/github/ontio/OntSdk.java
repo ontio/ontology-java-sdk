@@ -190,8 +190,8 @@ public class OntSdk {
      * @return
      * @throws Exception
      */
-    public Transaction addSign(Transaction tx,String addr,String password) throws Exception {
-        return addSign(tx,getWalletMgr().getAccount(addr,password));
+    public Transaction addSign(Transaction tx,String addr,String password,byte[] salt) throws Exception {
+        return addSign(tx,getWalletMgr().getAccount(addr,password,salt));
     }
     public Transaction addSign(Transaction tx,Account acct) throws Exception {
         if(tx.sigs == null){
@@ -230,9 +230,9 @@ public class OntSdk {
         tx.sigs = sigs;
         return tx;
     }
-    public Transaction signTx(Transaction tx, String address, String password) throws Exception{
+    public Transaction signTx(Transaction tx, String address, String password,byte[] salt) throws Exception{
         address = address.replace(Common.didont, "");
-        signTx(tx, new Account[][]{{getWalletMgr().getAccount(address, password)}});
+        signTx(tx, new Account[][]{{getWalletMgr().getAccount(address, password,salt)}});
         return tx;
     }
     /**

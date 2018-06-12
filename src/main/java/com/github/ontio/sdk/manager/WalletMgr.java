@@ -211,13 +211,13 @@ public class WalletMgr {
     }
 
     private IdentityInfo createIdentity(String label,String password, byte[] prikey) throws Exception {
-        com.github.ontio.account.Account acct = createAccount(label,password, prikey, false);
+        byte[] salt = ECC.generateKey(16);
+        com.github.ontio.account.Account acct = createAccount(label,password,salt, prikey, false);
         IdentityInfo info = new IdentityInfo();
         info.ontid = Common.didont + Address.addressFromPubKey(acct.serializePublicKey()).toBase58();
         info.pubkey = Helper.toHexString(acct.serializePublicKey());
         info.setPrikey(Helper.toHexString(acct.serializePrivateKey()));
         info.setPriwif(acct.exportWif());
-        byte[] salt = ECC.generateKey(16);
         info.encryptedPrikey = acct.exportGcmEncryptedPrikey(password, salt,walletFile.getScrypt().getN());
         info.addressU160 = acct.getAddressU160().toHexString();
         return info;
@@ -250,14 +250,15 @@ public class WalletMgr {
 
 
     private AccountInfo createAccount(String label,String password, byte[] prikey) throws Exception {
-        com.github.ontio.account.Account acct = createAccount(label,password, prikey, true);
+        byte[] salt = ECC.generateKey(16);
+        com.github.ontio.account.Account acct = createAccount(label,password,salt, prikey, true);
         new SecureRandom().nextBytes(prikey);
         AccountInfo info = new AccountInfo();
         info.addressBase58 = Address.addressFromPubKey(acct.serializePublicKey()).toBase58();
         info.pubkey = Helper.toHexString(acct.serializePublicKey());
         info.setPrikey(Helper.toHexString(acct.serializePrivateKey()));
         info.setPriwif(acct.exportWif());
-        //info.encryptedPrikey = acct.exportGcmEncryptedPrikey(password, walletFile.getScrypt().getN());
+        info.encryptedPrikey = acct.exportGcmEncryptedPrikey(password, salt,walletFile.getScrypt().getN());
         info.addressU160 = acct.getAddressU160().toHexString();
         return info;
     }
@@ -304,10 +305,6 @@ public class WalletMgr {
     public com.github.ontio.account.Account getAccount(String address, String password,byte[] salt) throws Exception {
         address = address.replace(Common.didont, "");
         return getAccountByAddress(Address.decodeBase58(address), password,salt);
-    }
-
-    private com.github.ontio.account.Account createAccount(String label,String password, String prikey) throws Exception {
-        return createAccount(label,password, Helper.hexToBytes(prikey), true);
     }
 
     private Identity addIdentity(String ontid) {
@@ -398,9 +395,8 @@ public class WalletMgr {
         return identity;
     }
 
-    private com.github.ontio.account.Account createAccount(String label, String password, byte[] privateKey, boolean saveAccountFlag) throws Exception {
+    private com.github.ontio.account.Account createAccount(String label, String password, byte[] salt,byte[] privateKey, boolean saveAccountFlag) throws Exception {
         com.github.ontio.account.Account account = new com.github.ontio.account.Account(privateKey, scheme);
-        byte[] salt = ECC.generateKey(16);
         Account acct;
         switch (scheme) {
             case SHA256WITHECDSA:

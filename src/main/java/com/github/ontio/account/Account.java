@@ -476,6 +476,7 @@ public class Account {
             byte[] encryptedkey = cipher.doFinal(serializePrivateKey());
             return new String(Base64.getEncoder().encode(encryptedkey));
         } catch (Exception e) {
+            e.printStackTrace();
             throw new SDKException(ErrorCode.EncriptPrivateKeyError);
         }
     }
@@ -540,15 +541,15 @@ public class Account {
         System.arraycopy(derivedkey, 0, iv, 0, 12);
         System.arraycopy(derivedkey, 32, derivedhalf2, 0, 32);
 
-        SecretKeySpec skeySpec = new SecretKeySpec(derivedhalf2, "AES");
-        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        cipher.init(Cipher.DECRYPT_MODE, skeySpec, new IvParameterSpec(iv));
-        cipher.updateAAD(address.getBytes());
-
         byte[] rawkey = new byte[0];
         try {
+            SecretKeySpec skeySpec = new SecretKeySpec(derivedhalf2, "AES");
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec, new IvParameterSpec(iv));
+            cipher.updateAAD(address.getBytes());
             rawkey = cipher.doFinal(encryptedkey);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new SDKException(ErrorCode.encryptedPriKeyAddressPasswordErr);
         }
         Account account = new Account(rawkey, scheme);

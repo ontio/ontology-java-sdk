@@ -30,7 +30,7 @@ public class ClaimRecordTxDemo {
             String password = "111111";
 
             Account payerAccInfo = ontSdk.getWalletMgr().createAccount(password);
-            com.github.ontio.account.Account payerAcc = ontSdk.getWalletMgr().getAccount(payerAccInfo.address,password,new byte[]{});
+            com.github.ontio.account.Account payerAcc = ontSdk.getWalletMgr().getAccount(payerAccInfo.address,password,payerAccInfo.getSalt());
 
 
             if (ontSdk.getWalletMgr().getIdentitys().size() < 2) {
@@ -58,13 +58,13 @@ public class ClaimRecordTxDemo {
             clmRevMap.put("typ","AttestContract");
             clmRevMap.put("addr",dids.get(1).ontid.replace(Common.didont,""));
 
-            String claim = ontSdk.nativevm().ontId().createOntIdClaim(dids.get(0).ontid,password,new byte[]{}, "claim:context", map, map,clmRevMap,System.currentTimeMillis()/1000 +100000);
+            String claim = ontSdk.nativevm().ontId().createOntIdClaim(dids.get(0).ontid,password,dids.get(0).controls.get(0).getSalt(), "claim:context", map, map,clmRevMap,System.currentTimeMillis()/1000 +100000);
             System.out.println(claim);
 
             boolean b = ontSdk.nativevm().ontId().verifyOntIdClaim(claim);
             System.out.println(b);
 
-//            System.exit(0);
+            System.exit(0);
 
             Account account = ontSdk.getWalletMgr().importAccount("ET5m04btJ/bhRvSomqfqSY05M1mlmePU74mY+yvpIjY=","111111","TA4nUbnjX5UGVxkumhfndc7wyemrxdMtn8",new byte[]{});
             AccountInfo info = ontSdk.getWalletMgr().getAccountInfo(account.address,"111111",new byte[]{});

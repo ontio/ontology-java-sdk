@@ -282,8 +282,8 @@ public class Account {
         try {
             switch (this.keyType) {
                 case ECDSA:
-                    bs.write(this.keyType.getLabel());
-                    bs.write(Curve.valueOf(pub.getParameters().getCurve()).getLabel());
+                   // bs.write(this.keyType.getLabel());
+                   // bs.write(Curve.valueOf(pub.getParameters().getCurve()).getLabel());
                     bs.write(pub.getQ().getEncoded(true));
                     break;
                 case SM2:
@@ -322,7 +322,7 @@ public class Account {
                 ECPublicKeySpec pubSpec0 = new ECPublicKeySpec(
                         ECPointUtil.decodePoint(
                                 param0.getCurve(),
-                                Arrays.copyOfRange(data, 2, data.length)),
+                                Arrays.copyOfRange(data, 0, data.length)),
                         param0);
                 KeyFactory kf0 = KeyFactory.getInstance("EC", "BC");
                 this.publicKey = kf0.generatePublic(pubSpec0);

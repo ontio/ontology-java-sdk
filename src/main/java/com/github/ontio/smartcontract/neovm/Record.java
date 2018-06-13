@@ -24,11 +24,11 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
-import com.github.ontio.core.VmType;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.KeyType;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
+import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -52,7 +52,7 @@ public class Record {
     }
 
 
-    public String sendPut(String addr,String password,String key,String value,long gaslimit,long gas) throws Exception {
+    public String sendPut(String addr,String password,byte[] salt, String key,String value,long gaslimit,long gas) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -61,7 +61,7 @@ public class Record {
         }
         addr = addr.replace(Common.didont,"");
         byte[] did = (Common.didont + addr).getBytes();
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
+        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,salt);
         byte[] pk = Helper.hexToBytes(info.pubkey);
         List list = new ArrayList<Object>();
         list.add("Put".getBytes());
@@ -70,14 +70,14 @@ public class Record {
         tmp.add(JSON.toJSONString(constructRecord(value)).getBytes());
         list.add(tmp);
         Transaction tx = makeInvokeTransaction(list,info.addressBase58,gaslimit,gas);
-        sdk.signTx(tx, addr, password);
+        sdk.signTx(tx, addr, password,salt);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
         }
         return null;
     }
-    public String sendGet(String addr,String password,String key) throws Exception {
+    public String sendGet(String addr,String password,byte[] salt, String key) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -85,7 +85,7 @@ public class Record {
             throw new SDKException(ErrorCode.NullKey);
         }
         byte[] did = (Common.didont + addr).getBytes();
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password);
+        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,salt);
         byte[] pk = Helper.hexToBytes(info.pubkey);
         List list = new ArrayList<Object>();
         list.add("Get".getBytes());
@@ -93,14 +93,14 @@ public class Record {
         tmp.add(key.getBytes());
         list.add(tmp);
         Transaction tx = makeInvokeTransaction(list,null,0,0);
-        sdk.signTx(tx, addr, password);
+        sdk.signTx(tx, addr, password,salt);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         return new String(Helper.hexToBytes((String)obj));
     }
 
     public Transaction makeInvokeTransaction(List<Object> list,String payer,long gaslimit,long gas) throws Exception {
         byte[] params = BuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,null,params, VmType.NEOVM.value(), payer,gaslimit,gas);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,null,params, payer,gaslimit,gas);
         return tx;
     }
 

@@ -17,11 +17,12 @@
  *
  */
 
-package com.github.ontio.sdk.abi;
+package com.github.ontio.smartcontract.nativevm.abi;
 
 import com.alibaba.fastjson.JSON;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.sdk.exception.SDKException;
+
 import java.util.List;
 
 /**

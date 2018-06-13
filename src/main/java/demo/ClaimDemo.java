@@ -59,7 +59,7 @@ public class ClaimDemo {
             map.put("Subject", dids.get(1).ontid);
 
 
-            String claim = ontSdk.nativevm().ontId().createOntIdClaim(dids.get(0).ontid,"passwordtest", "claim:context", map, map,map,0);
+            String claim = ontSdk.nativevm().ontId().createOntIdClaim(dids.get(0).ontid,"passwordtest",new byte[]{}, "claim:context", map, map,map,0);
             System.out.println(claim);
             boolean b = ontSdk.nativevm().ontId().verifyOntIdClaim(claim);
             System.out.println(b);

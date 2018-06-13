@@ -156,7 +156,7 @@ public class RestClient extends AbstractConnector {
         String rs = api.getTransaction(txhash, true);
         Result rr = JSON.parseObject(rs, Result.class);
         if (rr.Error == 0) {
-            return Transaction.deserializeFrom(Helper.hexToBytes((String) rr.Result)).json();
+            return JSON.toJSONString(Transaction.deserializeFrom(Helper.hexToBytes((String) rr.Result)).json());
         }
         throw new RestfulException(to(rr));
     }

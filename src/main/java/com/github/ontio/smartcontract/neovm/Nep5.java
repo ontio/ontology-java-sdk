@@ -25,11 +25,11 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.ErrorCode;
-import com.github.ontio.core.VmType;
 import com.github.ontio.core.transaction.Transaction;
-import com.github.ontio.sdk.abi.AbiFunction;
-import com.github.ontio.sdk.abi.AbiInfo;
+import com.github.ontio.smartcontract.neovm.abi.AbiFunction;
+import com.github.ontio.smartcontract.neovm.abi.AbiInfo;
 import com.github.ontio.sdk.exception.SDKException;
+import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 
 
 /**
@@ -78,7 +78,7 @@ public class Nep5 {
         func.name = "init";
         if(preExec) {
             byte[] params = BuildParams.serializeAbiFunction(func);
-            Transaction tx = sdk.vm().makeInvokeCodeTransaction(getContractAddress(), null, params, VmType.NEOVM.value(), null,0, 0);
+            Transaction tx = sdk.vm().makeInvokeCodeTransaction(getContractAddress(), null, params,null,0, 0);
             Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
             if (Integer.parseInt(((JSONObject) obj).getString("Result")) != 1){
                 throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
@@ -127,7 +127,7 @@ public class Nep5 {
         if(preExec) {
             byte[] params = BuildParams.serializeAbiFunction(func);
 
-            Transaction tx = sdk.vm().makeInvokeCodeTransaction(getContractAddress(), null, params, VmType.NEOVM.value(), null,0, 0);
+            Transaction tx = sdk.vm().makeInvokeCodeTransaction(getContractAddress(), null, params,null,0, 0);
             sdk.signTx(tx, new Account[][]{{acct}});
             Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
             if (Integer.parseInt(((JSONObject) obj).getString("Result")) != 1){

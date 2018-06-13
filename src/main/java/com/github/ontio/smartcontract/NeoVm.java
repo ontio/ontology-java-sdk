@@ -19,15 +19,13 @@
 
 package com.github.ontio.smartcontract;
 
-import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.ErrorCode;
-import com.github.ontio.core.VmType;
 import com.github.ontio.core.transaction.Transaction;
-import com.github.ontio.sdk.abi.AbiFunction;
+import com.github.ontio.smartcontract.neovm.abi.AbiFunction;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.smartcontract.neovm.BuildParams;
+import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import com.github.ontio.smartcontract.neovm.ClaimRecord;
 import com.github.ontio.smartcontract.neovm.Nep5;
 import com.github.ontio.smartcontract.neovm.Record;
@@ -76,12 +74,12 @@ public class NeoVm {
     public Object sendTransaction(String contractAddr, Account acct,Account payerAcct, long gaslimit, long gasprice, AbiFunction func, boolean preExec) throws Exception {
         byte[] params = BuildParams.serializeAbiFunction(func);
         if (preExec) {
-            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, VmType.NEOVM.value(), null,0, 0);
+            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, null,0, 0);
             Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
             return obj;
         } else {
             String payer = payerAcct.getAddressU160().toBase58();
-            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, VmType.NEOVM.value(), payer,gaslimit, gasprice);
+            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, payer,gaslimit, gasprice);
             sdk.signTx(tx, new Account[][]{{acct}});
             if(!payer.equals(payerAcct.getAddressU160().toBase58())){
                 sdk.addSign(tx,payerAcct);

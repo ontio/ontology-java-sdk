@@ -36,7 +36,7 @@ import java.util.Random;
 /**
  *
  */
-class Interfaces {
+public class Interfaces {
     private final URL url;
 
 
@@ -78,7 +78,7 @@ class Interfaces {
     }
 
 
-    private Object send(Object request) throws IOException {
+    public Object send(Object request) throws IOException {
         try {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");

@@ -20,7 +20,9 @@
 package com.github.ontio.sdk.wallet;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONField;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +32,9 @@ public class Control {
     public String id = "";
     public String key = "";
     public String salt = "";
+    public String hash = "sha256";
+    @JSONField(name = "enc-alg")
+    public String encAlg = "aes-256-gcm";
     public String address = "";
     public Control(){
 
@@ -40,11 +45,17 @@ public class Control {
         this.id = id;
         this.parameters.put("curve","secp256r1");
     }
-    public String getSalt(){
-        return salt;
+    public String getEncAlg(){
+        return encAlg;
     }
-    public void setSalt(String salt){
-        this.salt = salt;
+    public void setEncAlg(String encAlg){
+        this.encAlg = encAlg;
+    }
+    public byte[] getSalt(){
+        return Base64.getDecoder().decode(salt);
+    }
+    public void setSalt(byte[] salt){
+        this.salt = new String(Base64.getEncoder().encode(salt));
     }
     public String getAddress(){
         return address;

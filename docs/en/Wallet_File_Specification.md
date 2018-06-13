@@ -44,6 +44,7 @@ Here is an example as below:
 	"name": "mywallet",
 	"version": "1.0",
 	"scrypt": {
+		"dkLen": 64,
 		"n": 16384,
 		"p": 8,
 		"r": 8
@@ -53,35 +54,40 @@ Here is an example as below:
     "createTime": "2018-03-14T03:12:30.862Z",
     "identitys": [
 		{
-			"controls": [{
-				"algorithm": "ECDSA",
-				"id": "",
-				"key": "6PYT85poeK8XpuQhnroArEov64NfRsEeB4KiGD1YCoq5xU7sJrnXC92Vey", //加密后的私钥
-				"parameters": {
-				    "curve": "secp256r1"
-				}
-			}],
-			"label": "",
-			"lock": false,
-			"ontid": "did:ont:AMs5NFdXPgCgC7Dci1FdFttvD42HELoLxG"  //ontid,身份id
-		}
+            "controls": [{
+                "address": "AU6hYcc1k9CfL1pMfdno2XquMzCb7mDxSr",
+                "algorithm": "ECDSA",
+                "enc-alg": "aes-256-gcm",
+                "hash": "sha256",
+                "id": "keys-1",
+                "key": "Lnz9hMswv7/5UPyt5vBsZaGa3DdwnVEMjmwpPpips2U6rfzOqJr7b5SPX94B2T+9",
+                "parameters": {
+                    "curve": "secp256r1"
+                },
+                "salt": "f7hVud1GhryaFvqsPTkMjQ=="
+            }],
+            "isDefault": false,
+            "label": "5149e77c",
+            "lock": false,
+            "ontid": "did:ont:AU6hYcc1k9CfL1pMfdno2XquMzCb7mDxSr"
+        }	
 	],
 	"accounts": [
-		{
-			"address": "AMs5NFdXPgCgC7Dci1FdFttvD42HELoLxG",
-			"algorithm": "ECDSA",
-			"contract": {
-				"deployed": false,
-				"parameters": ["Signature"],
-				"script": "210392a4dbb2a44da81e0942cee1a62ff4298e04ed463b88911b97de19a1597fa83dac"
-			},
-			"key": "6PYT85poeK8XpuQhnroArEov64NfRsEeB4KiGD1YCoq5xU7sJrnXC92Vey", //加密后的私钥
-			"label": "",
-			"lock": false,
-			"parameters": {
-				 "curve": "secp256r1"
-			}
-		}
+        {
+            "address": "AW4tstUKotLacGBEL2dwf8wAXSW7PhC8Fa",
+            "algorithm": "ECDSA",
+            "enc-alg": "aes-256-gcm",
+            "hash": "sha256",
+            "isDefault": false,
+            "key": "TRtt9uLbszTDznvjDiZ+5S//LcjNM51nwUwOvSV9zfb5O9siU6HVl6caG7zDhABv",
+            "label": "755ddba4",
+            "lock": false,
+            "parameters": {
+                "curve": "P-256"
+            },
+            "salt": "nyU4DZ+1LBLPmgZLIUDggQ==",
+            "signatureScheme": "SHA256withECDSA"
+         }
 	]
 }
 ```
@@ -92,9 +98,10 @@ ScryptParameters object has the following structure:
 
 ```
 {
-  "n": 16384,
-  "r": 8,
-  "p": 8
+	"dkLen": 64,
+	"n": 16384,
+	"p": 8,
+	"r": 8
 }
 ```
 ```n``` is a parameter that defines the CPU/memory cost. Must be a value 2^N.

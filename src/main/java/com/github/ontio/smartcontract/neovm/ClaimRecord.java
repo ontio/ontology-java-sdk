@@ -19,6 +19,7 @@
 
 package com.github.ontio.smartcontract.neovm;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
@@ -30,16 +31,24 @@ import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.io.Serializable;
 import com.github.ontio.sdk.exception.SDKException;
+import com.github.ontio.smartcontract.neovm.abi.AbiFunction;
+import com.github.ontio.smartcontract.neovm.abi.AbiInfo;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static demo.NeoVmDemo.abi;
 
 public class ClaimRecord {
     private OntSdk sdk;
     private String contractAddress = null;
+
+    private String abi = "{\"hash\":\"0x9a4c79ee4379a0b5d10db03553ca7e61e17a8977\",\"entrypoint\":\"Main\",\"functions\":[{\"name\":\"Main\",\"parameters\":[{\"name\":\"operation\",\"type\":\"String\"},{\"name\":\"args\",\"type\":\"Array\"}],\"returntype\":\"Any\"},{\"name\":\"Commit\",\"parameters\":[{\"name\":\"claimId\",\"type\":\"ByteArray\"},{\"name\":\"commiterId\",\"type\":\"ByteArray\"},{\"name\":\"ownerId\",\"type\":\"ByteArray\"}],\"returntype\":\"Boolean\"},{\"name\":\"Revoke\",\"parameters\":[{\"name\":\"claimId\",\"type\":\"ByteArray\"},{\"name\":\"ontId\",\"type\":\"ByteArray\"}],\"returntype\":\"Boolean\"},{\"name\":\"GetStatus\",\"parameters\":[{\"name\":\"claimId\",\"type\":\"ByteArray\"}],\"returntype\":\"ByteArray\"}],\"events\":[{\"name\":\"ErrorMsg\",\"parameters\":[{\"name\":\"arg1\",\"type\":\"ByteArray\"},{\"name\":\"arg2\",\"type\":\"String\"}],\"returntype\":\"Void\"},{\"name\":\"Push\",\"parameters\":[{\"name\":\"arg1\",\"type\":\"ByteArray\"},{\"name\":\"arg2\",\"type\":\"String\"},{\"name\":\"arg3\",\"type\":\"ByteArray\"}],\"returntype\":\"Void\"}]}";
 
 
     public ClaimRecord(OntSdk sdk) {
@@ -107,14 +116,21 @@ public class ClaimRecord {
         if(gaslimit < 0 || gasprice < 0){
             throw new SDKException(ErrorCode.ParamErr("gaslimit or gasprice is less than 0"));
         }
-        List list = new ArrayList<Object>();
-        list.add("Commit".getBytes());
-        List tmp = new ArrayList<Object>();
-        tmp.add(claimId.getBytes());
-        tmp.add(issuerOntid.getBytes());
-        tmp.add(subjectOntid.getBytes());
-        list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list,payer,gaslimit,gasprice);
+//        List list = new ArrayList<Object>();
+//        list.add("Commit".getBytes());
+//        List tmp = new ArrayList<Object>();
+//        tmp.add(claimId.getBytes());
+//        tmp.add(issuerOntid.getBytes());
+//        tmp.add(subjectOntid.getBytes());
+//        list.add(tmp);
+
+        AbiInfo abiinfo = JSON.parseObject(abi, AbiInfo.class);
+        String name = "Commit";
+        AbiFunction func = abiinfo.getFunction(name);
+        func.name = name;
+        func.setParamsValue(claimId.getBytes(),issuerOntid.getBytes(),subjectOntid.getBytes());
+        byte[] params = BuildParams.serializeAbiFunction(func);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractAddress), null, params, payer,gaslimit, gasprice);
         return tx;
     }
 
@@ -152,13 +168,21 @@ public class ClaimRecord {
     }
 
     public Transaction makeRevoke(String issuerOntid,String claimId,String payer,long gaslimit,long gasprice) throws Exception {
-        List list = new ArrayList<Object>();
-        list.add("Revoke".getBytes());
-        List tmp = new ArrayList<Object>();
-        tmp.add(claimId.getBytes());
-        tmp.add(issuerOntid.getBytes());
-        list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list,payer,gaslimit,gasprice);
+//        List list = new ArrayList<Object>();
+//        list.add("Revoke".getBytes());
+//        List tmp = new ArrayList<Object>();
+//        tmp.add(claimId.getBytes());
+//        tmp.add(issuerOntid.getBytes());
+//        list.add(tmp);
+//        Transaction tx = makeInvokeTransaction(list,payer,gaslimit,gasprice);
+
+        AbiInfo abiinfo = JSON.parseObject(abi, AbiInfo.class);
+        String name = "Revoke";
+        AbiFunction func = abiinfo.getFunction(name);
+        func.name = name;
+        func.setParamsValue(claimId.getBytes(),issuerOntid.getBytes());
+        byte[] params = BuildParams.serializeAbiFunction(func);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractAddress), null, params, payer,gaslimit, gasprice);
         return tx;
     }
     public String sendGetStatus(String claimId) throws Exception {
@@ -168,13 +192,20 @@ public class ClaimRecord {
         if (claimId == null || claimId == ""){
             throw new SDKException(ErrorCode.NullKeyOrValue);
         }
-        List list = new ArrayList<Object>();
-        list.add("GetStatus".getBytes());
-        List tmp = new ArrayList<Object>();
-        tmp.add(claimId.getBytes());
-        list.add(tmp);
-        Transaction tx = makeInvokeTransaction(list,null,0,0);
-        Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+//        List list = new ArrayList<Object>();
+//        list.add("GetStatus".getBytes());
+//        List tmp = new ArrayList<Object>();
+//        tmp.add(claimId.getBytes());
+//        list.add(tmp);
+//        Transaction tx = makeInvokeTransaction(list,null,0,0);
+//        Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+
+        AbiInfo abiinfo = JSON.parseObject(abi, AbiInfo.class);
+        String name = "GetStatus";
+        AbiFunction func = abiinfo.getFunction(name);
+        func.name = name;
+        func.setParamsValue(claimId.getBytes());
+        Object obj =  sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
         String res = ((JSONObject)obj).getString("Result");
         if(res.equals("")){
             return "";

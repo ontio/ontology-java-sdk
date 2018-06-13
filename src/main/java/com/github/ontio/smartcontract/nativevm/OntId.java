@@ -764,18 +764,17 @@ public class OntId {
 //        byte[] parabytes = NativeBuildParams.buildParams(ontid, attributes, pk);
 //        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "addAttributes", parabytes, payer, gaslimit, gasprice);
 
-        Struct[] structs = new Struct[attributes.length];
-        for(int i=0;i<attributes.length;i++){
-            structs[i] = new Struct().add(attributes[i].key,attributes[i].valueType,attributes[i].value);
-        }
         List list = new ArrayList();
-        list.add(ontid);
-        list.add(structs);
-        list.add(pk);
-        byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        System.out.println("args:" + Helper.toHexString(arg));
-        System.out.println("ontid:" + Helper.toHexString(ontid.getBytes()));
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"addAttributes",arg,payer,gaslimit,gasprice);
+        Struct struct = new Struct().add(ontid.getBytes());
+        struct.add(attributes.length);
+        for (int i = 0; i < attributes.length; i++) {
+            struct.add(attributes[i].key, attributes[i].valueType, attributes[i].value);
+        }
+        struct.add(pk);
+        list.add(struct);
+        byte[] args = NativeBuildParams.createCodeParamsScript(list);
+
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"addAttributes",args,payer,gaslimit,gasprice);
         return tx;
     }
 

@@ -163,12 +163,6 @@ public class WalletMgr {
         return getIdentity(info.ontid);
     }
 
-    public Identity importIdentity(String label, String encryptedPrikey, String password,String address, byte[] salt) throws Exception {
-        String prikey = com.github.ontio.account.Account.getGcmDecodedPrivateKey(encryptedPrikey, password, address,salt, walletFile.getScrypt().getN(), scheme);
-        IdentityInfo info = createIdentity(label, password, Helper.hexToBytes(prikey));
-        prikey = null;
-        return getIdentity(info.ontid);
-    }
 
     public Identity createIdentity(String password) throws Exception {
         return createIdentity("",password);

@@ -168,9 +168,9 @@ public class BuildParams {
                 } else if (val instanceof Boolean) {
                     sb.push((Boolean) val);
                 } else if(val instanceof Integer){
-                    sb.push(BigInteger.valueOf((int)val));
+                    sb.push(Helper.BigInt2Bytes(BigInteger.valueOf((int)val)));
                 } else if (val instanceof Long) {
-                    sb.push(BigInteger.valueOf((Long) val));
+                    sb.push(Helper.BigInt2Bytes(BigInteger.valueOf((Long) val)));
                 } else if(val instanceof BigInteger){
                     sb.push((BigInteger)val);
                 } else if(val instanceof Map){

@@ -24,11 +24,11 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
-import com.github.ontio.core.VmType;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.KeyType;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
+import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

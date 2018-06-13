@@ -19,33 +19,19 @@
 
 package com.github.ontio.smartcontract;
 
-import com.alibaba.fastjson.JSONObject;
-import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Common;
-import com.github.ontio.common.ErrorCode;
-import com.github.ontio.core.VmType;
-import com.github.ontio.core.asset.Contract;
 import com.github.ontio.core.scripts.ScriptOp;
 import com.github.ontio.core.transaction.Attribute;
 import com.github.ontio.core.transaction.Transaction;
-import com.github.ontio.core.transaction.AttributeUsage;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.payload.DeployCode;
 import com.github.ontio.core.payload.InvokeCode;
 import com.github.ontio.core.scripts.ScriptBuilder;
 import com.github.ontio.OntSdk;
-import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.sdk.abi.AbiFunction;
-import com.github.ontio.sdk.abi.Parameter;
-import com.github.ontio.sdk.info.AccountInfo;
-import com.alibaba.fastjson.JSON;
 
-import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Array;
 import java.math.BigInteger;
-import java.rmi.dgc.VMID;
 import java.util.*;
 
 /**

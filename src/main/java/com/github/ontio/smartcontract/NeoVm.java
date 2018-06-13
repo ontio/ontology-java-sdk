@@ -19,15 +19,13 @@
 
 package com.github.ontio.smartcontract;
 
-import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.ErrorCode;
-import com.github.ontio.core.VmType;
 import com.github.ontio.core.transaction.Transaction;
-import com.github.ontio.sdk.abi.AbiFunction;
+import com.github.ontio.smartcontract.neovm.abi.AbiFunction;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.smartcontract.neovm.BuildParams;
+import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import com.github.ontio.smartcontract.neovm.ClaimRecord;
 import com.github.ontio.smartcontract.neovm.Nep5;
 import com.github.ontio.smartcontract.neovm.Record;

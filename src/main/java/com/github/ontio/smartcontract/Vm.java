@@ -62,14 +62,13 @@ public class Vm {
      * @param author
      * @param email
      * @param desp
-     * @param vmtype
      * @param payer
      * @param gaslimit
      * @param gasprice
      * @return
      * @throws SDKException
      */
-    public DeployCode makeDeployCodeTransaction(String codeStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp, byte vmtype,String payer,long gaslimit,long gasprice) throws SDKException {
+    public DeployCode makeDeployCodeTransaction(String codeStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp,String payer,long gaslimit,long gasprice) throws SDKException {
         DeployCode tx = new DeployCode();
         if(payer != null){
             tx.payer = Address.decodeBase58(payer.replace(Common.didont,""));

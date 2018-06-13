@@ -25,11 +25,11 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.ErrorCode;
-import com.github.ontio.core.VmType;
 import com.github.ontio.core.transaction.Transaction;
-import com.github.ontio.sdk.abi.AbiFunction;
-import com.github.ontio.sdk.abi.AbiInfo;
+import com.github.ontio.smartcontract.neovm.abi.AbiFunction;
+import com.github.ontio.smartcontract.neovm.abi.AbiInfo;
 import com.github.ontio.sdk.exception.SDKException;
+import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 
 
 /**

@@ -13,7 +13,7 @@ import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.wallet.Identity;
 import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
-import com.github.ontio.smartcontract.neovm.BuildParams;
+import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

@@ -2,17 +2,11 @@ package demo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
-import com.github.ontio.common.Address;
-import com.github.ontio.common.Common;
 import com.github.ontio.common.Helper;
-import com.github.ontio.core.VmType;
 import com.github.ontio.core.transaction.Transaction;
-import com.github.ontio.crypto.SignatureScheme;
-import com.github.ontio.sdk.abi.AbiFunction;
-import com.github.ontio.sdk.abi.AbiInfo;
 import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Identity;
-import com.github.ontio.smartcontract.neovm.BuildParams;
+import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 
 import java.util.ArrayList;
 import java.util.List;

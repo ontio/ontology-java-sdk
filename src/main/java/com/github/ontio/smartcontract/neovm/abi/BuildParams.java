@@ -17,25 +17,17 @@
  *
  */
 
-package com.github.ontio.smartcontract.neovm;
+package com.github.ontio.smartcontract.neovm.abi;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.github.ontio.account.Account;
-import com.github.ontio.common.Common;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.scripts.ScriptBuilder;
 import com.github.ontio.core.scripts.ScriptOp;
-import com.github.ontio.core.transaction.Transaction;
-import com.github.ontio.sdk.abi.AbiFunction;
-import com.github.ontio.sdk.abi.Parameter;
 import com.github.ontio.sdk.exception.SDKException;
 
 import java.lang.reflect.Array;
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -76,11 +68,17 @@ public class BuildParams {
                 } else if (val instanceof Boolean) {
                     builder.push((Boolean) val);
                 } else if(val instanceof Integer){
-                    builder.push(BigInteger.valueOf((int)val));
+                    builder.push(Helper.BigInt2Bytes(BigInteger.valueOf((int)val)));
                 } else if (val instanceof Long) {
-                    builder.push(BigInteger.valueOf((long)val));
+                    builder.push(Helper.BigInt2Bytes(BigInteger.valueOf((long)val)));
                 } else if(val instanceof Map){
-                    builder.push(getMapBytes(val));
+                    byte[] bys = getMapBytes(val);
+                    System.out.println(Helper.toHexString(bys));
+                    builder.push(bys);
+                } else if(val instanceof Struct){
+                    byte[] bys = getStructBytes(val);
+                    System.out.println(Helper.toHexString(bys));
+                    builder.push(bys);
                 } else if (val instanceof List) {
                     List tmp = (List) val;
                     createCodeParamsScript(builder, tmp);
@@ -94,6 +92,36 @@ public class BuildParams {
             e.printStackTrace();
         }
         return builder.toArray();
+    }
+    public static byte[] getStructBytes(Object val){
+
+        ScriptBuilder sb = null;
+        try {
+            sb = new ScriptBuilder();
+            List list = ((Struct)val).list;
+            sb.add(Type.ArrayType.getValue());
+            sb.add(Helper.BigInt2Bytes(BigInteger.valueOf( list.size())));
+            for (int i = 0; i < list.size(); i++) {
+                if(list.get(i) instanceof byte[]){
+                    sb.add(Type.ByteArrayType.getValue());
+                    sb.push((byte[]) list.get(i));
+                } else if(list.get(i) instanceof String){
+                    sb.add(Type.ByteArrayType.getValue());
+                    sb.push(((String) list.get(i)).getBytes());
+                } else if(list.get(i) instanceof Integer){
+                    sb.add(Type.ByteArrayType.getValue());
+                    sb.push(Helper.BigInt2Bytes(BigInteger.valueOf((Integer)list.get(i))));
+                } else if(list.get(i) instanceof Long){
+                    sb.add(Type.ByteArrayType.getValue());
+                    sb.push(Helper.BigInt2Bytes(BigInteger.valueOf((Long) list.get(i))));
+                } else {
+                    throw new SDKException(ErrorCode.ParamError);
+                }
+            }
+        } catch (SDKException e) {
+            e.printStackTrace();
+        }
+        return sb.toArray();
     }
     public static byte[] getMapBytes(Object val){
         ScriptBuilder sb = null;
@@ -113,10 +141,10 @@ public class BuildParams {
                     sb.push(((String) e.getValue()).getBytes());
                 } else if(e.getValue() instanceof Integer){
                     sb.add(Type.IntegerType.getValue());
-                    sb.push(BigInteger.valueOf((Integer) e.getValue()));
+                    sb.push(Helper.BigInt2Bytes(BigInteger.valueOf((Integer) e.getValue())));
                 } else if(e.getValue() instanceof Long){
                     sb.add(Type.IntegerType.getValue());
-                    sb.push(BigInteger.valueOf((Long) e.getValue()));
+                    sb.push(Helper.BigInt2Bytes(BigInteger.valueOf((Long) e.getValue())));
                 } else {
                     throw new SDKException(ErrorCode.ParamError);
                 }
@@ -146,7 +174,11 @@ public class BuildParams {
                 } else if(val instanceof BigInteger){
                     sb.push((BigInteger)val);
                 } else if(val instanceof Map){
-                    sb.push(getMapBytes(val));
+                    byte[] bys = getMapBytes(val);
+                    sb.push(bys);
+                } else if(val instanceof Struct){
+                    byte[] bys = getStructBytes(val);
+                    sb.push(bys);
                 } else if (val instanceof List) {
                     List tmp = (List) val;
                     createCodeParamsScript(sb, tmp);
@@ -187,6 +219,8 @@ public class BuildParams {
 
             } else if ("Map".equals(obj.getType())) {
                 tmp.add(JSON.parseObject(obj.getValue(), Map.class));
+            } else if ("Struct".equals(obj.getType())) {
+                tmp.add(JSON.parseObject(obj.getValue(), Struct.class));
             } else {
                 throw new SDKException(ErrorCode.TypeError);
             }

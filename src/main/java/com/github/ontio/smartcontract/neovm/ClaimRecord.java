@@ -25,12 +25,12 @@ import com.github.ontio.account.Account;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
-import com.github.ontio.core.VmType;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.io.Serializable;
 import com.github.ontio.sdk.exception.SDKException;
+import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

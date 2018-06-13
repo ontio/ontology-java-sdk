@@ -17,7 +17,7 @@
  *
  */
 
-package com.github.ontio.sdk.abi;
+package com.github.ontio.smartcontract.neovm.abi;
 
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.sdk.exception.SDKException;
@@ -71,6 +71,9 @@ public class Parameter {
             } else if ("Void".equals(type)) {
             } else if ("Map".equals(type)) {
                 Map tmp = (Map) value;
+                this.value = JSON.toJSONString(tmp);
+            } else if ("Struct".equals(type)) {
+                Struct tmp = (Struct) value;
                 this.value = JSON.toJSONString(tmp);
             } else {
                 throw new SDKException(ErrorCode.TypeError);

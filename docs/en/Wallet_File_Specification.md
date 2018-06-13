@@ -54,39 +54,39 @@ Here is an example as below:
     "createTime": "2018-03-14T03:12:30.862Z",
     "identitys": [
 		{
-        		"controls": [{
-        			"address": "ANRoMGmxSLtWyzcDcnfCVnJw3FXdNuC9Vq",
-        			"algorithm": "ECDSA",
-        			"hash": "sha256",
-        			"enc-alg": "aes-256-gcm",
-        			"id": "",
-        			"key": "F2aggq4pn7Exqq6VYHcMqmKzIZ//FpZ+Vec5qVksHmGupkyQSbISypLEGIrfLlt3",
-        			"parameters": {
-        				"curve": "secp256r1"
-        			},
-        			"salt": "ACm4B8Jr1oBPu++e7YIHow=="
-        		}],
-        		"isDefault": true,
-        		"label": "no",
-        		"lock": false,
-        		"ontid": "did:ont:ANRoMGmxSLtWyzcDcnfCVnJw3FXdNuC9Vq"
+            "controls": [{
+                "address": "AU6hYcc1k9CfL1pMfdno2XquMzCb7mDxSr",
+                "algorithm": "ECDSA",
+                "enc-alg": "aes-256-gcm",
+                "hash": "sha256",
+                "id": "keys-1",
+                "key": "Lnz9hMswv7/5UPyt5vBsZaGa3DdwnVEMjmwpPpips2U6rfzOqJr7b5SPX94B2T+9",
+                "parameters": {
+                    "curve": "secp256r1"
+                },
+                "salt": "f7hVud1GhryaFvqsPTkMjQ=="
+            }],
+            "isDefault": false,
+            "label": "5149e77c",
+            "lock": false,
+            "ontid": "did:ont:AU6hYcc1k9CfL1pMfdno2XquMzCb7mDxSr"
         }	
 	],
 	"accounts": [
         {
-                "address": "ANRoMGmxSLtWyzcDcnfCVnJw3FXdNuC9Vq",
-                "algorithm": "ECDSA",
-                "enc-alg": "aes-256-gcm",
-                "hash": "sha256",
-                "isDefault": true,
-                "key": "F2aggq4pn7Exqq6VYHcMqmKzIZ//FpZ+Vec5qVksHmGupkyQSbISypLEGIrfLlt3",
-                "label": "no",
-                "lock": false,
-                "parameters": {
-                    "curve": "P-256"
-                },
-                "salt": "ACm4B8Jr1oBPu++e7YIHow==",
-                "signatureScheme": "SHA256withECDSA"
+            "address": "AW4tstUKotLacGBEL2dwf8wAXSW7PhC8Fa",
+            "algorithm": "ECDSA",
+            "enc-alg": "aes-256-gcm",
+            "hash": "sha256",
+            "isDefault": false,
+            "key": "TRtt9uLbszTDznvjDiZ+5S//LcjNM51nwUwOvSV9zfb5O9siU6HVl6caG7zDhABv",
+            "label": "755ddba4",
+            "lock": false,
+            "parameters": {
+                "curve": "P-256"
+            },
+            "salt": "nyU4DZ+1LBLPmgZLIUDggQ==",
+            "signatureScheme": "SHA256withECDSA"
          }
 	]
 }

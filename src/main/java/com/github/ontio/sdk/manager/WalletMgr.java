@@ -440,8 +440,9 @@ public class WalletMgr {
                 walletInMem.setDefaultOntid(idt.ontid);
             }
             idt.controls = new ArrayList<Control>();
-            Control ctl = new Control(acct.key, "");
+            Control ctl = new Control(acct.key, "keys-1");
             ctl.setSalt(salt);
+            ctl.setAddress(acct.address);
             idt.controls.add(ctl);
             walletInMem.getIdentities().add(idt);
         }

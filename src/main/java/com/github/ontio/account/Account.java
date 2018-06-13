@@ -23,6 +23,7 @@ import org.bouncycastle.util.Strings;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
@@ -282,8 +283,8 @@ public class Account {
         try {
             switch (this.keyType) {
                 case ECDSA:
-                   // bs.write(this.keyType.getLabel());
-                   // bs.write(Curve.valueOf(pub.getParameters().getCurve()).getLabel());
+                    //bs.write(this.keyType.getLabel());
+                    //bs.write(Curve.valueOf(pub.getParameters().getCurve()).getLabel());
                     bs.write(pub.getQ().getEncoded(true));
                     break;
                 case SM2:
@@ -310,9 +311,11 @@ public class Account {
         if (data.length < 2) {
             throw new Exception(ErrorCode.InvalidData);
         }
+        if(data.length == 33){
+            this.keyType = KeyType.ECDSA;
+        }
         this.privateKey = null;
         this.publicKey = null;
-        this.keyType = KeyType.fromLabel(data[0]);
         switch (this.keyType) {
             case ECDSA:
 			    this.keyType = KeyType.ECDSA;
@@ -462,7 +465,7 @@ public class Account {
         if (salt.length != 16) {
             throw new SDKException(ErrorCode.ParamError);
         }
-
+        Security.addProvider(new BouncyCastleProvider());
         byte[] derivedkey = SCrypt.generate(passphrase.getBytes(StandardCharsets.UTF_8), salt, N, r, p, dkLen);
         byte[] derivedhalf2 = new byte[32];
         byte[] iv = new byte[12];
@@ -471,7 +474,7 @@ public class Account {
         try {
             SecretKeySpec skeySpec = new SecretKeySpec(derivedhalf2, "AES");
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-            cipher.init(Cipher.ENCRYPT_MODE, skeySpec, new IvParameterSpec(iv));
+            cipher.init(Cipher.ENCRYPT_MODE, skeySpec, new GCMParameterSpec(128,iv));
             cipher.updateAAD(getAddressU160().toBase58().getBytes());
             byte[] encryptedkey = cipher.doFinal(serializePrivateKey());
             return new String(Base64.getEncoder().encode(encryptedkey));
@@ -527,7 +530,7 @@ public class Account {
         if (salt.length != 16) {
             throw new SDKException(ErrorCode.ParamError);
         }
-        Security.addProvider(new BouncyCastleProvider());
+
         byte[] encryptedkey = Base64.getDecoder().decode(encryptedPriKey);
 
         int N = n;
@@ -545,7 +548,7 @@ public class Account {
         try {
             SecretKeySpec skeySpec = new SecretKeySpec(derivedhalf2, "AES");
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-            cipher.init(Cipher.DECRYPT_MODE, skeySpec, new IvParameterSpec(iv));
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec, new GCMParameterSpec(128,iv));
             cipher.updateAAD(address.getBytes());
             rawkey = cipher.doFinal(encryptedkey);
         } catch (Exception e) {

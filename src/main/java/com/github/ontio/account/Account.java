@@ -80,7 +80,7 @@ public class Account {
         this.addressU160 = Address.addressFromPubKey(serializePublicKey());
     }
 
-    public Account(byte[] data, SignatureScheme scheme) throws Exception {
+    public Account(byte[] prikey, SignatureScheme scheme) throws Exception {
         Security.addProvider(new BouncyCastleProvider());
         signatureScheme = scheme;
 
@@ -95,7 +95,7 @@ public class Account {
         switch (scheme) {
             case SHA256WITHECDSA:
             case SM3WITHSM2:
-                BigInteger d = new BigInteger(1, data);
+                BigInteger d = new BigInteger(1, prikey);
                 ECNamedCurveParameterSpec spec = ECNamedCurveTable.getParameterSpec((String) this.curveParams[0]);
                 ECParameterSpec paramSpec = new ECNamedCurveSpec(spec.getName(), spec.getCurve(), spec.getG(), spec.getN());
                 ECPrivateKeySpec priSpec = new ECPrivateKeySpec(d, paramSpec);
@@ -118,12 +118,12 @@ public class Account {
     }
 
     // construct an account from a serialized pubic key or private key
-    public Account(boolean fromPrivate, byte[] data) throws Exception {
+    public Account(boolean fromPrivate, byte[] pubkey) throws Exception {
         Security.addProvider(new BouncyCastleProvider());
         if (fromPrivate) {
             //parsePrivateKey(data);
         } else {
-            parsePublicKey(data);
+            parsePublicKey(pubkey);
         }
     }
 

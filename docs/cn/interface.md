@@ -62,12 +62,12 @@
 ```  
      |                        Main   Function                                     |     Description            
  ----|----------------------------------------------------------------------------|------------------------ 
-   1 | Account importAccount(String encryptedPrikey, String pwd,String address)   |   导入资产账户
+   1 | Account importAccount(String encryptedPrikey, String pwd,byte[] salt,String address)   |   导入资产账户
    2 | Account createAccount(String password)                                     |   创建资产账户
    3 | Account createAccountFromPriKey(String password, String prikey)            |   根据私钥创建
    4 | AccountInfo createAccountInfo(String password)                             |   根据私钥创建
    5 | AccountInfo createAccountInfoFromPriKey(String password, String prikey)    |   根据私钥创建
-   6 | AccountInfo getAccountInfo(String address, String password)                |   获取账号信息
+   6 | AccountInfo getAccountInfo(String address, String password,byte[] salt)                |   获取账号信息
    7 | List<Account> getAccounts()                                                |   查询所有账号
    8 | Account getAccount(String address)                                         |   获取账户
    9 | Account getDefaultAccount()                                                |   获取默认账户

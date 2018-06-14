@@ -31,10 +31,10 @@ public class Account {
     public Map parameters = new HashMap() ;
     public String key = "";
     @JSONField(name = "enc-alg")
-    public String encAlg = "aes-256-ctr";
+    public String encAlg = "aes-256-gcm";
+    public String salt = "";
     public String hash = "sha256";
     public String signatureScheme = "SHA256withECDSA";
-    public String passwordHash = "";
     public Object extra = null;
 }
 ```

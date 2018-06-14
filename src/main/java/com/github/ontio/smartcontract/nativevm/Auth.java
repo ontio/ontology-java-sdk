@@ -11,9 +11,13 @@ import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.io.Serializable;
 import com.github.ontio.sdk.exception.SDKException;
+import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
+import com.github.ontio.smartcontract.nativevm.abi.Struct;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Description:
@@ -21,7 +25,7 @@ import java.io.IOException;
  */
 public class Auth {
     private OntSdk sdk;
-    private final String contractAddress = "ff00000000000000000000000000000000000006";
+    private final String contractAddress = "0000000000000000000000000000000000000006";
     public Auth(OntSdk sdk) {
         this.sdk = sdk;
     }
@@ -97,8 +101,14 @@ public class Auth {
         if(keyNo <0 || gaslimit <0 || gasprice <0){
             throw new SDKException(ErrorCode.ParamErr("keyNo or gaslimit or gasprice should not be less than 0"));
         }
-        byte[] parabytes = new TransferParam(Helper.hexToBytes(contractAddr),newAdminOntID.getBytes(),keyNo).toArray();
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"transfer",parabytes,payer,gaslimit,gasprice);
+//        byte[] parabytes = new TransferParam(Helper.hexToBytes(contractAddr),newAdminOntID.getBytes(),keyNo).toArray();
+//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"transfer",parabytes,payer,gaslimit,gasprice);
+
+        List list = new ArrayList();
+        list.add(new Struct().add(Helper.hexToBytes(contractAddr),newAdminOntID.getBytes(),keyNo));
+        byte[] arg = NativeBuildParams.createCodeParamsScript(list);
+
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"transfer",arg,payer,gaslimit,gasprice);
         return tx;
     }
 
@@ -109,22 +119,18 @@ public class Auth {
      * @param contractAddr
      * @param funcName
      * @param keyNo
-     * @param payerAcct
-     * @param gaslimit
-     * @param gasprice
      * @return
      * @throws Exception
      */
-    public String verifyToken(String ontid,String password,byte[] salt, String contractAddr,String funcName,long keyNo,Account payerAcct,long gaslimit,long gasprice) throws Exception {
-        if(ontid ==null || ontid.equals("") || password ==null || password.equals("")|| contractAddr == null || contractAddr.equals("") || funcName==null || funcName.equals("")||payerAcct==null){
+    public String verifyToken(String ontid,String password,byte[] salt, String contractAddr,String funcName,long keyNo) throws Exception {
+        if(ontid ==null || ontid.equals("") || password ==null || password.equals("")|| contractAddr == null || contractAddr.equals("") || funcName==null || funcName.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
-        if(keyNo < 0 || gaslimit < 0 || gasprice < 0){
+        if(keyNo < 0){
             throw new SDKException(ErrorCode.ParamErr("key or gaslimit or gas price should not be less than 0"));
         }
-        Transaction tx = makeVerifyToken(ontid,contractAddr,funcName,keyNo,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
+        Transaction tx = makeVerifyToken(ontid,contractAddr,funcName,keyNo);
         sdk.signTx(tx,ontid,password,salt);
-        sdk.addSign(tx,payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (!b) {
             throw new SDKException(ErrorCode.SendRawTxError);
@@ -138,21 +144,24 @@ public class Auth {
      * @param contractAddr
      * @param funcName
      * @param keyNo
-     * @param payer
-     * @param gaslimit
-     * @param gasprice
      * @return
      * @throws SDKException
      */
-    public Transaction makeVerifyToken(String ontid,String contractAddr,String funcName,long keyNo,String payer,long gaslimit,long gasprice) throws SDKException {
-        if(ontid ==null || ontid.equals("")|| contractAddr == null || contractAddr.equals("") || funcName==null || funcName.equals("")||payer==null ||payer.equals("")){
+    public Transaction makeVerifyToken(String ontid,String contractAddr,String funcName,long keyNo) throws SDKException {
+        if(ontid ==null || ontid.equals("")|| contractAddr == null || contractAddr.equals("") || funcName==null || funcName.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
-        if(keyNo < 0 || gaslimit < 0 || gasprice < 0){
+        if(keyNo < 0){
             throw new SDKException(ErrorCode.ParamErr("key or gaslimit or gas price should not be less than 0"));
         }
-        byte[] parabytes = new VerifyTokenParam(Helper.hexToBytes(contractAddr),ontid.getBytes(),funcName.getBytes(),keyNo).toArray();
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"verifyToken",parabytes,payer,gaslimit,gasprice);
+//        byte[] parabytes = new VerifyTokenParam(Helper.hexToBytes(contractAddr),ontid.getBytes(),funcName.getBytes(),keyNo).toArray();
+//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"verifyToken",parabytes,payer,gaslimit,gasprice);
+
+        List list = new ArrayList();
+        list.add(new Struct().add(Helper.hexToBytes(contractAddr),ontid.getBytes(),funcName.getBytes(),keyNo));
+        byte[] arg = NativeBuildParams.createCodeParamsScript(list);
+
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"verifyToken",arg,null,0,0);
         return tx;
     }
 
@@ -208,8 +217,20 @@ public class Auth {
         if(keyNo < 0 || gaslimit < 0 || gasprice < 0){
             throw new SDKException(ErrorCode.ParamErr("keyNo or gaslimit or gas price should not be less than 0"));
         }
-        byte[] parabytes = new FuncsToRoleParam(Helper.hexToBytes(contractAddr),adminOntID.getBytes(),role.getBytes(),funcName,keyNo).toArray();
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"assignFuncsToRole",parabytes,payer,gaslimit,gasprice);
+//        byte[] parabytes = new FuncsToRoleParam(Helper.hexToBytes(contractAddr),adminOntID.getBytes(),role.getBytes(),funcName,keyNo).toArray();
+//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"assignFuncsToRole",parabytes,payer,gaslimit,gasprice);
+
+        List list = new ArrayList();
+        Struct struct = new Struct();
+        struct.add(Helper.hexToBytes(contractAddr),adminOntID.getBytes(),role.getBytes());
+        struct.add(funcName.length);
+        for (int i = 0; i < funcName.length; i++) {
+            struct.add(funcName);
+        }
+        struct.add(keyNo);
+        byte[] arg = NativeBuildParams.createCodeParamsScript(list);
+
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"transfer",arg,payer,gaslimit,gasprice);
         return tx;
     }
 
@@ -270,8 +291,19 @@ public class Auth {
         for(int i=0; i< ontIDs.length ; i++){
             ontId[i] = ontIDs[i].getBytes();
         }
-        byte[] parabytes = new OntIDsToRoleParam(Helper.hexToBytes(contractAddr),adminOntId.getBytes(),role.getBytes(),ontId,keyNo).toArray();
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"assignOntIDsToRole",parabytes, payer,gaslimit,gasprice);
+//        byte[] parabytes = new OntIDsToRoleParam(Helper.hexToBytes(contractAddr),adminOntId.getBytes(),role.getBytes(),ontId,keyNo).toArray();
+//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"assignOntIDsToRole",parabytes, payer,gaslimit,gasprice);
+        List list = new ArrayList();
+        Struct struct = new Struct();
+        struct.add(Helper.hexToBytes(contractAddr),adminOntId.getBytes(),role.getBytes());
+        struct.add(ontId.length);
+        for(int i =0;i<ontId.length;i++){
+            struct.add(ontId[i]);
+        }
+        struct.add(keyNo);
+        byte[] arg = NativeBuildParams.createCodeParamsScript(list);
+
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"transfer",arg,payer,gaslimit,gasprice);
         return tx;
     }
 
@@ -332,8 +364,13 @@ public class Auth {
         if(period<0 || level <0 || keyNo <0 || gaslimit < 0 || gasprice < 0){
             throw new SDKException(ErrorCode.ParamErr("period level keyNo gaslimit or gasprice should not be less than 0"));
         }
-        byte[] parabytes = new DelegateParam(Helper.hexToBytes(contractAddr),ontid.getBytes(),toAddr.getBytes(),role.getBytes(),period,level,keyNo).toArray();
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"delegate",parabytes, payer,gaslimit,gasprice);
+//        byte[] parabytes = new DelegateParam(Helper.hexToBytes(contractAddr),ontid.getBytes(),toAddr.getBytes(),role.getBytes(),period,level,keyNo).toArray();
+//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"delegate",parabytes, payer,gaslimit,gasprice);
+        List list = new ArrayList();
+        list.add(new Struct().add(Helper.hexToBytes(contractAddr),ontid.getBytes(),toAddr.getBytes(),role.getBytes(),period,level,keyNo));
+        byte[] arg = NativeBuildParams.createCodeParamsScript(list);
+
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"delegate",arg,payer,gaslimit,gasprice);
         return tx;
     }
 
@@ -390,8 +427,13 @@ public class Auth {
         if(keyNo <0 || gaslimit < 0 || gasprice < 0){
             throw new SDKException(ErrorCode.ParamErr("key gaslimit or gasprice should not be less than 0"));
         }
-        byte[] parabytes = new AuthWithdrawParam(Helper.hexToBytes(contractAddr),ontid.getBytes(),delegate.getBytes(),role.getBytes(),keyNo).toArray();
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"withdraw",parabytes, payer,gaslimit,gasprice);
+//        byte[] parabytes = new AuthWithdrawParam(Helper.hexToBytes(contractAddr),ontid.getBytes(),delegate.getBytes(),role.getBytes(),keyNo).toArray();
+//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"withdraw",parabytes, payer,gaslimit,gasprice);
+        List list = new ArrayList();
+        list.add(new Struct().add(Helper.hexToBytes(contractAddr),ontid.getBytes(),delegate.getBytes(),role.getBytes(),keyNo));
+        byte[] arg = NativeBuildParams.createCodeParamsScript(list);
+
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"withdraw",arg,payer,gaslimit,gasprice);
         return tx;
     }
 }

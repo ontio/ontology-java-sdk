@@ -127,8 +127,8 @@ public class OntAssetSM2Demo {
 //        String ip = "http://54.222.182.88;
 //        String ip = "http://101.132.193.149";
         String restUrl = ip + ":" + "20334";
-        String rpcUrl = ip + ":" + "20386";
-        String wsUrl = ip + ":" + "20385";
+        String rpcUrl = ip + ":" + "20336";
+        String wsUrl = ip + ":" + "20335";
 
         OntSdk wm = OntSdk.getInstance();
         wm.setRpc(rpcUrl);

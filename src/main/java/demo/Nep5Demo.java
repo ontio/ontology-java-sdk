@@ -99,7 +99,7 @@ public class Nep5Demo {
 //        String ip = "http://polaris1.ont.io";
         String restUrl = ip + ":" + "20334";
         String rpcUrl = ip + ":" + "20336";
-        String wsUrl = ip + ":" + "20385";
+        String wsUrl = ip + ":" + "20335";
 
         OntSdk wm = OntSdk.getInstance();
         wm.setRpc(rpcUrl);

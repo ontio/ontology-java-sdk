@@ -11,15 +11,14 @@
 
 ```
 String ip = "http://127.0.0.1";
-String restUrl = ip + ":" + "20384";
-String rpcUrl = ip + ":" + "20386";
-String wsUrl = ip + ":" + "20385";
+String restUrl = ip + ":" + "20334";
+String rpcUrl = ip + ":" + "20336";
+String wsUrl = ip + ":" + "20335";
 OntSdk wm = OntSdk.getInstance();
 wm.setRpc(rpcUrl);
 wm.setRestful(restUrl);
 wm.setDefaultConnect(wm.getRestful());
 wm.openWalletFile("RecordTxDemo.json");
-wm.setCodeAddress("803ca638069742da4b6871fe3d7f78718eeee78a");
 ```
 
 > Note: codeAddress是存证合约地址。

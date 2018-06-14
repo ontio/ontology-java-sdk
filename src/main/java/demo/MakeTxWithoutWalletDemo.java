@@ -175,8 +175,8 @@ public class MakeTxWithoutWalletDemo {
 //        String ip = "http://101.132.193.149";
 //        String ip = "http://polaris1.ont.io";
         String restUrl = ip + ":" + "20334";
-        String rpcUrl = ip + ":" + "20386";
-        String wsUrl = ip + ":" + "20385";
+        String rpcUrl = ip + ":" + "20336";
+        String wsUrl = ip + ":" + "20335";
 
         OntSdk wm = OntSdk.getInstance();
         wm.setRpc(rpcUrl);

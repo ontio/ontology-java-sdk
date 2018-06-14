@@ -92,14 +92,14 @@ public class WebsocketDemo {
                     Account info1 = null;
                     Account info2 = null;
                     Account info3 = null;
-                    if (ontSdk.getWalletMgr().getAccounts().size() < 3) {
+                    if (ontSdk.getWalletMgr().getWallet().getAccounts().size() < 3) {
                         info1 = ontSdk.getWalletMgr().createAccountFromPriKey("passwordtest", "9a31d585431ce0aa0aab1f0a432142e98a92afccb7bcbcaff53f758df82acdb3");
                         info2 = ontSdk.getWalletMgr().createAccount("passwordtest");
                         info3 = ontSdk.getWalletMgr().createAccount("passwordtest");
                         ontSdk.getWalletMgr().writeWallet();
                     }
-                    info1 = ontSdk.getWalletMgr().getAccounts().get(0);
-                    info2 = ontSdk.getWalletMgr().getAccounts().get(1);
+                    info1 = ontSdk.getWalletMgr().getWallet().getAccounts().get(0);
+                    info2 = ontSdk.getWalletMgr().getWallet().getAccounts().get(1);
                     Transaction tx = ontSdk.nativevm().ont().makeTransfer( info1.address, info2.address, 100L,payer.address, ontSdk.DEFAULT_GAS_LIMIT,0);
                     ontSdk.signTx(tx, info1.address, password,new byte[]{});
                     System.out.println(tx.toHexString());
@@ -133,7 +133,7 @@ public class WebsocketDemo {
                     //System.out.println("Functions:" + abiinfo.getFunctions());
 
                     AbiFunction func0 = abiinfo.getFunction("Put");
-                    Identity did0 = ontSdk.getWalletMgr().getIdentitys().get(0);
+                    Identity did0 = ontSdk.getWalletMgr().getWallet().getIdentities().get(0);
                     func0.setParamsValue("key".getBytes(), "value".getBytes());
                 }
                 if(true){

@@ -394,4 +394,21 @@ public class WalletMgr {
         throw new SDKException(ErrorCode.OtherError("Account null"));
     }
 
+
+    public Identity getDefaultIdentity() {
+        for (Identity e : getWallet().getIdentities()) {
+            if (e.isDefault) {
+                return e;
+            }
+        }
+        return null;
+    }
+    public Account getDefaultAccount() {
+        for (Account e : getWallet().getAccounts()) {
+            if (e.isDefault) {
+                return e;
+            }
+        }
+        return null;
+    }
 }

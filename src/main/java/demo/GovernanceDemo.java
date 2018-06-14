@@ -30,6 +30,7 @@ public class GovernanceDemo {
             Account account9 = new Account(Helper.hexToBytes(privatekey9),SignatureScheme.SHA256WITHECDSA);
 
             String prikey = "75de8489fcb2dcaf2ef3cd607feffde18789de7da129b5e97c81e001793cb7cf";
+            prikey = "523c5fcf74823831756f0bcb3634234f10b3beb1c05595058534577752ad2d9f";
             Account account = new Account(Helper.hexToBytes(prikey),SignatureScheme.SHA256WITHECDSA);
             Account account8 = new Account(Helper.hexToBytes(privatekey8),SignatureScheme.SHA256WITHECDSA);
             Account account7 = new Account(Helper.hexToBytes(privatekey7),SignatureScheme.SHA256WITHECDSA);
@@ -49,11 +50,11 @@ public class GovernanceDemo {
 //                Thread.sleep(6000);
                 System.out.println(sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
                 System.out.println(sdk.nativevm().ong().unclaimOng(account.getAddressU160().toBase58()));
-                sdk.nativevm().ong().claimOng(account,account.getAddressU160().toBase58(),1360000000000L,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+                //sdk.nativevm().ong().claimOng(account,account.getAddressU160().toBase58(),640000000000L,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
             }
 
-            if(false){
-                Identity identity = sdk.getWalletMgr().importIdentity("blDuHRtsfOGo9A79rxnJFo2iOMckxdFDfYe2n6a9X+jdMCRkNUfs4+C4vgOfCOQ5",password,Base64.getDecoder().decode("0hAaO6CT+peDil9s5eoHyw=="),account.getAddressU160().toBase58());
+            if(true){
+                Identity identity = sdk.getWalletMgr().createIdentityFromPriKey("passwordtest",prikey);
                 String txhash = sdk.nativevm().ontId().sendRegister(identity,password,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
                 Thread.sleep(6000);
                 Object obj = sdk.getConnect().getSmartCodeEvent(txhash);
@@ -61,8 +62,8 @@ public class GovernanceDemo {
             }
             List<Identity> dids = sdk.getWalletMgr().getWallet().getIdentities();
             Identity identity = dids.get(0);
-            System.out.println("account:" + sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
-            if(true){
+            //System.out.println("account:" + sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
+            if(false){
                 String contractAddr = "0000000000000000000000000000000000000007";
                 Identity adminOntid = sdk.getWalletMgr().importIdentity("blDuHRtsfOGo9A79rxnJFo2iOMckxdFDfYe2n6a9X+jdMCRkNUfs4+C4vgOfCOQ5",password,Base64.getDecoder().decode("0hAaO6CT+peDil9s5eoHyw=="),account.getAddressU160().toBase58());
 //                String txhash = sdk.nativevm().auth().assignFuncsToRole(adminOntid.ontid,password,adminOntid.controls.get(0).getSalt(),contractAddr,"role",new String[]{"registerCandidate"},1,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
@@ -98,10 +99,12 @@ public class GovernanceDemo {
                 System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
                 System.out.println(sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
             }
-            System.out.println("account:" + sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
-            String res = sdk.nativevm().governance().getPeerPoolMap();
-            JSONObject jsr = JSONObject.parseObject(res);
-            System.out.println(jsr.getString(Helper.toHexString(account7.serializePublicKey())));
+            if(false) {
+                System.out.println("account:" + sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
+                String res = sdk.nativevm().governance().getPeerPoolMap();
+                JSONObject jsr = JSONObject.parseObject(res);
+                System.out.println(jsr.getString(Helper.toHexString(account7.serializePublicKey())));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -116,7 +119,7 @@ public class GovernanceDemo {
 //        String ip = "http://101.132.193.149";
         String restUrl = ip + ":" + "20334";
         String rpcUrl = ip + ":" + "20336";
-        String wsUrl = ip + ":" + "20385";
+        String wsUrl = ip + ":" + "20335";
 
         OntSdk wm = OntSdk.getInstance();
         wm.setRpc(rpcUrl);

@@ -11,9 +11,9 @@
 
 ```
 String ip = "http://127.0.0.1";
-String restUrl = ip + ":" + "20384";
-String rpcUrl = ip + ":" + "20386";
-String wsUrl = ip + ":" + "20385";
+String restUrl = ip + ":" + "20334";
+String rpcUrl = ip + ":" + "20336";
+String wsUrl = ip + ":" + "20335";
 OntSdk wm = OntSdk.getInstance();
 wm.setRpc(rpcUrl);
 wm.setRestful(restUrl);

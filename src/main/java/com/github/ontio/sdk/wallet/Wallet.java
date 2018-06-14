@@ -212,22 +212,6 @@ public class Wallet implements Cloneable {
         }
     }
 
-    public String getDefaultIdentity() {
-        for (Identity e : getIdentities()) {
-            if (e.isDefault) {
-                return e.ontid;
-            }
-        }
-        return null;
-    }
-    public String getDefaultAccount() {
-        for (Account e : getAccounts()) {
-            if (e.isDefault) {
-                return e.address;
-            }
-        }
-        return null;
-    }
     private Identity addIdentity(String ontid) {
         for (Identity e : getIdentities()) {
             if (e.ontid.equals(ontid)) {

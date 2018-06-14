@@ -12,7 +12,7 @@ public class WalletDemo {
     public static void main(String[] args) {
         try {
             OntSdk ontSdk = getOntSdk();
-            if (ontSdk.getWalletMgr().getAccounts().size() > 0) {
+            if (ontSdk.getWalletMgr().getWallet().getAccounts().size() > 0) {
                 ontSdk.getWalletMgr().getWallet().clearAccount();
                 ontSdk.getWalletMgr().getWallet().clearIdentity();
                 ontSdk.getWalletMgr().writeWallet();
@@ -25,7 +25,7 @@ public class WalletDemo {
             System.out.println(ontSdk.getWalletMgr().getWalletFile().toString());
 
             System.out.println();
-            ontSdk.getWalletMgr().getWallet().removeAccount(ontSdk.getWalletMgr().getAccounts().get(0).address);
+            ontSdk.getWalletMgr().getWallet().removeAccount(ontSdk.getWalletMgr().getWallet().getAccounts().get(0).address);
             ontSdk.getWalletMgr().getWallet().setVersion("2.0");
             System.out.println("removeAccount size: "+ontSdk.getWalletMgr().getWallet().getAccounts().size()+" " +ontSdk.getWalletMgr().getWalletFile().getAccounts().size());
             System.out.println(ontSdk.getWalletMgr().getWallet().toString());
@@ -39,7 +39,7 @@ public class WalletDemo {
 
 
             System.out.println();
-            ontSdk.getWalletMgr().getWallet().removeAccount(ontSdk.getWalletMgr().getAccounts().get(0).address);
+            ontSdk.getWalletMgr().getWallet().removeAccount(ontSdk.getWalletMgr().getWallet().getAccounts().get(0).address);
             ontSdk.getWalletMgr().getWallet().setVersion("2.0");
             System.out.println("removeAccount size: "+ontSdk.getWalletMgr().getWallet().getAccounts().size()+" " +ontSdk.getWalletMgr().getWalletFile().getAccounts().size());
             System.out.println(ontSdk.getWalletMgr().getWallet().toString());

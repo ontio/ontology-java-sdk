@@ -102,7 +102,7 @@ public class WalletMgrTest {
 
     @Test
     public void importAccount() throws Exception {
-        List<Account> accounts = walletMgr.getAccounts();
+        List<Account> accounts = walletMgr.getWallet().getAccounts();
         accounts.clear();
         assertEquals(accounts.size(), 0);
         walletMgr.writeWallet();

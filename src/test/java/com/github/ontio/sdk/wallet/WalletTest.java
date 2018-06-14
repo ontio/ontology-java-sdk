@@ -46,14 +46,14 @@ public class WalletTest {
 
     @Test
     public void getAccount() throws Exception {
-        Account acct = ontSdk.getWalletMgr().getAccount(acct1.address);
+        Account acct = ontSdk.getWalletMgr().getWallet().getAccount(acct1.address);
         Assert.assertNotNull(acct);
 
         ontSdk.getWalletMgr().getWallet().setDefaultIdentity(id1.ontid);
         ontSdk.getWalletMgr().getWallet().setDefaultIdentity(1);
         ontSdk.getWalletMgr().getWallet().setDefaultAccount(acct1.address);
         ontSdk.getWalletMgr().getWallet().setDefaultAccount(1);
-        Identity did = ontSdk.getWalletMgr().getIdentity(id1.ontid);
+        Identity did = ontSdk.getWalletMgr().getWallet().getIdentity(id1.ontid);
         Assert.assertNotNull(did);
         boolean b = ontSdk.getWalletMgr().getWallet().removeIdentity(id1.ontid);
         Assert.assertTrue(b);

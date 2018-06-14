@@ -51,7 +51,7 @@ public class WasmVm {
             Object obj = (String) sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
             String result = ((JSONObject) obj).getString("Result");
             if (Integer.parseInt(result) == 0) {
-                throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
+                throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error: "+ obj));
             }
             return result;
         } else {

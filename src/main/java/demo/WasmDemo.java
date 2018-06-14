@@ -27,10 +27,10 @@ public class WasmDemo {
 
             String password = "111111";
             Identity identity;
-            if(ontSdk.getWalletMgr().getIdentitys().size() < 1){
+            if(ontSdk.getWalletMgr().getWallet().getIdentities().size() < 1){
                 identity = ontSdk.getWalletMgr().createIdentity(password);
             }else{
-                identity = ontSdk.getWalletMgr().getIdentitys().get(0);
+                identity = ontSdk.getWalletMgr().getWallet().getIdentities().get(0);
             }
 
             //code

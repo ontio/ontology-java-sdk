@@ -81,7 +81,7 @@ public class Nep5 {
             Transaction tx = sdk.vm().makeInvokeCodeTransaction(getContractAddress(), null, params,null,0, 0);
             Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
             if (Integer.parseInt(((JSONObject) obj).getString("Result")) != 1){
-                throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
+                throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error: "+ obj));
             }
             return ((JSONObject) obj).getLong("Gas");
         }
@@ -131,7 +131,7 @@ public class Nep5 {
             sdk.signTx(tx, new Account[][]{{acct}});
             Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
             if (Integer.parseInt(((JSONObject) obj).getString("Result")) != 1){
-                throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
+                throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error: "+ obj));
             }
             return ((JSONObject) obj).getLong("Gas");
         }

@@ -8,6 +8,7 @@ import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Identity;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,25 @@ public class AccountDemo {
 
         try {
             OntSdk ontSdk = getOntSdk();
+            byte[] saltt = Base64.getDecoder().decode("0X3NC1UHQGltHc4ikzgzmA==");
+            String prikeyg = com.github.ontio.account.Account.getGcmDecodedPrivateKey("7a1ccOWFQUGl0HQmc+PSLeKMwbVZ45/YDHTH/+um4O1z/YAWuv+vsr9zusvYXWbj", "1","ANH5bHrrt111XwNEnuPZj6u95Dd6u7G4D6",saltt,16384,ontSdk.defaultSignScheme);
+            com.github.ontio.account.Account a = new com.github.ontio.account.Account(Helper.hexToBytes(prikeyg),ontSdk.defaultSignScheme);
+            System.out.println(Helper.toHexString(a.serializePrivateKey()));
+            System.out.println(a.getAddressU160().toBase58());
+            //com.github.ontio.account.Account b = new com.github.ontio.account.Account(false,a.serializePublicKey());
 
+            //System.out.println(Helper.toHexString(b.serializePublicKey()));
+            System.out.println( a.exportGcmEncryptedPrikey("1",saltt,16384));
+            //            ontSdk.getWalletMgr().createAccount("password");
+//            ontSdk.getWalletMgr().writeWallet();
+            //ontSdk.getWalletMgr().getAccount("AUxEWKBM7zaU8iPSdymNSaZt7Dt9yB1KU6","1", Base64.getDecoder().decode("q6FCsP3XKxaeZaj15QZRqA=="));
+           // ontSdk.getWalletMgr().getAccount("AHvSop5MbUX6pnqbXnFC5t3yjqVV5DiL7w","password", Base64.getDecoder().decode("ylsxIy8xq0uh4KjjbhxVLw=="));
+          // ontSdk.getWalletMgr().getAccount("ANRoMGmxSLtWyzcDcnfCVnJw3FXdNuC9Vq","passwordtest", Base64.getDecoder().decode("ACm4B8Jr1oBPu++e7YIHow=="));
+            System.exit(0);
+            if(true){
+                ontSdk.getWalletMgr().createAccount("1");
+                System.exit(0);
+            }
 
             byte[] salt0 = java.util.Base64.getDecoder().decode("+AX/Aa8VXp0h74PZySZ9RA==");
             String key0 = "+TDw5opWl5HfGEWUpxblVa5BqVKF2962DoCwi1GYidwWMKvOj7mqaUVx3k/utGLx";

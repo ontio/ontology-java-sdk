@@ -99,6 +99,7 @@ public class NativeBuildParams {
                     builder.pushPack();
 
                 } else {
+                    throw new SDKException(ErrorCode.OtherError("not this type"));
                 }
             }
         } catch (Exception e) {
@@ -129,7 +130,8 @@ public class NativeBuildParams {
                     builder.add(ScriptOp.OP_SWAP);
                     builder.add(ScriptOp.OP_APPEND);
                 }
-            } else{
+            }  else {
+                throw new SDKException(ErrorCode.OtherError("not this type"));
             }
         } catch (Exception e) {
             e.printStackTrace();

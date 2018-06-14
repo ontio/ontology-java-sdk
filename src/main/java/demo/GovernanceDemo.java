@@ -32,7 +32,7 @@ public class GovernanceDemo {
             Account account = new Account(Helper.hexToBytes(prikey),SignatureScheme.SHA256WITHECDSA);
             Account account8 = new Account(Helper.hexToBytes(privatekey8),SignatureScheme.SHA256WITHECDSA);
             Account account7 = new Account(Helper.hexToBytes(privatekey7),SignatureScheme.SHA256WITHECDSA);
-            if(sdk.getWalletMgr().getIdentitys().size() < 2){
+            if(sdk.getWalletMgr().getWallet().getIdentities().size() < 2){
                 Identity identity = sdk.getWalletMgr().createIdentity(password);
                 String txhash = sdk.nativevm().ontId().sendRegister(identity,password,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
 
@@ -58,14 +58,14 @@ public class GovernanceDemo {
                 Object obj = sdk.getConnect().getSmartCodeEvent(txhash);
                 System.out.println(obj);
             }
-            List<Identity> dids = sdk.getWalletMgr().getIdentitys();
+            List<Identity> dids = sdk.getWalletMgr().getWallet().getIdentities();
             Identity identity = dids.get(0);
             System.out.println("account:" + sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
             if(false){
                 String contractAddr = "ff00000000000000000000000000000000000007";
                 Identity adminOntid = sdk.getWalletMgr().importIdentity("ET5m04btJ/bhRvSomqfqSY05M1mlmePU74mY+yvpIjY=",password,new byte[]{},account.getAddressU160().toBase58());
 //                String txhash = sdk.nativevm().auth().assignFuncsToRole(adminOntid.ontid,password,contractAddr,"role",new String[]{"registerCandidate"},1,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
-                String txhash = sdk.nativevm().auth().assignOntIDsToRole(adminOntid.ontid,password,new byte[]{},contractAddr,"role",new String[]{identity.ontid,dids.get(1).ontid},1,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+                String txhash = sdk.nativevm().auth().assignOntIdsToRole(adminOntid.ontid,password,new byte[]{},1,contractAddr,"role",new String[]{identity.ontid,dids.get(1).ontid},payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
                 Thread.sleep(6000);
                 Object obj = sdk.getConnect().getSmartCodeEvent(txhash);
                 System.out.println(obj);

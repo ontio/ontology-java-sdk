@@ -39,7 +39,7 @@ import java.util.Map;
  *
  */
 public class Nep5Demo {
-    public static String privatekey0 = "c19f16785b8f3543bbaf5e1dbb5d398dfa6c85aaad54fc9d71203ce83e505c07";
+    public static String privatekey0 = "523c5fcf74823831756f0bcb3634234f10b3beb1c05595058534577752ad2d9f";
     public static String privatekey1 = "49855b16636e70f100cc5f4f42bc20a6535d7414fb8845e7310f8dd065a97221";
     public static String privatekey2 = "1094e90dd7c4fdfd849c14798d725ac351ae0d924b29a279a9ffa77d5737bd96";
     public static String privatekey3 = "bc254cf8d3910bc615ba6bf09d4553846533ce4403bc24f58660ae150a6d64cf";
@@ -56,22 +56,22 @@ public class Nep5Demo {
 
             Account acct = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey0), ontSdk.defaultSignScheme);
             System.out.println("recv:"+acct.getAddressU160().toBase58());
-            if(true) {
+            if(false) {
                 long gasLimit = ontSdk.neovm().nep5().sendInitGetGasLimit();
                 System.out.println(gasLimit);
                 //String result = ontSdk.neovm().nep5().sendInit(acct,acct,30000,0);
                 //System.out.println(result);
                 System.exit(0);
             }
-//            long gasLimit =  ontSdk.neovm().nep5().sendTransferGetGasLimit(acct,acct1.getAddressU160().toBase58(), 9000000000L);
-//            System.out.println(gasLimit);
-//            ontSdk.neovm().nep5().sendTransfer(acct,acct1.getAddressU160().toBase58(),9000000000L,acct,gasLimit,0);
+            long gasLimit =  ontSdk.neovm().nep5().sendTransferGetGasLimit(acct,acct1.getAddressU160().toBase58(), 9000000000L);
+            System.out.println(gasLimit);
+            ontSdk.neovm().nep5().sendTransfer(acct,acct1.getAddressU160().toBase58(),1000000000L,acct,gasLimit,0);
 //            System.exit(0);
 //
 //
-//            String balance = ontSdk.neovm().nep5().queryBalanceOf(acct.getAddressU160().toBase58());
-//            System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(balance))).longValue());
-//            System.exit(0);
+            String balance = ontSdk.neovm().nep5().queryBalanceOf(acct.getAddressU160().toBase58());
+            System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(balance))).longValue());
+            System.exit(0);
             String totalSupply = ontSdk.neovm().nep5().queryTotalSupply();
             System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(totalSupply))).longValue());
             System.exit(0);

@@ -23,6 +23,9 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.common.Helper;
 import com.github.ontio.common.Address;
 import com.github.ontio.core.VmType;
+import com.github.ontio.core.asset.Contract;
+import com.github.ontio.core.payload.InvokeCode;
+import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.wallet.Account;
@@ -42,8 +45,7 @@ public class OntDemo {
 
         try {
             OntSdk ontSdk = getOntSdk();
-            String privatekey0 = "c19f16785b8f3543bbaf5e1dbb5d398dfa6c85aaad54fc9d71203ce83e505c07";
-            privatekey0 = "a1a38ccff49fa6476e737d66ef9f18c7507b50eb4804ed8e077744a4a2a74bb6";
+            String privatekey0 = "523c5fcf74823831756f0bcb3634234f10b3beb1c05595058534577752ad2d9f";
             com.github.ontio.account.Account payerAcct = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey0),ontSdk.defaultSignScheme);
             com.github.ontio.account.Account acct0 = payerAcct;
             com.github.ontio.account.Account acct1 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey1), ontSdk.defaultSignScheme);
@@ -55,8 +57,13 @@ public class OntDemo {
             System.out.println("acct0:" + acct0.getAddressU160().toBase58());
             System.out.println("acct1:" + acct1.getAddressU160().toBase58());
             System.out.println("acct2:" + acct2.getAddressU160().toBase58());
+String txHex = "00d178bd7f88000000000000000030750000000000004756c9dd829b2142883adbe1ae4f8689a1f673e97100c66b144756c9dd829b2142883adbe1ae4f8689a1f673e96a7cc814aa6e06c79f864152ab7f3139074aad822ffea8556a7cc85b6a7cc86c51c1087472616e736665721400000000000000000000000000000000000000010068164f6e746f6c6f67792e4e61746976652e496e766f6b650000";
+            Transaction reqTx = Transaction.deserializeFrom(com.github.ontio.common.Helper.hexToBytes(txHex));
+           // Contract contract = Contract.deserializeFrom(((InvokeCode) reqTx).code);
+            String str =Helper.toHexString(((InvokeCode) reqTx).code);
+            System.out.println(str.split(Helper.toHexString("transfer".getBytes()))[0]);
 
-
+System.exit(0);
 
             if (false) {
                 String hash = ontSdk.nativevm().ont().sendApprove(acct0,acct1.getAddressU160().toBase58(),100,payerAcct,30000,0);

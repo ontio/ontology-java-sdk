@@ -75,6 +75,7 @@ public class NeoVm {
         byte[] params = BuildParams.serializeAbiFunction(func);
         if (preExec) {
             Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, null,0, 0);
+            sdk.signTx(tx, new Account[][]{{acct}});
             Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
             return obj;
         } else {

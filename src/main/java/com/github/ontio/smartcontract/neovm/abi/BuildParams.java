@@ -212,7 +212,7 @@ public class BuildParams {
             } else if ("Integer".equals(obj.getType())) {
                 tmp.add(JSON.parseObject(obj.getValue(), Long.class));
             } else if ("Array".equals(obj.getType())) {
-                tmp.add(JSON.parseObject(obj.getValue(), Array.class));
+                tmp.add(JSON.parseObject(obj.getValue(), List.class));
             } else if ("InteropInterface".equals(obj.getType())) {
                 tmp.add(JSON.parseObject(obj.getValue(), Object.class));
             } else if ("Void".equals(obj.getType())) {

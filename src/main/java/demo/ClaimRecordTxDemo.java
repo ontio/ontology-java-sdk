@@ -33,7 +33,7 @@ public class ClaimRecordTxDemo {
             com.github.ontio.account.Account payerAcc = ontSdk.getWalletMgr().getAccount(payerAccInfo.address,password,payerAccInfo.getSalt());
 
 
-            if (ontSdk.getWalletMgr().getIdentitys().size() < 2) {
+            if (ontSdk.getWalletMgr().getWallet().getIdentities().size() < 2) {
                 Identity identity = ontSdk.getWalletMgr().createIdentity(password);
 
                 ontSdk.nativevm().ontId().sendRegister(identity,password,payerAcc,ontSdk.DEFAULT_GAS_LIMIT,0);
@@ -47,7 +47,7 @@ public class ClaimRecordTxDemo {
                 Thread.sleep(6000);
             }
 
-            List<Identity> dids = ontSdk.getWalletMgr().getIdentitys();
+            List<Identity> dids = ontSdk.getWalletMgr().getWallet().getIdentities();
 
 
             Map<String, Object> map = new HashMap<String, Object>();

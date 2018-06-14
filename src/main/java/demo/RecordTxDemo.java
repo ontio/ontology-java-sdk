@@ -10,14 +10,14 @@ public class RecordTxDemo {
         try {
             OntSdk ontSdk = getOntSdk();
 
-            if(ontSdk.getWalletMgr().getIdentitys().size() < 1) {
+            if(ontSdk.getWalletMgr().getWallet().getIdentities().size() < 1) {
 
                 ontSdk.getWalletMgr().createIdentity("passwordtest");
                 ontSdk.getWalletMgr().writeWallet();
             }
 
 
-            Identity id = ontSdk.getWalletMgr().getIdentitys().get(0);
+            Identity id = ontSdk.getWalletMgr().getWallet().getIdentities().get(0);
 
             String hash = ontSdk.neovm().record().sendPut(id.ontid,"passwordtest",new byte[]{},"key","value-test",0,0);
             System.out.println(hash);

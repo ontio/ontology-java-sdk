@@ -90,7 +90,7 @@ public class OntId {
             Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
             String result = ((JSONObject) obj).getString("Result");
             if (Integer.parseInt(result) == 0) {
-                throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error"));
+                throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error: "+ obj));
             }
         } else {
             boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -168,11 +168,9 @@ public class OntId {
         Transaction tx = makeRegisterWithAttrs(ontid, password,ident.controls.get(0).getSalt(), attributes, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.signTx(tx, ontid, password,ident.controls.get(0).getSalt());
         sdk.addSign(tx, payerAcct);
-        Identity identity = sdk.getWalletMgr().addOntIdController(ontid, info.encryptedPrikey, info.ontid);
+        Identity identity = sdk.getWalletMgr().getWallet().addOntIdController(ontid, info.encryptedPrikey, info.ontid);
         sdk.getWalletMgr().writeWallet();
-        boolean b = false;
-//        sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
-        b = sdk.getConnect().sendRawTransaction(tx.toHexString());
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         return tx.hash().toHexString();
     }
 

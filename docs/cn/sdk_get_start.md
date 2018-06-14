@@ -329,7 +329,7 @@ Address recvAddr = acct1;
 构造转账交易：
 long amount = 1000;
 Transaction tx = ontSdk.nativevm().ont().makeTransfer(sender.toBase58(),recvAddr.toBase58(), amount,sender.toBase58(),30000,0);
-
+String hash = tx.hash().toString()
 
 对交易做签名：
 ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct0}});
@@ -436,8 +436,8 @@ String txHex = tx.toHexString();
 ontSdk.getSignServer().sendSigRawTx(txHex);
  
 请求多签交易： 
-String[] signs = new String[]{"1202039b196d5ed74a4d771ade78752734957346597b31384c3047c1946ce96211c2a7",
-                    "120203428daa06375b8dd40a5fc249f1d8032e578b5ebb5c62368fc6c5206d8798a966"};
+String[] signs = new String[]{"02039b196d5ed74a4d771ade78752734957346597b31384c3047c1946ce96211c2a7",
+                    "0203428daa06375b8dd40a5fc249f1d8032e578b5ebb5c62368fc6c5206d8798a966"};
 ontSdk.getSignServer().sendMultiSigRawTx(txHex,2,signs);
 
 请求构造转账交易并签名：

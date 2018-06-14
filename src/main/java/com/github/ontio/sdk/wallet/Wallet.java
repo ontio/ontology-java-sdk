@@ -212,6 +212,57 @@ public class Wallet implements Cloneable {
         }
     }
 
+    public Identity getDefaultIdentity() {
+        for (Identity e : getIdentities()) {
+            if (e.isDefault) {
+                return e;
+            }
+        }
+        return null;
+    }
+    public Account getDefaultAccount() {
+        for (Account e : getAccounts()) {
+            if (e.isDefault) {
+                return e;
+            }
+        }
+        return null;
+    }
+    private Identity addIdentity(String ontid) {
+        for (Identity e : getIdentities()) {
+            if (e.ontid.equals(ontid)) {
+                return e;
+            }
+        }
+        Identity identity = new Identity();
+        identity.ontid = ontid;
+        identity.controls = new ArrayList<Control>();
+        getIdentities().add(identity);
+        return identity;
+    }
+
+    private void addIdentity(Identity idt) {
+        for (Identity e : getIdentities()) {
+            if (e.ontid.equals(idt.ontid)) {
+                return;
+            }
+        }
+        getIdentities().add(idt);
+    }
+    public Identity addOntIdController(String ontid, String key, String id) {
+        Identity identity = getIdentity(ontid);
+        if (identity == null) {
+            identity = addIdentity(ontid);
+        }
+        for (Control e : identity.controls) {
+            if (e.key.equals(key)) {
+                return identity;
+            }
+        }
+        Control control = new Control(key, id);
+        identity.controls.add(control);
+        return identity;
+    }
     @Override
     public Wallet clone() {
         Wallet o = null;

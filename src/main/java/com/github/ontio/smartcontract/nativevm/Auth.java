@@ -135,7 +135,7 @@ public class Auth {
         if (Integer.parseInt(((JSONObject) obj).getString("Result")) != 1){
             throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error: "+ obj));
         }
-        return tx.hash().toHexString();
+        return ((JSONObject)obj).getString("Result");
     }
 
     /**

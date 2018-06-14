@@ -330,7 +330,7 @@ public class Governance {
     public String commitDpos(String adminOntId,String password,byte[] salt, Account payerAcct,long gaslimit,long gasprice) throws Exception{
 //        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"commitDpos",new byte[]{},payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
 
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"rejectCandidate",new byte[]{},payerAcct.getAddressU160().toBase58(),gaslimit, gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"commitDpos",new byte[]{0},payerAcct.getAddressU160().toBase58(),gaslimit, gasprice);
         sdk.signTx(tx,adminOntId,password,salt);
         sdk.addSign(tx,payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -465,7 +465,7 @@ public class Governance {
         List list = new ArrayList();
         list.add(new Struct().add(candidateFee,minInitStake,candidateNum,A,B,Yita));
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"updateConfig",args,payerAcct.getAddressU160().toBase58(),gaslimit, gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"updateGlobalParam",args,payerAcct.getAddressU160().toBase58(),gaslimit, gasprice);
         sdk.signTx(tx,new Account[][]{{payerAcct}});
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {

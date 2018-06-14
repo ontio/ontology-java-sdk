@@ -212,18 +212,18 @@ public class Wallet implements Cloneable {
         }
     }
 
-    public Identity getDefaultIdentity() {
+    public String getDefaultIdentity() {
         for (Identity e : getIdentities()) {
             if (e.isDefault) {
-                return e;
+                return e.ontid;
             }
         }
         return null;
     }
-    public Account getDefaultAccount() {
+    public String getDefaultAccount() {
         for (Account e : getAccounts()) {
             if (e.isDefault) {
-                return e;
+                return e.address;
             }
         }
         return null;

@@ -112,7 +112,7 @@ public class Address extends UIntBase implements Comparable<Address> {
     public static Address decodeBase58(String address) throws SDKException {
         byte[] data = Base58.decode(address);
         if (data.length != 25) {
-            throw new SDKException(ErrorCode.ParamError + "address length is wrong");
+            throw new SDKException(ErrorCode.ParamError);
         }
         if (data[0] != COIN_VERSION) {
             throw new SDKException(ErrorCode.ParamError);
@@ -120,7 +120,7 @@ public class Address extends UIntBase implements Comparable<Address> {
         byte[] checksum = Digest.sha256(Digest.sha256(data, 0, 21));
         for (int i = 0; i < 4; i++) {
             if (data[data.length - 4 + i] != checksum[i]) {
-                throw new IllegalArgumentException();
+                throw new SDKException(ErrorCode.ParamError);
             }
         }
         byte[] buffer = new byte[20];

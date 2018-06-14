@@ -220,7 +220,7 @@ public class Auth {
         struct.add(Helper.hexToBytes(contractAddr),adminOntID.getBytes(),role.getBytes());
         struct.add(funcName.length);
         for (int i = 0; i < funcName.length; i++) {
-            struct.add(funcName);
+            struct.add(funcName[i]);
         }
         struct.add(keyNo);
         list.add(struct);
@@ -430,7 +430,7 @@ public class Auth {
     }
 
     public Object queryAuth(String contractAddr,String ontid) throws Exception {
-        Object obj = sdk.getConnect().getStorage(contractAddr,ontid);
+        Object obj = sdk.getConnect().getStorage(contractAddr,contractAddr+Helper.toHexString("role".getBytes())+Helper.toHexString(ontid.getBytes()));
         return obj;
     }
 }

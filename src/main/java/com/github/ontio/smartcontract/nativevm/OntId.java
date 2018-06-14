@@ -206,7 +206,7 @@ public class OntId {
         return tx;
     }
 
-    private byte[] serializeAttributes(Attribute[] attributes) throws IOException {
+    private byte[] serializeAttributes(Attribute[] attributes) throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BinaryWriter bw = new BinaryWriter(baos);
         bw.writeSerializableArray(attributes);
@@ -216,19 +216,15 @@ public class OntId {
     /**
      * @param ontid
      * @return
-     * @throws SDKException
-     * @throws ConnectorException
-     * @throws IOException
+     * @throws Exception
      */
-    public String sendGetPublicKeys(String ontid) throws SDKException, ConnectorException, IOException {
+    public String sendGetPublicKeys(String ontid) throws Exception {
         if (ontid == null || ontid.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("ontid should not be null"));
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-//        byte[] parabytes = NativeBuildParams.buildParams(ontid.getBytes());
-//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "getPublicKeys", parabytes, null, 0, 0);
 
         List list = new ArrayList();
         list.add(ontid.getBytes());
@@ -596,8 +592,6 @@ public class OntId {
         String addr = ontid.replace(Common.didont, "");
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,salt);
         byte[] pk = Helper.hexToBytes(info.pubkey);
-//        byte[] parabytes = NativeBuildParams.buildParams(ontid, Address.decodeBase58(recoveryAddr), pk);
-//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "addRecovery", parabytes, payer, gaslimit, gasprice);
 
         List list = new ArrayList();
         list.add(new Struct().add(ontid,Address.decodeBase58(recoveryAddr), pk));
@@ -655,8 +649,6 @@ public class OntId {
         }
         Address newAddr = Address.decodeBase58(newRecoveryOntId.replace(Common.didont,""));
         Address oldAddr = Address.decodeBase58(oldRecoveryOntId.replace(Common.didont,""));
-//        byte[] parabytes = NativeBuildParams.buildParams(ontid, newAddr, oldAddr);
-//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "changeRecovery", parabytes, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
 
         List list = new ArrayList();
         list.add(new Struct().add(ontid,newAddr, oldAddr));
@@ -999,19 +991,15 @@ public class OntId {
     /**
      * @param ontid
      * @return
-     * @throws SDKException
-     * @throws ConnectorException
-     * @throws IOException
+     * @throws Exception
      */
-    public String sendGetDDO(String ontid) throws SDKException, ConnectorException, IOException {
+    public String sendGetDDO(String ontid) throws Exception {
         if (ontid == null) {
             throw new SDKException(ErrorCode.ParamErr("ontid should not be null"));
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-//        byte[] parabytes = NativeBuildParams.buildParams(ontid.getBytes());
-//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "getDDO", parabytes, null, 0, 0);
 
         List list = new ArrayList();
         list.add(ontid.getBytes());
@@ -1030,7 +1018,7 @@ public class OntId {
         return JSON.toJSONString(map);
     }
 
-    private Map parseDdoData(String ontid, String obj) throws IOException {
+    private Map parseDdoData(String ontid, String obj) throws Exception {
         byte[] bys = Helper.hexToBytes(obj);
 
         ByteArrayInputStream bais = new ByteArrayInputStream(bys);

@@ -69,7 +69,7 @@ AccountInfo info0 = ontSdk.getWalletMgr().createAccountInfo("passwordtest");
 AccountInfo info = ontSdk.getWalletMgr().createAccountInfoFromPriKey("passwordtest","e467a2a9c9f56b012c71cf2270df42843a9d7ff181934068b4a62bcdd570e8be");
 
 获取账号
-com.github.ontio.account.Account acct0 = ontSdk.getWalletMgr().getAccount(info.addressBase58,"passwordtest");
+com.github.ontio.account.Account acct0 = ontSdk.getWalletMgr().getAccount(info.addressBase58,"passwordtest",salt);
 
 ```
 
@@ -409,8 +409,7 @@ String txHex = tx.toHexString();
 接收方反序列化交易并签名：
 
 Transaction txRx = Transaction.deserializeFrom(Helper.hexToBytes(txHex));
-//查看交易中转账内容
-System.out.println(Transfers.deserializeFrom(Contract.deserializeFrom(txRx.code).args).json());
+
 
 签名：
 ontSdk.addSign(txRx,acct0);

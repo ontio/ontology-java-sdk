@@ -113,7 +113,7 @@ Auth合约负责管理应用合约的函数调用权限，功能有合约管理�
      ||gasprice|gas价格|
      |返回值说明|交易hash||
 
-6. String verifyToken(String ontid,String password,String contractAddr,String funcName,long keyNo,Account payerAcct,long gaslimit,long gasprice)
+6. String verifyToken(String ontid,String password,String contractAddr,String funcName,long keyNo)
 
       |说明||描述|
       |:--|:--|:--|
@@ -124,7 +124,4 @@ Auth合约负责管理应用合约的函数调用权限，功能有合约管理�
       ||contractAddr|合约地址|
       ||funcName|函数名|
       ||keyNo|ontid的公钥编号|
-      ||payerAcct|付费账户|
-      ||gaslimit|gas价格|
-      ||gasprice|gas价格|
       |返回值说明|交易hash||

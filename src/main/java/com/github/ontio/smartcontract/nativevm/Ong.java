@@ -100,9 +100,7 @@ public class Ong {
         if (amount <= 0 || gasprice < 0 || gaslimit < 0) {
             throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
         }
-        State state = new State(Address.decodeBase58(sendAddr), Address.decodeBase58(recvAddr), amount);
-        Transfers transfers = new Transfers(new State[]{state});
-//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "transfer", transfers.toArray(), payer, gaslimit, gasprice);
+
 
         List list = new ArrayList();
         Struct[] structs = new Struct[]{new Struct().add(Address.decodeBase58(sendAddr),Address.decodeBase58(recvAddr),amount)};
@@ -119,8 +117,6 @@ public class Ong {
         if(gasprice < 0 || gaslimit < 0){
             throw new SDKException(ErrorCode.ParamError);
         }
-//        Transfers transfers = new Transfers(states);
-//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "transfer", transfers.toArray(),payer, gaslimit, gasprice);
 
         List list = new ArrayList();
         Struct[] structs = new Struct[states.length];
@@ -141,8 +137,6 @@ public class Ong {
         if(address == null|| address.equals("")){
             throw new SDKException(ErrorCode.ParamErr("address should not be null"));
         }
-//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "balanceOf",Address.decodeBase58(address).toArray(), null, 0, 0);
-//        Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         List list = new ArrayList();
         list.add(Address.decodeBase58(address));
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
@@ -166,10 +160,6 @@ public class Ong {
         if(fromAddr==null||fromAddr.equals("")||toAddr==null||toAddr.equals("")){
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
-//        byte[] parabytes = NativeBuildParams.buildParams(Address.decodeBase58(fromAddr), Address.decodeBase58(toAddr));
-//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "allowance", parabytes,null, 0, 0);
-//        Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
-
         List list = new ArrayList();
         list.add(new Struct().add(Address.decodeBase58(fromAddr),Address.decodeBase58(toAddr)));
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
@@ -351,12 +341,12 @@ public class Ong {
      * @return
      * @throws Exception
      */
-    public String unclaimOng(String address) throws Exception {
+    public long unclaimOng(String address) throws Exception {
         if(address==null||address.equals("")){
             throw new SDKException(ErrorCode.ParamErr("address should not be null"));
         }
-        String uncliamong = sdk.getConnect().getAllowance("ong", Address.parse(ontContract).toBase58(), address);
-
+        String uncliamongStr = sdk.getConnect().getAllowance("ong", Address.parse(ontContract).toBase58(), address);
+        long uncliamong = Long.parseLong(uncliamongStr);
         return uncliamong;
     }
 
@@ -407,9 +397,6 @@ public class Ong {
         if (amount <= 0 || gaslimit<0||gasprice < 0) {
             throw new SDKException(ErrorCode.ParamErr("amount or gaslimit gasprice should not be less than 0"));
         }
-//        TransferFrom transferFrom = new TransferFrom(Address.decodeBase58(claimer), Address.parse(ontContract), Address.decodeBase58(toAddr), amount);
-//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ongContract, "transferFrom", transferFrom.toArray(), payer, gaslimit, gasprice);
-
         List list = new ArrayList();
         list.add(new Struct().add(Address.decodeBase58(claimer), Address.parse(ontContract), Address.decodeBase58(toAddr), amount));
         byte[] args = NativeBuildParams.createCodeParamsScript(list);

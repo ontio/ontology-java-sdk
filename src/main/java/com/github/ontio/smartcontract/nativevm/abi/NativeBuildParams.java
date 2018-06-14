@@ -92,6 +92,8 @@ public class NativeBuildParams {
                     builder.push(BigInteger.valueOf((Long)val));
                 } else if(val instanceof Address){
                     builder.push(((Address) val).toArray());
+                } else if(val instanceof String){
+                    builder.push(((String)val).getBytes());
                 } else if (val instanceof List) {
                     List tmp = (List) val;
                     createCodeParamsScript(builder, tmp);

@@ -127,9 +127,6 @@ public class Ont {
         if(gasprice < 0 || gaslimit < 0){
             throw new SDKException(ErrorCode.ParamError);
         }
-//        Transfers transfers = new Transfers(states);
-//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(ontContract, "transfer", transfers.toArray(), payer, gaslimit, gasprice);
-
         List list = new ArrayList();
         Struct[] structs = new Struct[states.length];
         for (int i = 0; i < states.length; i++) {
@@ -209,7 +206,6 @@ public class Ont {
         if (!sendAcct.equals(payerAcct)) {
             sdk.addSign(tx, payerAcct);
         }
-        sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toHexString();
@@ -234,12 +230,10 @@ public class Ont {
         if (amount <= 0 || gasprice < 0 || gaslimit < 0) {
             throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
         }
-
         List list = new ArrayList();
         list.add(new Struct().add(Address.decodeBase58(sender),Address.decodeBase58(recvAddr),amount));
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ontContract)),"approve",args,payer,gaslimit, gasprice);
-
         return tx;
     }
 

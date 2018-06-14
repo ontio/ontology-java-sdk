@@ -130,8 +130,6 @@ public class OntId {
         }
         IdentityInfo info = sdk.getWalletMgr().getIdentityInfo(ontid, password,salt);
         byte[] pk = Helper.hexToBytes(info.pubkey);
-//        byte[] parabytes = NativeBuildParams.buildParams(info.ontid, pk);
-//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "regIDWithPublicKey", parabytes, payer, gaslimit, gasprice);
 
         List list = new ArrayList();
         list.add(new Struct().add(info.ontid,pk));
@@ -164,7 +162,6 @@ public class OntId {
         }
         IdentityInfo info = sdk.getWalletMgr().getIdentityInfo(ident.ontid, password,ident.controls.get(0).getSalt());
         String ontid = info.ontid;
-        System.out.println(ontid);
         Transaction tx = makeRegisterWithAttrs(ontid, password,ident.controls.get(0).getSalt(), attributes, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.signTx(tx, ontid, password,ident.controls.get(0).getSalt());
         sdk.addSign(tx, payerAcct);
@@ -297,8 +294,6 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-//        byte[] parabytes = NativeBuildParams.buildParams(ontid.getBytes());
-//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "getAttributes", parabytes, null, 0, 0);
 
 
         List list = new ArrayList();
@@ -759,9 +754,6 @@ public class OntId {
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,salt);
         password = null;
         byte[] pk = Helper.hexToBytes(info.pubkey);
-//        byte[] parabytes = NativeBuildParams.buildParams(ontid, attributes, pk);
-//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "addAttributes", parabytes, payer, gaslimit, gasprice);
-
         List list = new ArrayList();
         Struct struct = new Struct().add(ontid.getBytes());
         struct.add(attributes.length);
@@ -829,8 +821,6 @@ public class OntId {
         String addr = ontid.replace(Common.didont, "");
         AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,salt);
         byte[] pk = Helper.hexToBytes(info.pubkey);
-//        byte[] parabytes = NativeBuildParams.buildParams(ontid.getBytes(), path.getBytes(), pk);
-//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "removeAttribute", parabytes,addr, gaslimit, gasprice);
 
         List list = new ArrayList();
         list.add(new Struct().add(ontid.getBytes(), path.getBytes(), pk));

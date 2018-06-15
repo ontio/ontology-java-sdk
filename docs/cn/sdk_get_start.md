@@ -377,8 +377,8 @@ acct0签名：
 ontSdk.addMultiSign(tx,2,new com.github.ontio.account.Account[]{acct0});
 或
 tx.sigs[0].M = 2;
-tx.sigs[0].pubKeys[0] = acct1.serializePublicKey();
-tx.sigs[0].sigData[0] = tx.sign(acct1,ontSdk.defaultSignScheme);
+tx.sigs[0].pubKeys[0] = acct0.serializePublicKey();
+tx.sigs[0].sigData[0] = tx.sign(acct0,ontSdk.defaultSignScheme);
 
 acct1签名：
 tx.sigs[0].pubKeys[1] = acct1.serializePublicKey();

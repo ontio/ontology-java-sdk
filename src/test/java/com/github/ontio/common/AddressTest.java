@@ -24,8 +24,8 @@ public class AddressTest {
 
     @Test
     public void parse() {
-//        Address address = Address.parse(account.getAddressU160().toHexString());
-//        assertEquals(address,account.getAddressU160());
+        Address address = Address.parse(Helper.toHexString(account.getAddressU160().toArray()));
+        assertTrue(address.equals(account.getAddressU160()));
     }
 
     @Test

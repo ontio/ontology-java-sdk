@@ -89,6 +89,23 @@ public class Governance {
         return null;
     }
 
+    public String unRegisterCandidate(Account account, String peerPubkey,Account payerAcct, long gaslimit, long gasprice) throws Exception{
+
+        List list = new ArrayList();
+        list.add(new Struct().add(peerPubkey,account.getAddressU160()));
+        byte[] args = NativeBuildParams.createCodeParamsScript(list);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"unRegisterCandidate",args,payerAcct.getAddressU160().toBase58(),gaslimit, gasprice);
+        sdk.signTx(tx,new Account[][]{{account}});
+        if(!account.equals(payerAcct)){
+            sdk.addSign(tx,payerAcct);
+        }
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
+        if (b) {
+            return tx.hash().toString();
+        }
+        return null;
+    }
+
     /**
      *
      * @return

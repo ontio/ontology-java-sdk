@@ -41,12 +41,12 @@ public class BinaryWriterTest {
 
     @Test
     public void writeSerializable() throws IOException, SDKException {
-//        ByteArrayOutputStream ms = new ByteArrayOutputStream();
-//        BinaryWriter binaryWriter = new BinaryWriter(ms);
-//        Address address = Address.decodeBase58("TA6nRD9DqGkE8xRJaB37bW2KQEz59ovKRH");
-//        binaryWriter.writeSerializable(address);
-//        binaryWriter.flush();
-//        assertNotNull(ms);
+        ByteArrayOutputStream ms = new ByteArrayOutputStream();
+        BinaryWriter binaryWriter = new BinaryWriter(ms);
+        Address address = Address.decodeBase58("AazEvfQPcQ2GEFFPLF1ZLwQ7K5jDn81hve");
+        binaryWriter.writeSerializable(address);
+        binaryWriter.flush();
+        assertNotNull(ms);
     }
 
     @Test

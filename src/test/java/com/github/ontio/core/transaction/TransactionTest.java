@@ -18,7 +18,7 @@ public class TransactionTest {
 
     OntSdk ontSdk;
     Vm vm;
-    String ontContract = "ff00000000000000000000000000000000000001";
+    String ontContract = "0000000000000000000000000000000000000001";
 
     @Before
     public void setUp(){

@@ -52,7 +52,9 @@ public class Governance {
     public Governance(OntSdk sdk) {
         this.sdk = sdk;
     }
-
+    public String getContractAddress() {
+        return contractAddress;
+    }
     /**
      *
      * @param account

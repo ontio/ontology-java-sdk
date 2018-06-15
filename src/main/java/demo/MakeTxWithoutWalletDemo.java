@@ -60,7 +60,7 @@ public class MakeTxWithoutWalletDemo {
         try {
             OntSdk ontSdk = getOntSdk();
 
-            String privatekey0 = "c19f16785b8f3543bbaf5e1dbb5d398dfa6c85aaad54fc9d71203ce83e505c07";
+            String privatekey0 = "523c5fcf74823831756f0bcb3634234f10b3beb1c05595058534577752ad2d9f";
             com.github.ontio.account.Account acct0 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey0), ontSdk.defaultSignScheme);
             System.out.println(Helper.toHexString(acct0.serializePublicKey()));
 
@@ -70,19 +70,15 @@ public class MakeTxWithoutWalletDemo {
             com.github.ontio.account.Account acct4 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey4), ontSdk.defaultSignScheme);
             com.github.ontio.account.Account acct5 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey5), ontSdk.defaultSignScheme);
 
-            byte[] pubkey1 = Helper.hexToBytes("120203a4e50edc1e59979442b83f327030a56bffd08c2de3e0a404cefb4ed2cc04ca3e");
-            byte[] pubkey2 = Helper.hexToBytes("12020225c98cc5f82506fb9d01bad15a7be3da29c97a279bb6b55da1a3177483ab149b");
-            com.github.ontio.account.Account acct11 = new com.github.ontio.account.Account(false, pubkey1);
-            com.github.ontio.account.Account acct12 = new com.github.ontio.account.Account(false, pubkey2);
 
-            if (false) {
+            if (true) {
                 //transer
                 Address sender = acct0.getAddressU160();
                 Address recvAddr = Address.addressFromMultiPubKeys(2, acct1.serializePublicKey(), acct2.serializePublicKey());
 //                Address recvAddr = Address.decodeBase58("TA5SgQXTeKWyN4GNfWGoXqioEQ4eCDFMqE");
                 System.out.println("sender:" + sender.toBase58());
                 System.out.println("recvAddr:" + recvAddr.toBase58());
-                long amount = 1000;
+                long amount = 1000000000;
 
                 Transaction tx = ontSdk.nativevm().ont().makeTransfer(sender.toBase58(),recvAddr.toBase58(), amount,sender.toBase58(),30000,0);
 
@@ -91,7 +87,10 @@ public class MakeTxWithoutWalletDemo {
                 ontSdk.addMultiSign(tx,2,new com.github.ontio.account.Account[]{acct0,acct1});
 
                 System.out.println(tx.hash().toHexString());
-                ontSdk.getConnect().sendRawTransaction(tx.toHexString());
+
+                Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+                System.out.println(obj);
+                //ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 
             }
 
@@ -113,7 +112,7 @@ public class MakeTxWithoutWalletDemo {
 
             }
 
-            if (true) {
+            if (false) {
                 //2 sender transfer to 1 reveiver
                 Address sender1 = acct0.getAddressU160();
                 Address sender2 = Address.addressFromMultiPubKeys(2, acct1.serializePublicKey(), acct2.serializePublicKey());

@@ -341,6 +341,13 @@ ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct1, acct2}});
 发送交易：
 ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 
+发送预执行（可选）：
+Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+System.out.println(obj);
+成功返回：
+{"State":1,"Gas":30000,"Result":"01"}
+余额不足返回异常：
+com.github.ontio.network.exception.RestfulException: {"Action":"sendrawtransaction","Desc":"SMARTCODE EXEC ERROR","Error":47001,"Result":"","Version":"1.0.0"}
 
 ```
 

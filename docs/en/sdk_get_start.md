@@ -337,6 +337,14 @@ ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct1, acct2}});
 // Send a transaction
 ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 
+Send prepare execution transaction（optional）：
+Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+System.out.println(obj);
+Success：
+{"State":1,"Gas":30000,"Result":"01"}
+Fail: if balance insufficient, get this Exception：
+com.github.ontio.network.exception.RestfulException: {"Action":"sendrawtransaction","Desc":"SMARTCODE EXEC ERROR","Error":47001,"Result":"","Version":"1.0.0"}
+
 ```
 
 | Method Name  | Parameter  | Parameter Description |

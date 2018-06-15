@@ -191,7 +191,7 @@ public class ConnectMgr {
 
     public Object getContract(String hash) throws ConnectorException, IOException {
         hash = hash.replace("0x", "");
-        return connector.getContract(hash);
+        return connector.getContractJson(hash);
     }
 
     public Object getContractJson(String hash) throws ConnectorException, IOException {

@@ -194,7 +194,7 @@ public class RestClient extends AbstractConnector {
 
     @Override
     public Object getContractJson(String hash) throws RestfulException {
-        String rs = api.getContract(hash);
+        String rs = api.getContractJson(hash);
         Result rr = JSON.parseObject(rs, Result.class);
         if (rr.Error == 0) {
             return rr.Result;

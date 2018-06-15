@@ -341,13 +341,13 @@ public class Ong {
      * @return
      * @throws Exception
      */
-    public long unclaimOng(String address) throws Exception {
+    public String unclaimOng(String address) throws Exception {
         if(address==null||address.equals("")){
             throw new SDKException(ErrorCode.ParamErr("address should not be null"));
         }
         String uncliamongStr = sdk.getConnect().getAllowance("ong", Address.parse(ontContract).toBase58(), address);
         long uncliamong = Long.parseLong(uncliamongStr);
-        return uncliamong;
+        return uncliamongStr;
     }
 
     /**

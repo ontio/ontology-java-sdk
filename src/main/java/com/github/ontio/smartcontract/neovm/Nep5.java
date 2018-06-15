@@ -138,6 +138,16 @@ public class Nep5 {
         Object obj = sdk.neovm().sendTransaction(contractAddress,acct,payerAcct,gaslimit,gasprice,func, preExec);
         return obj;
     }
+    public Transaction makeTransfer(String sendAddr,String recvAddr, long amount, Account payerAcct, long gaslimit, long gasprice) throws Exception{
+        AbiInfo abiinfo = JSON.parseObject(nep5abi, AbiInfo.class);
+        AbiFunction func = abiinfo.getFunction("Transfer");
+        func.name = "transfer";
+        func.setParamsValue(Address.decodeBase58(sendAddr).toArray(), Address.decodeBase58(recvAddr).toArray(), amount);
+        byte[] params = BuildParams.serializeAbiFunction(func);
+        String payer = payerAcct.getAddressU160().toBase58();
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(getContractAddress(), null, params, payer,gaslimit, gasprice);
+        return tx;
+    }
 
     public String queryBalanceOf(String addr) throws Exception {
         if (contractAddress == null) {

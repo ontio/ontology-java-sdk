@@ -334,16 +334,18 @@ ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct0}});
 ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct1, acct2}});
 //If the addresses of the transferee and the payer who pay the network fee are different, the payer’s signature needs to be added.
 
-// Send a transaction
-ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 
-Send prepare execution transaction（optional）：
+//Send prepare execution transaction（optional）：
 Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
 System.out.println(obj);
 Success：
 {"State":1,"Gas":30000,"Result":"01"}
 Fail: if balance insufficient, get this Exception：
 com.github.ontio.network.exception.RestfulException: {"Action":"sendrawtransaction","Desc":"SMARTCODE EXEC ERROR","Error":47001,"Result":"","Version":"1.0.0"}
+
+
+// Send a transaction
+ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 
 ```
 
@@ -363,6 +365,18 @@ ontSdk.addSign(tx,acct0);
 
 // 2.Add multiple signatures 
 ontSdk.addMultiSign(tx,2,new com.github.ontio.account.Account[]{acct0,acct1});
+
+//3.multiple signatures splite
+acct0 signature：
+ontSdk.addMultiSign(tx,2,new com.github.ontio.account.Account[]{acct0});
+or
+tx.sigs[0].M = 2;
+tx.sigs[0].pubKeys[0] = acct0.serializePublicKey();
+tx.sigs[0].sigData[0] = tx.sign(acct0,ontSdk.defaultSignScheme);
+
+acct1 signature：
+tx.sigs[0].pubKeys[1] = acct1.serializePublicKey();
+tx.sigs[0].sigData[1] = tx.sign(acct1,ontSdk.defaultSignScheme);
 
 ```
 

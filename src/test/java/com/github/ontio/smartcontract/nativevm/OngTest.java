@@ -27,7 +27,7 @@ public class OngTest {
         ontSdk.nativevm().ont().sendTransfer(account,receiveAcc.getAddressU160().toBase58(),10L,account,ontSdk.DEFAULT_GAS_LIMIT,0);
         Thread.sleep(6000);
 
-        long accountOng = ontSdk.nativevm().ong().unclaimOng(account.getAddressU160().toBase58());
+        String accountOng = ontSdk.nativevm().ong().unclaimOng(account.getAddressU160().toBase58());
         ontSdk.nativevm().ong().claimOng(account,account.getAddressU160().toBase58(),1000,account,ontSdk.DEFAULT_GAS_LIMIT,0);
         Thread.sleep(6000);
         Object obj = ontSdk.getConnect().getBalance(account.getAddressU160().toBase58());

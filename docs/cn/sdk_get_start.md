@@ -338,9 +338,6 @@ ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct1, acct2}});
 //如果转出方与网络费付款人不是同一个地址，需要添加网络费付款人的签名
 
 
-发送交易：
-ontSdk.getConnect().sendRawTransaction(tx.toHexString());
-
 发送预执行（可选）：
 Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
 System.out.println(obj);
@@ -348,6 +345,10 @@ System.out.println(obj);
 {"State":1,"Gas":30000,"Result":"01"}
 余额不足返回异常：
 com.github.ontio.network.exception.RestfulException: {"Action":"sendrawtransaction","Desc":"SMARTCODE EXEC ERROR","Error":47001,"Result":"","Version":"1.0.0"}
+
+
+发送交易：
+ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 
 ```
 
@@ -370,6 +371,18 @@ ontSdk.addSign(tx,acct0);
 
 2.添加多签签名
 ontSdk.addMultiSign(tx,2,new com.github.ontio.account.Account[]{acct0,acct1});
+
+3.多签签名分多次签
+acct0签名：
+ontSdk.addMultiSign(tx,2,new com.github.ontio.account.Account[]{acct0});
+或
+tx.sigs[0].M = 2;
+tx.sigs[0].pubKeys[0] = acct0.serializePublicKey();
+tx.sigs[0].sigData[0] = tx.sign(acct0,ontSdk.defaultSignScheme);
+
+acct1签名：
+tx.sigs[0].pubKeys[1] = acct1.serializePublicKey();
+tx.sigs[0].sigData[1] = tx.sign(acct1,ontSdk.defaultSignScheme);
 
 ```
 

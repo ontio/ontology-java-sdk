@@ -69,6 +69,18 @@ public class Nep5Demo {
 //            System.exit(0);
 //
 //
+            if(false){ // sender is multi sign addr
+                String sendAddr = null;
+                byte[][] pubkeys = new byte[2][];
+                pubkeys[0] = acct.serializePublicKey();
+                pubkeys[1] = acct2.serializePublicKey();
+                sendAddr  = Address.addressFromMultiPubKeys(2,pubkeys).toBase58();
+
+                Transaction tx = ontSdk.neovm().nep5().makeTransfer(sendAddr,acct1.getAddressU160().toBase58(),1000000000L,acct,gasLimit,0);
+                ontSdk.addMultiSign(tx,2,new Account[]{acct,acct2});
+                Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+                System.out.println(obj);
+            }
             String balance = ontSdk.neovm().nep5().queryBalanceOf(acct.getAddressU160().toBase58());
             System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(balance))).longValue());
             System.exit(0);

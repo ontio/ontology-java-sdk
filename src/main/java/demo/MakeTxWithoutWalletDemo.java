@@ -54,7 +54,6 @@ public class MakeTxWithoutWalletDemo {
     public static String privatekey7 = "24ab4d1d345be1f385c75caf2e1d22bdb58ef4b650c0308d9d69d21242ba8618";
     public static String privatekey8 = "87a209d232d6b4f3edfcf5c34434aa56871c2cb204c263f6b891b95bc5837cac";
     public static String privatekey9 = "1383ed1fe570b6673351f1a30a66b21204918ef8f673e864769fa2a653401114";
-    public static String ontContractAddr = "ff00000000000000000000000000000000000001";
 
     public static void main(String[] args) {
         try {

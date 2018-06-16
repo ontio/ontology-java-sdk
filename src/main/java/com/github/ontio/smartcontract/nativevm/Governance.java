@@ -338,19 +338,18 @@ public class Governance {
 
     /**
      *
-     * @param adminOntId
-     * @param password
+     * @param adminAccount
      * @param payerAcct
      * @param gaslimit
      * @param gasprice
      * @return
      * @throws Exception
      */
-    public String commitDpos(String adminOntId,String password,byte[] salt, Account payerAcct,long gaslimit,long gasprice) throws Exception{
+    public String commitDpos(Account adminAccount, Account payerAcct,long gaslimit,long gasprice) throws Exception{
 //        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"commitDpos",new byte[]{},payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
 
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"commitDpos",new byte[]{0},payerAcct.getAddressU160().toBase58(),gaslimit, gasprice);
-        sdk.signTx(tx,adminOntId,password,salt);
+        sdk.signTx(tx,new Account[][]{{adminAccount}});
         sdk.addSign(tx,payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {

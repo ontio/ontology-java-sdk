@@ -25,6 +25,7 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.*;
 import com.github.ontio.core.VmType;
+import com.github.ontio.core.governance.PeerPoolItem;
 import com.github.ontio.core.governance.VoteInfo;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.BinaryReader;
@@ -43,10 +44,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @Description:
- * @date 2018/5/24
- */
 public class Governance {
     private OntSdk sdk;
     private final String contractAddress = "0000000000000000000000000000000000000007";
@@ -110,11 +107,31 @@ public class Governance {
 
     /**
      *
+     * @param peerPubkey
      * @return
      * @throws ConnectorException
      * @throws IOException
      */
-    public String getPeerPoolMap() throws ConnectorException, IOException {
+    public String getPeerInfo(String peerPubkey) throws ConnectorException, IOException {
+        return getPeerPoolMap(peerPubkey);
+    }
+
+    /**
+     * 
+     * @return
+     * @throws ConnectorException
+     * @throws IOException
+     */
+    public String getPeerInfoAll() throws ConnectorException, IOException {
+        return getPeerPoolMap(null);
+    }
+    /**
+     *
+     * @return
+     * @throws ConnectorException
+     * @throws IOException
+     */
+    private String getPeerPoolMap(String peerPubkey) throws ConnectorException, IOException {
         String view = sdk.getConnect().getStorage(Helper.reverse(contractAddress),Helper.toHexString("governanceView".getBytes()));
         GovernanceView governanceView = new GovernanceView();
         ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(view));
@@ -140,9 +157,21 @@ public class Governance {
             item.deserialize(reader);
             peerPoolMap.put(item.peerPubkey,item.Json());
         }
+        if(peerPubkey != null) {
+            if(!peerPoolMap.containsKey(peerPubkey)) {
+                return null;
+            }
+            return JSON.toJSONString(peerPoolMap.get(peerPubkey));
+        }
         return JSON.toJSONString(peerPoolMap);
     }
 
+    /**
+     *
+     * @param peerPubkey
+     * @param addr
+     * @return
+     */
     public VoteInfo getVoteInfo(String peerPubkey,Address addr) {
         byte[] peerPubkeyPrefix = Helper.hexToBytes(peerPubkey);
         byte[] address = addr.toArray();
@@ -209,7 +238,7 @@ public class Governance {
      * @return
      * @throws Exception
      */
-    public String rejectCandidate(String peerPubkey,Account payerAcct,long gaslimit,long gasprice) throws Exception{
+    public String rejectCandidate(Account adminAccount,String peerPubkey,Account payerAcct,long gaslimit,long gasprice) throws Exception{
 //        byte[] params = new RejectCandidateParam(peerPubkey).toArray();
 //        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"rejectCandidate",params, payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
 
@@ -217,8 +246,10 @@ public class Governance {
         list.add(new Struct().add(peerPubkey));
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"rejectCandidate",args,payerAcct.getAddressU160().toBase58(),gaslimit, gasprice);
-
-        sdk.signTx(tx,new Account[][]{{payerAcct}});
+        sdk.signTx(tx,new Account[][]{{adminAccount}});
+        if (!adminAccount.equals(payerAcct)){
+            sdk.addSign(tx,payerAcct);
+        }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -544,59 +575,6 @@ public class Governance {
     }
 }
 
-class PeerPoolItem implements Serializable{
-    int index;
-    String peerPubkey;
-    Address address;
-    int status;
-    long initPos;
-    long totalPos;
-    PeerPoolItem(){}
-    PeerPoolItem(int index,String peerPubkey,Address address,int status,long initPos,long totalPos){
-        this.index = index;
-        this.peerPubkey = peerPubkey;
-        this.address = address;
-        this.status = status;
-        this.initPos = initPos;
-        this.totalPos = totalPos;
-    }
-
-    @Override
-    public void deserialize(BinaryReader reader) throws IOException {
-        this.index = reader.readInt();
-        this.peerPubkey = reader.readVarString();
-        try {
-            this.address = reader.readSerializable(Address.class);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        this.status = reader.readByte();
-        this.initPos = reader.readLong();
-        this.totalPos = reader.readLong();
-    }
-
-    @Override
-    public void serialize(BinaryWriter writer) throws IOException {
-        writer.writeInt(index);
-        writer.writeVarString(peerPubkey);
-        writer.writeSerializable(address);
-        writer.writeByte((byte)status);
-        writer.writeLong(initPos);
-        writer.writeLong(totalPos);
-    }
-    public Object Json(){
-        Map map = new HashMap();
-        map.put("index",index);
-        map.put("peerPubkey",peerPubkey);
-        map.put("address",address.toBase58());
-        map.put("status",status);
-        map.put("initPos",initPos);
-        map.put("totalPos",totalPos);
-        return map;
-    }
-}
 class GovernanceView implements Serializable{
     int view;
     int height;

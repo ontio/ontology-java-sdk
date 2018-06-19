@@ -32,10 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @Description:
- * @date 2018/5/23
- */
 public class BuildParams {
     public enum Type {
         ByteArrayType(0x00),

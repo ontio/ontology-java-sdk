@@ -6,10 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/**
- * @Description:
- * @date 2018/6/10
- */
 public class Struct {
     public List list = new ArrayList();
     public Struct(){

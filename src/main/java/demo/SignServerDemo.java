@@ -4,10 +4,6 @@ import com.github.ontio.OntSdk;
 
 import java.util.Map;
 
-/**
- * @Description:
- * @date 2018/6/11
- */
 public class SignServerDemo {
     public static void main(String[] args) {
         try {

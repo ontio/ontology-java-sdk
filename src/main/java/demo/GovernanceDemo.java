@@ -117,7 +117,7 @@ public class GovernanceDemo {
             }
             if(true) {
                 System.out.println("account:" + sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
-                String res = sdk.nativevm().governance().getPeerPoolMap();
+                String res = sdk.nativevm().governance().getPeerInfoAll();
                 JSONObject jsr = JSONObject.parseObject(res);
 //                System.out.println(Helper.toHexString(account7.serializePublicKey()));
                 VoteInfo voteInfo= sdk.nativevm().governance().getVoteInfo(Helper.toHexString(account8.serializePublicKey()),account.getAddressU160());

@@ -29,10 +29,6 @@ import com.github.ontio.sdk.exception.SDKException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-/**
- * @Description:
- * @date 2018/5/17
- */
 public class GlobalParams {
     private OntSdk sdk;
     private final String contractAddress = "ff00000000000000000000000000000000000004";

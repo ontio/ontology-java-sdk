@@ -29,10 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @Description:
- * @date 2018/4/4
- */
 public class MerkleVerifier {
     private static TreeHasher hasher = new TreeHasher();
 

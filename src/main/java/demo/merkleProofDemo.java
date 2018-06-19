@@ -10,10 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @Description:
- * @date 2018/4/8
- */
 public class merkleProofDemo {
     public static void main(String[] args) {
 

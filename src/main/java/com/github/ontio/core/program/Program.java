@@ -34,8 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @Description:
- * @date 2018/6/10
+ *
  */
 public class Program {
     public static byte[] ProgramFromParams(byte[][] sigData) throws IOException {

@@ -33,10 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @Description:
- * @date 2018/5/17
- */
 public class WasmVm {
 
     private OntSdk sdk;

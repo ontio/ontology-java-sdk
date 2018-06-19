@@ -42,10 +42,6 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @Description:
- * @date 2018/5/23
- */
 public class NativeBuildParams {
     public static  byte[] buildParams(Object ...params) throws SDKException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

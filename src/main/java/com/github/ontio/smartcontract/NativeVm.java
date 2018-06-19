@@ -22,10 +22,6 @@ package com.github.ontio.smartcontract;
 import com.github.ontio.OntSdk;
 import com.github.ontio.smartcontract.nativevm.*;
 
-/**
- * @Description:
- * @date 2018/5/17
- */
 public class NativeVm {
     private Ont ont = null;
     private Ong ong = null;

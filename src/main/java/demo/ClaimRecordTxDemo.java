@@ -77,8 +77,9 @@ public class ClaimRecordTxDemo {
 
             System.out.println("ClaimId:" + payload.getString("jti"));
 
-            ontSdk.neovm().claimRecord().setContractAddress("9a4c79ee4379a0b5d10db03553ca7e61e17a8977");
-
+//            ontSdk.neovm().claimRecord().setContractAddress("9a4c79ee4379a0b5d10db03553ca7e61e17a8977");
+            //
+            ontSdk.neovm().claimRecord().setContractAddress("88b398df1653ce5721c37841a881a554e24d13d5");
 //            String getstatusRes9 = ontSdk.neovm().claimRecord().sendGetStatus(payload.getString("jti"));
 //            System.out.println("getstatusResBytes:" + getstatusRes9);
 
@@ -98,6 +99,8 @@ public class ClaimRecordTxDemo {
             String getstatusRes = ontSdk.neovm().claimRecord().sendGetStatus(payload.getString("jti"));
             System.out.println("getstatusResBytes:" + getstatusRes);
             Thread.sleep(6000);
+
+//            System.exit(0);
 
             String revokeHash = ontSdk.neovm().claimRecord().sendRevoke(dids.get(0).ontid,password,dids.get(0).controls.get(0).getSalt(),payload.getString("jti"),account1,ontSdk.DEFAULT_GAS_LIMIT,0);
             System.out.println("revokeRes:" + revokeHash);

@@ -25,10 +25,6 @@ import com.github.ontio.sdk.exception.SDKException;
 
 import java.util.List;
 
-/**
- * @Description:
- * @date 2018/6/11
- */
 public class SubType {
     public List<Parameter> parameters;
 

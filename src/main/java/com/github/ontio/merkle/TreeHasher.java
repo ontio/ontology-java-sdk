@@ -30,10 +30,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @Description:
- * @date 2018/4/4
- */
 public class TreeHasher {
     public UInt256 hash_empty(){
         return new UInt256();

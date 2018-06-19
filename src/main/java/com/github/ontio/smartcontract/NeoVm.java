@@ -30,10 +30,6 @@ import com.github.ontio.smartcontract.neovm.ClaimRecord;
 import com.github.ontio.smartcontract.neovm.Nep5;
 import com.github.ontio.smartcontract.neovm.Record;
 
-/**
- * @Description:
- * @date 2018/5/17
- */
 public class NeoVm {
     private Nep5 nep5Tx = null;
     private Record recordTx = null;

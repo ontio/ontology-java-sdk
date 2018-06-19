@@ -28,10 +28,6 @@ import com.github.ontio.network.rpc.RpcClient;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @Description:
- * @date 2018/6/11
- */
 public class SignServer {
     private Interfaces rpcClient;
     private String url = "";

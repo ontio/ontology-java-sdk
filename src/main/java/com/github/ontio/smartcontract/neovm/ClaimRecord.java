@@ -116,13 +116,6 @@ public class ClaimRecord {
         if(gaslimit < 0 || gasprice < 0){
             throw new SDKException(ErrorCode.ParamErr("gaslimit or gasprice is less than 0"));
         }
-//        List list = new ArrayList<Object>();
-//        list.add("Commit".getBytes());
-//        List tmp = new ArrayList<Object>();
-//        tmp.add(claimId.getBytes());
-//        tmp.add(issuerOntid.getBytes());
-//        tmp.add(subjectOntid.getBytes());
-//        list.add(tmp);
 
         AbiInfo abiinfo = JSON.parseObject(abi, AbiInfo.class);
         String name = "Commit";
@@ -168,14 +161,6 @@ public class ClaimRecord {
     }
 
     public Transaction makeRevoke(String issuerOntid,String claimId,String payer,long gaslimit,long gasprice) throws Exception {
-//        List list = new ArrayList<Object>();
-//        list.add("Revoke".getBytes());
-//        List tmp = new ArrayList<Object>();
-//        tmp.add(claimId.getBytes());
-//        tmp.add(issuerOntid.getBytes());
-//        list.add(tmp);
-//        Transaction tx = makeInvokeTransaction(list,payer,gaslimit,gasprice);
-
         AbiInfo abiinfo = JSON.parseObject(abi, AbiInfo.class);
         String name = "Revoke";
         AbiFunction func = abiinfo.getFunction(name);
@@ -192,14 +177,6 @@ public class ClaimRecord {
         if (claimId == null || claimId == ""){
             throw new SDKException(ErrorCode.NullKeyOrValue);
         }
-//        List list = new ArrayList<Object>();
-//        list.add("GetStatus".getBytes());
-//        List tmp = new ArrayList<Object>();
-//        tmp.add(claimId.getBytes());
-//        list.add(tmp);
-//        Transaction tx = makeInvokeTransaction(list,null,0,0);
-//        Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
-
         AbiInfo abiinfo = JSON.parseObject(abi, AbiInfo.class);
         String name = "GetStatus";
         AbiFunction func = abiinfo.getFunction(name);

@@ -5,10 +5,6 @@ import com.github.ontio.core.DataSignature;
 import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.wallet.Account;
 
-/**
- * @Description:
- * @date 2018/3/28
- */
 public class SignatureDemo {
     public static void main(String[] args) {
         try {

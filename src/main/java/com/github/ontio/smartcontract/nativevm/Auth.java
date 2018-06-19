@@ -21,10 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @Description:
- * @date 2018/5/24
- */
+
 public class Auth {
     private OntSdk sdk;
     private final String contractAddress = "0000000000000000000000000000000000000006";

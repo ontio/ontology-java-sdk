@@ -48,10 +48,6 @@ import java.security.Key;
 import java.security.SecureRandom;
 import java.security.Security;
 
-/**
- * @Description:
- * @date 2018/4/11
- */
 public class ECIES {
     public static KeyType keyType = KeyType.ECDSA;
     public static Object[] curveParaSpec = new Object[]{"P-256"};

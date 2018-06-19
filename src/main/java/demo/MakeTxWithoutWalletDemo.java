@@ -40,10 +40,6 @@ import java.security.Key;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @Description:
- * @date 2018/3/30
- */
 public class MakeTxWithoutWalletDemo {
     public static String privatekey1 = "49855b16636e70f100cc5f4f42bc20a6535d7414fb8845e7310f8dd065a97221";
     public static String privatekey2 = "1094e90dd7c4fdfd849c14798d725ac351ae0d924b29a279a9ffa77d5737bd96";

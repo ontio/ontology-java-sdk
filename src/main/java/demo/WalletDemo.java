@@ -4,10 +4,6 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.wallet.Account;
 
-/**
- * @Description:
- * @date 2018/3/28
- */
 public class WalletDemo {
     public static void main(String[] args) {
         try {

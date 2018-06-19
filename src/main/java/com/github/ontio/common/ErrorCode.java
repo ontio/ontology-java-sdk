@@ -18,16 +18,11 @@
  */
 
 package com.github.ontio.common;
-
 import com.alibaba.fastjson.JSON;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @Description:
- * @date 2018/4/24
- */
 public class ErrorCode {
     public static String getError(int code, String msg) {
         Map map = new HashMap();

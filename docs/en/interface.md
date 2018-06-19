@@ -77,16 +77,16 @@ include：
 ```  
      |                        Main   Function                                     |     Description            
  ----|----------------------------------------------------------------------------|------------------------ 
-   1 | Identity importIdentity(String encryptedPrikey, String pwd,String address) |   导入身份
-   2 | Identity createIdentity(String password)                                   |   创建身份
-   3 | Identity createIdentityFromPriKey(String password, String prikey)          |   根据私钥创建
-   4 | IdentityInfo createIdentityInfo(String password)                           |   创建身份
-   5 | IdentityInfo createIdentityInfoFromPriKey(String password, String prikey)  |   根据私钥创建
-   6 | IdentityInfo getIdentityInfo(String ontid, String password)                |   查询身份信息  
-   7 | List<Identity> getIdentitys()                                              |   查询所有身份 
-   8 | Identity getIdentity(String ontid)                                         |   获取身份 
-   9 | Identity getDefaultIdentity()                                              |   获取默认身份
-  10 | Identity addOntIdController(String ontid, String key, String id)           |   添加控制人 
+   1 | Identity importIdentity(String encryptedPrikey, String pwd,String address) |   
+   2 | Identity createIdentity(String password)                                   |   
+   3 | Identity createIdentityFromPriKey(String password, String prikey)          |   
+   4 | IdentityInfo createIdentityInfo(String password)                           |   
+   5 | IdentityInfo createIdentityInfoFromPriKey(String password, String prikey)  |   
+   6 | IdentityInfo getIdentityInfo(String ontid, String password)                |     
+   7 | List<Identity> getIdentitys()                                              |    
+   8 | Identity getIdentity(String ontid)                                         |    
+   9 | Identity getDefaultIdentity()                                              |   
+  10 | Identity addOntIdController(String ontid, String key, String id)           |    
 ```        
 
 ### digit asset：

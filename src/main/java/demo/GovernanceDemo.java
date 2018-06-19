@@ -78,7 +78,7 @@ public class GovernanceDemo {
             Account adminAccount2 = new Account(Helper.hexToBytes(adminPrivateKey2),SignatureScheme.SHA256WITHECDSA);
             System.out.println("account:" + sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
 //            System.out.println("adminontid:" + sdk.nativevm().ontId().sendGetDDO(adminOntid.ontid));
-//            System.out.println("account:" + account.getAddressU160().toBase58());
+            System.out.println("account:" + account.getAddressU160().toBase58());
 
             if(false){
                 String contractAddr = "0000000000000000000000000000000000000007";
@@ -106,11 +106,12 @@ public class GovernanceDemo {
             if(false){
 //                Identity adminOntid = sdk.getWalletMgr().getWallet().getIdentity("did:ont:AazEvfQPcQ2GEFFPLF1ZLwQ7K5jDn81hve");
 //                String txhash = sdk.nativevm().governance().approveCandidate(adminAccount2,Helper.toHexString(account8.serializePublicKey()),payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
-                String txhash = sdk.nativevm().governance().voteForPeer(account,new String[]{Helper.toHexString(account8.serializePublicKey())},new long[]{100},payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+//                  String txhash = sdk.nativevm().governance().rejectCandidate(adminAccount2,Helper.toHexString(account8.serializePublicKey()),payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+// String txhash = sdk.nativevm().governance().voteForPeer(account,new String[]{Helper.toHexString(account8.serializePublicKey())},new long[]{100},payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
 //String txhash = sdk.nativevm().governance().unVoteForPeer(account,new String[]{Helper.toHexString(account8.serializePublicKey())},new long[]{300},payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
 //                  String txhash = sdk.nativevm().governance().quitNode(account,Helper.toHexString(account8.serializePublicKey()),payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
 //                String txhash = sdk.nativevm().governance().withdraw(account,new String[]{Helper.toHexString(account8.serializePublicKey())},new long[]{10000},payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
-//                String txhash = sdk.nativevm().governance().commitDpos(adminAccount2,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+                String txhash = sdk.nativevm().governance().commitDpos(adminAccount2,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
                 Thread.sleep(6000);
                 System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
 //                System.out.println("account9" +sdk.getConnect().getBalance( account9.getAddressU160().toBase58()));
@@ -120,12 +121,12 @@ public class GovernanceDemo {
                 String res = sdk.nativevm().governance().getPeerInfoAll();
                 JSONObject jsr = JSONObject.parseObject(res);
 //                System.out.println(Helper.toHexString(account7.serializePublicKey()));
-                VoteInfo voteInfo= sdk.nativevm().governance().getVoteInfo(Helper.toHexString(account8.serializePublicKey()),account.getAddressU160());
+                VoteInfo voteInfo= sdk.nativevm().governance().getVoteInfo(Helper.toHexString(account7.serializePublicKey()),account.getAddressU160());
                 if(voteInfo != null) {
-                    System.out.println(JSON.toJSONString(voteInfo));
+                    System.out.println("voteInfo:" + voteInfo.json());
                 }
 
-                System.out.println(jsr.getString(Helper.toHexString(account8.serializePublicKey())));
+                System.out.println(jsr.getString(Helper.toHexString(account7.serializePublicKey())));
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -129,8 +129,8 @@ public class Auth {
         Transaction tx = makeVerifyToken(ontid,contractAddr,funcName,keyNo);
         sdk.signTx(tx,ontid,password,salt);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
-        if (Integer.parseInt(((JSONObject) obj).getString("Result")) != 1){
-            throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error: "+ obj));
+        if (obj == null){
+            throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error: "));
         }
         return ((JSONObject)obj).getString("Result");
     }

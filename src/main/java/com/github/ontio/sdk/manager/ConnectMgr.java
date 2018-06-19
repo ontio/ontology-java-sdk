@@ -234,6 +234,23 @@ public class ConnectMgr {
         hash = hash.replace("0x", "");
         return connector.getMemPoolTxState(hash);
     }
+
+    public Object waitResult(String hash) throws Exception {
+        for (int i = 0; i < 15; i++) {
+            try {
+                Thread.sleep(3000);
+                Object obj = connector.getSmartCodeEvent(hash);
+                if(((Map)obj).get("Notify") != null){
+                    return obj;
+                }
+            } catch (Exception e) {
+                if(!e.getMessage().contains("INVALID TRANSACTION")){
+                    break;
+                }
+            }
+        }
+        throw new SDKException(ErrorCode.ParamError);
+    }
 }
 
 

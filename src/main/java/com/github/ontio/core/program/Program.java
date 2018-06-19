@@ -69,7 +69,6 @@ public class Program {
             for (byte[] publicKey : publicKeys) {
                 sb.push(publicKey);
             }
-            System.out.println(Helper.toHexString(sb.toArray()));
             sb.push(BigInteger.valueOf(publicKeys.length));
             sb.add(ScriptOp.OP_CHECKMULTISIG);
             return sb.toArray();

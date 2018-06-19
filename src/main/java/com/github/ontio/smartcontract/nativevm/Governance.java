@@ -181,8 +181,6 @@ public class Governance {
         System.arraycopy(peerPubkeyPrefix,0,key,voteInfoPool.length,peerPubkeyPrefix.length);
         System.arraycopy(address,0,key,voteInfoPool.length + peerPubkeyPrefix.length,address.length);
         String res = null;
-        System.out.println(Helper.toHexString(key));
-
         try {
             res = sdk.getConnect().getStorage(Helper.reverse(contractAddress),Helper.toHexString(key));
             if(!res.equals("")){

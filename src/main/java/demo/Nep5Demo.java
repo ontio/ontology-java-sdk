@@ -58,7 +58,7 @@ public class Nep5Demo {
             System.out.println("recv:"+acct.getAddressU160().toBase58());
             System.out.println("acct1:"+acct1.getAddressU160().toBase58());
             if(false) {
-                long gasLimit = ontSdk.neovm().nep5().sendInitGetGasLimit();
+                long gasLimit = ontSdk.neovm().nep5().sendInitPreExec(acct,acct,30000,0);
                 System.out.println(gasLimit);
                 String result = ontSdk.neovm().nep5().sendInit(acct,acct,30000,0);
                 System.out.println(result);
@@ -67,7 +67,7 @@ public class Nep5Demo {
             String multiAddr = Address.addressFromMultiPubKeys(2,acct.serializePublicKey(),acct2.serializePublicKey()).toBase58();
             System.out.println("multiAddr:"+multiAddr);
             if(false) {
-                long gasLimit = ontSdk.neovm().nep5().sendTransferGetGasLimit(acct, acct1.getAddressU160().toBase58(), 9000000000L);
+                long gasLimit = ontSdk.neovm().nep5().sendTransferPreExec(acct, acct1.getAddressU160().toBase58(), 9000000000L);
                 System.out.println(gasLimit);
                 ontSdk.neovm().nep5().sendTransfer(acct, acct1.getAddressU160().toBase58(), 1000000000L, acct, gasLimit, 0);
                 ontSdk.neovm().nep5().sendTransfer(acct, multiAddr, 1000000000L, acct, gasLimit, 0);
@@ -93,7 +93,7 @@ public class Nep5Demo {
             balance = ontSdk.neovm().nep5().queryBalanceOf(multiAddr);
             System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(balance))).longValue());
             System.exit(0);
-            
+
             String totalSupply = ontSdk.neovm().nep5().queryTotalSupply();
             System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(totalSupply))).longValue());
             System.exit(0);

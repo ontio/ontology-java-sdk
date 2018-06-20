@@ -65,8 +65,8 @@ public class Nep5 {
         return (String)sendInit(acct,payerAcct,gaslimit,gasprice,false);
     }
 
-    public long sendInitGetGasLimit() throws Exception {
-        return (long)sendInit(null,null,0,0,true);
+    public long sendInitPreExec(Account acct, Account payerAcct,long gaslimit,long gasprice) throws Exception {
+        return (long)sendInit(acct,payerAcct,gaslimit,gasprice,true);
     }
 
     private Object sendInit(Account acct, Account payerAcct,long gaslimit,long gasprice,boolean preExec) throws Exception {
@@ -79,6 +79,9 @@ public class Nep5 {
         if(preExec) {
             byte[] params = BuildParams.serializeAbiFunction(func);
             Transaction tx = sdk.vm().makeInvokeCodeTransaction(getContractAddress(), null, params,null,0, 0);
+            if (acct != null) {
+                sdk.signTx(tx, new Account[][]{{acct}});
+            }
             Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
             if (Integer.parseInt(((JSONObject) obj).getString("Result")) != 1){
                 throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error: "+ obj));
@@ -108,7 +111,7 @@ public class Nep5 {
         return (String)sendTransfer(acct, recvAddr, amount,payerAcct,gaslimit,gasprice, false);
     }
 
-    public long sendTransferGetGasLimit(Account acct, String recvAddr, long amount) throws Exception {
+    public long sendTransferPreExec(Account acct, String recvAddr, long amount) throws Exception {
         return (long)sendTransfer(acct, recvAddr, amount,acct,0,0, true);
     }
 

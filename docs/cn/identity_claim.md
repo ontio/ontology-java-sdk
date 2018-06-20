@@ -67,7 +67,7 @@ public class Control {
 创建数字身份指的是产生一个Identity数据结构的身份信息，并写入到到钱包文件中。
 
 ```
-Identity identity = ontSdk.getConnect().createIdentity("passwordtest");
+Identity identity = ontSdk.getWalletMgr().createIdentity("passwordtest");
 //创建的账号或身份只在内存中，如果要写入钱包文件，需调用写入接口
 ontSdk.getWalletMgr().writeWallet();
 ```
@@ -111,7 +111,7 @@ ontSdk.getConnect().sendRawTransaction(tx);
 
 
 ```
-Identity identity = ontSdk.getWalletMgr().importIdentity(encriptPrivateKey,password);
+Identity identity = ontSdk.getWalletMgr().importIdentity(encryptedPrikey,password,salt,address);
 //写入钱包      
 ontSdk.getWalletMgr().writeWallet();
 ```
@@ -278,7 +278,7 @@ Transaction makeAddPubKey(String ontid,String password,byte[] salt,String newpub
 
 示例代码
 ```
-Transaction tx = ontSdk.nativevm().ontId().makeAddPubKey(ontid,password,byte[] salt,newpubkey,payer,gaslimit,gasprice);
+Transaction tx = ontSdk.nativevm().ontId().makeAddPubKey(ontid,password,salt,newpubkey,payer,gaslimit,gasprice);
 ontSdk.signTx(tx,identity.ontid,password);
 ontSdk.getConnect().sendRawTransaction(tx);
 ```
@@ -399,7 +399,7 @@ Transaction makeAddRecovery(String ontid, String password,byte[] salt, String re
 
 示例
 ```
-Transaction tx = ontSdk.nativevm().ontId().makeAddRecovery(ontid,password,salt,recovery,payer,gas);
+Transaction tx = ontSdk.nativevm().ontId().makeAddRecovery(ontid,password,salt,recovery,payer,gaslimit,gasprice);
 ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password,salt);
 ontSdk.getConnect().sendRawTransaction(tx);
 ```

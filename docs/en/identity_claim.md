@@ -353,8 +353,8 @@ String sendRemovePubKey(String ontid, String recoveryAddr,String password,salt, 
 |        | recoveryAddr| String | recovery password | required |
 |        | removePubkey| String  |public key       | required， removePubkey|
 |        | payerAcct    | Account  | payer       | required，payer |
-|   | gaslimit      | long | gaslimit     | required |
-|   | gasprice      | long | gas price    | required |
+|        | gaslimit      | long | gaslimit     | required |
+|        | gasprice      | long | gas price    | required |
 | output param | txhash   | String  | transaction hash  | Transaction hash |
 
 
@@ -413,8 +413,8 @@ String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery, 
 |        | oldRecovery| String  |oldRecovery address | required，oldRecovery|
 |        |  password | String  | oldRecovery password  | required |
 |        | salt| byte[] |  | required |
-|   | gaslimit      | long | gaslimit     | required |
-|   | gasprice      | long | gas price    | required |
+|        | gaslimit      | long | gaslimit     | required |
+|        | gasprice      | long | gas price    | required |
 | output param | txhash   | String  | transaction hash  | transaction hash |
 
 

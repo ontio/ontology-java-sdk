@@ -16,7 +16,7 @@ is.read(bys);
 is.close();
 code = Helper.toHexString(bys);
 System.out.println("Code:" + Helper.toHexString(bys));
-System.out.println("CodeAddress:" + Helper.getCodeAddress(code, VmType.NEOVM.value()));
+System.out.println("CodeAddress:" + Address.AddressFromVmCode(code));
 ```
 
 > Note: When you get the codeAddress, you need to set which virtual machine the contract needs to run on. The java-sdk currently supported virtual machines are NEO and WASM.。
@@ -26,7 +26,7 @@ System.out.println("CodeAddress:" + Helper.getCodeAddress(code, VmType.NEOVM.val
 ```
 //step1：construct transaction
 //Firstly, convert the parameters of smart contract into the vm-recognizable opcode 
-Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), sender.toBase58(),gaslimit，gasprice);
+Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(),sender.toBase58(),gaslimit，gasprice);
 
 //step2：sign the transaction
 ontSdk.signTx(tx, info1.address, password);
@@ -60,10 +60,10 @@ byte[] bys = new byte[is.available()];
 is.read(bys);
 is.close();
 code = Helper.toHexString(bys);
-ontSdk.setCodeAddress(Helper.getCodeAddress(codeHexStr,vmtype));
+ontSdk.setCodeAddress(Address.AddressFromVmCode(codeHexStr));
 
 //Deploy the contract
-Transaction tx = ontSdk.vm().makeDeployCodeTransaction(codeHexStr, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),payer,gaslimit,gasprice);
+Transaction tx = ontSdk.vm().makeDeployCodeTransaction(codeHexStr, true, "name", "1.0", "1", "1", "1",payer,gaslimit,gasprice);
 String txHex = Helper.toHexString(tx.toArray());
 ontSdk.getConnect().sendRawTransaction(txHex);
 //Waiting for block generation
@@ -80,7 +80,6 @@ DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnect().getTransac
 |               | author      | String                | Contract author                   | Required                               |
 |               | email       | String                | Author email                      | Required                               |
 |               | desp        | String                | Description                       | Required                               |
-|               | VmType      | byte                  | Virtual machine type              | Required                               |
 |               | payer       | String                | account address used to pay transaction fee| Required |
 |               | gaslimit    | long                  | gaslimit                          | Required |
 |               | gasprice    | long                  | gasprice                          | Required |
@@ -172,7 +171,7 @@ String funcName = "add";
 //The parameters needed to construct a contract function
 String params = ontSdk.getSmartcodeTx().buildWasmContractJsonParam(new Object[]{20,30});
 //Specify a virtual machine type to construct a transaction
-Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontSdk.getSmartcodeTx().getCodeAddress(),funcName,params.getBytes(),VmType.WASMVM.value(),payer,gaslimit,gasprice);
+Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontSdk.getSmartcodeTx().getCodeAddress(),funcName,params.getBytes(),payer,gaslimit,gasprice);
 //send transaction
 ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 

@@ -16,7 +16,7 @@ is.read(bys);
 is.close();
 code = Helper.toHexString(bys);
 System.out.println("Code:" + Helper.toHexString(bys));
-System.out.println("CodeAddress:" + Helper.getCodeAddress(code, VmType.NEOVM.value()));
+System.out.println("CodeAddress:" + Address.AddressFromVmCode(code));
 ```
 
 > Note: 在获得codeAddress的时候，需要设置该合约需要运行在什么虚拟机上，目前支持的虚拟机是NEO和WASM。
@@ -26,7 +26,7 @@ System.out.println("CodeAddress:" + Helper.getCodeAddress(code, VmType.NEOVM.val
 ```
 //step1：构造交易
 //需先将智能合约参数转换成vm可识别的opcode
-Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), sender.toBase58(),gaslimit，gasprice);
+Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(),sender.toBase58(),gaslimit，gasprice);
 
 //step2：对交易签名
 ontSdk.signTx(tx, info1.address, password);
@@ -59,10 +59,10 @@ byte[] bys = new byte[is.available()];
 is.read(bys);
 is.close();
 code = Helper.toHexString(bys);
-ontSdk.setCodeAddress(Helper.getCodeAddress(code,VmType.NEOVM.value()));
+ontSdk.setCodeAddress(Address.AddressFromVmCode(code));
 
 //部署合约
-Transaction tx = ontSdk.vm().makeDeployCodeTransaction(codeHexStr, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),payer,gaslimit,gasprice);
+Transaction tx = ontSdk.vm().makeDeployCodeTransaction(codeHexStr, true, "name", "1.0", "1", "1", "1",payer,gaslimit,gasprice);
 String txHex = Helper.toHexString(tx.toArray());
 ontSdk.getConnect().sendRawTransaction(txHex);
 //等待出块
@@ -79,7 +79,6 @@ DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnect().getTransac
 |        | author   | String | 作者     | 必选 |
 |        | email   | String | emal     | 必选 |
 |        | desp   | String | 描述信息     | 必选 |
-|        | VmType   | byte | 虚拟机类型     | 必选 |
 |        | payer   | String | 支付交易费用的账户地址     | 必选 |
 |        | gaslimit   | long | gaslimit    | 必选 |
 |        | gasprice   | long | gas价格   | 必选 |
@@ -127,7 +126,7 @@ System.out.println(func.getParameters());
 func.setParamsValue(did.ontid.getBytes(),"key".getBytes(),"bytes".getBytes(),"values02".getBytes(),Helper.hexToBytes(info.pubkey));
 System.out.println(func);
 //调用智能合约，sendInvokeSmartCodeWithSign方法封装好了构造交易，签名交易，发送交易步骤
-String hash = ontSdk.vm().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", func, (byte) VmType.NEOVM.value(),gaslimit,gasprice);
+String hash = ontSdk.vm().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", func,gaslimit,gasprice);
 
 ```
 
@@ -169,7 +168,7 @@ String funcName = "add";
 //构造合约函数需要的参数
 String params = ontSdk.vm().buildWasmContractJsonParam(new Object[]{20,30});
 //指定虚拟机类型构造交易
-Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontSdk.getSmartcodeTx().getCodeAddress(),funcName,params.getBytes(),VmType.WASMVM.value(),payer,gas);
+Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontSdk.getSmartcodeTx().getCodeAddress(),funcName,params.getBytes(),payer,gas);
 //发送交易
 ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 

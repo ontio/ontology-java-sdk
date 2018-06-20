@@ -39,7 +39,7 @@ public class OngDemo {
         try {
             OntSdk ontSdk = getOntSdk();
             String privatekey0 = "c19f16785b8f3543bbaf5e1dbb5d398dfa6c85aaad54fc9d71203ce83e505c07";
-            privatekey0 = "a1a38ccff49fa6476e737d66ef9f18c7507b50eb4804ed8e077744a4a2a74bb6";
+            privatekey0 = "523c5fcf74823831756f0bcb3634234f10b3beb1c05595058534577752ad2d9f";
             com.github.ontio.account.Account payerAcct = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey0),ontSdk.defaultSignScheme);
             com.github.ontio.account.Account acct0 = payerAcct;
             com.github.ontio.account.Account acct1 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey1), ontSdk.defaultSignScheme);
@@ -80,7 +80,7 @@ public class OngDemo {
                // ontSdk.nativevm().ong().claimOng(acct0,acct0.getAddressU160().toBase58(),49520000000000L,acct0,ontSdk.DEFAULT_GAS_LIMIT,0);
             }
             if(false){
-                System.out.println(ontSdk.nativevm().ong().unclaimOng(acct6.getAddressU160().toBase58()));
+                System.out.println(ontSdk.nativevm().ong().unboundOng(acct6.getAddressU160().toBase58()));
                 System.out.println(ontSdk.nativevm().ong().queryName());
                 System.out.println(ontSdk.nativevm().ong().querySymbol());
                 System.out.println(ontSdk.nativevm().ong().queryDecimals());
@@ -98,8 +98,8 @@ public class OngDemo {
                 System.out.println(ontSdk.getConnect().getSmartCodeEvent(hash));
             }
             if(true){
-                System.out.println(ontSdk.nativevm().ong().unclaimOng(acct0.getAddressU160().toBase58()));
-                String hash = ontSdk.nativevm().ong().claimOng(acct0, acct0.getAddressU160().toBase58(), 195458423999996040L, payerAcct, 30000, 0);
+                System.out.println(ontSdk.nativevm().ong().unboundOng(acct0.getAddressU160().toBase58()));
+                String hash = ontSdk.nativevm().ong().withdrawOng(acct0, acct0.getAddressU160().toBase58(), 1459535000000000L, payerAcct, 30000, 0);
                 Thread.sleep(6000);
                 System.out.println(ontSdk.getConnect().getSmartCodeEvent(hash));
             }

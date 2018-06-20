@@ -59,8 +59,8 @@ public class GovernanceDemo {
                 sdk.nativevm().ont().sendTransfer(account,account9.getAddressU160().toBase58(),100000000,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
                 Thread.sleep(6000);
                 System.out.println("account" + sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
-                System.out.println("account" + sdk.nativevm().ong().unclaimOng(account.getAddressU160().toBase58()));
-                sdk.nativevm().ong().claimOng(account,account9.getAddressU160().toBase58(),640000000000L,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+                System.out.println("account" + sdk.nativevm().ong().unboundOng(account.getAddressU160().toBase58()));
+                sdk.nativevm().ong().withdrawOng(account,account9.getAddressU160().toBase58(),640000000000L,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
             }
 
             if(false){

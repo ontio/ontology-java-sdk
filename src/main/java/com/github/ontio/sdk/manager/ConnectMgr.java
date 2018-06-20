@@ -236,7 +236,7 @@ public class ConnectMgr {
     }
 
     public Object waitResult(String hash) throws Exception {
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 20; i++) {
             try {
                 Thread.sleep(3000);
                 Object obj = connector.getSmartCodeEvent(hash);

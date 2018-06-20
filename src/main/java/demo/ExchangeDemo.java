@@ -417,10 +417,10 @@ public class ExchangeDemo {
             //claim ong
             Object balance = ontSdk.getConnect().getBalance(mainAccountAddr.toBase58());
             printlog("++++ before claime ong ,balance of "+ mainAccountAddr.toBase58() +" is " + balance);
-            String uOngAmt = ontSdk.nativevm().ong().unclaimOng(mainAccountAddr.toBase58());
+            String uOngAmt = ontSdk.nativevm().ong().unboundOng(mainAccountAddr.toBase58());
             printlog("++++ unclaimed ong is " + uOngAmt);
             if(new BigInteger(uOngAmt).compareTo(new BigInteger("0")) > 0) {
-                tx = ontSdk.nativevm().ong().makeClaimOng(mainAccountAddr.toBase58(), mainAccountAddr.toBase58(), new BigInteger(uOngAmt).longValue(), FEE_PROVIDER, 30000, 0);
+                tx = ontSdk.nativevm().ong().makeWithdrawOng(mainAccountAddr.toBase58(), mainAccountAddr.toBase58(), new BigInteger(uOngAmt).longValue(), FEE_PROVIDER, 30000, 0);
                 ontSdk.addMultiSign(tx, 3, new Account[]{mutiSeedAct1, mutiSeedAct2, mutiSeedAct3});
                 ontSdk.addSign(tx, feeAct);
                 ontSdk.getConnect().sendRawTransaction(tx.toHexString());

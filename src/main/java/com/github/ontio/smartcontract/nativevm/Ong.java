@@ -341,13 +341,13 @@ public class Ong {
      * @return
      * @throws Exception
      */
-    public String unclaimOng(String address) throws Exception {
+    public String unboundOng(String address) throws Exception {
         if(address==null||address.equals("")){
             throw new SDKException(ErrorCode.ParamErr("address should not be null"));
         }
-        String uncliamongStr = sdk.getConnect().getAllowance("ong", Address.parse(ontContract).toBase58(), address);
-        long uncliamong = Long.parseLong(uncliamongStr);
-        return uncliamongStr;
+        String unboundOngStr = sdk.getConnect().getAllowance("ong", Address.parse(ontContract).toBase58(), address);
+        long unboundOng = Long.parseLong(unboundOngStr);
+        return unboundOngStr;
     }
 
     /**
@@ -361,14 +361,14 @@ public class Ong {
      * @return
      * @throws Exception
      */
-    public String claimOng(Account sendAcct, String toAddr, long amount, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String withdrawOng(Account sendAcct, String toAddr, long amount, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (sendAcct == null ||  payerAcct == null ) {
             throw new SDKException(ErrorCode.ParamError);
         }
         if (amount <= 0 || gaslimit<0||gasprice < 0) {
             throw new SDKException(ErrorCode.ParamErr("amount or gaslimit gasprice should not be less than 0"));
         }
-        Transaction tx = makeClaimOng(sendAcct.getAddressU160().toBase58(), toAddr, amount, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeWithdrawOng(sendAcct.getAddressU160().toBase58(), toAddr, amount, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.signTx(tx, new Account[][]{{sendAcct}});
         if(!sendAcct.equals(payerAcct)){
             sdk.addSign(tx,payerAcct);
@@ -390,7 +390,7 @@ public class Ong {
      * @return
      * @throws Exception
      */
-    public Transaction makeClaimOng(String claimer, String toAddr, long amount, String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeWithdrawOng(String claimer, String toAddr, long amount, String payer, long gaslimit, long gasprice) throws Exception {
         if(claimer==null||claimer.equals("")||toAddr==null||toAddr.equals("")||payer==null||payer.equals("")){
             throw new SDKException(ErrorCode.ParamError);
         }

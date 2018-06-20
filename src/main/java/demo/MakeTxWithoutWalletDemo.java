@@ -66,14 +66,14 @@ public class MakeTxWithoutWalletDemo {
             com.github.ontio.account.Account acct5 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey5), ontSdk.defaultSignScheme);
 
 
-            if (true) {
+            if (false) {
                 //transer
                 Address sender = acct0.getAddressU160();
                 Address recvAddr = Address.addressFromMultiPubKeys(2, acct1.serializePublicKey(), acct2.serializePublicKey());
 //                Address recvAddr = Address.decodeBase58("TA5SgQXTeKWyN4GNfWGoXqioEQ4eCDFMqE");
                 System.out.println("sender:" + sender.toBase58());
                 System.out.println("recvAddr:" + recvAddr.toBase58());
-                long amount = 1000000000;
+                long amount = 100000;
 
                 Transaction tx = ontSdk.nativevm().ont().makeTransfer(sender.toBase58(),recvAddr.toBase58(), amount,sender.toBase58(),30000,0);
 
@@ -92,8 +92,8 @@ public class MakeTxWithoutWalletDemo {
             if (false) {
                 //sender address From MultiPubKeys
                 Address multiAddr = Address.addressFromMultiPubKeys(2, acct1.serializePublicKey(), acct2.serializePublicKey());
-                System.out.println("sender:" + multiAddr);
-                Address recvAddr = acct5.getAddressU160();
+                System.out.println("sender:" + multiAddr.toBase58());
+                Address recvAddr = acct0.getAddressU160();
                 System.out.println("recvAddr:" + recvAddr.toBase58());
                 int amount = 8;
 
@@ -153,8 +153,8 @@ public class MakeTxWithoutWalletDemo {
 
             }
             if(false){
-                String claimer = acct0.getAddressU160().toBase58();
-                Transaction tx = ontSdk.nativevm().ong().makeClaimOng(claimer,claimer,10,claimer,30000,0);
+                String sender = acct0.getAddressU160().toBase58();
+                Transaction tx = ontSdk.nativevm().ong().makeWithdrawOng(sender,sender,10,sender,30000,0);
                 ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct0}});
                 ontSdk.getConnect().sendRawTransaction(tx.toHexString());
             }

@@ -122,7 +122,9 @@ ontSdk.getWalletMgr().writeWallet();
 
 Parameter Description：
 encriptPrivateKey: Encrypted private key
-password： Password used to encrypt the private key
+password: Password used to encrypt the private key
+salt: Private key decryption parameters.
+address: account address
 
 * 5 Query blockchain-based identity
 
@@ -370,14 +372,16 @@ parameter description,please refer to method four(recovery)
 method one
 
 ```
-String sendAddRecovery(String ontid, String password,salt, String recoveryAddr,Account payerAcct,long gaslimit,long gasprice)
+String sendAddRecovery(String ontid, String password,byte[] salt, String recoveryAddr,Account payerAcct,long gaslimit,long gasprice)
 ```
 
 | Param      | Field   | Type  | Descriptions |             Remarks |
 | ----- | ------- | ------ | ------------- | ----------- |
 | input param | password| String | identity password | required |
 |        | ontid    | String | identity ID   | required，identity Id |
-|        | recovery| String  |recovery address | required，recovery|
+|        | password | String | identity password |required|
+|        | salt     | byte[] | identity salt  | required|
+|        | recoveryAddr| String  |recovery address | required，recovery|
 |        | payerAcct    | Account  | payer       | required，payer |
 |   | gaslimit      | long | gaslimit     | required |
 |   | gasprice      | long | gas price    | required |
@@ -480,7 +484,7 @@ class Payload {
 
 ### 2 interface list
 
-1. createOntIdClaim(String signerOntid, String password, String context, Map<String, Object> claimMap, Map metaData,Map clmRevMap,long expire)
+1. createOntIdClaim(String signerOntid, String password,byte[] salt, String context, Map<String, Object> claimMap, Map metaData,Map clmRevMap,long expire)
 
      function description： create claim
 
@@ -488,6 +492,7 @@ class Payload {
     | ----- | ------- | ------ | ------------- | ----------- |
     | input parameter | signerOntid| String | ontid | required |
     |        | password    | String | ontid password   | required |
+    |        | salt        | byte[] | Private key decryption parameters |required|
     |        | context| String  |attribute specifies the uri of claim content definition document which defines the meaning of each field and the type of the value | required|
     |        | claimMap| Map  |content of claim | required|
     |        | metaData   | Map | claim issuer and subject's ontid | required |
@@ -517,7 +522,7 @@ map.put("Subject", dids.get(1).ontid);
 Map clmRevMap = new HashMap();
 clmRevMap.put("typ","AttestContract");
 clmRevMap.put("addr",dids.get(1).ontid.replace(Common.didont,""));
-String claim = ontSdk.nativevm().ontId().createOntIdClaim(dids.get(0).ontid,password, "claim:context", map, map,clmRevMap,System.currentTimeMillis()/1000 +100000);
+String claim = ontSdk.nativevm().ontId().createOntIdClaim(dids.get(0).ontid,password,salt, "claim:context", map, map,clmRevMap,System.currentTimeMillis()/1000 +100000);
 ```
 > Note: The Issuer may have multiple public keys. The parameter ontid of createOntIdClaim specifies which public key to use.
 
@@ -533,13 +538,13 @@ boolean b = ontSdk.nativevm().ontId().verifyOntIdClaim(claim);
 
 ```
 Identity identity = ontSdk.getWalletMgr().createIdentity(password);
-ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcc.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
+ontSdk.nativevm().ontId().sendRegister(identity2,password,salt,payerAcc,ontSdk.DEFAULT_GAS_LIMIT,0);
 String ontid = ident.ontid;
 Map recordMap = new HashMap();
 recordMap.put("key0", "world0");
 recordMap.put("keyNum", 1234589);
 recordMap.put("key2", false);
-String hash = ontSdk.nativevm().ontId().sendAddAttributes(dids.get(0).ontid,password,attributes,payerAcc.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
+String hash = ontSdk.nativevm().ontId().sendAddAttributes(dids.get(0).ontid,password,salt,attributes,payerAcc,ontSdk.DEFAULT_GAS_LIMIT,0);
 ```
 > Note: When the attribute does not exist, calling the sendUpdateAttribute method will increase the corresponding attribute. When the attribute exists, the corresponding attribute will be updated. Attri represents the attribute name, "Json" is the attribute value data type, and recordMap represents the attribute value.
 
@@ -554,6 +559,6 @@ Map clmRevMap = new HashMap();
 clmRevMap.put("typ","AttestContract");
 clmRevMap.put("addr",dids.get(1).ontid.replace(Common.didont,""));
 
-String claim = ontSdk.nativevm().ontId().createOntIdClaim(dids.get(0).ontid,password, "claim:context", map, map,clmRevMap,System.currentTimeMillis()/1000 +100000);
+String claim = ontSdk.nativevm().ontId().createOntIdClaim(dids.get(0).ontid,password,salt, "claim:context", map, map,clmRevMap,System.currentTimeMillis()/1000 +100000);
 boolean b = ontSdk.nativevm().ontId().verifyOntIdClaim(claim);
 ```

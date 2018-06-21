@@ -20,7 +20,7 @@ Auth合约负责管理应用合约的函数调用权限，功能有合约管理�
 
 接口列表
 
-1. String sendTransfer(String adminOntId, String password, String contractAddr, String newAdminOntID, long keyNo, Account payerAcct, long gaslimit, long gasprice)
+1. String sendTransfer(String adminOntId, String password, byte[] salt, String contractAddr, String newAdminOntID, long keyNo, Account payerAcct, long gaslimit, long gasprice)
 
     |说明||描述|
     |:--|:--|:--|
@@ -28,6 +28,7 @@ Auth合约负责管理应用合约的函数调用权限，功能有合约管理�
     |参数说明|字段|描述|
     ||adminOntId|合约管理员ontid|
     ||password|合约管理员密码|
+    ||slat |私钥解密参数|
     ||contractAddr|合约地址|
     ||newAdminOntID|新的管理员|
     ||keyNo|合约管理员的公钥编号|
@@ -36,7 +37,7 @@ Auth合约负责管理应用合约的函数调用权限，功能有合约管理�
     ||gasprice|gas价格|
     |返回值说明|交易hash||
 
-2. String assignFuncsToRole(String adminOntID,String password,String contractAddr,String role,String[] funcName,long keyNo,Account payerAcct,long gaslimit,long gasprice)
+2. String assignFuncsToRole(String adminOntID,String password,byte[] salt,String contractAddr,String role,String[] funcName,long keyNo,Account payerAcct,long gaslimit,long gasprice)
 
     |说明||描述|
     |:--|:--|:--|
@@ -44,6 +45,7 @@ Auth合约负责管理应用合约的函数调用权限，功能有合约管理�
     |参数说明|字段|描述|
     ||adminOntId|合约管理员ontid|
     ||password|合约管理员密码|
+    ||salt|私钥解密参数|
     ||contractAddr|合约地址|
     ||role|角色|
     ||funcName|函数名数组|
@@ -53,7 +55,7 @@ Auth合约负责管理应用合约的函数调用权限，功能有合约管理�
     ||gasprice|gas价格|
     |返回值说明|交易hash||
 
-3. String assignOntIDsToRole(String adminOntId,String password,String contractAddr,String role,String[] ontIDs,long keyNo,Account payerAcct,long gaslimit,long gasprice)
+3. String assignOntIDsToRole(String adminOntId,String password,byte[] salt, String contractAddr,String role,String[] ontIDs,long keyNo,Account payerAcct,long gaslimit,long gasprice)
 
      |说明||描述|
      |:--|:--|:--|
@@ -61,6 +63,7 @@ Auth合约负责管理应用合约的函数调用权限，功能有合约管理�
      |参数说明|字段|描述|
      ||adminOntId|合约管理员ontid|
      ||password|合约管理员密码|
+     ||salt|私钥解密参数|
      ||contractAddr|合约地址|
      ||role|角色|
      ||ontIDs|ontid数组|
@@ -70,7 +73,7 @@ Auth合约负责管理应用合约的函数调用权限，功能有合约管理�
      ||gasprice|gas价格|
      |返回值说明|交易hash||
 
-4. String delegate(String ontid,String password,String contractAddr,String toOntId,String role,long period,long level,long keyNo,Account payerAcct,long gaslimit,long gasprice)
+4. String delegate(String ontid,String password,byte[] salt,String contractAddr,String toOntId,String role,long period,long level,long keyNo,Account payerAcct,long gaslimit,long gasprice)
 
      角色拥有者可以将角色代理给其他人，from是转让者的ONT ID，to是代理人的ONT ID，role表示要代理的角色，period参数指定委托任期时间（以second为单位）。
 
@@ -84,6 +87,7 @@ Auth合约负责管理应用合约的函数调用权限，功能有合约管理�
      |参数说明|字段|描述|
      ||ontid|拥有合约中某个函数调用权的ontid|
      ||password|ontid密码|
+     ||salt|私钥解密参数|
      ||contractAddr|合约地址|
      ||toOntId|接收合约调用权的ontid|
      ||role|角色|
@@ -94,7 +98,7 @@ Auth合约负责管理应用合约的函数调用权限，功能有合约管理�
      ||gasprice|gas价格|
      |返回值说明|交易hash||
 
-5. String withdraw(String initiatorOntid,String password,String contractAddr,String delegate, String role,long keyNo,Account payerAcct,long gaslimit,long gasprice)
+5. String withdraw(String initiatorOntid,String password,byte[] salt,String contractAddr,String delegate, String role,long keyNo,Account payerAcct,long gaslimit,long gasprice)
 
      角色拥有者可以提前将角色代理提前撤回，initiatorOntid是发起者，delegate是角色代理人，initiator将代理给delegate的角色提前撤回。
 
@@ -104,6 +108,7 @@ Auth合约负责管理应用合约的函数调用权限，功能有合约管理�
      |参数说明|字段|描述|
      ||initiatorOntid|将合约调用权转让给其他人的ontid|
      ||password|ontid密码|
+     ||salt|私钥解密参数|
      ||contractAddr|合约地址|
      ||delegate|代理人ontid|
      ||role|角色|
@@ -113,7 +118,7 @@ Auth合约负责管理应用合约的函数调用权限，功能有合约管理�
      ||gasprice|gas价格|
      |返回值说明|交易hash||
 
-6. String verifyToken(String ontid,String password,String contractAddr,String funcName,long keyNo)
+6. String verifyToken(String ontid,String password,byte[] salt,String contractAddr,String funcName,long keyNo)
 
       |说明||描述|
       |:--|:--|:--|
@@ -121,6 +126,7 @@ Auth合约负责管理应用合约的函数调用权限，功能有合约管理�
       |参数说明|字段|描述|
       ||ontid|验证的ontid|
       ||password|ontid密码|
+      ||salt|私钥解密参数|
       ||contractAddr|合约地址|
       ||funcName|函数名|
       ||keyNo|ontid的公钥编号|

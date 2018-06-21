@@ -111,7 +111,7 @@ ontSdk.getConnect().sendRawTransaction(tx);
 
 
 ```
-Identity identity = ontSdk.getWalletMgr().importIdentity(encriptPrivateKey,password);
+Identity identity = ontSdk.getWalletMgr().importIdentity(encriptPrivateKey,password,salt,address);
 //写入钱包      
 ontSdk.getWalletMgr().writeWallet();
 ```
@@ -120,6 +120,8 @@ ontSdk.getWalletMgr().writeWallet();
 参数说明：
 encriptPrivateKey: 加密后的私钥
 password： 加密私钥使用的密码
+salt: 解密私钥用的参数
+address: 账户地址base58编码
 
 * 5 查询链上身份
 
@@ -251,7 +253,7 @@ ontSdk.getConnect().sendRawTransaction(tx);
 方法一
 
 ```
-String sendAddPubKey(String ontid, String password,salt, String newpubkey,Account payerAcct,long gaslimit,long gasprice)
+String sendAddPubKey(String ontid, String password,byte[] salt, String newpubkey,Account payerAcct,long gaslimit,long gasprice)
 ```
 
 
@@ -413,11 +415,11 @@ String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery, 
 
 | 参数      | 字段   | 类型  | 描述 |             说明 |
 | ----- | ------- | ------ | ------------- | ----------- |
-| 输入参数 | password| String | 数字身份密码 | 必选 |
-|        | ontid    | String | 数字身份ID   | 必选，身份Id |
+| 输入参数 |ontid    | String | 数字身份ID   | 必选，身份Id |
 |        | newRecovery| String  |newRecovery账户地址 | 必选，newRecovery|
 |        | oldRecovery| String  |oldRecovery账户地址 | 必选，oldRecovery|
 |        | oldRecovery password | String  | oldRecovery password  | 必选 |
+|        | password| String | 数字身份密码 | 必选 |
 |        | salt| byte[] | | required |
 |        | gaslimit   | long | gaslimit     | 必选 |
 |        | gasprice   | long | gasprice     | 必选 |
@@ -492,7 +494,7 @@ class Payload {
 
 ### 2 可信申明接口列表
 
-1. createOntIdClaim(String signerOntid, String password, String context, Map<String, Object> claimMap, Map metaData,Map clmRevMap,long expire)
+1. createOntIdClaim(String signerOntid, String password,byte[] salt, String context, Map<String, Object> claimMap, Map metaData,Map clmRevMap,long expire)
 
      功能说明： 创建可信声明
 
@@ -500,6 +502,7 @@ class Payload {
     | ----- | ------- | ------ | ------------- | ----------- |
     | 输入参数 | signerOntid| String | 签名者ontid | 必选 |
     |        | password    | String | 签名者密码   | 必选 |
+    |        | salt        | byte[] | 解密需要的参数|必选|
     |        | context| String  |指定申明内容定义文档URI，其定义了每个字段的含义和值得类型 | 必选|
     |        | claimMap| Map  |声明的内容 | 必选|
     |        | metaData   | Map | 申明发行者和申请者ontid | 必选 |
@@ -535,7 +538,7 @@ map.put("Subject", dids.get(1).ontid);
 Map clmRevMap = new HashMap();
 clmRevMap.put("typ","AttestContract");
 clmRevMap.put("addr",dids.get(1).ontid.replace(Common.didont,""));
-String claim = ontSdk.nativevm().ontId().createOntIdClaim(dids.get(0).ontid,password, "claim:context", map, map,clmRevMap,System.currentTimeMillis()/1000 +100000);
+String claim = ontSdk.nativevm().ontId().createOntIdClaim(dids.get(0).ontid,password,salt, "claim:context", map, map,clmRevMap,System.currentTimeMillis()/1000 +100000);
 ```
 
 
@@ -559,14 +562,14 @@ boolean b = ontSdk.nativevm().ontId().verifyOntIdClaim(claim);
 ```
 //注册ontid
 Identity identity = ontSdk.getWalletMgr().createIdentity(password);
-ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcc.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
+ontSdk.nativevm().ontId().sendRegister(identity2,password,salt,payerAcc,ontSdk.DEFAULT_GAS_LIMIT,0);
 String ontid = ident.ontid;
 //更新属性
 Map recordMap = new HashMap();
 recordMap.put("key0", "world0");
 recordMap.put("keyNum", 1234589);
 recordMap.put("key2", false);
-String hash = ontSdk.nativevm().ontId().sendAddAttributes(dids.get(0).ontid,password,attributes,payerAcc.address,password,ontSdk.DEFAULT_GAS_LIMIT,0);
+String hash = ontSdk.nativevm().ontId().sendAddAttributes(dids.get(0).ontid,password,attributes,payerAcc,ontSdk.DEFAULT_GAS_LIMIT,0);
 ```
 
 > Note: 当不存在该属性时，调用sendAddAttributes方法，会增加相应的属性，当属性存在时，会更新相应属性。

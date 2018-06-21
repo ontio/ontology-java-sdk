@@ -441,7 +441,7 @@ ontSdk.addSign(txRx,acct0);
 
 ```
 节点启动时打开签名机服务：
-./ontology --clirpc
+go run SigSvr.go
 
 
 设置签名机URL：

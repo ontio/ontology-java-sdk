@@ -234,7 +234,9 @@ public class ConnectMgr {
         hash = hash.replace("0x", "");
         return connector.getMemPoolTxState(hash);
     }
-
+    public String getVersion() throws ConnectorException, IOException {
+        return connector.getVersion();
+    }
     public Object waitResult(String hash) throws Exception {
         for (int i = 0; i < 20; i++) {
             try {

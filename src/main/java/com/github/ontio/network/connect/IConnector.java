@@ -52,4 +52,5 @@ public interface IConnector {
 	String getAllowance(String asset,String from,String to) throws ConnectorException, IOException;
 	Object getMemPoolTxCount() throws ConnectorException, IOException;
 	Object getMemPoolTxState(String hash) throws ConnectorException, IOException;
+	String getVersion() throws ConnectorException, IOException;
 }

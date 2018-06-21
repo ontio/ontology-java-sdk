@@ -248,5 +248,14 @@ public class RpcClient extends AbstractConnector {
             throw new RuntimeException(e);
         }
     }
+    @Override
+    public String getVersion() throws ConnectorException, IOException {
+        Object result = rpc.call("getversion");
+        try {
+            return (String)result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 

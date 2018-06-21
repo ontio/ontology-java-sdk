@@ -9,8 +9,9 @@ public enum Curve {
     P224(1, "P-224"),
     P256(2, "P-256"),
     P384(3, "P-384"),
-    P512(4, "P-521"),
-    SM2P256V1(20, "sm2p256v1");
+    P521(4, "P-521"),
+    SM2P256V1(20, "sm2p256v1"),
+    ED25519(25, "ED25519");
 
     private int label;
     private String name;

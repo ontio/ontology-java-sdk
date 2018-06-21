@@ -432,7 +432,7 @@ ontSdk.addSign(txRx,acct0);
 
 ```
 //Start the signature server service when nodes start：
-./ontology --clirpc
+go run SigSvr.go
 
 
 // Set signature server URL

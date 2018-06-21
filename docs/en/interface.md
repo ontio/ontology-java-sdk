@@ -157,20 +157,20 @@ ong:
       |                                         Main   Function                                                     |           Description            
  -----|-------------------------------------------------------------------------------------------------------------|---------------------------------------------
     1 | String getContractAddress()                                                                                                                             |  get contract address 
-    2 | Identity sendRegister(Identity ident, String password,Account payerAcct,long gaslimit,long gasprice)                                         |  register ontid
-    3 | Identity sendRegisterPreExec(Identity ident, String password,Account payerAcct,long gaslimit,long gasprice)                                  |  prepare execution registryontid
-    4 | Identity sendRegisterWithAttrs(Identity ident, String password,Attribute[] attributes,Account payerAcct,long gaslimit,long gasprice)         |  register ontid with add attribute
-    5 | String sendAddPubKey(String ontid, String password, String newpubkey,Account payerAcct,long gaslimit,long gasprice)                          |  add pubkey
-    6 | String sendAddPubKey(String ontid,String recoveryOntid, String password, String newpubkey,Account payerAcct,long gaslimit,long gasprice)      |  add pubkey
+    2 | Identity sendRegister(Identity ident, String password,byte[] salt,Account payerAcct,long gaslimit,long gasprice)                                         |  register ontid
+    3 | Identity sendRegisterPreExec(Identity ident, String password,byte[] salt,Account payerAcct,long gaslimit,long gasprice)                                  |  prepare execution registryontid
+    4 | Identity sendRegisterWithAttrs(Identity ident, String password,byte[] salt,Attribute[] attributes,Account payerAcct,long gaslimit,long gasprice)         |  register ontid with add attribute
+    5 | String sendAddPubKey(String ontid, String password,byte[] salt, String newpubkey,Account payerAcct,long gaslimit,long gasprice)                          |  add pubkey
+    6 | String sendAddPubKey(String ontid,String recoveryOntid, String password,byte[] salt, String newpubkey,Account payerAcct,long gaslimit,long gasprice)      |  add pubkey
     7 | String sendGetPublicKeys(String ontid)                                                                                                                  |  add pubkey
-    8 | String sendRemovePubKey(String ontid, String password, String removePubkey,Account payerAcct,long gaslimit,long gasprice)                    |  remove pubkey
-    9 | String sendRemovePubKey(String ontid, String recoveryOntid,String password, String removePubkey,Account payerAcct,long gaslimit,long gasprice)|  remove pubkey
+    8 | String sendRemovePubKey(String ontid, String password,byte[] salt, String removePubkey,Account payerAcct,long gaslimit,long gasprice)                    |  remove pubkey
+    9 | String sendRemovePubKey(String ontid, String recoveryOntid,String password,byte[] salt, String removePubkey,Account payerAcct,long gaslimit,long gasprice)|  remove pubkey
    10 | String sendGetKeyState(String ontid,int index)                                                                                                          |  get pubkey status
-   11 | String sendAddAttributes(String ontid, String password, Attribute[] attributes,Account payerAcct,long gaslimit,long gasprice)                |  add attribute
+   11 | String sendAddAttributes(String ontid, String password,byte[] salt, Attribute[] attributes,Account payerAcct,long gaslimit,long gasprice)                |  add attribute
    12 | String sendGetAttributes(String ontid)                                                                                                                  |  query attribute
-   13 | String sendRemoveAttribute(String ontid,String password,String path,Account payerAcct,long gaslimit,long gasprice)                           |  remove attribute
-   14 | String sendAddRecovery(String ontid, String password, String recoveryOntid,Account payerAcct,long gaslimit,long gasprice)                     |  add Recovery
-   15 | String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery, String password,Account payerAcct, long gaslimit,long gasprice)                            |  change Recovery
+   13 | String sendRemoveAttribute(String ontid,String password,byte[] salt,String path,Account payerAcct,long gaslimit,long gasprice)                           |  remove attribute
+   14 | String sendAddRecovery(String ontid, String password,byte[] salt, String recoveryOntid,Account payerAcct,long gaslimit,long gasprice)                     |  add Recovery
+   15 | String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery, String password,byte[] salt,Account payerAcct, long gaslimit,long gasprice)                            |  change Recovery
    16 | String sendGetDDO(String ontid)                                                                                                                         |  get DDO
    
 ```
@@ -180,15 +180,15 @@ ong:
  ```  
      |                                           Make Transaction  Function                                                |     Description            
  ----|---------------------------------------------------------------------------------------------------------------------|------------------------ 
-   1 | Transaction makeRegister(String ontid,String password,String payer,long gaslimit,long gasprice)                                              | 
-   2 | Transaction makeRegisterWithAttrs(String ontid, String password, Attribute[] attributes, String payer, long gaslimit, long gasprice)         | 
-   3 | Transaction makeAddPubKey(String ontid,String password,String newpubkey,String payer,long gaslimit,long gasprice)                            | 
-   4 | Transaction makeAddPubKey(String ontid,String recoveryAddr,String password,String newpubkey,String payer,long gaslimit,long gasprice)        | 
-   5 | Transaction makeRemovePubKey(String ontid, String password, String removePubkey,String payer,long gaslimit,long gasprice)                    | 
-   6 | Transaction makeRemovePubKey(String ontid,String recoveryAddr, String password, String removePubkey,String payer,long gaslimit,long gasprice)| 
-   7 | Transaction makeAddAttributes(String ontid, String password, Attribute[] attributes,String payer,long gaslimit,long gasprice)                | 
-   8 | Transaction makeRemoveAttribute(String ontid,String password,String path,String payer,long gaslimit,long gasprice)                           | 
-   9 | Transaction makeAddRecovery(String ontid, String password, String recoveryAddr,String payer,long gaslimit,long gasprice)                     | 
+   1 | Transaction makeRegister(String ontid,String password,byte[] salt,String payer,long gaslimit,long gasprice)                                              |
+   2 | Transaction makeRegisterWithAttrs(String ontid, String password,byte[] salt, Attribute[] attributes, String payer, long gaslimit, long gasprice)         |
+   3 | Transaction makeAddPubKey(String ontid,String password,byte[] salt,String newpubkey,String payer,long gaslimit,long gasprice)                            |
+   4 | Transaction makeAddPubKey(String ontid,String recoveryAddr,String password,byte[] salt,String newpubkey,String payer,long gaslimit,long gasprice)        |
+   5 | Transaction makeRemovePubKey(String ontid, String password,byte[] salt, String removePubkey,String payer,long gaslimit,long gasprice)                    |
+   6 | Transaction makeRemovePubKey(String ontid,String recoveryAddr, String password, byte[] salt,String removePubkey,String payer,long gaslimit,long gasprice)|
+   7 | Transaction makeAddAttributes(String ontid, String password,byte[] salt, Attribute[] attributes,String payer,long gaslimit,long gasprice)                |
+   8 | Transaction makeRemoveAttribute(String ontid,String password,byte[] salt,String path,String payer,long gaslimit,long gasprice)                           |
+   9 | Transaction makeAddRecovery(String ontid, String password,byte[] salt, String recoveryAddr,String payer,long gaslimit,long gasprice)                     |
   ```
   
 * Claim：
@@ -198,7 +198,7 @@ ong:
  ----|-------------------------------------------------------------------------------------------------------------------------------|------------------------
    1 | public Object getMerkleProof(String txhash)                                                                                   |   
    2 | boolean verifyMerkleProof(String claim)                                                                                       |                 
-   3 | String createOntIdClaim(String signerOntid, String pwd, String context, Map claimMap, Map metaData,Map clmRevMap,long expire) |   
+   3 | String createOntIdClaim(String signerOntid, String pwd,byte[] salt, String context, Map claimMap, Map metaData,Map clmRevMap,long expire) |
    4 | boolean verifyOntIdClaim(String claim)                                                                                        |   
   
  ```
@@ -208,8 +208,8 @@ ong:
  ```
      |                                            Function                                                         |     Description
  ----|-------------------------------------------------------------------------------------------------------------|------------------------
-   1 | String sendCommit(String issuerOntid,String pwd,String subjectOntid,String claimId,Account payerAcct,long gaslimit,long gasprice)  |   
-   2 | String sendRevoke(String issuerOntid,String password,String claimId,Account payerAcct,long gaslimit,long gasprice)                 |   
+   1 | String sendCommit(String issuerOntid,String pwd,byte[] salt,String subjectOntid,String claimId,Account payerAcct,long gaslimit,long gasprice)  |
+   2 | String sendRevoke(String issuerOntid,String password,byte[] salt,String claimId,Account payerAcct,long gaslimit,long gasprice)                 |
    3 | String sendGetStatus(String claimId)                                                                                               |   
   
  ```
@@ -233,11 +233,11 @@ ong:
  ```
        |                                            Function                                                                                                                               |     Description
    ----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------
-     1 | String sendTransfer(String adminOntId,String password,String contractAddr, String newAdminOntID,int key,Account payerAcct,long gaslimit,long gasprice)                 |   
-     2 | String assignFuncsToRole(String adminOntID,String password,String contractAddr,String role,String[] funcName,int key,Account payerAcct, long gaslimit,long gasprice)    |   
-     3 | String assignOntIDsToRole(String adminOntId,String password,String contractAddr,String role,String[] ontIDs, int key,Account payerAcct, long gaslimit,long gasprice)    |   
-     4 | String delegate(String ontid,String password,String contractAddr,String toOntId,String role,int period,int level,int key,Account payerAcct, long gaslimit,long gasprice)|   
-     5 | String withdraw(String initiatorOntid,String password,String contractAddr,String delegate, String role,int key,Account payerAcct, long gaslimit,long gasprice)          |   
+     1 | String sendTransfer(String adminOntId,String password,byte[] salt,String contractAddr, String newAdminOntID,int key,Account payerAcct,long gaslimit,long gasprice)                 |
+     2 | String assignFuncsToRole(String adminOntID,String password,byte[] salt,String contractAddr,String role,String[] funcName,int key,Account payerAcct, long gaslimit,long gasprice)    |
+     3 | String assignOntIDsToRole(String adminOntId,String password,byte[] salt,String contractAddr,String role,String[] ontIDs, int key,Account payerAcct, long gaslimit,long gasprice)    |
+     4 | String delegate(String ontid,String password,byte[] salt,String contractAddr,String toOntId,String role,int period,int level,int key,Account payerAcct, long gaslimit,long gasprice)|
+     5 | String withdraw(String initiatorOntid,String password,byte[] salt,String contractAddr,String delegate, String role,int key,Account payerAcct, long gaslimit,long gasprice)          |
  ```
 
  * make transaction：

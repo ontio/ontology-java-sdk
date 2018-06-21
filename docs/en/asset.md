@@ -13,27 +13,28 @@
 `curve` elliptic curve  
 `key` NEP-2 private key, whose value can be null (in case of read-only or non-standard address)  
 `contract` smart contract, whose value can be null (in case of read-only address)
-`encAlg` 私钥加密的算法名称，固定为aes-256-ctr.
+`encAlg` Private key encryption algorithm name, fixed at aes-256-ctr.
+`salt` Private key decryption parameters.
 `extra` extra information stored by client developer, whose value can be null
 `signatureScheme` `signatureScheme` is a signature scheme used for transaction signatures.
 `hash` hash algorithm for derived privateKey。
-`passwordHash`  password hash
+
 ```
-    public class Account {
-        public String label = "";
-        public String address = "";
-        public boolean isDefault = false;
-        public boolean lock = false;
-        public String algorithm = "";
-        public Map parameters = new HashMap() ;
-        public String key = "";
-        @JSONField(name = "enc-alg")
-        public String encAlg = "aes-256-ctr";
-        public String hash = "sha256";
-        public String signatureScheme = "SHA256withECDSA";
-        public String passwordHash = "";
-        public Object extra = null;
-    }
+public class Account {
+    public String label = "";
+    public String address = "";
+    public boolean isDefault = false;
+    public boolean lock = false;
+    public String algorithm = "";
+    public Map parameters = new HashMap() ;
+    public String key = "";
+    @JSONField(name = "enc-alg")
+    public String encAlg = "aes-256-gcm";
+    public String salt = "";
+    public String hash = "sha256";
+    public String signatureScheme = "SHA256withECDSA";
+    public Object extra = null;
+}
 
 ```
 
@@ -135,7 +136,7 @@ ont and ong asset list
 
  4. long queryBalanceOf(String address)
 
-         function description： Query the assetName asset balance of the account address
+         function description： Query the asset balance of the account address
 
          parameter description：
 
@@ -171,7 +172,7 @@ ont and ong asset list
 
  8. long queryDecimals()
 
-            function description： query the accuracy of assetName assets
+            function description： query the accuracy of  assets
 
             parameter description：
 
@@ -179,7 +180,7 @@ ont and ong asset list
 
  9. long queryTotalSupply()
 
-             function description： query the total supply of assetName assets
+             function description： query the total supply of  assets
 
              parameter description：
 
@@ -191,7 +192,7 @@ Example:
 ```
 //step1:get sdk instance
 OntSdk sdk = OntSdk.getInstance();
-sdk.setRpcConnection(url);
+sdk.setRpc(url);
 sdk.openWalletFile("OntAssetDemo.json");
 //step2:get ontAssetTx instance
 ont = sdk.nativevm().ont()

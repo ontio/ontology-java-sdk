@@ -152,6 +152,7 @@ public class AuthDemo {
 
         OntSdk wm = OntSdk.getInstance();
         wm.setRestful(restUrl);
+
 //        wm.setRestful("http://polaris1.ont.io:20334");
 //        wm.setRestful("http://192.168.50.121:9099");
         //

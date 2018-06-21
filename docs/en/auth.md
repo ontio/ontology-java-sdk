@@ -21,7 +21,7 @@ The Auth contract is responsible for managing the function call authorizations o
 
 Interface list
 
-1. String sendTransfer(String adminOntId, String password, String contractAddr, String newAdminOntID, long keyNo, Account payerAcct, long gaslimit, long gasprice)
+1. String sendTransfer(String adminOntId, String password, byte[] salt, String contractAddr, String newAdminOntID, long keyNo, Account payerAcct, long gaslimit, long gasprice)
 
     |Instruction||Description|
     |:--|:--|:--|
@@ -29,6 +29,7 @@ Interface list
     |Parameter instruction|Field|Description|
     ||adminOntId|Contract administrator's ontid|
     ||password|Contract administrator's password|
+    ||salt|Private key decryption parameters|
     ||contractAddr|Contract address|
     ||newAdminOntID|New administrator|
     ||keyNo|Contract administrator's public key KeyNo|
@@ -38,7 +39,7 @@ Interface list
     |Return value instruction|Transaction hash||
     
 
-2. String assignFuncsToRole(String adminOntID,String password,String contractAddr,String role,String[] funcName,long keyNo,Account payerAcct,long gaslimit,long gasprice)
+2. String assignFuncsToRole(String adminOntID,String password,byte[] salt,String contractAddr,String role,String[] funcName,long keyNo,Account payerAcct,long gaslimit,long gasprice)
 
     |instruction||Description|
     |:--|:--|:--|
@@ -46,6 +47,7 @@ Interface list
     |Parameter instruction|Field|Description|
     ||adminOntId|Contract administrator's ontid|
     ||password|Contract administrator's password|
+    ||salt|Private key decryption parameters|
     ||contractAddr|Contract address|
     ||role|Role|
     ||funcName|Function name|
@@ -57,7 +59,7 @@ Interface list
     
     
 
-3. String assignOntIDsToRole(String adminOntId,String password,String contractAddr,String role,String[] ontIDs,long keyNo,Account payerAcct,long gaslimit,long gasprice)
+3. String assignOntIDsToRole(String adminOntId,String password,salt,String contractAddr,String role,String[] ontIDs,long keyNo,Account payerAcct,long gaslimit,long gasprice)
 
      |instruction||Description|
      |:--|:--|:--|
@@ -65,6 +67,7 @@ Interface list
      |Parameter instruction|Field|Description|
      ||adminOntId|Contract administrator's ontid|
      ||password|Contract administrator password|
+     ||salt|Private key decryption parameters|
      ||contractAddr|Contract address|
      ||role|Role|
      ||ontIDs|ontid array|
@@ -74,7 +77,7 @@ Interface list
      ||gasprice|Gas price|
      |Return value instruction|Transaction hash||
 
-4. String delegate(String ontid,String password,String contractAddr,String toOntId,String role,long period,long level,long keyNo,Account payerAcct,long gaslimit,long gasprice)
+4. String delegate(String ontid,String password,salt,String contractAddr,String toOntId,String role,long period,long level,long keyNo,Account payerAcct,long gaslimit,long gasprice)
 
 The role owner can delegate the role to others. "from:" is the ONT ID of the transferor, "to" is the ONT ID of the delegator, "role" is the role of delegator, and the "period" parameter specifies the duration of the delegation. (use second as the unit).
 
@@ -89,6 +92,7 @@ The role owner can delegate the role to others. "from:" is the ONT ID of the tra
      |Parameter instruction|Field|Description|
      ||ontid|The ontid of a function call authorization in the contract|
      ||password|ontid password|
+     ||salt|Private key decryption parameters|
      ||contractAddr|Contract address|
      ||toOntId|The ontid that receives contract call authorization|
      ||role|Role|
@@ -99,7 +103,7 @@ The role owner can delegate the role to others. "from:" is the ONT ID of the tra
      ||gasprice|Gas price|
      |Return value instruction|Transaction hash||
 
-5. String withdraw(String initiatorOntid,String password,String contractAddr,String delegate, String role,long keyNo,Account payerAcct,long gaslimit,long gasprice)
+5. String withdraw(String initiatorOntid,String password,byte[] salt,String contractAddr,String delegate, String role,long keyNo,Account payerAcct,long gaslimit,long gasprice)
 
 The role owner can withdraw the role delegation in advance. initiator is the initiator, delegate is the role delegator, and the initiator can withdraw the role from the delegator in advance.
 
@@ -110,6 +114,7 @@ The role owner can withdraw the role delegation in advance. initiator is the ini
      |Parameter instruction|Field|Description|
      ||initiatorOntid|Transfer contract call authorization to other's ontid|
      ||password|ontid password|
+     ||salt|Private key decryption parameters|
      ||contractAddr|Contract address|
      ||delegate|Delegator's ontid|
      ||role|Role|
@@ -119,7 +124,7 @@ The role owner can withdraw the role delegation in advance. initiator is the ini
      ||gasprice|Gas price|
      |Return value instruction|Transaction hash||
 
-6. String verifyToken(String ontid,String password,String contractAddr,String funcName,long keyNo,Account payerAcct,long gaslimit,long gasprice)
+6. String verifyToken(String ontid,String password,byte[] salt,String contractAddr,String funcName,long keyNo,Account payerAcct,long gaslimit,long gasprice)
 
       |instruction||Description|
       |:--|:--|:--|
@@ -127,6 +132,7 @@ The role owner can withdraw the role delegation in advance. initiator is the ini
       |Parameter instruction|Field|Description|
       ||ontid|ontid that should be verified|
       ||password|ontid password|
+      ||salt|Private key decryption parameters|
       ||contractAddr|Contract address|
       ||funcName|Function name|
       ||keyNo|ontid public key KeyNo|

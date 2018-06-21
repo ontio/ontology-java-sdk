@@ -27,7 +27,7 @@ wm.openWalletFile("RecordTxDemo.json");
 
 The specification of the following interface document is https://github.com/kunxian-xia/ontology-DID/blob/master/docs/en/claim_spec.md。
 
-* 2. String sendCommit(String issuerOntid, String password, String subjectOntid, String claimId, Account payerAcct, long gaslimit, long gasprice)
+* 2. String sendCommit(String issuerOntid, String password,byte[] salt, String subjectOntid, String claimId, Account payerAcct, long gaslimit, long gasprice)
 
         function description： Save data to the chain
 
@@ -74,7 +74,7 @@ String getstatusRes2 = ontSdk.neovm().claimRecord().sendGetStatus(payload.getStr
 ```
 
 
-* 4. String sendRevoke(String issuerOntid,String password,String claimId,Account payerAcct,long gaslimit,long gas)
+* 4. String sendRevoke(String issuerOntid,String password,byte[] salt,String claimId,Account payerAcct,long gaslimit,long gas)
 
         function description：Repeal of a trust claim
 

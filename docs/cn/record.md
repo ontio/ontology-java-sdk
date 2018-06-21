@@ -26,7 +26,7 @@ wm.setCodeAddress("803ca638069742da4b6871fe3d7f78718eeee78a");
 
 下面接口文档的规范是https://github.com/ontio/ontology-DID/blob/master/docs/cn/claim_spec_cn.md。
 
-* 2. String sendCommit(String issuerOntid, String password, String subjectOntid, String claimId, Account payerAcct, long gaslimit, long gasprice)
+* 2. String sendCommit(String issuerOntid, String password,byte[] salt, String subjectOntid, String claimId, Account payerAcct, long gaslimit, long gasprice)
 
         功能说明： 将数据保存到链上
 
@@ -75,7 +75,7 @@ String getstatusRes2 = ontSdk.neovm().claimRecord().sendGetStatus(payload.getStr
 ```
 
 
-* 4. String sendRevoke(String issuerOntid,String password,String claimId,Account payerAcct,long gaslimit,long gas)
+* 4. String sendRevoke(String issuerOntid,String password,byte[] salt,String claimId,Account payerAcct,long gaslimit,long gas)
 
         功能说明：撤销可信申明
 
@@ -98,5 +98,5 @@ String getstatusRes2 = ontSdk.neovm().claimRecord().sendGetStatus(payload.getStr
 示例代码
 
 ```
-String revokeHash = ontSdk.neovm().claimRecord().sendRevoke(dids.get(0).ontid,password,payload.getString("jti"),account1,ontSdk.DEFAULT_GAS_LIMIT,0);
+String revokeHash = ontSdk.neovm().claimRecord().sendRevoke(dids.get(0).ontid,password,salt,payload.getString("jti"),account1,ontSdk.DEFAULT_GAS_LIMIT,0);
 ```

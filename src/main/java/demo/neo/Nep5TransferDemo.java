@@ -2,6 +2,7 @@ package demo.neo;
 
 
 import com.alibaba.fastjson.JSON;
+import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
@@ -14,6 +15,7 @@ import com.github.ontio.smartcontract.neovm.abi.AbiFunction;
 import com.github.ontio.smartcontract.neovm.abi.AbiInfo;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
@@ -55,16 +57,17 @@ public class Nep5TransferDemo {
 		if(true) {
 			String balance = (String) getBalance(nodeUrl, contractAddr, Helper.toHexString(acct1.getAddressU160().toArray()));
 			System.out.println("acct1: " + balance);
-			balance = (String) getBalance(nodeUrl, contractAddr, Helper.toHexString(acct2.getAddressU160().toArray()));
-			System.out.println("acct2: " + balance);
-			balance = (String) getBalance(nodeUrl, contractAddr, Helper.toHexString(multiSignAddr.toArray()));
-			System.out.println("multiSignAddr: " + balance);
+			System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(balance))).longValue());
+//			balance = (String) getBalance(nodeUrl, contractAddr, Helper.toHexString(acct2.getAddressU160().toArray()));
+//			System.out.println("acct2: " + balance);
+//			balance = (String) getBalance(nodeUrl, contractAddr, Helper.toHexString(multiSignAddr.toArray()));
+//			System.out.println("multiSignAddr: " + balance);
 		}
 		if(false) {
 			Address recv = multiSignAddr;//acct2.getAddressU160()
 			AbiFunction func = abiinfo.getFunction("Transfer");
 			func.name = func.name.toLowerCase();
-			func.setParamsValue(acct1.getAddressU160().toArray(), recv.toArray(), Long.valueOf(10));
+			func.setParamsValue(acct1.getAddressU160().toArray(), recv.toArray(), Long.valueOf(19*10000000));
 
 			//make transaction
 			TransactionNeo tx = SmartContract.makeInvocationTransaction(Helper.reverse(contractAddr), acct1.getAddressU160().toArray(), func);
@@ -72,15 +75,13 @@ public class Nep5TransferDemo {
 			tx.scripts[0] = new Program();
 			tx.scripts[0].parameter = Program.ProgramFromParams(new byte[][]{tx.sign(acct1, SignatureScheme.SHA256WITHECDSA)});
 			tx.scripts[0].code =  Program.ProgramFromPubKey(acct1.serializePublicKey());
-			if(false){
-				tx.scripts[0].parameter = Program.ProgramFromParams(new byte[][]{tx.sign(acct1, SignatureScheme.SHA256WITHECDSA),tx.sign(acct2, SignatureScheme.SHA256WITHECDSA)});
-				tx.scripts[0].code =  Program.ProgramFromMultiPubKey(2,acct1.serializePublicKey(),acct2.serializePublicKey());
-			}
+
 			System.out.println(tx.toHexString());
 			System.out.println(tx.hash().toString());
 			System.out.println(Helper.toHexString(Program.ProgramFromPubKey(acct1.serializePublicKey())));
 			//send tx to neo node
-			sendRawTransaction(nodeUrl,tx.toHexString());
+			Object obj = sendRawTransaction(nodeUrl,tx.toHexString());
+			System.out.println(obj);
 		}
 
 		if(false) { //multiSignAddr
@@ -99,7 +100,8 @@ public class Nep5TransferDemo {
 			System.out.println(tx.hash().toString());
 			System.out.println(Helper.toHexString(Program.ProgramFromPubKey(acct1.serializePublicKey())));
 			//send tx to neo node
-			sendRawTransaction(nodeUrl,tx.toHexString());
+			Object obj = sendRawTransaction(nodeUrl,tx.toHexString());
+			System.out.println(obj);
 		}
 
 	}
@@ -128,7 +130,7 @@ public class Nep5TransferDemo {
 			throw new RpcException(0,JSON.toJSONString(response));
 		}
 		else {
-			throw new IOException();
+			throw new RpcException(0,JSON.toJSONString(response));
 		}
 	}
 

@@ -70,8 +70,8 @@ public class SignServer {
         params.put("from", from);
         params.put("to", to);
         params.put("amount", amount);
-        params.put("gasLimit", gasLimit);
-        params.put("gasPrice", gasPrice);
+        params.put("gas_limit", gasLimit);
+        params.put("gas_price", gasPrice);
         req.put("params", params);
         req.put("id", 1);
         return send(req);
@@ -85,8 +85,8 @@ public class SignServer {
         params.put("address", contractAddr);
         params.put("method", method);
         params.put("version", version);
-        params.put("gasLimit", gasLimit);
-        params.put("gasPrice", gasPrice);
+        params.put("gas_limit", gasLimit);
+        params.put("gas_price", gasPrice);
         params.put("params", parameters);
         req.put("params", params);
         req.put("id", 1);
@@ -100,8 +100,8 @@ public class SignServer {
         Map params = new HashMap();
         params.put("address", contractAddr);
         params.put("version", version);
-        params.put("gasLimit", gasLimit);
-        params.put("gasPrice", gasPrice);
+        params.put("gas_limit", gasLimit);
+        params.put("gas_price", gasPrice);
         params.put("params", parameters);
         req.put("params", params);
         req.put("id", 1);

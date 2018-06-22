@@ -68,7 +68,12 @@ public class NeoVm {
         return claimRecordTx;
     }
     public Object sendTransaction(String contractAddr, Account acct,Account payerAcct, long gaslimit, long gasprice, AbiFunction func, boolean preExec) throws Exception {
-        byte[] params = BuildParams.serializeAbiFunction(func);
+        byte[] params;
+        if(func != null) {
+            params = BuildParams.serializeAbiFunction(func);
+        } else {
+            params = new byte[]{};
+        }
         if (preExec) {
             Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, null,0, 0);
             if (acct != null) {

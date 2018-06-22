@@ -2,6 +2,7 @@ package demo.neo;
 
 
 import com.alibaba.fastjson.JSON;
+import com.github.neo.core.NeoRpc;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.ErrorCode;
@@ -55,7 +56,7 @@ public class Nep5TransferDemo {
 		System.out.println("acct2 address:" + acct2.getAddressU160().toBase58()+" "+Helper.toHexString(acct2.getAddressU160().toArray()));
 		System.out.println("multi address:" + multiSignAddr.toBase58()+" "+Helper.toHexString(multiSignAddr.toArray()));
 		if(true) {
-			String balance = (String) getBalance(nodeUrl, contractAddr, Helper.toHexString(acct1.getAddressU160().toArray()));
+			String balance = (String)  NeoRpc.getBalance(nodeUrl, contractAddr, Helper.toHexString(acct1.getAddressU160().toArray()));
 			System.out.println("acct1: " + balance);
 			System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(balance))).longValue());
 //			balance = (String) getBalance(nodeUrl, contractAddr, Helper.toHexString(acct2.getAddressU160().toArray()));
@@ -80,7 +81,7 @@ public class Nep5TransferDemo {
 			System.out.println(tx.hash().toString());
 			System.out.println(Helper.toHexString(Program.ProgramFromPubKey(acct1.serializePublicKey())));
 			//send tx to neo node
-			Object obj = sendRawTransaction(nodeUrl,tx.toHexString());
+			Object obj =  NeoRpc.sendRawTransaction(nodeUrl,tx.toHexString());
 			System.out.println(obj);
 		}
 
@@ -100,70 +101,11 @@ public class Nep5TransferDemo {
 			System.out.println(tx.hash().toString());
 			System.out.println(Helper.toHexString(Program.ProgramFromPubKey(acct1.serializePublicKey())));
 			//send tx to neo node
-			Object obj = sendRawTransaction(nodeUrl,tx.toHexString());
+			Object obj = NeoRpc.sendRawTransaction(nodeUrl,tx.toHexString());
 			System.out.println(obj);
 		}
 
 	}
 
-	public static Object sendRawTransaction(String url,String sData) throws Exception {
-		Object result = call(url,"sendrawtransaction", new Object[]{sData});
-		return result;
-	}
-	public static Object getBalance(String url,String contractAddr,String addr) throws Exception {
-		Object result = call(url,"getstorage", new Object[]{contractAddr,addr});
-		return result;
-	}
-	public static Object call(String url,String method, Object... params) throws RpcException, IOException {
-		Map req = makeRequest(method, params);
-		Map response = (Map) send(url,req);
-		if (response == null) {
-			throw new RpcException(0, ErrorCode.ConnectUrlErr(  url + "response is null. maybe is connect error"));
-		}
-		else if (response.get("result")  != null) {
-			return response.get("result");
-		}
-		else if (response.get("Result")  != null) {
-			return response.get("Result");
-		}
-		else if (response.get("error") != null) {
-			throw new RpcException(0,JSON.toJSONString(response));
-		}
-		else {
-			throw new RpcException(0,JSON.toJSONString(response));
-		}
-	}
 
-	private static Map makeRequest(String method, Object[] params) {
-		Map request = new HashMap();
-		request.put("jsonrpc", "2.0");
-		request.put("method", method);
-		request.put("params", params);
-		request.put("id", 1);
-		System.out.println(String.format("POST %s", JSON.toJSONString(request)));
-		return request;
-	}
-
-
-	public static Object send(String url,Object request) throws IOException {
-		try {
-			HttpURLConnection connection = (HttpURLConnection)  new URL(url).openConnection();
-			connection.setRequestMethod("POST");
-			connection.setDoOutput(true);
-			try (OutputStreamWriter w = new OutputStreamWriter(connection.getOutputStream())) {
-				w.write(JSON.toJSONString(request));
-			}
-			try (InputStreamReader r = new InputStreamReader(connection.getInputStream())) {
-				StringBuffer temp = new StringBuffer();
-				int c = 0;
-				while ((c = r.read()) != -1) {
-					temp.append((char) c);
-				}
-				//System.out.println("result:"+temp.toString());
-				return JSON.parseObject(temp.toString(), Map.class);
-			}
-		} catch (IOException e) {
-		}
-		return null;
-	}
 }

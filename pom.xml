@@ -89,6 +89,7 @@
                         <exclude>**/MerkleVerifierTest.java</exclude>
                         <exclude>**/NativeOntIdTxTest.java</exclude>
                         <exclude>**/OngTest.java</exclude>
+                        <exclude>**/NeoVmTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>

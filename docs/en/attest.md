@@ -27,6 +27,7 @@ wm.openWalletFile("RecordTxDemo.json");
 
 The specification of the following interface document is https://github.com/kunxian-xia/ontology-DID/blob/master/docs/en/claim_spec.md。
 
+
 * 2. String sendCommit(String issuerOntid, String password,byte[] salt, String subjectOntid, String claimId, Account payerAcct, long gaslimit, long gasprice)
 
         function description： Save data to the chain
@@ -57,6 +58,7 @@ String[] claims = claim.split("\\.");
 JSONObject payload = JSONObject.parseObject(new String(Base64.getDecoder().decode(claims[1].getBytes())));
 ontSdk.neovm().claimRecord().sendCommit(ontid,password,payload.getString("jti"),0)
 ```
+
 
 * 3. String sendGetStatus(String claimId)
 

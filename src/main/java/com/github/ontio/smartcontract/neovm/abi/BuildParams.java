@@ -95,7 +95,7 @@ public class BuildParams {
         try {
             sb = new ScriptBuilder();
             List list = ((Struct)val).list;
-            sb.add(Type.ArrayType.getValue());
+            sb.add(Type.StructType.getValue());
             sb.add(Helper.BigInt2Bytes(BigInteger.valueOf( list.size())));
             for (int i = 0; i < list.size(); i++) {
                 if(list.get(i) instanceof byte[]){

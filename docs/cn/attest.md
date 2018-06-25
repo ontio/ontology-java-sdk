@@ -6,7 +6,7 @@
 ## 操作步骤
 
 
-* 1.初始化SDK
+* 1. 初始化SDK
 
 
 ```
@@ -24,7 +24,8 @@ wm.setCodeAddress("803ca638069742da4b6871fe3d7f78718eeee78a");
 
 > Note: codeAddress是存证合约地址。
 
-下面接口文档的规范是https://github.com/ontio/ontology-DID/blob/master/docs/cn/claim_spec_cn.md。
+下面接口文档的规范是https://github.com/ontio/ontology-DID/blob/master/docs/cn/claim_spec_cn.md
+
 
 * 2. String sendCommit(String issuerOntid, String password,byte[] salt, String subjectOntid, String claimId, Account payerAcct, long gaslimit, long gasprice)
 

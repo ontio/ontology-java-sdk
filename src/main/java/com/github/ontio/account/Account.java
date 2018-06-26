@@ -332,6 +332,8 @@ public class Account {
         }
         if(data.length == 33){
             this.keyType = KeyType.ECDSA;
+        } else if(data.length == 35) {
+            this.keyType = KeyType.SM2;
         }
         this.privateKey = null;
         this.publicKey = null;

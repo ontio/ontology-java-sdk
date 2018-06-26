@@ -31,7 +31,6 @@ public class ConnectMgrTest {
     String codeAddress;
     String blockHash;
     String password = "111111";
-    byte[] salt = new byte[]{};
     Identity identity;
     private final String ontContract = "0000000000000000000000000000000000000001";
 
@@ -77,7 +76,7 @@ public class ConnectMgrTest {
         Thread.sleep(6000);
 
 
-        AccountInfo info = ontSdk.getWalletMgr().getAccountInfo(identity.ontid.replace(Common.didont,""), password,salt);
+        AccountInfo info = ontSdk.getWalletMgr().getAccountInfo(identity.ontid.replace(Common.didont,""), password,identity.controls.get(0).getSalt());
         List list = new ArrayList<Object>();
         list.add("Commit".getBytes());
         List tmp = new ArrayList<Object>();
@@ -86,7 +85,7 @@ public class ConnectMgrTest {
         list.add(tmp);
         byte[] params = BuildParams.createCodeParamsScript(list);
         Transaction tx2 = ontSdk.vm().makeInvokeCodeTransaction(codeAddress,null,params,identity.ontid,ontSdk.DEFAULT_GAS_LIMIT,0);
-        ontSdk.signTx(tx2, identity.ontid, password,salt);
+        ontSdk.signTx(tx2, identity.ontid, password,identity.controls.get(0).getSalt());
         boolean b2 = ontSdk.getConnect().sendRawTransaction(tx2.toHexString());
         Assert.assertEquals(true,b);
 
@@ -161,9 +160,4 @@ public class ConnectMgrTest {
         Assert.assertNotNull(obj);
     }
 
-    @Test
-    public void getContract() throws ConnectorException, IOException, SDKException {
-        Object obj = ontSdk.getConnect().getContract(ontSdk.nativevm().ont().getContractAddress());
-        Assert.assertNotNull(obj);
-    }
 }

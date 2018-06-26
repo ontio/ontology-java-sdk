@@ -27,7 +27,6 @@ public class OntAssetTxTest {
     Account info2 = null;
     Account info3 = null;
     String password = "111111";
-    byte[] salt = new byte[]{};
     String wallet = "OntAssetTxTest.json";
 
     Account payer;
@@ -55,8 +54,8 @@ public class OntAssetTxTest {
     }
     @Test
     public void sendTransfer() throws Exception {
-        com.github.ontio.account.Account sendAcct = ontSdk.getWalletMgr().getAccount(info1.address,password,salt);
-        com.github.ontio.account.Account payerAcct = ontSdk.getWalletMgr().getAccount(payer.address,password,salt);
+        com.github.ontio.account.Account sendAcct = ontSdk.getWalletMgr().getAccount(info1.address,password,info1.getSalt());
+        com.github.ontio.account.Account payerAcct = ontSdk.getWalletMgr().getAccount(payer.address,password,payer.getSalt());
         String res= ontSdk.nativevm().ont().sendTransfer(sendAcct,info2.address,100L,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
 
 
@@ -72,9 +71,9 @@ public class OntAssetTxTest {
 
     @Test
     public void sendApprove() throws Exception {
-        com.github.ontio.account.Account sendAcct1 = ontSdk.getWalletMgr().getAccount(info1.address,password,salt);
-        com.github.ontio.account.Account sendAcct2 = ontSdk.getWalletMgr().getAccount(info2.address,password,salt);
-        com.github.ontio.account.Account payerAcct = ontSdk.getWalletMgr().getAccount(payer.address,password,salt);
+        com.github.ontio.account.Account sendAcct1 = ontSdk.getWalletMgr().getAccount(info1.address,password,info1.getSalt());
+        com.github.ontio.account.Account sendAcct2 = ontSdk.getWalletMgr().getAccount(info2.address,password,info2.getSalt());
+        com.github.ontio.account.Account payerAcct = ontSdk.getWalletMgr().getAccount(payer.address,password,payer.getSalt());
         ontSdk.nativevm().ont().sendApprove(sendAcct1,sendAcct2.getAddressU160().toBase58(),10L,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
         long info1balance = ontSdk.nativevm().ont().queryBalanceOf(sendAcct1.getAddressU160().toBase58());
         long info2balance = ontSdk.nativevm().ont().queryBalanceOf(sendAcct2.getAddressU160().toBase58());
@@ -95,8 +94,9 @@ public class OntAssetTxTest {
 
     @Test
     public void sendOngTransferFrom() throws Exception {
-
-        String res = ontSdk.nativevm().ong().withdrawOng(ontSdk.getWalletMgr().getAccount(info1.address,password,salt),info2.address,10L,ontSdk.getWalletMgr().getAccount(payer.address,password,salt),ontSdk.DEFAULT_GAS_LIMIT,0);
+        String unboundOngStr = ontSdk.nativevm().ong().unboundOng(info1.address);
+        long unboundOng = Long.parseLong(unboundOngStr);
+        String res = ontSdk.nativevm().ong().withdrawOng(ontSdk.getWalletMgr().getAccount(info1.address,password,info1.getSalt()),info2.address,unboundOng/100,ontSdk.getWalletMgr().getAccount(payer.address,password,payer.getSalt()),ontSdk.DEFAULT_GAS_LIMIT,0);
         Assert.assertNotNull(res);
     }
 

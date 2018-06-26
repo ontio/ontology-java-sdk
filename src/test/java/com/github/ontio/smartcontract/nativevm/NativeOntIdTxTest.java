@@ -5,6 +5,7 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.OntSdkTest;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Common;
+import com.github.ontio.common.Helper;
 import com.github.ontio.core.ontid.Attribute;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.SignatureScheme;
@@ -24,7 +25,6 @@ import java.util.Map;
 public class NativeOntIdTxTest {
     OntSdk ontSdk;
     String password = "111111";
-    byte[] salt = new byte[]{};
     Account payer;
     com.github.ontio.account.Account payerAcct;
     Identity identity;
@@ -35,9 +35,9 @@ public class NativeOntIdTxTest {
         ontSdk.setRestful(OntSdkTest.URL);
         ontSdk.setDefaultConnect(ontSdk.getRestful());
         ontSdk.openWalletFile(walletFile);
-        ontSdk.setSignatureScheme(SignatureScheme.SM3WITHSM2);
+//        ontSdk.setSignatureScheme(SignatureScheme.SHA256WITHECDSA);
         payer = ontSdk.getWalletMgr().createAccount(password);
-        payerAcct = ontSdk.getWalletMgr().getAccount(payer.address,password,salt);
+        payerAcct = ontSdk.getWalletMgr().getAccount(payer.address,password,payer.getSalt());
         identity = ontSdk.getWalletMgr().createIdentity(password);
         ontSdk.nativevm().ontId().sendRegister(identity,password,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
         Thread.sleep(6000);
@@ -56,8 +56,8 @@ public class NativeOntIdTxTest {
 
     @Test
     public void sendRegister() throws Exception {
-        Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,salt,payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
-        ontSdk.signTx(tx, identity.ontid,password,salt);
+        Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,identity.controls.get(0).getSalt(),payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
+        ontSdk.signTx(tx, identity.ontid,password,identity.controls.get(0).getSalt());
         ontSdk.addSign(tx,payerAcct);
         ontSdk.getConnect().sendRawTransaction(tx);
 
@@ -93,7 +93,7 @@ public class NativeOntIdTxTest {
         clmRevMap.put("typ","AttestContract");
         clmRevMap.put("addr",identity.ontid.replace(Common.didont,""));
 
-        String claim = ontSdk.nativevm().ontId().createOntIdClaim(identity.ontid,password,salt, "claim:context", map, map,clmRevMap,System.currentTimeMillis()/1000 +100000);
+        String claim = ontSdk.nativevm().ontId().createOntIdClaim(identity.ontid,password,identity.controls.get(0).getSalt(), "claim:context", map, map,clmRevMap,System.currentTimeMillis()/1000 +100000);
         boolean b2 = ontSdk.nativevm().ontId().verifyOntIdClaim(claim);
         Assert.assertTrue(b2);
     }
@@ -101,12 +101,12 @@ public class NativeOntIdTxTest {
     public void sendAddPubkey() throws Exception {
         IdentityInfo info = ontSdk.getWalletMgr().createIdentityInfo(password);
         IdentityInfo info2 = ontSdk.getWalletMgr().createIdentityInfo(password);
-        Transaction tx = ontSdk.nativevm().ontId().makeAddPubKey(identity.ontid,password,salt,info.pubkey,payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
-        ontSdk.signTx(tx, identity.ontid,password,salt);
+        Transaction tx = ontSdk.nativevm().ontId().makeAddPubKey(identity.ontid,password,identity.controls.get(0).getSalt(),info.pubkey,payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
+        ontSdk.signTx(tx, identity.ontid,password,identity.controls.get(0).getSalt());
         ontSdk.addSign(tx,payerAcct);
         ontSdk.getConnect().sendRawTransaction(tx);
 
-        ontSdk.nativevm().ontId().sendAddPubKey(identity.ontid,password,salt,info2.pubkey,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
+        ontSdk.nativevm().ontId().sendAddPubKey(identity.ontid,password,identity.controls.get(0).getSalt(),info2.pubkey,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
 
         Thread.sleep(6000);
         String ddo = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);
@@ -116,12 +116,12 @@ public class NativeOntIdTxTest {
         String publikeys = ontSdk.nativevm().ontId().sendGetPublicKeys(identity.ontid);
         Assert.assertNotNull(publikeys);
 
-        Transaction tx2 = ontSdk.nativevm().ontId().makeRemovePubKey(identity.ontid,password,salt,info.pubkey,payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
-        ontSdk.signTx(tx2,identity.ontid,password,salt);
+        Transaction tx2 = ontSdk.nativevm().ontId().makeRemovePubKey(identity.ontid,password,identity.controls.get(0).getSalt(),info.pubkey,payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
+        ontSdk.signTx(tx2,identity.ontid,password,identity.controls.get(0).getSalt());
         ontSdk.addSign(tx2,payerAcct);
         ontSdk.getConnect().sendRawTransaction(tx2);
 
-        ontSdk.nativevm().ontId().sendRemovePubKey(identity.ontid,password,salt,info2.pubkey,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
+        ontSdk.nativevm().ontId().sendRemovePubKey(identity.ontid,password,identity.controls.get(0).getSalt(),info2.pubkey,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
         Thread.sleep(6000);
         String ddo3 = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);
         Assert.assertFalse(ddo3.contains(info.pubkey));
@@ -132,14 +132,14 @@ public class NativeOntIdTxTest {
     public void sendAddAttributes() throws Exception {
         Attribute[] attributes = new Attribute[1];
         attributes[0] = new Attribute("key1".getBytes(),"value1".getBytes(),"String".getBytes());
-        Transaction tx = ontSdk.nativevm().ontId().makeAddAttributes(identity.ontid,password,salt,attributes,payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
-        ontSdk.signTx(tx, identity.ontid,password,salt);
+        Transaction tx = ontSdk.nativevm().ontId().makeAddAttributes(identity.ontid,password,identity.controls.get(0).getSalt(),attributes,payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
+        ontSdk.signTx(tx, identity.ontid,password,identity.controls.get(0).getSalt());
         ontSdk.addSign(tx,payerAcct);
         ontSdk.getConnect().sendRawTransaction(tx);
 
         Attribute[] attributes2 = new Attribute[1];
         attributes2[0] = new Attribute("key99".getBytes(),"value99".getBytes(),"String".getBytes());
-        ontSdk.nativevm().ontId().sendAddAttributes(identity.ontid,password,salt,attributes2,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
+        ontSdk.nativevm().ontId().sendAddAttributes(identity.ontid,password,identity.controls.get(0).getSalt(),attributes2,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
 
         Thread.sleep(6000);
         String ddo = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);
@@ -149,12 +149,12 @@ public class NativeOntIdTxTest {
         String attribute = ontSdk.nativevm().ontId().sendGetAttributes(identity.ontid);
         Assert.assertTrue(attribute.contains("key1"));
 
-        Transaction tx2= ontSdk.nativevm().ontId().makeRemoveAttribute(identity.ontid,password,salt,"key1",payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
-        ontSdk.signTx(tx2,identity.ontid,password,salt);
+        Transaction tx2= ontSdk.nativevm().ontId().makeRemoveAttribute(identity.ontid,password,identity.controls.get(0).getSalt(),"key1",payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
+        ontSdk.signTx(tx2,identity.ontid,password,identity.controls.get(0).getSalt());
         ontSdk.addSign(tx2,payerAcct);
         ontSdk.getConnect().sendRawTransaction(tx2);
 
-        ontSdk.nativevm().ontId().sendRemoveAttribute(identity.ontid,password,salt,"key99",payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
+        ontSdk.nativevm().ontId().sendRemoveAttribute(identity.ontid,password,identity.controls.get(0).getSalt(),"key99",payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
         Thread.sleep(6000);
 
         String ddo2 = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);
@@ -173,31 +173,31 @@ public class NativeOntIdTxTest {
 
         Thread.sleep(6000);
 
-        AccountInfo info = ontSdk.getWalletMgr().createAccountInfo(password);
+        Account account = ontSdk.getWalletMgr().createAccount(password);
 
-        Transaction tx = ontSdk.nativevm().ontId().makeAddRecovery(identity.ontid,password,salt,info.addressBase58,payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
-        ontSdk.signTx(tx, identity.ontid,password,salt);
+        Transaction tx = ontSdk.nativevm().ontId().makeAddRecovery(identity.ontid,password,identity.controls.get(0).getSalt(),account.address,payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
+        ontSdk.signTx(tx, identity.ontid,password,identity.controls.get(0).getSalt());
         ontSdk.addSign(tx,payerAcct);
         ontSdk.getConnect().sendRawTransaction(tx);
 
-        ontSdk.nativevm().ontId().sendAddRecovery(identity2.ontid,password,salt,info.addressBase58,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
+        ontSdk.nativevm().ontId().sendAddRecovery(identity2.ontid,password,identity2.controls.get(0).getSalt(),account.address,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
 
         Thread.sleep(6000);
         String ddo = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);
-        Assert.assertTrue(ddo.contains(info.addressBase58));
+        Assert.assertTrue(ddo.contains(account.address));
         String ddo2 = ontSdk.nativevm().ontId().sendGetDDO(identity2.ontid);
-        Assert.assertTrue(ddo2.contains(info.addressBase58));
+        Assert.assertTrue(ddo2.contains(account.address));
 
         AccountInfo info2 = ontSdk.getWalletMgr().createAccountInfo(password);
 
-        Transaction tx2 = ontSdk.nativevm().ontId().makeChangeRecovery(identity.ontid,info2.addressBase58,info.addressBase58,password,payerAcct.getAddressU160().toBase58(),ontSdk.DEFAULT_GAS_LIMIT,0);
-        ontSdk.signTx(tx2,info.addressBase58,password,salt);
+        Transaction tx2 = ontSdk.nativevm().ontId().makeChangeRecovery(identity.ontid,info2.addressBase58,account.address,password,payerAcct.getAddressU160().toBase58(),ontSdk.DEFAULT_GAS_LIMIT,0);
+        ontSdk.signTx(tx2,account.address,password,account.getSalt());
 
-        ontSdk.nativevm().ontId().sendChangeRecovery(identity2.ontid,info2.addressBase58,info.addressBase58,password,salt,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
+        ontSdk.nativevm().ontId().sendChangeRecovery(identity2.ontid,info2.addressBase58,account.address,password,account.getSalt(),payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
         Thread.sleep(6000);
 
         String ddo3 = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);
-        Assert.assertTrue(ddo3.contains(info.addressBase58));
+        Assert.assertTrue(ddo3.contains(account.address));
         String ddo4 = ontSdk.nativevm().ontId().sendGetDDO(identity2.ontid);
         Assert.assertTrue(ddo4.contains(info2.addressBase58));
     }

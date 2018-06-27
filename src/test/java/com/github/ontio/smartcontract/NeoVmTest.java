@@ -49,7 +49,7 @@ public class NeoVmTest {
 
         if(true){
             Transaction tx = ontSdk.vm().makeDeployCodeTransaction(codeHex, true, "name",
-                    "v1.0", "author", "email", "desp", account.getAddressU160().toBase58(),10000000,0);
+                    "v1.0", "author", "email", "desp", account.getAddressU160().toBase58(),30000000,0);
             ontSdk.signTx(tx, new Account[][]{{account}});
             Object result = ontSdk.getConnect().sendRawTransaction(tx.toHexString());
             Thread.sleep(6000);

@@ -90,6 +90,7 @@
                         <exclude>**/NativeOntIdTxTest.java</exclude>
                         <exclude>**/OngTest.java</exclude>
                         <exclude>**/NeoVmTest.java</exclude>
+                        <exclude>**/AuthTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>

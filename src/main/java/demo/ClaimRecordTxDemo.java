@@ -79,7 +79,6 @@ public class ClaimRecordTxDemo {
 
 //            ontSdk.neovm().claimRecord().setContractAddress("9a4c79ee4379a0b5d10db03553ca7e61e17a8977");
             //
-            ontSdk.neovm().claimRecord().setContractAddress("88b398df1653ce5721c37841a881a554e24d13d5");
 //            String getstatusRes9 = ontSdk.neovm().claimRecord().sendGetStatus(payload.getString("jti"));
 //            System.out.println("getstatusResBytes:" + getstatusRes9);
 

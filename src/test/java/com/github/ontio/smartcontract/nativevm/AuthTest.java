@@ -53,6 +53,9 @@ public class AuthTest {
         identity  = sdk.getWalletMgr().createIdentityFromPriKey(password,OntSdkTest.PRIVATEKEY2);
         identity2 = sdk.getWalletMgr().createIdentityFromPriKey(password,OntSdkTest.PRIVATEKEY3);
 
+        codeHex = "5ac56b6c766b00527ac46c766b51527ac4616c766b00c304696e6974876c766b52527ac46c766b52c3641100616580016c766b53527ac46222016c766b00c303666f6f876c766b54527ac46c766b54c3644400616c766b00c36c766b51c3617c650202009c6c766b55527ac46c766b55c3641500076e6f20617574686c766b53527ac462d6006165db006c766b53527ac462c8006c766b00c304666f6f32876c766b56527ac46c766b56c3644400616c766b00c36c766b51c3617c65a701009c6c766b57527ac46c766b57c3641500076e6f20617574686c766b53527ac4627b00616599006c766b53527ac4626d006c766b00c304666f6f33876c766b58527ac46c766b58c3644400616c766b00c36c766b51c3617c654c01009c6c766b59527ac46c766b59c3641500076e6f20617574686c766b53527ac4622000616557006c766b53527ac4621200046f7665726c766b53527ac46203006c766b53c3616c756651c56b6101416c766b00527ac46203006c766b00c3616c756651c56b6101426c766b00527ac46203006c766b00c3616c756651c56b6101436c766b00527ac46203006c766b00c3616c756653c56b611400000000000000000000000000000000000000066c766b00527ac4006c766b00c311696e6974436f6e747261637441646d696e612a6469643a6f6e743a41617a457666515063513247454646504c46315a4c7751374b356a446e383168766561537951795572755172755279527954727552727568164f6e746f6c6f67792e4e61746976652e496e766f6b656c766b51527ac46c766b51c300517f519c6c766b52527ac46203006c766b52c3616c756657c56b6c766b00527ac46c766b51527ac461556154c66c766b527a527ac46c766b55c36c766b52527ac46c766b52c361682d53797374656d2e457865637574696f6e456e67696e652e476574457865637574696e6753637269707448617368007cc46c766b52c36c766b00c3527cc46c766b52c36c766b51c300c3517cc46c766b52c36c766b51c351c3537cc41400000000000000000000000000000000000000066c766b53527ac4006c766b53c30b766572696679546f6b656e6c766b52c361537951795572755172755279527954727552727568164f6e746f6c6f67792e4e61746976652e496e766f6b656c766b54527ac46c766b54c300517f519c6c766b56527ac46203006c766b56c3616c7566";
+        codeAddress = Address.AddressFromVmCode(codeHex).toHexString();
+        abi = "{\"hash\":\"0xbc9795db0abe9d2d9ea565286a237dbf6b407165\",\"entrypoint\":\"Main\",\"functions\":[{\"name\":\"Main\",\"parameters\":[{\"name\":\"operation\",\"type\":\"String\"},{\"name\":\"args\",\"type\":\"Array\"}],\"returntype\":\"Any\"},{\"name\":\"foo\",\"parameters\":[],\"returntype\":\"String\"},{\"name\":\"foo2\",\"parameters\":[],\"returntype\":\"String\"},{\"name\":\"foo3\",\"parameters\":[],\"returntype\":\"String\"},{\"name\":\"init\",\"parameters\":[],\"returntype\":\"Boolean\"}],\"events\":[]}";
     }
 
     @After
@@ -116,6 +119,27 @@ public class AuthTest {
 
 
     @Test
+    public void assignFuncsToRole2() throws Exception {
+        String txhash = sdk.nativevm().auth().assignFuncsToRole(adminIdentity.ontid, password, adminIdentity.controls.get(0).getSalt(),
+                1, Helper.reverse(codeAddress), "role1", new String[]{"foo1"}, account, sdk.DEFAULT_GAS_LIMIT, 0);
+
+        String txhash2 = sdk.nativevm().auth().assignFuncsToRole(adminIdentity.ontid, password, adminIdentity.controls.get(0).getSalt(), 1,
+                Helper.reverse(codeAddress), "role2", new String[]{"foo2","foo3"}, account, sdk.DEFAULT_GAS_LIMIT, 0);
+        Thread.sleep(6000);
+        Object obj = sdk.getConnect().getSmartCodeEvent(txhash);
+        assertTrue(((JSONObject) obj).getString("State").equals("1"));
+        obj = sdk.getConnect().getSmartCodeEvent(txhash2);
+        assertTrue(((JSONObject) obj).getString("State").equals("1"));
+        txhash = sdk.nativevm().auth().assignOntIdsToRole(adminIdentity.ontid, password, adminIdentity.controls.get(0).getSalt(), 1, Helper.reverse(codeAddress), "role1", new String[]{identity2.ontid}, account, sdk.DEFAULT_GAS_LIMIT, 0);
+        Thread.sleep(6000);
+        obj = sdk.getConnect().getSmartCodeEvent(txhash);
+        assertTrue(((JSONObject) obj).getString("State").equals("1"));
+        String result = sdk.nativevm().auth().verifyToken(identity2.ontid, password, identity2.controls.get(0).getSalt(), 1, Helper.reverse(codeAddress), "foo1");
+        assertTrue(result.equals("01"));
+    }
+
+
+    @Test
     public void assignFuncsToRole() throws Exception {
         String txhash = sdk.nativevm().auth().assignFuncsToRole(adminIdentity.ontid, password, adminIdentity.controls.get(0).getSalt(), 1, Helper.reverse(codeAddress), "role", new String[]{"foo"}, account, sdk.DEFAULT_GAS_LIMIT, 0);
         Thread.sleep(6000);
@@ -133,6 +157,7 @@ public class AuthTest {
     public void delegate() throws Exception {
         sdk.nativevm().auth().delegate(identity2.ontid,password,identity2.controls.get(0).getSalt(),1,Helper.reverse(codeAddress),identity.ontid,"role",60*5,1,account,sdk.DEFAULT_GAS_LIMIT,0);
         Thread.sleep(6000);
+        sdk.nativevm().auth().withdraw(identity2.ontid,password,identity2.controls.get(0).getSalt(),1,Helper.reverse(codeAddress),identity.ontid,"role1",account,sdk.DEFAULT_GAS_LIMIT,0);
         String result = sdk.nativevm().auth().verifyToken(identity2.ontid, password, identity2.controls.get(0).getSalt(), 1, Helper.reverse(codeAddress), "foo");
         String result2 = sdk.nativevm().auth().verifyToken(identity.ontid, password, identity.controls.get(0).getSalt(), 1, Helper.reverse(codeAddress), "foo");
         assertTrue(result2.equals("01"));

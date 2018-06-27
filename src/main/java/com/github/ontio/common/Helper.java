@@ -55,7 +55,7 @@ public class Helper {
         }
         byte[] bs = bi.toByteArray();
         byte b = bs[0];
-        if(bi.intValue() < 0) {
+        if(bi.longValue() < 0) {
             for(int i= 0;i < bs.length;i++){
                 bs[i] = (byte)~b;
             }

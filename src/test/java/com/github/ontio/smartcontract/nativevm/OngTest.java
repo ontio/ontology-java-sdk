@@ -63,7 +63,7 @@ public class OngTest {
         Assert.assertTrue(acctbalance-acctbalance2 == 10);
         Assert.assertTrue(reciebalance2 - reciebalance == 10);
         long allowance3 = ontSdk.nativevm().ong().queryAllowance(account.getAddressU160().toBase58(),receiveAcc.getAddressU160().toBase58());
-        Assert.assertTrue(allowance3 == 10);
+        Assert.assertTrue(allowance3 == allowance);
     }
 
     @Test

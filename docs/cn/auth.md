@@ -31,10 +31,10 @@ Ontology智能合约不支持部署的时候即执行初始化，所以合约管
 
 ```
 1. 将智能合约部署到链上。
-2. 调用智能合约中的init方法，在合约代码中通过调用initContractAdmin方法设置管理员（需先将管理员ontid注册到链上）。
+2. 调用智能合约中的init方法，在合约代码中通过调用initContractAdmin方法，将合约中预先定义的管理员ONT ID，设置为该合约的管理员（注意:需先将管理员ONT ID注册到链上）。
 3. 合约管理员设计需要用到的角色，并将角色和智能合约中的函数进行绑定，该步骤可以调用Java-SDK中的assignFuncsToRole接口进行设置。
-4. 合约管理员将角色分配给ontid，拥有角色的ontid将有权限调用该角色对应的函数，该步骤可以调用Java-SDK中的assignOntIDsToRole接口进行设置。
-5. 拥有某个角色的ontid在调用该角色对应的函数之前，可以通过Java-SDK中的verifyToken接口验证该ontid是否有调用相应函数的权利。
+4. 合约管理员将角色分配给ONT ID，拥有该角色的ONT ID将有权限调用该角色对应的函数，该步骤可以调用Java-SDK中的assignOntIDsToRole接口进行设置。
+5. 拥有某个角色的ONT ID在调用该角色对应的函数之前，可以通过Java-SDK中的verifyToken接口验证该ontid是否有调用相应函数的权利。
 ```
 
 结合下面的示例讲解使用流程：

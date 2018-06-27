@@ -10,15 +10,205 @@
 具体请参考https://github.com/ontio/ontology-smartcontract/blob/master/smartcontract/native/auth/auth.md
 
 
-* 权限管理合约管理
+* 权限合约管理
+
+* 用法示例
 
 * 接口列表
 
-### 权限管理合约管理
+
+### 权限合约管理
 
 Auth合约负责管理应用合约的函数调用权限，功能有合约管理员可以转让合约管理权限，合约管理员为角色分配函数，合约管理员绑定角色到实体身份，有合约函数调用权的实体将合约调用权代理给其他人，合约管理员收回合约调用权，实体验证合约调用token的有效性。
 
-接口列表
+
+### 用法示例
+
+由于Neo合约不支持部署的时候即执行初始化，所以合约管理员需要硬编码，即将合约管理员ontId在合约中定义成一个常量，具体请看下面的合约样例。在进行Neo合约开发时，
+通过verifyToken函数进行权限验证，同时为了方便开发者验证某个ontid是否有某个角色，Java-SDK也提供了verifyToken接口，可以实时查询角色的分配情况。
+
+使用流程：
+
+```
+1. 将Neo合约部署到链上。
+2. 调用neo合约中的init方法，Neo合约中通过调用initContractAdmin方法设置管理员，请先将管理员ontid注册到链上在执行该方法。
+3. 合约管理员设计需要用到的角色，并将角色和Neo合约中的函数进行绑定，该步骤可以调用Java-SDK中的assignFuncsToRole接口进行设置。
+4. 合约管理员将角色分配给ontid，拥有角色的ontid将有权限调用该角色对应的函数，该步骤可以调用Java-SDK中的assignOntIDsToRole接口进行设置。
+5. 拥有某个角色的ontid在调用该角色对应的函数之前，可以通过Java-SDK中的verifyToken接口验证该ontid是否有调用相应函数的权利。
+```
+
+结合下面的示例讲解使用流程：
+
+1. 将Neo合约部署到链上。
+2. 调用该合约中init方法。
+
+```
+AbiInfo abiInfo = JSON.parseObject(abi,AbiInfo.class);
+String name = "init";
+AbiFunction function = abiInfo.getFunction(name);
+function.setParamsValue();
+String txhash = (String) sdk.neovm().sendTransaction(Helper.reverse(codeAddress),account,account,sdk.DEFAULT_GAS_LIMIT,0,function,false);
+```
+
+3. 合约管理员设计角色role1和role2，并将角色role1和函数foo1绑定，将角色role2和函数foo2、foo3绑定。
+
+```
+String txhash = sdk.nativevm().auth().assignFuncsToRole(adminIdentity.ontid, password, adminIdentity.controls.get(0).getSalt(),
+1, Helper.reverse(codeAddress), "role1", new String[]{"foo1"}, account, sdk.DEFAULT_GAS_LIMIT, 0);
+
+String txhash = sdk.nativevm().auth().assignFuncsToRole(adminIdentity.ontid, password, adminIdentity.controls.get(0).getSalt(), 1,
+Helper.reverse(codeAddress), "role2", new String[]{"foo2","foo3"}, account, sdk.DEFAULT_GAS_LIMIT, 0);
+
+```
+
+4. 合约管理员将角色"role1"分配给ontId1,将角色"role2"分配给ontId2，则ontId1拥有调用函数foo1的权限，ontId2拥有调用函数foo2和函数foo3的权限。
+
+```
+String txhash = sdk.nativevm().auth().assignOntIdsToRole(adminIdentity.ontid, password, adminIdentity.controls.get(0).getSalt(), 1,
+Helper.reverse(codeAddress), "role1", new String[]{identity1.ontid}, account, sdk.DEFAULT_GAS_LIMIT, 0);
+
+String txhash = sdk.nativevm().auth().assignOntIdsToRole(adminIdentity.ontid, password, adminIdentity.controls.get(0).getSalt(), 1,
+Helper.reverse(codeAddress), "role2", new String[]{identity2.ontid}, account, sdk.DEFAULT_GAS_LIMIT, 0);
+
+
+```
+
+5. 由于ontId1的角色是合约管理员分配的，其权限level默认是2，即ontId1可以将权限代理给其他ontidX，代理的Java-SDK接口是delegate,具体接口信息请参考下面的接口信息。
+在代理权限的时候需要指定被代理人权限的级别以及代理时间，如果代理人的level是2，则被代理人的level只能是1。
+
+```
+sdk.nativevm().auth().delegate(identity1.ontid,password,identity1.controls.get(0).getSalt(),1,Helper.reverse(codeAddress),
+identityX.ontid,"role1",60*5,1,account,sdk.DEFAULT_GAS_LIMIT,0);
+```
+
+6. 验证某个ontId是否有调用某个函数的权限，可以通过verifyToken接口查询。
+
+```
+String result = sdk.nativevm().auth().verifyToken(identityX.ontid, password, identityX.controls.get(0).getSalt(), 1, Helper.reverse(codeAddress), "foo1");
+
+返回值: "01"表示有权限，"00"表示没有权限。
+```
+
+7. 如果被代理人的权限时间没有结束，代理人可以提前收回代理给别人的权限。
+
+```
+sdk.nativevm().auth().withdraw(identity1.ontid,password,identity1.controls.get(0).getSalt(),1,Helper.reverse(codeAddress),identityX.ontid,"role1",account,sdk.DEFAULT_GAS_LIMIT,0);
+```
+
+8. 合约管理员可以将自己的管理权限转移给其他的ontId
+
+```
+String txhash = sdk.nativevm().auth().sendTransfer(adminIdentity.ontid,password,adminIdentity.controls.get(0).getSalt(),1,Helper.reverse(codeAddress),adminIdentity.ontid,
+account,sdk.DEFAULT_GAS_LIMIT,0);
+```
+
+
+
+Neo 合约示例：
+```
+using Neo.SmartContract.Framework;
+using Neo.SmartContract.Framework.Services.Neo;
+using Neo.SmartContract.Framework.Services.System;
+using System;
+using System.ComponentModel;
+using System.Numerics;
+
+namespace Example
+{
+    public class AppContract : SmartContract
+    {
+        public struct initContractAdminParam
+        {
+            public byte[] adminOntID;
+        }
+
+        public struct verifyTokenParam
+        {
+            public byte[] contractAddr;
+            public byte[] caller;
+            public string fn;
+            public int keyNo;
+        }
+
+        //the admin ONT ID of this contract must be hardcoded.
+        public static readonly byte[] adminOntID = "did:ont:AazEvfQPcQ2GEFFPLF1ZLwQ7K5jDn81hve".AsByteArray();
+
+        public static Object Main(string operation,object[] args)
+        {
+            if (operation == "init") return init();
+
+            if (operation == "foo")
+            {
+                //we need to check if the caller is authorized to invoke foo
+                if (!verifyToken(operation, args)) return "no auth";
+
+                return foo();
+            }
+            if (operation == "foo2")
+            {
+                //we need to check if the caller is authorized to invoke foo
+                if (!verifyToken(operation, args)) return "no auth";
+
+                return foo2();
+            }
+            if (operation == "foo3")
+            {
+                //we need to check if the caller is authorized to invoke foo
+                if (!verifyToken(operation, args)) return "no auth";
+
+                return foo3();
+            }
+
+            return "over";
+        }
+
+        public static string foo()
+        {
+            return "A";
+        }
+        public static string foo2()
+        {
+            return "B";
+        }
+        public static string foo3()
+        {
+            return "C";
+        }
+
+        //this method is a must-defined method if you want to use native auth contract.
+        public static bool init()
+        {
+            byte[] authContractAddr = {
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x06 };
+            byte[] ret = Native.Invoke(0, authContractAddr, "initContractAdmin", adminOntID);
+            return ret[0] == 1;
+        }
+
+        internal static bool verifyToken(string operation, object[] args)
+        {
+            verifyTokenParam param = new verifyTokenParam{};
+            param.contractAddr = ExecutionEngine.ExecutingScriptHash;
+            param.fn = operation;
+            param.caller = (byte[])args[0];
+            param.keyNo = (int)args[1];
+
+            byte[] authContractAddr = {
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x06 };
+            byte[] ret = Native.Invoke(0, authContractAddr, "verifyToken", param);
+            return ret[0] == 1;
+        }
+    }
+}
+```
+
+
+### 接口列表
+
+Java-SDK已经封装好权限合约的调用接口，可以通过Java-SDK进行权限管理。
 
 1. String sendTransfer(String adminOntId, String password, byte[] salt, String contractAddr, String newAdminOntID, long keyNo, Account payerAcct, long gaslimit, long gasprice)
 
@@ -131,3 +321,4 @@ Auth合约负责管理应用合约的函数调用权限，功能有合约管理�
       ||funcName|函数名|
       ||keyNo|ontid的公钥编号|
       |返回值说明|交易hash||
+

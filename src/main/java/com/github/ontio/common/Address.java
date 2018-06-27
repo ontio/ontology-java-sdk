@@ -23,6 +23,7 @@ import com.github.ontio.core.scripts.ScriptBuilder;
 import com.github.ontio.core.scripts.ScriptOp;
 import com.github.ontio.crypto.Base58;
 import com.github.ontio.crypto.Digest;
+import com.github.ontio.crypto.ECC;
 import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.sdk.exception.SDKException;
 
@@ -30,6 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
+import org.bouncycastle.math.ec.ECPoint;
 
 /**
  * Custom type which inherits base class defines 20-bit data,
@@ -90,19 +92,20 @@ public class Address extends UIntBase implements Comparable<Address> {
     }
 
     public static Address addressFromMultiPubKeys(int m, byte[]... publicKeys) throws Exception {
-        if (m <= 0 || m > publicKeys.length || publicKeys.length > 24) {
+        if (m <= 0 || m > publicKeys.length || publicKeys.length > 16) {
             throw new SDKException(ErrorCode.ParamError);
         }
         try (ScriptBuilder sb = new ScriptBuilder()) {
             sb.push(BigInteger.valueOf(m));
             publicKeys = Arrays.stream(publicKeys).sorted((o1, o2) -> {
-                return Helper.toHexString(o1).compareTo(Helper.toHexString(o2));
+                ECPoint pk1 = ECC.secp256r1.getCurve().decodePoint(o1);
+                ECPoint pk2 = ECC.secp256r1.getCurve().decodePoint(o2);
+                return ECC.compare(pk1,pk2);
             }).toArray(byte[][]::new);
 
             for (byte[] publicKey : publicKeys) {
                 sb.push(publicKey);
             }
-            System.out.println(Helper.toHexString(sb.toArray()));
             sb.push(BigInteger.valueOf(publicKeys.length));
             sb.add(ScriptOp.OP_CHECKMULTISIG);
             return new Address(Digest.hash160(sb.toArray()));

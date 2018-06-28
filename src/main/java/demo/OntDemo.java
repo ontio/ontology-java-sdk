@@ -61,23 +61,25 @@ public class OntDemo {
             System.out.println("acct2:" + acct2.getAddressU160().toBase58());
             System.out.println(acct0.getAddressU160().toBase58());
 
-            com.github.ontio.account.Account acct00 = new com.github.ontio.account.Account(Helper.hexToBytes("dcb22fdeb1cd57c4ad82c8dc21dd6792d4b1e90b5aa06d6698c03eacddabeb1f"),SignatureScheme.SM3WITHSM2);
-            com.github.ontio.account.Account acct11 = new com.github.ontio.account.Account(Helper.hexToBytes("0638dff2f03964883471e1dac3df9e7738f21fd2452aef4846c11a53be6feb0e"),ontSdk.defaultSignScheme);
-            com.github.ontio.account.Account acct22 = new com.github.ontio.account.Account(Helper.hexToBytes("46027c9786e24ecc1b4d7b406dfe90ec30b2c2fa6ad2f7963df251200e7f003d"),ontSdk.defaultSignScheme);
-            com.github.ontio.account.Account acct33 = new com.github.ontio.account.Account(Helper.hexToBytes("523c5fcf74823831756f0bcb3634234f10b3beb1c05595058534577752ad2d9f"),ontSdk.defaultSignScheme);
+
+
+            if(false){//sendTransferFromMultiSignAddr
+                com.github.ontio.account.Account acct00 = new com.github.ontio.account.Account(Helper.hexToBytes("dcb22fdeb1cd57c4ad82c8dc21dd6792d4b1e90b5aa06d6698c03eacddabeb1f"),SignatureScheme.SM3WITHSM2);
+                com.github.ontio.account.Account acct11 = new com.github.ontio.account.Account(Helper.hexToBytes("0638dff2f03964883471e1dac3df9e7738f21fd2452aef4846c11a53be6feb0e"),ontSdk.defaultSignScheme);
+                com.github.ontio.account.Account acct22 = new com.github.ontio.account.Account(Helper.hexToBytes("46027c9786e24ecc1b4d7b406dfe90ec30b2c2fa6ad2f7963df251200e7f003d"),ontSdk.defaultSignScheme);
+                com.github.ontio.account.Account acct33 = new com.github.ontio.account.Account(Helper.hexToBytes("523c5fcf74823831756f0bcb3634234f10b3beb1c05595058534577752ad2d9f"),ontSdk.defaultSignScheme);
 
 //            System.out.println("##"+Helper.toHexString(acct00.serializePublicKey()));
 //            System.out.println(Helper.toHexString(acct11.serializePublicKey()));
 //            System.out.println(Helper.toHexString(acct22.serializePublicKey()));
 //            System.out.println(Helper.toHexString(acct33.serializePublicKey()));
-            System.out.println(Address.addressFromMultiPubKeys(4,acct00.serializePublicKey(),acct11.serializePublicKey(),acct22.serializePublicKey(),acct33.serializePublicKey()).toBase58());
 
-            Address multiAddr = Address.addressFromMultiPubKeys(4,acct00.serializePublicKey(),acct11.serializePublicKey(),acct22.serializePublicKey(),acct33.serializePublicKey());
-            Transaction tx = ontSdk.nativevm().ont().makeTransfer(multiAddr.toBase58(), acct0.getAddressU160().toBase58(), 5, multiAddr.toBase58(), 30000, 0);
-            ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct00,acct11,acct22,acct33}},new int[]{4});
-            boolean b = ontSdk.getConnect().sendRawTransaction(tx.toHexString());
-System.exit(0);
+                Address multiAddr = Address.addressFromMultiPubKeys(4,acct00.serializePublicKey(),acct11.serializePublicKey(),acct22.serializePublicKey(),acct33.serializePublicKey());
+                System.out.println(multiAddr.toBase58());
 
+                ontSdk.nativevm().ont().sendTransferFromMultiSignAddr(new com.github.ontio.account.Account[]{acct00,acct11,acct22,acct33},4,acct1.getAddressU160().toBase58(),5,acct0,ontSdk.DEFAULT_GAS_LIMIT,0);
+                System.exit(0);
+            }
             if (false) {
                 String hash = ontSdk.nativevm().ont().sendApprove(acct0,acct1.getAddressU160().toBase58(),100,payerAcct,30000,0);
                 System.out.println(hash);

@@ -137,58 +137,29 @@ public class Program {
             }
         }else if(end == ScriptOp.OP_CHECKMULTISIG.getByte()) {
             short m = 0;
+            int len = program[program.length - 2] - ScriptOp.OP_PUSH1.getByte() +1;
             try {
-                m = readNum(reader);
-            } catch (SDKException e) {
+                m = reader.readByte();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            byte[][] pub = new byte[m][];
-            for(int i =0; i<(int)m; i++){
-                pub[i] = readBytes(reader);
+            byte[][] pub = new byte[len][];
+            for(int i =0; i<(int)len; i++){
+                pub[i] = reader.readVarBytes();
             }
             info.setPublicKey(pub);
-            List<byte[]> buffer = new ArrayList();
-            while(true){
-                ScriptOp code = readOpCode(reader);
-                if(code == ScriptOp.OP_CHECKMULTISIG){
-                    readOpCode(reader);
-                    break;
-                }else if(code == ScriptOp.OP_0){
-                    readOpCode(reader);
-                    BigInteger bint = BigInteger.valueOf(0);
-                    buffer.add(Helper.BigInt2Bytes(bint));
-                }else{
-                    int num = (int)code.getByte() - (int)ScriptOp.OP_1.getByte() + 1;
-                    if(num >= 1 && num <= 16){
-                        readOpCode(reader);
-                        BigInteger bint = BigInteger.valueOf(num);
-                        buffer.add(Helper.BigInt2Bytes(bint));
-                    }else{
-                        buffer.add(readBytes(reader));
-                    }
-                }
-            }
-            byte[][] buffers = new byte[buffer.size()][];
-            for(int i = 0;i < buffer.size();i++){
-                buffers[i] = buffer.get(i);
-            }
-            BigInteger bint = new BigInteger(buffers[buffers.length - 1]);
-            long n = bint.longValue();
-            if(1 <= m && m<=n && n<= 1024){
-//                throw new SDKException(ErrorCode.OtherError(""));
-            }
-            info.setPublicKey(buffers);
+            info.setM(m);
         }
         return info;
     }
 
     public static short readNum(BinaryReader reader) throws IOException, SDKException {
         ScriptOp code = readOpCode(reader);
-        if(code == ScriptOp.OP_0){
+        if(code == ScriptOp.OP_PUSH0){
             readOpCode(reader);
             return 0;
         }else {
-            int num = (int)code.getByte() - (int)ScriptOp.OP_1.getByte() + 1;
+            int num = (int)code.getByte() - (int)ScriptOp.OP_PUSH1.getByte() + 1;
             if(num >= 1 && num <= 16) {
                 readOpCode(reader);
                 return (short)num;

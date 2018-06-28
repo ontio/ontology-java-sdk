@@ -56,7 +56,6 @@ public class OntSdk {
     public SignatureScheme defaultSignScheme = SignatureScheme.SHA256WITHECDSA;
     public long DEFAULT_GAS_LIMIT = 20000;
     public long DEFAULT_DEPLOY_GAS_LIMIT = 20000000;
-    public static final int MULTI_SIG_MAX_PUBKEY_SIZE = 16;
     public static synchronized OntSdk getInstance(){
         if(instance == null){
             instance = new OntSdk();
@@ -199,7 +198,7 @@ public class OntSdk {
         if(tx.sigs == null){
             tx.sigs = new Sig[0];
         } else {
-            if (tx.sigs.length >= MULTI_SIG_MAX_PUBKEY_SIZE) {
+            if (tx.sigs.length >= Common.TX_MAX_SIG_SIZE) {
                 throw new SDKException(ErrorCode.ParamErr("the number of transaction signatures should not be over 16"));
             }
         }
@@ -221,7 +220,7 @@ public class OntSdk {
         if (tx.sigs == null) {
             tx.sigs = new Sig[0];
         } else {
-            if (tx.sigs.length >= MULTI_SIG_MAX_PUBKEY_SIZE || tx.sigs.length + acct.length > MULTI_SIG_MAX_PUBKEY_SIZE) {
+            if (tx.sigs.length + 1 >= Common.TX_MAX_SIG_SIZE || acct.length > Common.MULTI_SIG_MAX_PUBKEY_SIZE) {
                 throw new SDKException(ErrorCode.ParamErr("the number of transaction signatures should not be over 16"));
             }
         }
@@ -252,7 +251,7 @@ public class OntSdk {
      * @return
      */
     public Transaction signTx(Transaction tx, Account[][] accounts) throws Exception{
-        if (accounts.length > MULTI_SIG_MAX_PUBKEY_SIZE) {
+        if (accounts.length > Common.TX_MAX_SIG_SIZE) {
             throw new SDKException(ErrorCode.ParamErr("the number of transaction signatures should not be over 16"));
         }
         Sig[] sigs = new Sig[accounts.length];
@@ -280,7 +279,7 @@ public class OntSdk {
      * @throws SDKException
      */
     public Transaction signTx(Transaction tx, Account[][] accounts, int[] M) throws Exception {
-        if (accounts.length > MULTI_SIG_MAX_PUBKEY_SIZE) {
+        if (accounts.length > Common.TX_MAX_SIG_SIZE) {
             throw new SDKException(ErrorCode.ParamErr("the number of transaction signatures should not be over 16"));
         }
         if (M.length != accounts.length) {

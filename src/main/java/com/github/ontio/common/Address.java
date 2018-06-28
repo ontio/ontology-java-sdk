@@ -92,7 +92,7 @@ public class Address extends UIntBase implements Comparable<Address> {
     }
 
     public static Address addressFromMultiPubKeys(int m, byte[]... publicKeys) throws Exception {
-        if (m <= 0 || m > publicKeys.length || publicKeys.length > 16) {
+        if (m <= 0 || m > publicKeys.length || publicKeys.length > Common.MULTI_SIG_MAX_PUBKEY_SIZE) {
             throw new SDKException(ErrorCode.ParamError);
         }
         try (ScriptBuilder sb = new ScriptBuilder()) {

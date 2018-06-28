@@ -30,6 +30,8 @@ import java.util.Date;
 
 public abstract class Common implements AutoCloseable {
     public static String didont = "did:ont:";
+    public static final int MULTI_SIG_MAX_PUBKEY_SIZE = 16;
+    public static final int TX_MAX_SIG_SIZE = 16;
 
     public static byte[] generateKey64Bit() {
         return ECC.generateKey(64);

@@ -199,7 +199,7 @@ public class Governance {
         String res = null;
         try {
             res = sdk.getConnect().getStorage(Helper.reverse(contractAddress),Helper.toHexString(key));
-            if(!res.equals("")){
+            if(res !=null && !res.equals("")){
                 return Serializable.from(Helper.hexToBytes(res), VoteInfo.class);
             }
         } catch (ConnectorException e) {

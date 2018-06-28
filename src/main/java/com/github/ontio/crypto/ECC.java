@@ -29,7 +29,9 @@ import org.bouncycastle.math.ec.ECPoint;
 public class ECC {
 	private static final X9ECParameters secp256r1nc = ECNamedCurveTable.getByName("secp256r1");
 	public static final ECDomainParameters secp256r1 = new ECDomainParameters(secp256r1nc.getCurve(), secp256r1nc.getG(), secp256r1nc.getN(), secp256r1nc.getH(), secp256r1nc.getSeed());
-			
+	private static final X9ECParameters sm2p256v1nc = ECNamedCurveTable.getByName("sm2p256v1");
+	public static final ECDomainParameters sm2p256v1 = new ECDomainParameters(sm2p256v1nc.getCurve(), sm2p256v1nc.getG(), sm2p256v1nc.getN(), sm2p256v1nc.getH(), sm2p256v1nc.getSeed());
+
 	public static int compare(ECPoint a, ECPoint b) {
 		if (a == b) {
 			return 0;

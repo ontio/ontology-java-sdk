@@ -137,7 +137,7 @@ public class Program {
             }
         }else if(end == ScriptOp.OP_CHECKMULTISIG.getByte()) {
             short m = 0;
-            int len = program[program.length - 2] - ScriptOp.OP_PUSH1.getByte() +1;
+            int len = program[program.length - 2] - ScriptOp.OP_1.getByte() +1;
             try {
                 m = reader.readByte();
             } catch (Exception e) {
@@ -155,11 +155,11 @@ public class Program {
 
     public static short readNum(BinaryReader reader) throws IOException, SDKException {
         ScriptOp code = readOpCode(reader);
-        if(code == ScriptOp.OP_PUSH0){
+        if(code == ScriptOp.OP_0){
             readOpCode(reader);
             return 0;
         }else {
-            int num = (int)code.getByte() - (int)ScriptOp.OP_PUSH1.getByte() + 1;
+            int num = (int)code.getByte() - (int)ScriptOp.OP_1.getByte() + 1;
             if(num >= 1 && num <= 16) {
                 readOpCode(reader);
                 return (short)num;

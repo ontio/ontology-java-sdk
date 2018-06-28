@@ -30,6 +30,8 @@ import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.wallet.Account;
 
+import java.util.Base64;
+
 
 /**
  *
@@ -57,12 +59,23 @@ public class OntDemo {
             System.out.println("acct0:" + acct0.getAddressU160().toBase58());
             System.out.println("acct1:" + acct1.getAddressU160().toBase58());
             System.out.println("acct2:" + acct2.getAddressU160().toBase58());
-String txHex = "00d178bd7f88000000000000000030750000000000004756c9dd829b2142883adbe1ae4f8689a1f673e97100c66b144756c9dd829b2142883adbe1ae4f8689a1f673e96a7cc814aa6e06c79f864152ab7f3139074aad822ffea8556a7cc85b6a7cc86c51c1087472616e736665721400000000000000000000000000000000000000010068164f6e746f6c6f67792e4e61746976652e496e766f6b650000";
-            Transaction reqTx = Transaction.deserializeFrom(com.github.ontio.common.Helper.hexToBytes(txHex));
-           // Contract contract = Contract.deserializeFrom(((InvokeCode) reqTx).code);
-            String str =Helper.toHexString(((InvokeCode) reqTx).code);
-            System.out.println(str.split(Helper.toHexString("transfer".getBytes()))[0]);
+            System.out.println(acct0.getAddressU160().toBase58());
 
+            com.github.ontio.account.Account acct00 = new com.github.ontio.account.Account(Helper.hexToBytes("dcb22fdeb1cd57c4ad82c8dc21dd6792d4b1e90b5aa06d6698c03eacddabeb1f"),SignatureScheme.SM3WITHSM2);
+            com.github.ontio.account.Account acct11 = new com.github.ontio.account.Account(Helper.hexToBytes("0638dff2f03964883471e1dac3df9e7738f21fd2452aef4846c11a53be6feb0e"),ontSdk.defaultSignScheme);
+            com.github.ontio.account.Account acct22 = new com.github.ontio.account.Account(Helper.hexToBytes("46027c9786e24ecc1b4d7b406dfe90ec30b2c2fa6ad2f7963df251200e7f003d"),ontSdk.defaultSignScheme);
+            com.github.ontio.account.Account acct33 = new com.github.ontio.account.Account(Helper.hexToBytes("523c5fcf74823831756f0bcb3634234f10b3beb1c05595058534577752ad2d9f"),ontSdk.defaultSignScheme);
+
+//            System.out.println("##"+Helper.toHexString(acct00.serializePublicKey()));
+//            System.out.println(Helper.toHexString(acct11.serializePublicKey()));
+//            System.out.println(Helper.toHexString(acct22.serializePublicKey()));
+//            System.out.println(Helper.toHexString(acct33.serializePublicKey()));
+            System.out.println(Address.addressFromMultiPubKeys(4,acct00.serializePublicKey(),acct11.serializePublicKey(),acct22.serializePublicKey(),acct33.serializePublicKey()).toBase58());
+
+            Address multiAddr = Address.addressFromMultiPubKeys(4,acct00.serializePublicKey(),acct11.serializePublicKey(),acct22.serializePublicKey(),acct33.serializePublicKey());
+            Transaction tx = ontSdk.nativevm().ont().makeTransfer(multiAddr.toBase58(), acct0.getAddressU160().toBase58(), 5, multiAddr.toBase58(), 30000, 0);
+            ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct00,acct11,acct22,acct33}},new int[]{4});
+            boolean b = ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 System.exit(0);
 
             if (false) {
@@ -80,12 +93,12 @@ System.exit(0);
                 Thread.sleep(6000);
                 System.out.println(ontSdk.getConnect().getSmartCodeEvent(hash));
             }
-            if(true){
+            if(false){
                 System.out.println(ontSdk.nativevm().ont().queryBalanceOf(acct6.getAddressU160().toBase58()));
                 //System.out.println(ontSdk.nativevm().ont().queryTotalSupply());
 //                System.exit(0);
-                String hash = ontSdk.nativevm().ont().sendTransfer(acct0,acct1.getAddressU160().toBase58(),11,acct0,ontSdk.DEFAULT_GAS_LIMIT,0);
-                //System.out.println(hash);
+                String hash = ontSdk.nativevm().ont().sendTransfer(acct0,"AS4VEDn8TvJd3fQuFcHy2NfPqCm5xa7kYk",200,acct0,ontSdk.DEFAULT_GAS_LIMIT,0);
+                System.out.println(hash);
                 //Thread.sleep(6000);
 
                // ontSdk.nativevm().ong().claimOng(acct0,acct0.getAddressU160().toBase58(),49520000000000L,acct0,ontSdk.DEFAULT_GAS_LIMIT,0);

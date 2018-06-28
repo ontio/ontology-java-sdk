@@ -19,12 +19,16 @@
 
 package com.github.ontio.core.program;
 
+import com.github.ontio.common.Common;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.scripts.ScriptBuilder;
 import com.github.ontio.core.scripts.ScriptOp;
+import com.github.ontio.crypto.ECC;
+import com.github.ontio.crypto.KeyType;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.sdk.exception.SDKException;
+import org.bouncycastle.math.ec.ECPoint;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -56,15 +60,12 @@ public class Program {
     public static byte[] ProgramFromMultiPubKey(int m, byte[]... publicKeys) throws Exception {
         int n = publicKeys.length;
 
-        if (m <= 0 || m > n || n > 24) {
+        if (m <= 0 || m > n || n > Common.MULTI_SIG_MAX_PUBKEY_SIZE) {
             throw new SDKException(ErrorCode.ParamError);
         }
         try (ScriptBuilder sb = new ScriptBuilder()) {
             sb.push(BigInteger.valueOf(m));
-            publicKeys = Arrays.stream(publicKeys).sorted((o1, o2) -> {
-                return Helper.toHexString(o1).compareTo(Helper.toHexString(o2));
-            }).toArray(byte[][]::new);
-
+            publicKeys = sortPublicKeys(publicKeys);
             for (byte[] publicKey : publicKeys) {
                 sb.push(publicKey);
             }
@@ -73,7 +74,35 @@ public class Program {
             return sb.toArray();
         }
     }
-
+    public static byte[][] sortPublicKeys(byte[]... publicKeys){
+        publicKeys = Arrays.stream(publicKeys).sorted((o1, o2) -> {
+            if (KeyType.fromPubkey(o1).getLabel() != KeyType.fromPubkey(o2).getLabel()) {
+                return KeyType.fromPubkey(o1).getLabel() > KeyType.fromPubkey(o2).getLabel() ? 1 : -1;
+            }
+            switch (KeyType.fromPubkey(o1)) {
+                case SM2:
+                    byte[] p = new byte[33];
+                    System.arraycopy(o1, 2, p, 0, p.length);
+                    o1 = p;
+                    byte[] p2 = new byte[33];
+                    System.arraycopy(o2, 2, p2, 0, p2.length);
+                    o2 = p2;
+                    ECPoint smPk1 = ECC.sm2p256v1.getCurve().decodePoint(o1);
+                    ECPoint smPk2 = ECC.sm2p256v1.getCurve().decodePoint(o2);
+                    return ECC.compare(smPk1, smPk2);
+                case ECDSA:
+                    ECPoint pk1 = ECC.secp256r1.getCurve().decodePoint(o1);
+                    ECPoint pk2 = ECC.secp256r1.getCurve().decodePoint(o2);
+                    return ECC.compare(pk1, pk2);
+                case EDDSA:
+                    //TODO
+                    return Helper.toHexString(o1).compareTo(Helper.toHexString(o1));
+                default:
+                    return Helper.toHexString(o1).compareTo(Helper.toHexString(o1));
+            }
+        }).toArray(byte[][]::new);
+        return publicKeys;
+    }
     public static byte[][] getParamInfo(byte[] program) {
         ByteArrayInputStream bais = new ByteArrayInputStream(program);
         BinaryReader br = new BinaryReader(bais);

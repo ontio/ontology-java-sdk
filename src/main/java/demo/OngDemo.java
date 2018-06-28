@@ -54,21 +54,26 @@ public class OngDemo {
             System.out.println("acct2:" + acct2.getAddressU160().toBase58());
 
 
-            if(false){//sendTransferFromMultiSignAddr
-                com.github.ontio.account.Account acct00 = new com.github.ontio.account.Account(Helper.hexToBytes("dcb22fdeb1cd57c4ad82c8dc21dd6792d4b1e90b5aa06d6698c03eacddabeb1f"), SignatureScheme.SM3WITHSM2);
-                com.github.ontio.account.Account acct11 = new com.github.ontio.account.Account(Helper.hexToBytes("0638dff2f03964883471e1dac3df9e7738f21fd2452aef4846c11a53be6feb0e"),ontSdk.defaultSignScheme);
-                com.github.ontio.account.Account acct22 = new com.github.ontio.account.Account(Helper.hexToBytes("46027c9786e24ecc1b4d7b406dfe90ec30b2c2fa6ad2f7963df251200e7f003d"),ontSdk.defaultSignScheme);
-                com.github.ontio.account.Account acct33 = new com.github.ontio.account.Account(Helper.hexToBytes("523c5fcf74823831756f0bcb3634234f10b3beb1c05595058534577752ad2d9f"),ontSdk.defaultSignScheme);
+            if(true){//sendTransferFromMultiSignAddr
+                com.github.ontio.account.Account acct00 = new com.github.ontio.account.Account(Helper.hexToBytes("dcb22fdeb1cd57c4ad82c8dc21dd6792d4b1e90b5aa06d6698c03eacddabeb1f"),SignatureScheme.SM3WITHSM2);
+                com.github.ontio.account.Account acct01 = new com.github.ontio.account.Account(Helper.hexToBytes("f07d5a2be17bde8632ec08083af8c760b41b5e8e0b5de3703683c3bdcfb91549"),SignatureScheme.SM3WITHSM2);
+                com.github.ontio.account.Account acct02 = new com.github.ontio.account.Account(Helper.hexToBytes("49855b16636e70f100cc5f4f42bc20a6535d7414fb8845e7310f8dd065a97221"),SignatureScheme.SM3WITHSM2);
+                com.github.ontio.account.Account acct03 = new com.github.ontio.account.Account(Helper.hexToBytes("06bda156eda61222693cc6f8488557550735c329bc7ca91bd2994c894cd3cbc8"),SignatureScheme.SM3WITHSM2);
+                com.github.ontio.account.Account acct04 = new com.github.ontio.account.Account(Helper.hexToBytes("0638dff2f03964883471e1dac3df9e7738f21fd2452aef4846c11a53be6feb0e"),ontSdk.defaultSignScheme);
+                com.github.ontio.account.Account acct05 = new com.github.ontio.account.Account(Helper.hexToBytes("46027c9786e24ecc1b4d7b406dfe90ec30b2c2fa6ad2f7963df251200e7f003d"),ontSdk.defaultSignScheme);
+                com.github.ontio.account.Account acct06 = new com.github.ontio.account.Account(Helper.hexToBytes("523c5fcf74823831756f0bcb3634234f10b3beb1c05595058534577752ad2d9f"),ontSdk.defaultSignScheme);
+                com.github.ontio.account.Account acct07 = new com.github.ontio.account.Account(Helper.hexToBytes("1094e90dd7c4fdfd849c14798d725ac351ae0d924b29a279a9ffa77d5737bd96"),ontSdk.defaultSignScheme);
 
 //            System.out.println("##"+Helper.toHexString(acct00.serializePublicKey()));
 //            System.out.println(Helper.toHexString(acct11.serializePublicKey()));
 //            System.out.println(Helper.toHexString(acct22.serializePublicKey()));
 //            System.out.println(Helper.toHexString(acct33.serializePublicKey()));
 
-                Address multiAddr = Address.addressFromMultiPubKeys(4,acct00.serializePublicKey(),acct11.serializePublicKey(),acct22.serializePublicKey(),acct33.serializePublicKey());
+                Address multiAddr = Address.addressFromMultiPubKeys(8,acct00.serializePublicKey(),acct01.serializePublicKey(),acct02.serializePublicKey(),acct03.serializePublicKey(),
+                        acct04.serializePublicKey(),acct05.serializePublicKey(),acct06.serializePublicKey(),acct07.serializePublicKey());
                 System.out.println(multiAddr.toBase58());
 
-                ontSdk.nativevm().ont().sendTransferFromMultiSignAddr(new com.github.ontio.account.Account[]{acct00,acct11,acct22,acct33},4,acct1.getAddressU160().toBase58(),5,acct0,ontSdk.DEFAULT_GAS_LIMIT,0);
+                ontSdk.nativevm().ont().sendTransferFromMultiSignAddr(new com.github.ontio.account.Account[]{acct00,acct01,acct02,acct03,acct04,acct05,acct06,acct07},8,acct1.getAddressU160().toBase58(),5,acct0,ontSdk.DEFAULT_GAS_LIMIT,0);
                 System.exit(0);
             }
             if (false) {

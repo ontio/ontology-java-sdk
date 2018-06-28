@@ -89,7 +89,6 @@ public class Ont {
     /**
      *
      * @param sendAccts
-     * @param M
      * @param recvAddr
      * @param amount
      * @param payerAcct
@@ -98,7 +97,7 @@ public class Ont {
      * @return
      * @throws Exception
      */
-    public String sendTransferFromMultiSignAddr(Account[] sendAccts,int M, String recvAddr, long amount, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendTransferFromMultiSignAddr(Account[] sendAccts,String recvAddr, long amount, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (sendAccts == null || sendAccts.length <= 1 || payerAcct == null ) {
             throw new SDKException(ErrorCode.ParamErr("parameters should not be null"));
         }
@@ -109,7 +108,7 @@ public class Ont {
         for(int i=0;i<pks.length;i++){
             pks[i] = sendAccts[i].serializePublicKey();
         }
-        Address multiAddr = Address.addressFromMultiPubKeys(M,pks);
+        Address multiAddr = Address.addressFromMultiPubKeys(sendAccts.length,pks);
         Transaction tx = makeTransfer(multiAddr.toBase58(), recvAddr, amount, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.signTx(tx, new Account[][]{sendAccts});
         sdk.addSign(tx, payerAcct);

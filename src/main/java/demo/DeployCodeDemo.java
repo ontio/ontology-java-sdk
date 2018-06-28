@@ -81,7 +81,7 @@ public class DeployCodeDemo {
             ontSdk.vm().setCodeAddress(Address.AddressFromVmCode(code).toHexString());
             Account account = new Account(Helper.hexToBytes("75de8489fcb2dcaf2ef3cd607feffde18789de7da129b5e97c81e001793cb7cf"),SignatureScheme.SHA256WITHECDSA);
             Transaction tx = ontSdk.vm().makeDeployCodeTransaction(code, true, "name",
-                    "v1.0", "author", "email", "desp", account.getAddressU160().toBase58(),10000000,0);
+                    "v1.0", "author", "email", "desp", account.getAddressU160().toBase58(),ontSdk.DEFAULT_DEPLOY_GAS_LIMIT,0);
             ontSdk.signTx(tx, new Account[][]{{account}});
             String txHex = Helper.toHexString(tx.toArray());
             System.out.println(txHex);

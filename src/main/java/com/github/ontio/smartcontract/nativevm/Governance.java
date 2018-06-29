@@ -154,7 +154,6 @@ public class Governance {
         ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(view));
         BinaryReader br = new BinaryReader(bais);
         governanceView.deserialize(br);
-System.out.println(governanceView.view);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BinaryWriter bw = new BinaryWriter(baos);
         bw.writeInt(governanceView.view);

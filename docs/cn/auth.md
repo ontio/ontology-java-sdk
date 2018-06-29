@@ -124,10 +124,10 @@ namespace Example
 
         public struct verifyTokenParam
         {
-            public byte[] contractAddr;
-            public byte[] caller;
-            public string fn;
-            public int keyNo;
+            public byte[] contractAddr; //合约地址
+            public byte[] calllerOntID; //调用者ontId
+            public string funcName;     //调用的函数名
+            public int keyNo;           //使用调用者ontId的第几把公钥
         }
 
         //the admin ONT ID of this contract must be hardcoded.
@@ -190,8 +190,8 @@ namespace Example
         {
             verifyTokenParam param = new verifyTokenParam{};
             param.contractAddr = ExecutionEngine.ExecutingScriptHash;
-            param.fn = operation;
-            param.caller = (byte[])args[0];
+            param.funcName = operation;
+            param.calllerOntID = (byte[])args[0];
             param.keyNo = (int)args[1];
 
             byte[] authContractAddr = {

@@ -55,6 +55,12 @@ public class Nep5TransferDemo {
 		System.out.println("acct1 address:" + acct1.getAddressU160().toBase58()+" "+Helper.toHexString(acct1.getAddressU160().toArray()));
 		System.out.println("acct2 address:" + acct2.getAddressU160().toBase58()+" "+Helper.toHexString(acct2.getAddressU160().toArray()));
 		System.out.println("multi address:" + multiSignAddr.toBase58()+" "+Helper.toHexString(multiSignAddr.toArray()));
+		if(false) {
+			Address zeroAddr = Address.parse("0000000000000000000000000000000000000000");//AFmseVrdL9f9oyCzZefL9tG6UbvhPbdYzM
+			System.out.println(zeroAddr.toBase58());
+			System.out.println(Address.decodeBase58("AFmseVrdL9f9oyCzZefL9tG6UbvhPbdYzM"));
+			System.exit(0);
+		}
 		if(true) {
 			String balance = (String)  NeoRpc.getBalance(nodeUrl, contractAddr, Helper.toHexString(acct1.getAddressU160().toArray()));
 			System.out.println("acct1: " + balance);

@@ -221,4 +221,11 @@ public class BinaryReader implements AutoCloseable {
 	public String readVarString() throws IOException {
 		return new String(readVarBytes(), "UTF-8");
 	}
+	public int available() throws IOException {
+		return reader.available();
+	}
+	public long Seek(long n) throws IOException {
+		reader.reset();
+		return reader.skip(n);
+	}
 }

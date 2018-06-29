@@ -56,20 +56,20 @@ public class ScriptBuilder implements AutoCloseable {
 
     public ScriptBuilder push(boolean b) {
         if (b == true) {
-            return add(ScriptOp.OP_1);
+            return add(ScriptOp.OP_PUSH1);
         }
-        return add(ScriptOp.OP_0);
+        return add(ScriptOp.OP_PUSH0);
     }
 
     public ScriptBuilder push(BigInteger number) {
         if (number.equals(BigInteger.ONE.negate())) {
-            return add(ScriptOp.OP_1NEGATE);
+            return add(ScriptOp.OP_PUSHM1);
         }
         if (number.equals(BigInteger.ZERO)) {
-            return add(ScriptOp.OP_0);
+            return add(ScriptOp.OP_PUSH0);
         }
         if (number.compareTo(BigInteger.ZERO) > 0 && number.compareTo(BigInteger.valueOf(16)) <= 0) {
-            return add((byte) (ScriptOp.OP_1.getByte() - 1 + number.byteValue()));
+            return add((byte) (ScriptOp.OP_PUSH1.getByte() - 1 + number.byteValue()));
         }
         if (number.longValue() < 0 || number.longValue() >= Long.MAX_VALUE) {
             throw new IllegalArgumentException();
@@ -81,9 +81,9 @@ public class ScriptBuilder implements AutoCloseable {
 
     public ScriptBuilder pushNum(short num) {
         if(num == 0) {
-            return add(ScriptOp.OP_0);
+            return add(ScriptOp.OP_PUSH0);
         }else if(num < 16){
-            return add(ScriptOp.valueOf(num - 1 + ScriptOp.OP_1.getByte()));
+            return add(ScriptOp.valueOf(num - 1 + ScriptOp.OP_PUSH1.getByte()));
         }
         BigInteger bint = BigInteger.valueOf(num);
         return push(Helper.BigInt2Bytes(bint));

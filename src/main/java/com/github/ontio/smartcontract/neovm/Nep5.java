@@ -161,7 +161,11 @@ public class Nep5 {
         func.name = "balanceOf";
         func.setParamsValue(Address.decodeBase58(addr).toArray());
         Object obj =  sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
-        return ((JSONObject) obj).getString("Result");
+        String balance = ((JSONObject) obj).getString("Result");
+        if(balance.equals("")){
+            balance = "00";
+        }
+        return balance;
     }
 
     public String queryTotalSupply() throws Exception {

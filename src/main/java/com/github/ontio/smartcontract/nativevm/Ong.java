@@ -180,7 +180,7 @@ public class Ong {
         if (res==null||res.equals("")) {
             return 0;
         }
-        return Long.valueOf(res, 16);
+        return Long.valueOf(Helper.reverse(res), 16);
     }
 
     /**
@@ -203,7 +203,7 @@ public class Ong {
         if (res==null||res.equals("")) {
             return 0;
         }
-        return Long.valueOf(res, 16);
+        return Long.valueOf(Helper.reverse(res), 16);
     }
 
     /**
@@ -352,7 +352,7 @@ public class Ong {
         if (("").equals(res)) {
             return 0;
         }
-        return Long.valueOf(res, 16);
+        return Long.valueOf(Helper.reverse(res), 16);
     }
 
     /**
@@ -366,7 +366,7 @@ public class Ong {
         if (res==null||res.equals("")) {
             return 0;
         }
-        return Long.valueOf(res, 16);
+        return Long.valueOf(Helper.reverse(res), 16);
     }
 
     /**

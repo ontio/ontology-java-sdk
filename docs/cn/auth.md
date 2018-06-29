@@ -104,7 +104,7 @@ account,sdk.DEFAULT_GAS_LIMIT,0);
 
 
 
-Neo 合约示例：
+Ontology合约示例：
 ```
 using Neo.SmartContract.Framework;
 using Neo.SmartContract.Framework.Services.Neo;

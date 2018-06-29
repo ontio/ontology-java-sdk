@@ -201,7 +201,6 @@ public abstract class TransactionNeo extends Inventory {
 	@Override
 	public byte[] sign(Account account, SignatureScheme scheme) throws Exception {
 		byte[] bys = account.generateSignature(((getHashData())), scheme, null);
-		System.out.println("sign 1:" + bys.length + " " + Helper.toHexString(bys));
 		byte[] signature = new byte[64];
 		System.arraycopy(bys, 1, signature, 0, 64);
 		return signature;

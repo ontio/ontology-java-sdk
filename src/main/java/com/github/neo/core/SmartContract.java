@@ -30,6 +30,14 @@ public class SmartContract {
             throw new Exception("null contractHash");
         }
         contractAddress = contractAddress.replace("0x", "");
+        byte[] params = serializeAbiFunction(abiFunction);
+        params = Helper.addBytes(params, new byte[]{0x67});
+        params = Helper.addBytes(params, Helper.hexToBytes(contractAddress));
+
+        InvocationTransaction tx = makeInvocationTransaction(params,addr);
+        return tx;
+    }
+    private static byte[] serializeAbiFunction(AbiFunction abiFunction) throws Exception {
         List list = new ArrayList<Object>();
         list.add(abiFunction.getName().getBytes());
         List tmp = new ArrayList<Object>();
@@ -56,13 +64,8 @@ public class SmartContract {
             list.add(tmp);
         }
         byte[] params = createCodeParamsScript(list);
-        params = Helper.addBytes(params, new byte[]{0x67});
-        params = Helper.addBytes(params, Helper.hexToBytes(contractAddress));
-
-        InvocationTransaction tx = makeInvocationTransaction(params,addr);
-        return tx;
+        return params;
     }
-
 
     private static byte[] createCodeParamsScript(ScriptBuilder builder, List<Object> list) {
         try {

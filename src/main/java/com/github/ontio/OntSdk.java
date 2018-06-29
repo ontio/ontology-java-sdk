@@ -246,7 +246,7 @@ public class OntSdk {
                     for (int j = 0; j < tx.sigs[i].sigData.length; j++) {
                         sigData[j] = tx.sigs[i].sigData[j];
                     }
-                    sigData[len] = tx.sign(acct, defaultSignScheme);
+                    sigData[len] = tx.sign(acct, acct.getSignatureScheme());
                     tx.sigs[i].sigData = sigData;
                     return tx;
                 }

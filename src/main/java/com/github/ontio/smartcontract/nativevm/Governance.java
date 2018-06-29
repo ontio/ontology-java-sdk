@@ -281,7 +281,7 @@ public class Governance {
             sigs[0].pubKeys[i] = pks[i];
         }
         for (int i = 0; i< sigs[0].M; i++) {
-            byte[] signature = tx.sign(accounts[i], sdk.defaultSignScheme);
+            byte[] signature = tx.sign(accounts[i], accounts[i].getSignatureScheme());
             sigs[0].sigData[i] = signature;
         }
         tx.sigs = sigs;
@@ -358,7 +358,7 @@ public class Governance {
             sigs[0].pubKeys[i] = pks[i];
         }
         for (int i = 0; i< sigs[0].M; i++) {
-            byte[] signature = tx.sign(accounts[i], sdk.defaultSignScheme);
+            byte[] signature = tx.sign(accounts[i], accounts[i].getSignatureScheme());
             sigs[0].sigData[i] = signature;
         }
         tx.sigs = sigs;
@@ -554,7 +554,7 @@ public class Governance {
             sigs[0].pubKeys[i] = pks[i];
         }
         for (int i = 0; i< sigs[0].M; i++) {
-            byte[] signature = tx.sign(accounts[i], sdk.defaultSignScheme);
+            byte[] signature = tx.sign(accounts[i], accounts[i].getSignatureScheme());
             sigs[0].sigData[i] = signature;
         }
         tx.sigs = sigs;

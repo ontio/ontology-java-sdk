@@ -25,6 +25,7 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.*;
 import com.github.ontio.core.VmType;
+import com.github.ontio.core.asset.Sig;
 import com.github.ontio.core.governance.PeerPoolItem;
 import com.github.ontio.core.governance.VoteInfo;
 import com.github.ontio.core.transaction.Transaction;
@@ -153,7 +154,6 @@ public class Governance {
         ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(view));
         BinaryReader br = new BinaryReader(bais);
         governanceView.deserialize(br);
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BinaryWriter bw = new BinaryWriter(baos);
         bw.writeInt(governanceView.view);
@@ -245,6 +245,56 @@ public class Governance {
 
     /**
      *
+     * @param multiAddress
+     * @param M
+     * @param accounts
+     * @param publicKeys
+     * @param peerPubkey
+     * @param payerAcct
+     * @param gaslimit
+     * @param gasprice
+     * @return
+     * @throws Exception
+     */
+    public String approveCandidate(Address multiAddress,int M, Account[] accounts,byte[][] publicKeys,String peerPubkey,Account payerAcct,long gaslimit,long gasprice) throws Exception{
+
+        byte[][] pks = new byte[accounts.length+publicKeys.length][];
+        for(int i=0;i<accounts.length;i++){
+            pks[i] = accounts[i].serializePublicKey();
+        }
+        for(int i = 0;i< publicKeys.length;i++){
+            pks[i+accounts.length] = publicKeys[i];
+        }
+        if(!multiAddress.equals(Address.addressFromMultiPubKeys(M,pks))){
+            throw new SDKException(ErrorCode.ParamErr("mutilAddress doesnot match accounts and publicKeys"));
+        }
+        List list = new ArrayList();
+        list.add(new Struct().add(peerPubkey));
+        byte[] args = NativeBuildParams.createCodeParamsScript(list);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"approveCandidate",args,payerAcct.getAddressU160().toBase58(),gaslimit, gasprice);
+        Sig[] sigs = new Sig[1];
+        sigs[0] = new Sig();
+        sigs[0].pubKeys = new byte[pks.length][];
+        sigs[0].sigData = new byte[M][];
+        sigs[0].M = M;
+        for (int i = 0; i < pks.length; i++) {
+            sigs[0].pubKeys[i] = pks[i];
+        }
+        for (int i = 0; i< sigs[0].M; i++) {
+            byte[] signature = tx.sign(accounts[i], sdk.defaultSignScheme);
+            sigs[0].sigData[i] = signature;
+        }
+        tx.sigs = sigs;
+        sdk.addSign(tx, payerAcct);
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
+        if (b) {
+            return tx.hash().toString();
+        }
+        return null;
+    }
+
+    /**
+     *
      * @param peerPubkey
      * @param payerAcct
      * @param gaslimit
@@ -264,6 +314,55 @@ public class Governance {
         if (!adminAccount.equals(payerAcct)){
             sdk.addSign(tx,payerAcct);
         }
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
+        if (b) {
+            return tx.hash().toString();
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @param multiAddress
+     * @param M
+     * @param accounts
+     * @param publicKeys
+     * @param peerPubkey
+     * @param payerAcct
+     * @param gaslimit
+     * @param gasprice
+     * @return
+     * @throws Exception
+     */
+    public String rejectCandidate(Address multiAddress,int M,Account[] accounts,byte[][] publicKeys,String peerPubkey,Account payerAcct,long gaslimit,long gasprice) throws Exception{
+        byte[][] pks = new byte[accounts.length + publicKeys.length][];
+        for(int i=0; i < accounts.length; i++){
+            pks[i] = accounts[i].serializePublicKey();
+        }
+        for(int i=0; i < publicKeys.length; i++){
+            pks[i+accounts.length] = publicKeys[i];
+        }
+        if(!multiAddress.equals(Address.addressFromMultiPubKeys(M,pks))){
+            throw new SDKException(ErrorCode.ParamErr("mutilAddress doesnot match accounts and publicKeys"));
+        }
+        List list = new ArrayList();
+        list.add(new Struct().add(peerPubkey));
+        byte[] args = NativeBuildParams.createCodeParamsScript(list);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"rejectCandidate",args,payerAcct.getAddressU160().toBase58(),gaslimit, gasprice);
+        Sig[] sigs = new Sig[1];
+        sigs[0] = new Sig();
+        sigs[0].pubKeys = new byte[pks.length][];
+        sigs[0].sigData = new byte[M][];
+        sigs[0].M = M;
+        for (int i = 0; i < pks.length; i++) {
+            sigs[0].pubKeys[i] = pks[i];
+        }
+        for (int i = 0; i< sigs[0].M; i++) {
+            byte[] signature = tx.sign(accounts[i], sdk.defaultSignScheme);
+            sigs[0].sigData[i] = signature;
+        }
+        tx.sigs = sigs;
+        sdk.addSign(tx,payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -426,6 +525,39 @@ public class Governance {
 
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"commitDpos",new byte[]{0},payerAcct.getAddressU160().toBase58(),gaslimit, gasprice);
         sdk.signTx(tx,new Account[][]{{adminAccount}});
+        sdk.addSign(tx,payerAcct);
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
+        if (b) {
+            return tx.hash().toString();
+        }
+        return null;
+    }
+    public String commitDpos(Address multiAddress,int M,Account[] accounts,byte[][] publicKeys,Account payerAcct,long gaslimit,long gasprice) throws Exception{
+        byte[][] pks = new byte[accounts.length + publicKeys.length][];
+        for(int i=0; i < accounts.length; i++){
+            pks[i] = accounts[i].serializePublicKey();
+        }
+        for(int i=0; i < publicKeys.length; i++){
+            pks[i+accounts.length] = publicKeys[i];
+        }
+        if(!multiAddress.equals(Address.addressFromMultiPubKeys(M,pks))){
+            throw new SDKException(ErrorCode.ParamErr("mutilAddress doesnot match accounts and publicKeys"));
+        }
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"commitDpos",new byte[]{0},payerAcct.getAddressU160().toBase58(),gaslimit, gasprice);
+
+        Sig[] sigs = new Sig[1];
+        sigs[0] = new Sig();
+        sigs[0].pubKeys = new byte[pks.length][];
+        sigs[0].sigData = new byte[M][];
+        sigs[0].M = M;
+        for (int i = 0; i < pks.length; i++) {
+            sigs[0].pubKeys[i] = pks[i];
+        }
+        for (int i = 0; i< sigs[0].M; i++) {
+            byte[] signature = tx.sign(accounts[i], sdk.defaultSignScheme);
+            sigs[0].sigData[i] = signature;
+        }
+        tx.sigs = sigs;
         sdk.addSign(tx,payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {

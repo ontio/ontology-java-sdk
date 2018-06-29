@@ -172,7 +172,9 @@ public class Account {
         Arrays.fill(data, (byte) 0);
         return privateKey;
     }
-
+    public SignatureScheme getSignatureScheme(){
+        return signatureScheme;
+    }
     public KeyType getKeyType() {
         return keyType;
     }

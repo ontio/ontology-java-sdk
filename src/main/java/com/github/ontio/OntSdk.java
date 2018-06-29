@@ -214,7 +214,7 @@ public class OntSdk {
         sigs[tx.sigs.length].pubKeys = new byte[1][];
         sigs[tx.sigs.length].sigData = new byte[1][];
         sigs[tx.sigs.length].pubKeys[0] = acct.serializePublicKey();
-        sigs[tx.sigs.length].sigData[0] = tx.sign(acct,defaultSignScheme);
+        sigs[tx.sigs.length].sigData[0] = tx.sign(acct,acct.getSignatureScheme());
         tx.sigs = sigs;
         return tx;
     }
@@ -260,7 +260,7 @@ public class OntSdk {
         sigs[tx.sigs.length].M = M;
         sigs[tx.sigs.length].pubKeys = pubKeys;
         sigs[tx.sigs.length].sigData = new byte[1][];
-        sigs[tx.sigs.length].sigData[0] = tx.sign(acct, defaultSignScheme);
+        sigs[tx.sigs.length].sigData[0] = tx.sign(acct, acct.getSignatureScheme());
 
         tx.sigs = sigs;
         return tx;
@@ -287,7 +287,7 @@ public class OntSdk {
             sigs[i].sigData = new byte[accounts[i].length][];
             for (int j = 0; j < accounts[i].length; j++) {
                 sigs[i].M++;
-                byte[] signature = tx.sign(accounts[i][j], defaultSignScheme);
+                byte[] signature = tx.sign(accounts[i][j], accounts[i][j].getSignatureScheme());
                 sigs[i].pubKeys[j] = accounts[i][j].serializePublicKey();
                 sigs[i].sigData[j] = signature;
             }

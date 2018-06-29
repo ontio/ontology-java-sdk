@@ -70,12 +70,15 @@ public class OngDemo {
 //            System.out.println(Helper.toHexString(acct11.serializePublicKey()));
 //            System.out.println(Helper.toHexString(acct22.serializePublicKey()));
 //            System.out.println(Helper.toHexString(acct33.serializePublicKey()));
+                int M = 5;
+                com.github.ontio.account.Account[] accounts = new com.github.ontio.account.Account[]{acct00,acct01,acct02,acct03,acct04,acct05,acct06,acct07};
+                byte[][] pks = new byte[accounts.length][];
+                for(int i=0;i<pks.length;i++){
+                    pks[i] = accounts[i].serializePublicKey();
+                }
+                Address multiAddr = Address.addressFromMultiPubKeys(M,pks);
 
-                Address multiAddr = Address.addressFromMultiPubKeys(8,acct00.serializePublicKey(),acct01.serializePublicKey(),acct02.serializePublicKey(),acct03.serializePublicKey(),
-                        acct04.serializePublicKey(),acct05.serializePublicKey(),acct06.serializePublicKey(),acct07.serializePublicKey());
-                System.out.println(multiAddr.toBase58());
-
-                ontSdk.nativevm().ong().sendTransferFromMultiSignAddr(new com.github.ontio.account.Account[]{acct00,acct01,acct02,acct03,acct04,acct05,acct06,acct07},acct1.getAddressU160().toBase58(),5,acct0,ontSdk.DEFAULT_GAS_LIMIT,0);
+                ontSdk.nativevm().ont().sendTransferFromMultiSignAddr(M,pks,new com.github.ontio.account.Account[]{acct00,acct01,acct02,acct03,acct04},acct1.getAddressU160().toBase58(),5,acct0,ontSdk.DEFAULT_GAS_LIMIT,0);
                 System.exit(0);
             }
             if(true){ //M < n
@@ -92,23 +95,14 @@ public class OngDemo {
                 for(int i=0;i<pks.length;i++){
                     pks[i] = accounts[i].serializePublicKey();
                 }
-                Address multiAddr = Address.addressFromMultiPubKeys(5,pks);
+                int M = 5;
+                Address multiAddr = Address.addressFromMultiPubKeys(M,pks);
                 System.out.println("multiAddr:"+multiAddr.toBase58());
-                Transaction tx = ontSdk.nativevm().ong().makeTransfer(multiAddr.toBase58(), acct1.getAddressU160().toBase58(), 2, payerAcct.getAddressU160().toBase58(), 30000, 0);
+                Transaction tx = ontSdk.nativevm().ont().makeTransfer(multiAddr.toBase58(), acct1.getAddressU160().toBase58(), 2, payerAcct.getAddressU160().toBase58(), 30000, 0);
 
-                Sig[] sigs = new Sig[1];
-                sigs[0] = new Sig();
-                sigs[0].pubKeys = new byte[8][];
-                sigs[0].sigData = new byte[5][];
-                sigs[0].M = 5;
-                for (int i = 0; i < accounts.length; i++) {
-                    sigs[0].pubKeys[i] = accounts[i].serializePublicKey();
+                for (int i = 0; i< M; i++) {
+                    ontSdk.addMultiSign(tx, M, pks, accounts[i]);
                 }
-                for (int i = 0; i< sigs[0].M; i++) {
-                    byte[] signature = tx.sign(accounts[i], ontSdk.defaultSignScheme);
-                    sigs[0].sigData[i] = signature;
-                }
-                tx.sigs = sigs;
                 ontSdk.addSign(tx, payerAcct);
                 boolean b = ontSdk.getConnect().sendRawTransaction(tx.toHexString());
                 System.exit(0);

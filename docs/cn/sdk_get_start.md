@@ -370,19 +370,15 @@ ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 ontSdk.addSign(tx,acct0);
 
 2.添加多签签名
-ontSdk.addMultiSign(tx,2,new com.github.ontio.account.Account[]{acct0,acct1});
+ontSdk.addMultiSign(tx,2,new byte[][]{acct.serializePublicKey(),acct2.serializePublicKey()},acct);
+ontSdk.addMultiSign(tx,2,new byte[][]{acct.serializePublicKey(),acct2.serializePublicKey()},acct2);
 
 3.多签签名分多次签
 acct0签名：
-ontSdk.addMultiSign(tx,2,new com.github.ontio.account.Account[]{acct0});
-或
-tx.sigs[0].M = 2;
-tx.sigs[0].pubKeys[0] = acct0.serializePublicKey();
-tx.sigs[0].sigData[0] = tx.sign(acct0,ontSdk.defaultSignScheme);
+ontSdk.addMultiSign(tx,2,new byte[][]{acct.serializePublicKey(),acct2.serializePublicKey()},acct);
 
 acct1签名：
-tx.sigs[0].pubKeys[1] = acct1.serializePublicKey();
-tx.sigs[0].sigData[1] = tx.sign(acct1,ontSdk.defaultSignScheme);
+ontSdk.addMultiSign(tx,2,new byte[][]{acct.serializePublicKey(),acct2.serializePublicKey()},acct2);
 
 ```
 
@@ -408,8 +404,8 @@ Transaction tx = ontSdk.nativevm().ont().makeTransfer(new State[]{state1,state2}
 
 //第一个转出方是单签地址，第二个转出方是多签地址：
 ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct0}});
-ontSdk.addMultiSign(tx,2,new com.github.ontio.account.Account[]{acct1, acct2});
-
+ontSdk.addMultiSign(tx,2,new byte[][]{acct1.serializePublicKey(),acct2.serializePublicKey()},acct1);
+ontSdk.addMultiSign(tx,2,new byte[][]{acct1.serializePublicKey(),acct2.serializePublicKey()},acct2);
 ```
 
 #### 使用签名机签名

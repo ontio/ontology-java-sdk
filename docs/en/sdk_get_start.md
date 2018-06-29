@@ -364,19 +364,15 @@ If the addresses of the transferee and the payer who pay the network fee are dif
 ontSdk.addSign(tx,acct0);
 
 // 2.Add multiple signatures 
-ontSdk.addMultiSign(tx,2,new com.github.ontio.account.Account[]{acct0,acct1});
+ontSdk.addMultiSign(tx,2,new byte[][]{acct.serializePublicKey(),acct2.serializePublicKey()},acct);
+ontSdk.addMultiSign(tx,2,new byte[][]{acct.serializePublicKey(),acct2.serializePublicKey()},acct2);
 
 //3.multiple signatures splite
 acct0 signature：
-ontSdk.addMultiSign(tx,2,new com.github.ontio.account.Account[]{acct0});
-or
-tx.sigs[0].M = 2;
-tx.sigs[0].pubKeys[0] = acct0.serializePublicKey();
-tx.sigs[0].sigData[0] = tx.sign(acct0,ontSdk.defaultSignScheme);
+ontSdk.addMultiSign(tx,2,new byte[][]{acct.serializePublicKey(),acct2.serializePublicKey()},acct);
 
 acct1 signature：
-tx.sigs[0].pubKeys[1] = acct1.serializePublicKey();
-tx.sigs[0].sigData[1] = tx.sign(acct1,ontSdk.defaultSignScheme);
+ontSdk.addMultiSign(tx,2,new byte[][]{acct.serializePublicKey(),acct2.serializePublicKey()},acct2);
 
 ```
 
@@ -400,7 +396,8 @@ Transaction tx = ontSdk.nativevm().ont().makeTransfer(new State[]{state1,state2}
 
 //The first transferee is a single-signature address, and the second transferee is a multiple-signature address
 ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct0}});
-ontSdk.addMultiSign(tx,2,new com.github.ontio.account.Account[]{acct1, acct2});
+ontSdk.addMultiSign(tx,2,new byte[][]{acct1.serializePublicKey(),acct2.serializePublicKey()},acct1);
+ontSdk.addMultiSign(tx,2,new byte[][]{acct1.serializePublicKey(),acct2.serializePublicKey()},acct2);
 
 ```
 

@@ -390,7 +390,9 @@ public class ExchangeDemo {
                 printlog("++++  " + usr.address + " ont balance : " + database.get(usr.address).ontBalance);
                 State wdSt = new State(mainAccountAddr, Address.decodeBase58(usr.withdrawAddr), 500);
                 Transaction wdTx = ontSdk.nativevm().ont().makeTransfer(new State[]{wdSt}, FEE_PROVIDER, 30000, 0);
-                ontSdk.addMultiSign(wdTx, 3, new Account[]{mutiSeedAct1, mutiSeedAct2, mutiSeedAct3});
+                ontSdk.addMultiSign(wdTx, 3, new byte[][]{mutiSeedAct1.serializePublicKey(),mutiSeedAct2.serializePublicKey(),mutiSeedAct3.serializePublicKey()},mutiSeedAct1);
+                ontSdk.addMultiSign(wdTx, 3, new byte[][]{mutiSeedAct1.serializePublicKey(),mutiSeedAct2.serializePublicKey(),mutiSeedAct3.serializePublicKey()},mutiSeedAct2);
+                ontSdk.addMultiSign(wdTx, 3, new byte[][]{mutiSeedAct1.serializePublicKey(),mutiSeedAct2.serializePublicKey(),mutiSeedAct3.serializePublicKey()},mutiSeedAct3);
                 ontSdk.addSign(wdTx, feeAct);
                 ontSdk.getConnect().sendRawTransaction(wdTx.toHexString());
 
@@ -407,7 +409,9 @@ public class ExchangeDemo {
 
                 State wdSt = new State(mainAccountAddr, Address.decodeBase58(usr.withdrawAddr), 500);
                 Transaction wdTx = ontSdk.nativevm().ong().makeTransfer(new State[]{wdSt}, FEE_PROVIDER, 30000, 0);
-                ontSdk.addMultiSign(wdTx, 3, new Account[]{mutiSeedAct1, mutiSeedAct2, mutiSeedAct3});
+                ontSdk.addMultiSign(wdTx, 3, new byte[][]{mutiSeedAct1.serializePublicKey(),mutiSeedAct2.serializePublicKey(),mutiSeedAct3.serializePublicKey()},mutiSeedAct1);
+                ontSdk.addMultiSign(wdTx, 3, new byte[][]{mutiSeedAct1.serializePublicKey(),mutiSeedAct2.serializePublicKey(),mutiSeedAct3.serializePublicKey()},mutiSeedAct2);
+                ontSdk.addMultiSign(wdTx, 3, new byte[][]{mutiSeedAct1.serializePublicKey(),mutiSeedAct2.serializePublicKey(),mutiSeedAct3.serializePublicKey()},mutiSeedAct3);
                 ontSdk.addSign(wdTx, feeAct);
                 ontSdk.getConnect().sendRawTransaction(wdTx.toHexString());
             }
@@ -421,7 +425,9 @@ public class ExchangeDemo {
             printlog("++++ unclaimed ong is " + uOngAmt);
             if(new BigInteger(uOngAmt).compareTo(new BigInteger("0")) > 0) {
                 tx = ontSdk.nativevm().ong().makeWithdrawOng(mainAccountAddr.toBase58(), mainAccountAddr.toBase58(), new BigInteger(uOngAmt).longValue(), FEE_PROVIDER, 30000, 0);
-                ontSdk.addMultiSign(tx, 3, new Account[]{mutiSeedAct1, mutiSeedAct2, mutiSeedAct3});
+                ontSdk.addMultiSign(tx, 3, new byte[][]{mutiSeedAct1.serializePublicKey(),mutiSeedAct2.serializePublicKey(),mutiSeedAct3.serializePublicKey()},mutiSeedAct1);
+                ontSdk.addMultiSign(tx, 3, new byte[][]{mutiSeedAct1.serializePublicKey(),mutiSeedAct2.serializePublicKey(),mutiSeedAct3.serializePublicKey()},mutiSeedAct2);
+                ontSdk.addMultiSign(tx, 3, new byte[][]{mutiSeedAct1.serializePublicKey(),mutiSeedAct2.serializePublicKey(),mutiSeedAct3.serializePublicKey()},mutiSeedAct3);
                 ontSdk.addSign(tx, feeAct);
                 ontSdk.getConnect().sendRawTransaction(tx.toHexString());
                 balance = ontSdk.getConnect().getBalance(mainAccountAddr.toBase58());

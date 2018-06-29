@@ -85,6 +85,8 @@ public class Ong {
 
     /**
      *
+     * @param M
+     * @param pubKeys
      * @param sendAccts
      * @param recvAddr
      * @param amount
@@ -94,20 +96,19 @@ public class Ong {
      * @return
      * @throws Exception
      */
-    public String sendTransferFromMultiSignAddr(Account[] sendAccts,String recvAddr, long amount, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendTransferFromMultiSignAddr(int M,byte[][] pubKeys,Account[] sendAccts,String recvAddr, long amount, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (sendAccts == null || sendAccts.length <= 1 || payerAcct == null ) {
             throw new SDKException(ErrorCode.ParamErr("parameters should not be null"));
         }
         if (amount <= 0 || gasprice < 0 || gaslimit < 0) {
             throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
         }
-        byte[][] pks = new byte[sendAccts.length][];
-        for(int i=0;i<pks.length;i++){
-            pks[i] = sendAccts[i].serializePublicKey();
-        }
-        Address multiAddr = Address.addressFromMultiPubKeys(sendAccts.length,pks);
+
+        Address multiAddr = Address.addressFromMultiPubKeys(sendAccts.length,pubKeys);
         Transaction tx = makeTransfer(multiAddr.toBase58(), recvAddr, amount, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
-        sdk.signTx(tx, new Account[][]{sendAccts});
+        for(int i=0;i<sendAccts.length;i++){
+            sdk.addMultiSign(tx, M, pubKeys, sendAccts[i]);
+        }
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {

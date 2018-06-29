@@ -79,8 +79,8 @@ public class MakeTxWithoutWalletDemo {
 
                 System.out.println(tx.json());
                 ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct0}});
-                ontSdk.addMultiSign(tx,2,new com.github.ontio.account.Account[]{acct0,acct1});
-
+                ontSdk.addMultiSign(tx,2,new byte[][]{acct0.serializePublicKey(),acct1.serializePublicKey()},acct0);
+                ontSdk.addMultiSign(tx,2,new byte[][]{acct0.serializePublicKey(),acct1.serializePublicKey()},acct0);
                 System.out.println(tx.hash().toHexString());
 
                 Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
@@ -100,7 +100,8 @@ public class MakeTxWithoutWalletDemo {
                 Transaction tx = ontSdk.nativevm().ont().makeTransfer(multiAddr.toBase58(),recvAddr.toBase58(), amount,multiAddr.toBase58(),30000,0);
                 System.out.println(tx.json());
                 //ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct1, acct2}});
-                ontSdk.addMultiSign(tx,2,new com.github.ontio.account.Account[]{acct1, acct2});
+                ontSdk.addMultiSign(tx,2,new byte[][]{acct1.serializePublicKey(),acct2.serializePublicKey()},acct1);
+                ontSdk.addMultiSign(tx,2,new byte[][]{acct1.serializePublicKey(),acct2.serializePublicKey()},acct2);
 
                 System.out.println(tx.hash().toHexString());
                 ontSdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -123,8 +124,8 @@ public class MakeTxWithoutWalletDemo {
                 Transaction tx = ontSdk.nativevm().ont().makeTransfer(new State[]{state1,state2},sender1.toBase58(),30000,0);
                 System.out.println(tx.json());
                 ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct0}});
-                ontSdk.addMultiSign(tx,2,new com.github.ontio.account.Account[]{acct1, acct2});
-
+                ontSdk.addMultiSign(tx,2,new byte[][]{acct1.serializePublicKey(),acct2.serializePublicKey()},acct1);
+                ontSdk.addMultiSign(tx,2,new byte[][]{acct1.serializePublicKey(),acct2.serializePublicKey()},acct2);
                 System.out.println(tx.hash().toHexString());
                 ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 
@@ -146,8 +147,8 @@ public class MakeTxWithoutWalletDemo {
                 InvokeCode txRx = (InvokeCode)Transaction.deserializeFrom(Helper.hexToBytes(txHex));
                 System.out.println(Transfers.deserializeFrom(Contract.deserializeFrom(txRx.code).args).json());
                 ontSdk.addSign(txRx,acct0);
-                ontSdk.addMultiSign(txRx,2,new com.github.ontio.account.Account[]{acct1,acct2});
-
+                ontSdk.addMultiSign(txRx,2,new byte[][]{acct1.serializePublicKey(),acct2.serializePublicKey()},acct1);
+                ontSdk.addMultiSign(txRx,2,new byte[][]{acct1.serializePublicKey(),acct2.serializePublicKey()},acct2);
                 //send tx
                 //ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 

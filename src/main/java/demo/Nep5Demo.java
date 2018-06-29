@@ -80,7 +80,8 @@ public class Nep5Demo {
 
                 Transaction tx = ontSdk.neovm().nep5().makeTransfer(multiAddr,acct1.getAddressU160().toBase58(),10000000L,acct,50000,0);
                 ontSdk.addSign(tx,acct);
-                ontSdk.addMultiSign(tx,2,new Account[]{acct,acct2});
+                ontSdk.addMultiSign(tx,2,new byte[][]{acct.serializePublicKey(),acct2.serializePublicKey()},acct);
+                ontSdk.addMultiSign(tx,2,new byte[][]{acct.serializePublicKey(),acct2.serializePublicKey()},acct2);
                 Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
                 System.out.println(obj);
              //   ontSdk.getConnect().sendRawTransaction(tx.toHexString());

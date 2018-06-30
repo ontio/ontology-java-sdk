@@ -3,6 +3,8 @@
 
 # Attest Attestation
 
+The attest contract of verifiable claim provides the attest service and the record availability information, that is, whether it has been revoked.
+
 ## Step
 
 
@@ -24,11 +26,28 @@ wm.openWalletFile("RecordTxDemo.json");
 
 > Note: codeAddress is the address of the record contract。
 
+* 2. create claim
+
+```
+Map<String, Object> map = new HashMap<String, Object>();
+map.put("Issuer", dids.get(0).ontid);
+map.put("Subject", dids.get(1).ontid);
+
+Map clmRevMap = new HashMap();
+clmRevMap.put("typ","AttestContract");
+clmRevMap.put("addr",dids.get(1).ontid.replace(Common.didont,""));
+
+String claim = ontSdk.nativevm().ontId().createOntIdClaim(dids.get(0).ontid,password,dids.get(0).controls.get(0).getSalt(), "claim:context", map, map,
+clmRevMap,System.currentTimeMillis()/1000 +100000);
+```
+
+> Note: createOntIdClaim interface details please see the digital identity ontid document https://github.com/ontio/ontology-java-sdk/blob/master/docs/cn/identity_claim.md
+
 
 The specification of the following interface document is https://github.com/kunxian-xia/ontology-DID/blob/master/docs/en/claim_spec.md
 
 
-* 2. String sendCommit(String issuerOntid, String password,byte[] salt, String subjectOntid, String claimId, Account payerAcct, long gaslimit, long gasprice)
+* 3. String sendCommit(String issuerOntid, String password,byte[] salt, String subjectOntid, String claimId, Account payerAcct, long gaslimit, long gasprice)
 
         function description： Save data to the chain
 
@@ -60,7 +79,7 @@ ontSdk.neovm().claimRecord().sendCommit(ontid,password,payload.getString("jti"),
 ```
 
 
-* 3. String sendGetStatus(String claimId)
+* 4. String sendGetStatus(String claimId)
 
         function description：query status of trusted claim
 
@@ -76,7 +95,7 @@ String getstatusRes2 = ontSdk.neovm().claimRecord().sendGetStatus(payload.getStr
 ```
 
 
-* 4. String sendRevoke(String issuerOntid,String password,byte[] salt,String claimId,Account payerAcct,long gaslimit,long gas)
+* 5. String sendRevoke(String issuerOntid,String password,byte[] salt,String claimId,Account payerAcct,long gaslimit,long gas)
 
         function description：Repeal of a trust claim
 

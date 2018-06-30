@@ -3,6 +3,8 @@
 
 # 数字身份Claim存证
 
+可信声明存证合约提供存证服务即存证可信声明Id，签发者ONT身份，属主ONT身份等信息，以及记录可用性信息即是否被吊销等信息。
+
 ## 操作步骤
 
 
@@ -24,12 +26,32 @@ wm.setCodeAddress("803ca638069742da4b6871fe3d7f78718eeee78a");
 
 > Note: codeAddress是存证合约地址。
 
+* 2. 创建可信声明
+
+```
+Map<String, Object> map = new HashMap<String, Object>();
+map.put("Issuer", dids.get(0).ontid);
+map.put("Subject", dids.get(1).ontid);
+
+Map clmRevMap = new HashMap();
+clmRevMap.put("typ","AttestContract");
+clmRevMap.put("addr",dids.get(1).ontid.replace(Common.didont,""));
+
+String claim = ontSdk.nativevm().ontId().createOntIdClaim(dids.get(0).ontid,password,dids.get(0).controls.get(0).getSalt(), "claim:context", map, map,
+clmRevMap,System.currentTimeMillis()/1000 +100000);
+```
+
+> Note: createOntIdClaim接口详细信息请查看数字身份ontid文档https://github.com/ontio/ontology-java-sdk/blob/master/docs/cn/identity_claim.md
+
+
 下面接口文档的规范是https://github.com/ontio/ontology-DID/blob/master/docs/cn/claim_spec_cn.md
 
 
-* 2. String sendCommit(String issuerOntid, String password,byte[] salt, String subjectOntid, String claimId, Account payerAcct, long gaslimit, long gasprice)
+* 3. String sendCommit(String issuerOntid, String password,byte[] salt, String subjectOntid, String claimId, Account payerAcct, long gaslimit, long gasprice)
 
-        功能说明： 将数据保存到链上
+        功能说明： 将数据保存到链上，声明存证，当且仅当该声明没有被存证过，且Commit函数是由committer调用，才能存证成功；否则，存证失败。
+
+                            存证成功后，该声明的状态就是已存证（committed）。
 
         参数说明：
 
@@ -58,7 +80,7 @@ JSONObject payload = JSONObject.parseObject(new String(Base64.getDecoder().decod
 String commitHash = ontSdk.neovm().claimRecord().sendCommit(dids.get(0).ontid,password,dids.get(1).ontid,payload.getString("jti"),account1,ontSdk.DEFAULT_GAS_LIMIT,0)
 ```
 
-* 3. String sendGetStatus(String claimId)
+* 4. String sendGetStatus(String claimId)
 
         功能说明：查询可信申明的状态
 
@@ -76,7 +98,7 @@ String getstatusRes2 = ontSdk.neovm().claimRecord().sendGetStatus(payload.getStr
 ```
 
 
-* 4. String sendRevoke(String issuerOntid,String password,byte[] salt,String claimId,Account payerAcct,long gaslimit,long gas)
+* 5. String sendRevoke(String issuerOntid,String password,byte[] salt,String claimId,Account payerAcct,long gaslimit,long gas)
 
         功能说明：撤销可信申明
 

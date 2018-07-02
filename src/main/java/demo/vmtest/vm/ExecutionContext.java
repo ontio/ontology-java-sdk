@@ -15,17 +15,22 @@ public class ExecutionContext {
         OpReader = new VmReader(code);
         InstructionPointer = 0;
     }
-    public int GetInstructionPointer(){
+
+    public int GetInstructionPointer() {
         return OpReader.Position();
     }
-    public long SetInstructionPointer(long offset){
+
+    public long SetInstructionPointer(long offset) {
         return OpReader.Seek(offset);
     }
-    public ScriptOp NextInstruction(){
+
+    public ScriptOp NextInstruction() {
         return ScriptOp.valueOf(Code[OpReader.Position()]);
     }
-    public ExecutionContext Clone(){
-        ExecutionContext executionContext = new ExecutionContext(engine,Code);
+
+    public ExecutionContext Clone() {
+        ExecutionContext executionContext = new ExecutionContext(engine, Code);
+        executionContext.InstructionPointer = this.InstructionPointer;
         executionContext.SetInstructionPointer(this.GetInstructionPointer());
         return executionContext;
     }

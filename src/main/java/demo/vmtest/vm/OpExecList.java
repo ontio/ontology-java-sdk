@@ -1,9 +1,15 @@
 package demo.vmtest.vm;
 
 import com.github.ontio.core.scripts.ScriptOp;
+import com.sun.org.apache.bcel.internal.generic.PUSH;
+import demo.vmtest.types.ArrayItem;
+import demo.vmtest.types.MapItem;
+import demo.vmtest.types.StackItems;
+import demo.vmtest.types.StructItem;
 import demo.vmtest.utils.PushData;
 
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,9 +18,10 @@ import java.util.Map;
  * @date 2018/6/27
  */
 public class OpExecList {
-    public static Map<ScriptOp,OpExec> OpExecList = new HashMap();
-    public static OpExec getOpExec(ScriptOp op){
-        if(OpExecList.size() == 0){
+    public static Map<ScriptOp, OpExec> OpExecList = new HashMap();
+
+    public static OpExec getOpExec(ScriptOp op) {
+        if (OpExecList.size() == 0) {
             try {
                 init();
             } catch (Exception e) {
@@ -23,63 +30,62 @@ public class OpExecList {
         }
         return OpExecList.get(op);
     }
+
     public static void init() throws Exception {
-        Method opPushData = PushData.class.getMethod("opPushData",ExecutionEngine.class);
-        Method opNop = PushData.class.getMethod("opNop",ExecutionEngine.class);
-        Method opJmp = PushData.class.getMethod("opJmp",ExecutionEngine.class);
-        Method opCall = PushData.class.getMethod("opCall",ExecutionEngine.class);
-        Method opRet = PushData.class.getMethod("opRet",ExecutionEngine.class);
-        Method opToAltStack = PushData.class.getMethod("opToAltStack",ExecutionEngine.class);
-        Method opToDupFromAltStack = PushData.class.getMethod("opToDupFromAltStack",ExecutionEngine.class);
-        Method opFromAltStack = PushData.class.getMethod("opFromAltStack",ExecutionEngine.class);
-        Method opXDrop = PushData.class.getMethod("opXDrop",ExecutionEngine.class);
-        Method opXSwap = PushData.class.getMethod("opXSwap",ExecutionEngine.class);
-        Method opXTuck = PushData.class.getMethod("opXTuck",ExecutionEngine.class);
-        Method opDepth = PushData.class.getMethod("opDepth",ExecutionEngine.class);
-        Method opDrop = PushData.class.getMethod("opDrop",ExecutionEngine.class);
-        Method opDup = PushData.class.getMethod("opDup",ExecutionEngine.class);
-        Method opNip = PushData.class.getMethod("opNip",ExecutionEngine.class);
-        Method opOver = PushData.class.getMethod("opOver",ExecutionEngine.class);
-        Method opPick = PushData.class.getMethod("opPick",ExecutionEngine.class);
-        Method opRoll = PushData.class.getMethod("opRoll",ExecutionEngine.class);
-        Method opRot = PushData.class.getMethod("opRot",ExecutionEngine.class);
-        Method opSwap = PushData.class.getMethod("opSwap",ExecutionEngine.class);
-        Method opTuck = PushData.class.getMethod("opTuck",ExecutionEngine.class);
-        Method opCat = PushData.class.getMethod("opCat",ExecutionEngine.class);
-        Method opSubStr = PushData.class.getMethod("opSubStr",ExecutionEngine.class);
-        Method opLeft = PushData.class.getMethod("opLeft",ExecutionEngine.class);
-        Method opRight = PushData.class.getMethod("opRight",ExecutionEngine.class);
-        Method opSize = PushData.class.getMethod("opSize",ExecutionEngine.class);
+        Method opPushData = PushData.class.getMethod("opPushData", ExecutionEngine.class);
+        Method opNop = PushData.class.getMethod("opNop", ExecutionEngine.class);
+        Method opJmp = PushData.class.getMethod("opJmp", ExecutionEngine.class);
+        Method opCall = PushData.class.getMethod("opCall", ExecutionEngine.class);
+        Method opRet = PushData.class.getMethod("opRet", ExecutionEngine.class);
+        Method opToAltStack = PushData.class.getMethod("opToAltStack", ExecutionEngine.class);
+        Method opToDupFromAltStack = PushData.class.getMethod("opToDupFromAltStack", ExecutionEngine.class);
+        Method opFromAltStack = PushData.class.getMethod("opFromAltStack", ExecutionEngine.class);
+        Method opXDrop = PushData.class.getMethod("opXDrop", ExecutionEngine.class);
+        Method opXSwap = PushData.class.getMethod("opXSwap", ExecutionEngine.class);
+        Method opXTuck = PushData.class.getMethod("opXTuck", ExecutionEngine.class);
+        Method opDepth = PushData.class.getMethod("opDepth", ExecutionEngine.class);
+        Method opDrop = PushData.class.getMethod("opDrop", ExecutionEngine.class);
+        Method opDup = PushData.class.getMethod("opDup", ExecutionEngine.class);
+        Method opNip = PushData.class.getMethod("opNip", ExecutionEngine.class);
+        Method opOver = PushData.class.getMethod("opOver", ExecutionEngine.class);
+        Method opPick = PushData.class.getMethod("opPick", ExecutionEngine.class);
+        Method opRoll = PushData.class.getMethod("opRoll", ExecutionEngine.class);
+        Method opRot = PushData.class.getMethod("opRot", ExecutionEngine.class);
+        Method opSwap = PushData.class.getMethod("opSwap", ExecutionEngine.class);
+        Method opTuck = PushData.class.getMethod("opTuck", ExecutionEngine.class);
+        Method opCat = PushData.class.getMethod("opCat", ExecutionEngine.class);
+        Method opSubStr = PushData.class.getMethod("opSubStr", ExecutionEngine.class);
+        Method opLeft = PushData.class.getMethod("opLeft", ExecutionEngine.class);
+        Method opRight = PushData.class.getMethod("opRight", ExecutionEngine.class);
+        Method opSize = PushData.class.getMethod("opSize", ExecutionEngine.class);
 
-        Method opInvert = PushData.class.getMethod("opInvert",ExecutionEngine.class);
-        Method opBigIntZip = PushData.class.getMethod("opBigIntZip",ExecutionEngine.class);
-        Method opEqual = PushData.class.getMethod("opEqual",ExecutionEngine.class);
-        Method opBigInt = PushData.class.getMethod("opBigInt",ExecutionEngine.class);
-        Method opSign = PushData.class.getMethod("opSign",ExecutionEngine.class);
-        Method opNot = PushData.class.getMethod("opNot",ExecutionEngine.class);
-        Method opNz = PushData.class.getMethod("opNz",ExecutionEngine.class);
-        Method opBoolZip = PushData.class.getMethod("opBoolZip",ExecutionEngine.class);
-        Method opBigIntComp = PushData.class.getMethod("opBigIntComp",ExecutionEngine.class);
-        Method opWithIn = PushData.class.getMethod("opWithIn",ExecutionEngine.class);
-        Method opHash = PushData.class.getMethod("opHash",ExecutionEngine.class);
+        Method opInvert = PushData.class.getMethod("opInvert", ExecutionEngine.class);
+        Method opBigIntZip = PushData.class.getMethod("opBigIntZip", ExecutionEngine.class);
+        Method opEqual = PushData.class.getMethod("opEqual", ExecutionEngine.class);
+        Method opBigInt = PushData.class.getMethod("opBigInt", ExecutionEngine.class);
+        Method opSign = PushData.class.getMethod("opSign", ExecutionEngine.class);
+        Method opNot = PushData.class.getMethod("opNot", ExecutionEngine.class);
+        Method opNz = PushData.class.getMethod("opNz", ExecutionEngine.class);
+        Method opBoolZip = PushData.class.getMethod("opBoolZip", ExecutionEngine.class);
+        Method opBigIntComp = PushData.class.getMethod("opBigIntComp", ExecutionEngine.class);
+        Method opWithIn = PushData.class.getMethod("opWithIn", ExecutionEngine.class);
+        Method opHash = PushData.class.getMethod("opHash", ExecutionEngine.class);
 
-        Method opArraySize = PushData.class.getMethod("opArraySize",ExecutionEngine.class);
-        Method opPack = PushData.class.getMethod("opPack",ExecutionEngine.class);
-        Method opUnpack = PushData.class.getMethod("opUnpack",ExecutionEngine.class);
-        Method opPickItem = PushData.class.getMethod("opPickItem",ExecutionEngine.class);
-        Method opSetItem = PushData.class.getMethod("opSetItem",ExecutionEngine.class);
-        Method opNewArray = PushData.class.getMethod("opNewArray",ExecutionEngine.class);
-        Method opNewMap = PushData.class.getMethod("opNewMap",ExecutionEngine.class);
-        Method opNewStruct = PushData.class.getMethod("opNewStruct",ExecutionEngine.class);
+        Method opArraySize = PushData.class.getMethod("opArraySize", ExecutionEngine.class);
+        Method opPack = PushData.class.getMethod("opPack", ExecutionEngine.class);
+        Method opUnpack = PushData.class.getMethod("opUnpack", ExecutionEngine.class);
+        Method opPickItem = PushData.class.getMethod("opPickItem", ExecutionEngine.class);
+        Method opSetItem = PushData.class.getMethod("opSetItem", ExecutionEngine.class);
+        Method opNewArray = PushData.class.getMethod("opNewArray", ExecutionEngine.class);
+        Method opNewMap = PushData.class.getMethod("opNewMap", ExecutionEngine.class);
+        Method opNewStruct = PushData.class.getMethod("opNewStruct", ExecutionEngine.class);
 
-        Method opAppend = PushData.class.getMethod("opAppend",ExecutionEngine.class);
-        Method opReverse = PushData.class.getMethod("opReverse",ExecutionEngine.class);
-        Method opThrow = PushData.class.getMethod("opThrow",ExecutionEngine.class);
-        Method opThrowIfNot = PushData.class.getMethod("opThrowIfNot",ExecutionEngine.class);
+        Method opAppend = PushData.class.getMethod("opAppend", ExecutionEngine.class);
+        Method opReverse = PushData.class.getMethod("opReverse", ExecutionEngine.class);
+        Method opThrow = PushData.class.getMethod("opThrow", ExecutionEngine.class);
+        Method opThrowIfNot = PushData.class.getMethod("opThrowIfNot", ExecutionEngine.class);
 
-
-
-
+        Method validatePickItem = OpExecList.class.getMethod("validatePickItem", ExecutionEngine.class);
 
 
         OpExecList.put(ScriptOp.OP_PUSH0, new OpExec(ScriptOp.OP_PUSH0, "PUSH0", opPushData, null));
@@ -119,7 +125,7 @@ public class OpExecList {
         OpExecList.put(ScriptOp.OP_DUPFROMALTSTACK, new OpExec(ScriptOp.OP_DUPFROMALTSTACK, "DUPFROMALTSTACK", opToDupFromAltStack, null));
         OpExecList.put(ScriptOp.OP_TOALTSTACK, new OpExec(ScriptOp.OP_TOALTSTACK, "TOALTSTACK", opToAltStack, null));
         OpExecList.put(ScriptOp.OP_FROMALTSTACK, new OpExec(ScriptOp.OP_FROMALTSTACK, "FROMALTSTACK", opFromAltStack, null));
-        OpExecList.put(ScriptOp.OP_XDROP, new OpExec(ScriptOp.OP_XDROP ,"XDROP", opXDrop, null));
+        OpExecList.put(ScriptOp.OP_XDROP, new OpExec(ScriptOp.OP_XDROP, "XDROP", opXDrop, null));
         OpExecList.put(ScriptOp.OP_XSWAP, new OpExec(ScriptOp.OP_XSWAP, "XSWAP", opXSwap, null));
         OpExecList.put(ScriptOp.OP_XTUCK, new OpExec(ScriptOp.OP_XTUCK, "XTUCK", opXTuck, null));
         OpExecList.put(ScriptOp.OP_DEPTH, new OpExec(ScriptOp.OP_DEPTH, "DEPTH", opDepth, null));
@@ -162,7 +168,7 @@ public class OpExecList {
         OpExecList.put(ScriptOp.OP_SHR, new OpExec(ScriptOp.OP_SHR, "SHR", opBigIntZip, null));
         OpExecList.put(ScriptOp.OP_BOOLAND, new OpExec(ScriptOp.OP_BOOLAND, "BOOLAND", opBoolZip, null));
         OpExecList.put(ScriptOp.OP_BOOLOR, new OpExec(ScriptOp.OP_BOOLOR, "BOOLOR", opBoolZip, null));
-        OpExecList.put(ScriptOp.OP_NUMEQUAL, new OpExec(ScriptOp.OP_NUMEQUAL,"NUMEQUAL", opBigIntComp, null));
+        OpExecList.put(ScriptOp.OP_NUMEQUAL, new OpExec(ScriptOp.OP_NUMEQUAL, "NUMEQUAL", opBigIntComp, null));
         OpExecList.put(ScriptOp.OP_LT, new OpExec(ScriptOp.OP_LT, "LT", opBigIntComp, null));
         OpExecList.put(ScriptOp.OP_GT, new OpExec(ScriptOp.OP_GT, "GT", opBigIntComp, null));
         OpExecList.put(ScriptOp.OP_LTE, new OpExec(ScriptOp.OP_LTE, "LTE", opBigIntComp, null));
@@ -194,4 +200,26 @@ public class OpExecList {
 
     }
 
+    public boolean validatePickItem(ExecutionEngine engine) {
+
+        StackItems item = PushData.PeekNStackItem(1, engine);
+        if (item == null) {
+            return false;
+        }
+        if (item instanceof MapItem) {
+        } else if (item instanceof ArrayItem) {
+            BigInteger index = PushData.PeekBigInteger(engine);
+            if (index.signum() < 0) {
+                System.out.println("ERR_BAD_VALUE");
+                return false;
+            }
+            StackItems[] arr = item.GetArray();
+            if (index.compareTo(BigInteger.valueOf(arr.length)) >= 0) {
+                System.out.println("ERR_OVER_MAX_ARRAY_SIZE");
+                return false;
+            }
+        } else if (item instanceof StructItem) {
+        }
+        return false;
+    }
 }

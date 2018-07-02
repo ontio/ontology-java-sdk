@@ -12,7 +12,7 @@ public class OpExec {
     public Method ExecFunc;
     public Method ValidatorFunc;
 
-    public OpExec(ScriptOp opcode, String name, Method execMethod, Method validatorMethod) throws Exception{
+    public OpExec(ScriptOp opcode, String name, Method execMethod, Method validatorMethod) throws Exception {
         Opcode = opcode;
         Name = name;
         ExecFunc = execMethod;
@@ -21,7 +21,7 @@ public class OpExec {
 
     public VMState Exec(ExecutionEngine engine) {
         try {
-           ExecFunc.invoke(PushData.class.newInstance(),engine);
+            ExecFunc.invoke(PushData.class.newInstance(), engine);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
             System.exit(0);
@@ -32,14 +32,26 @@ public class OpExec {
             e.printStackTrace();
             System.exit(0);
         }
-        return VMState.NONE ;
+        return VMState.NONE;
     }
 
     boolean Validator(ExecutionEngine engine) {
-        return true;
+        try {
+            if (ValidatorFunc == null) {
+                return true;
+            }
+            ValidatorFunc.invoke(OpExecList.class.newInstance(), engine);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            System.exit(0);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            System.exit(0);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
+        return false;
     }
 
-    public void init() {
-       // OpExecList
-    }
 }

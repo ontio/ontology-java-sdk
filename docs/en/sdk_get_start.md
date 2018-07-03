@@ -282,6 +282,17 @@ response:
 
 ```
 
+#### **synchronize query smartcontract event**
+
+```
+//query event per 3s after send transaction, maximum is 60s
+
+Object object = ontSdk.getConnect().waitResult(tx.hash().toString());
+System.out.println(object);
+
+
+```
+
 
 #### The list of chain interaction interfaces
 

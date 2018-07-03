@@ -19,6 +19,7 @@ sdk文档：[sdk文档](https://github.com/ontio/ontology-java-sdk/tree/master/d
 			* [ 查询ont，ong余额](#查询ontong余额)
 			* [ 查询交易是否在交易池中](#查询交易是否在交易池中)
 			* [ 查询交易是否调用成功](#查询交易是否调用成功)
+			* [ 同步查询智能合约event](#同步查询智能合约event)
 			* [其他与链交互接口列表：](#其他与链交互接口列表)
 		* [2.3 ont转账](#23-ont转账)
 			* [ 构造转账交易并发送](#构造转账交易并发送)
@@ -283,6 +284,16 @@ response:
 
 ```
 
+#### **同步查询智能合约event**
+
+```
+//发完交易每隔3秒请求一次，最长等待60秒
+
+Object object = ontSdk.getConnect().waitResult(tx.hash().toString());
+System.out.println(object);
+
+
+```
 
 #### 其他与链交互接口列表：
 

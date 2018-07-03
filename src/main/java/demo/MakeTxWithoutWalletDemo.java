@@ -88,6 +88,18 @@ public class MakeTxWithoutWalletDemo {
                 //ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 
             }
+            if(false){
+                Address sender = acct0.getAddressU160();
+                Address recvAddr = Address.addressFromMultiPubKeys(2, acct1.serializePublicKey(), acct2.serializePublicKey());
+                System.out.println("sender:" + sender.toBase58());
+                System.out.println("recvAddr:" + recvAddr.toBase58());
+                long amount = 100000;
+                Transaction tx = ontSdk.nativevm().ont().makeTransfer(sender.toBase58(),recvAddr.toBase58(), amount,sender.toBase58(),30000,0);
+                ontSdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct0}});
+                //getSmartCodeEvent per 3s, max 60s
+                Object object = ontSdk.getConnect().waitResult(tx.hash().toString());
+                System.out.println(object);
+            }
 
             if (false) {
                 //sender address From MultiPubKeys

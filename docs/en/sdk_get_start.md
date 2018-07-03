@@ -290,6 +290,11 @@ response:
 Object object = ontSdk.getConnect().waitResult(tx.hash().toString());
 System.out.println(object);
 
+response success:
+{"GasConsumed":0,"Notify":[],"TxHash":"cb9e0d4a7a4aea0518bb39409613b8ef76798df3962feb8f8040e05329674890","State":1}
+
+response fail,reject by txpool:
+com.github.ontio.sdk.exception.SDKException: {"Action":"getmempooltxstate","Desc":"UNKNOWN TRANSACTION","Error":44001,"Result":"","Version":"1.0.0"}
 
 ```
 
@@ -357,6 +362,15 @@ com.github.ontio.network.exception.RestfulException: {"Action":"sendrawtransacti
 
 // Send a transaction
 ontSdk.getConnect().sendRawTransaction(tx.toHexString());
+
+// Send a transaction synchronize 
+Object obj = ontSdk.getConnect().syncSendRawTransaction(tx.toHexString());
+
+response success:
+{"GasConsumed":0,"Notify":[],"TxHash":"cb9e0d4a7a4aea0518bb39409613b8ef76798df3962feb8f8040e05329674890","State":1}
+
+response fail,reject by txpool:
+com.github.ontio.sdk.exception.SDKException: {"Action":"getmempooltxstate","Desc":"UNKNOWN TRANSACTION","Error":44001,"Result":"","Version":"1.0.0"}
 
 ```
 

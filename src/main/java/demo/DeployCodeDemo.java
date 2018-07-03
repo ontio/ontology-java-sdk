@@ -84,6 +84,12 @@ public class DeployCodeDemo {
                     "v1.0", "author", "email", "desp", account.getAddressU160().toBase58(),ontSdk.DEFAULT_DEPLOY_GAS_LIMIT,0);
             ontSdk.signTx(tx, new Account[][]{{account}});
             String txHex = Helper.toHexString(tx.toArray());
+            if(true){
+                System.out.println(tx.hash().toString());
+                Object result = ontSdk.getConnect().syncSendRawTransaction(txHex);
+                System.out.println(result);
+                System.exit(0);
+            }
             System.out.println(txHex);
            Object result = ontSdk.getConnect().sendRawTransaction(txHex);
             System.out.println(result);
@@ -117,7 +123,7 @@ public class DeployCodeDemo {
         OntSdk wm = OntSdk.getInstance();
         wm.setRpc(rpcUrl);
         wm.setRestful(restUrl);
-        wm.setDefaultConnect(wm.getRpc());
+        wm.setDefaultConnect(wm.getRestful());
 
         wm.openWalletFile("DeployDemo.json");
 

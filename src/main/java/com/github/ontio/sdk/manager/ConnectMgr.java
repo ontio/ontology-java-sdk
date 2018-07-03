@@ -128,6 +128,31 @@ public class ConnectMgr {
         return false;
     }
 
+    /**
+     * wait result after send
+     * @param hexData
+     * @return
+     * @throws ConnectorException
+     * @throws Exception
+     */
+    public Object sendRawTransactionSync(String hexData) throws ConnectorException, Exception {
+        return syncSendRawTransaction(hexData);
+    }
+
+    /**
+     * wait result after send
+     * @param hexData
+     * @return
+     * @throws ConnectorException
+     * @throws Exception
+     */
+    public Object syncSendRawTransaction(String hexData) throws ConnectorException, Exception {
+        String rs = (String) connector.sendRawTransaction(hexData);
+        String hash = Transaction.deserializeFrom(Helper.hexToBytes(hexData)).hash().toString();
+        System.out.println("Transaction hash is: " + hash + ", Please waitting result... ");
+        return waitResult(hash);
+    }
+
     public Object sendRawTransactionPreExec(String hexData) throws ConnectorException, IOException {
         Object rs = connector.sendRawTransaction(true, null, hexData);
         if (connector instanceof RpcClient) {
@@ -237,21 +262,35 @@ public class ConnectMgr {
     public String getVersion() throws ConnectorException, IOException {
         return connector.getVersion();
     }
+
     public Object waitResult(String hash) throws Exception {
+        Object objEvent = null;
+        Object objTxState = null;
+        int notInpool = 0;
         for (int i = 0; i < 20; i++) {
             try {
                 Thread.sleep(3000);
-                Object obj = connector.getSmartCodeEvent(hash);
-                if(((Map)obj).get("Notify") != null){
-                    return obj;
+                objEvent = connector.getSmartCodeEvent(hash);
+                if (objEvent.equals("") || objEvent == null) {
+                    Thread.sleep(1000);
+                    objTxState = connector.getMemPoolTxState(hash);
+                    continue;
+                }
+                if (((Map) objEvent).get("Notify") != null) {
+                    return objEvent;
                 }
             } catch (Exception e) {
-                if(!e.getMessage().contains("INVALID TRANSACTION")){
-                    break;
+                if (e.getMessage().contains("UNKNOWN TRANSACTION") && e.getMessage().contains("getmempooltxstate")) {
+                    notInpool++;
+                    if ((objEvent.equals("") || objEvent == null) && notInpool >1){
+                        throw new SDKException(e.getMessage());
+                    }
+                } else {
+                    continue;
                 }
             }
         }
-        throw new SDKException(ErrorCode.ParamError);
+        throw new SDKException(ErrorCode.OtherError("time out"));
     }
 }
 

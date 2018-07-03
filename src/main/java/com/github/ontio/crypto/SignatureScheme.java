@@ -1,5 +1,7 @@
 package com.github.ontio.crypto;
 
+import com.github.ontio.common.ErrorCode;
+
 public enum SignatureScheme {
     SHA224WITHECDSA("SHA224withECDSA"),
     SHA256WITHECDSA("SHA256withECDSA"),
@@ -21,5 +23,14 @@ public enum SignatureScheme {
     @Override
     public String toString() {
         return name;
+    }
+
+    public static SignatureScheme fromScheme(String name) throws Exception {
+        for (SignatureScheme k : SignatureScheme.values()) {
+            if (k.name().equals(name.toUpperCase())) {
+                return k;
+            }
+        }
+        throw new Exception(ErrorCode.UnknownAsymmetricKeyType);
     }
 }

@@ -510,11 +510,8 @@ ontSdk.nativevm().ong().makeTransfer...
 
 ####  **Withdraw ONG**
 
-1. Check the balance of ONG
-2. Create account
-3. Construct transaction
-4. Signature
-5. Send a transaction that withdraws ONG
+1. Check the balance of non-withdrawal ONG
+2. Send a transaction that withdraws ONG
 
 ```
 

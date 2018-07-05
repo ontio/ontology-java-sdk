@@ -520,10 +520,7 @@ ontSdk.nativevm().ong().makeTransfer...
 ####  **提取ong**
 
 1. 查询是否有ong可以提取
-2. 创建账号
-3. 构造交易
-4. 签名
-5. 发送提取ong交易
+2. 发送提取ong交易
 
 ```
 查询未提取ong:

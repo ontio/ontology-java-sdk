@@ -23,6 +23,13 @@
     </repositories>
 
     <dependencies>
+
+        <dependency>
+            <groupId>io.github.novacrypto</groupId>
+            <artifactId>BIP32</artifactId>
+            <version>0.0.9</version>
+        </dependency>
+
         <dependency>
             <groupId>io.github.novacrypto</groupId>
             <artifactId>BIP39</artifactId>

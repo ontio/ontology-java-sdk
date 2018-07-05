@@ -517,22 +517,17 @@ ontSdk.nativevm().ong().makeTransfer...
 5. Send a transaction that withdraws ONG
 
 ```
-//Query non-withdrawal ONG
-String claimer = acct0.getAddressU160().toBase58();
-sdk.nativevm().ong().unclaimOng(claimer);
 
-//Claim ong，withdraw ONG
-com.github.ontio.account.Account acct0 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey0), ontSdk.signatureScheme);
+//Query non-withdrawal ONG:
+String addr = acct0.getAddressU160().toBase58();
+String ong = sdk.nativevm().ong().unboundOng(addr);
 
-Transaction tx = sdk.nativevm().ong().makeClaimOng(claimer,claimer,10,claimer,30000,0);
-sdk.signTx(tx, new com.github.ontio.account.Account[][]{{acct0}});
+//withdraw ONG
+com.github.ontio.account.Account account = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey0), ontSdk.signatureScheme);
+String hash = sdk.nativevm().ong().withdrawOng(account,toAddr,64000L,payerAcct,30000,500);
 
-ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 ```
 
-| Method Name | Parameter | Parameter Description |
-| :--- | :--- | :--- |
-| makeClaimOng | String claimer,String to,long amount,String payer,long gaslimit,long gasprice | claimer，who to send，amount, network payer address，gaslimit，gasprice |
 
 
 ## 3. NEP5 Transfer

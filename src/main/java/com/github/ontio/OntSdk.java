@@ -132,6 +132,24 @@ public class OntSdk {
     public void setDefaultConnect(ConnectMgr conn){
         connDefault = conn;
     }
+    public void setConnectTestNet(){
+        try {
+            String rpcUrl = "http://polaris1.ont.io";
+            getInstance().setRpc(rpcUrl);
+            connDefault = getInstance().getRpc();
+        } catch (SDKException e) {
+            e.printStackTrace();
+        }
+    }
+    public void setConnectMainNet(){
+        try {
+            String rpcUrl = "http://dappnode1.ont.io";
+            getInstance().setRpc(rpcUrl);
+            connDefault = getInstance().getRpc();
+        } catch (SDKException e) {
+            e.printStackTrace();
+        }
+    }
     public ConnectMgr getWebSocket() throws SDKException{
         if(connWebSocket == null){
             throw new SDKException(ErrorCode.WebsocketNotInit);

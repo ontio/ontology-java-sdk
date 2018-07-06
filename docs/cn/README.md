@@ -9,7 +9,7 @@
 
 
 - [区块链节点基本操作](basic.md)
-- [钱包文件及规范](Wallet_File_Specification.md)
+- [钱包文件及规范](../en/Wallet_File_Specification.md)
 - [数字身份及可信声明管理](identity_claim.md)
 - [数字资产](asset.md)
 - [智能合约部署和调用](smartcontract.md)

@@ -4,10 +4,6 @@ import com.github.ontio.common.Helper;
 
 import java.math.BigInteger;
 
-/**
- * @Description:
- * @date 2018/6/27
- */
 public class BoolItem extends StackItems {
     public boolean value;
 

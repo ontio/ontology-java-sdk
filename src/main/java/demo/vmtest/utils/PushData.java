@@ -11,10 +11,6 @@ import demo.vmtest.types.*;
 
 import java.math.BigInteger;
 
-/**
- * @Description:
- * @date 2018/6/27
- */
 public class PushData {
     public static VMState opPushData(ExecutionEngine engine) {
         Object data = getPushData(engine);

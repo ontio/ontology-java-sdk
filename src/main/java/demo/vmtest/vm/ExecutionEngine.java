@@ -9,10 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @Description:
- * @date 2018/6/26
- */
 public class ExecutionEngine {
 
     public RandomAccessStack EvaluationStack = new RandomAccessStack();

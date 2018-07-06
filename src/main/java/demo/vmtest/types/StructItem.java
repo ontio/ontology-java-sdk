@@ -5,10 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @Description:
- * @date 2018/6/27
- */
 public class StructItem extends StackItems {
     public List<StackItems> stackItems = new ArrayList<>();
 

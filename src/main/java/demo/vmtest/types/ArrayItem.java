@@ -1,9 +1,5 @@
 package demo.vmtest.types;
 
-/**
- * @Description:
- * @date 2018/6/27
- */
 public class ArrayItem extends StackItems {
     public StackItems[] stackItems;
 

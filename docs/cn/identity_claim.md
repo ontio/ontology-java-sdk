@@ -100,7 +100,8 @@ ontSdk.signTx(tx,identity.ontid,password);
 ontSdk.getConnect().sendRawTransaction(tx);
 ```
 
-链上注册成功后，对应此ONT ID的身份描述对象DDO将被存储在本体区块链上。关于DDO的信息可以从[ONT ID 身份标识协议及智能合约实现说明](https://git.ont.network/Ontology_Open_Platform/ontid/src/master/docs/en/ONTID_protocol_spec.md)详细了解。
+链上注册成功后，对应此ONT ID的身份描述对象DDO将被存储在本体区块链上。关于DDO的信息可以从[ONT ID 身份标识协议及智能合约实现说明]
+(https://github.com/ontio/ontology-DID/blob/master/README_cn.md)详细了解。
 
 
 * 4 导入账号或身份

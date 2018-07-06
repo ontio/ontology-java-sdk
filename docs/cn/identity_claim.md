@@ -7,7 +7,7 @@
 
 ## 钱包文件及规范
 
-钱包文件是一个Json格式的数据存储文件，可同时存储多个数字身份和多个数字资产账户。具体参考[钱包文件规范](Wallet_File_Specification.md)。
+钱包文件是一个Json格式的数据存储文件，可同时存储多个数字身份和多个数字资产账户。具体参考[钱包文件规范](../en/Wallet_File_Specification.md)。
 
 为了创建数字身份，您首先需要创建/打开一个钱包文件。
 
@@ -101,7 +101,7 @@ ontSdk.getConnect().sendRawTransaction(tx);
 ```
 
 链上注册成功后，对应此ONT ID的身份描述对象DDO将被存储在本体区块链上。关于DDO的信息可以从[ONT ID 身份标识协议及智能合约实现说明]
-(https://github.com/ontio/ontology-DID/blob/master/README_cn.md)详细了解。
+https://github.com/ontio/ontology-DID/blob/master/README_cn.md
 
 
 * 4 导入账号或身份

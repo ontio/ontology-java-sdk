@@ -6,10 +6,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @Description:
- * @date 2018/6/27
- */
+
 public class MapItem extends StackItems {
     public Map<StackItems, StackItems> map = new HashMap<>();
 

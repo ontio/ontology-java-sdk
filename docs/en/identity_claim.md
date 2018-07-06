@@ -105,7 +105,8 @@ ontSdk.signTx(tx,identity.ontid,password,salt);
 ontSdk.getConnect().sendRawTransaction(tx);
 ```
 
-Upon successful registration, the corresponding DDO of the ONT ID will be stored in Ontology blockchain. Detailed information about DDO can be found in [ONT ID identity protocol and smart contract implementation](https://git.ont.network/Ontology_Open_Platform/ontid/src/master/docs/en/ONTID_protocol_spec.md).
+Upon successful registration, the corresponding DDO of the ONT ID will be stored in Ontology blockchain. Detailed information about DDO can be found in [ONT ID identity protocol and smart contract implementation]
+https://github.com/ontio/ontology-DID/blob/master/README.md
 
 
 * 4 Import account or identity

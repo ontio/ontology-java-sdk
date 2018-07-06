@@ -13,10 +13,6 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @Description:
- * @date 2018/6/27
- */
 public class OpExecList {
     public static Map<ScriptOp, OpExec> OpExecList = new HashMap();
 

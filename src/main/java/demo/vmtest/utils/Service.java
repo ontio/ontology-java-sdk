@@ -17,10 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @Description:
- * @date 2018/6/30
- */
 public class Service {
     public Method ExecFunc;
     public Method ValidatorFunc;

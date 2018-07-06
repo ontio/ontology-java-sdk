@@ -9,10 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @Description:
- * @date 2018/6/30
- */
 public class Config {
     public String ContractAddress = "ContractAddress";
     public Map<String, byte[]> storageMap = new HashMap<>();

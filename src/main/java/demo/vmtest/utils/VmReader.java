@@ -6,10 +6,6 @@ import com.github.ontio.io.BinaryReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-/**
- * @Description:
- * @date 2018/6/27
- */
 public class VmReader {
     ByteArrayInputStream ms;
     public BinaryReader reader;

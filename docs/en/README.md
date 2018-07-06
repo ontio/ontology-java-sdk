@@ -7,11 +7,14 @@ This is a comprehensive Java library for the Ontology blockchain,which is releas
 
 ## Main functions
 
-
+- [Getting Started](sdk_get_start.md)
+- [interface](interface.md)
 - [Basic operation of blockchain nodes](basic.md)
 - [Wallet file specification](Wallet_File_Specification.md)
 - [Digital identity and verifable claim management](identity_claim.md)
 - [Digital assets](asset.md)
+- [Digital Attest](attest.md)
+- [Auth manager](auth.md)
 - [Smart contract deployment and invocation](smartcontract.md)
 - [Error code](errorcode.md)
 

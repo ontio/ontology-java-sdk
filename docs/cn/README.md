@@ -7,11 +7,14 @@
 
 ## 主要功能
 
-
+- [Getting Started](sdk_get_start.md)
+- [接口基本信息](interface.md)
 - [区块链节点基本操作](basic.md)
 - [钱包文件及规范](../en/Wallet_File_Specification.md)
 - [数字身份及可信声明管理](identity_claim.md)
 - [数字资产](asset.md)
+- [数字存证](attest.md)
+- [权限管理](auth.md)
 - [智能合约部署和调用](smartcontract.md)
 - [错误码](errorcode.md)
 

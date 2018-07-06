@@ -5,10 +5,6 @@ import demo.vmtest.vm.ExecutionEngine;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @Description:
- * @date 2018/6/30
- */
 public class ServiceMap {
     static Map<String, Service> map = new HashMap<>();
     static final String ATTRIBUTE_GETUSAGE_NAME = "Ontology.Attribute.GetUsage";

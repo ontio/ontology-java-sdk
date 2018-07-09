@@ -51,10 +51,10 @@ public interface Signable extends Serializable {
     	}
     }
 	default byte[] sign(Account account, SignatureScheme scheme) throws Exception {
-		return account.generateSignature(Digest.sha256(Digest.sha256(getHashData())), scheme,null);
+		return account.generateSignature(Digest.hash256(getHashData()), scheme,null);
 	}
 	default boolean verifySignature(Account account, byte[] data, byte[] signature) throws Exception {
-		return account.verifySignature(Digest.sha256(Digest.sha256(data)), signature);
+		return account.verifySignature(Digest.hash256(Digest.sha256(data)), signature);
 	}
 
 }

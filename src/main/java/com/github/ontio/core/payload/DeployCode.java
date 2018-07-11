@@ -42,7 +42,7 @@ public class DeployCode extends Transaction {
     }
 
     @Override
-    protected void deserializeExclusiveData(BinaryReader reader) throws IOException {
+    public void deserializeExclusiveData(BinaryReader reader) throws IOException {
         try {
             code = reader.readVarBytes();
             needStorage = reader.readBoolean();

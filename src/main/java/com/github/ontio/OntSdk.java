@@ -247,11 +247,15 @@ public class OntSdk {
      * @throws Exception
      */
     public Transaction addMultiSign(Transaction tx,int M,byte[][] pubKeys, Account acct) throws Exception {
+        addMultiSign(tx,M,pubKeys,tx.sign(acct, acct.getSignatureScheme()));
+        return tx;
+    }
+    public Transaction addMultiSign(Transaction tx,int M,byte[][] pubKeys, byte[] signatureData) throws Exception {
         pubKeys = Program.sortPublicKeys(pubKeys);
         if (tx.sigs == null) {
             tx.sigs = new Sig[0];
         } else {
-            if (tx.sigs.length  > Common.TX_MAX_SIG_SIZE || M > pubKeys.length || M <= 0 || acct == null || pubKeys == null) {
+            if (tx.sigs.length  > Common.TX_MAX_SIG_SIZE || M > pubKeys.length || M <= 0 || signatureData == null || pubKeys == null) {
                 throw new SDKException(ErrorCode.ParamError);
             }
             for (int i = 0; i < tx.sigs.length; i++) {
@@ -259,12 +263,15 @@ public class OntSdk {
                     if (tx.sigs[i].sigData.length + 1 > pubKeys.length) {
                         throw new SDKException(ErrorCode.ParamErr("too more sigData"));
                     }
+                    if(tx.sigs[i].M != M){
+                        throw new SDKException(ErrorCode.ParamErr("M error"));
+                    }
                     int len = tx.sigs[i].sigData.length;
                     byte[][] sigData = new byte[len+1][];
                     for (int j = 0; j < tx.sigs[i].sigData.length; j++) {
                         sigData[j] = tx.sigs[i].sigData[j];
                     }
-                    sigData[len] = tx.sign(acct, acct.getSignatureScheme());
+                    sigData[len] = signatureData;
                     tx.sigs[i].sigData = sigData;
                     return tx;
                 }
@@ -278,7 +285,7 @@ public class OntSdk {
         sigs[tx.sigs.length].M = M;
         sigs[tx.sigs.length].pubKeys = pubKeys;
         sigs[tx.sigs.length].sigData = new byte[1][];
-        sigs[tx.sigs.length].sigData[0] = tx.sign(acct, acct.getSignatureScheme());
+        sigs[tx.sigs.length].sigData[0] = signatureData;
 
         tx.sigs = sigs;
         return tx;

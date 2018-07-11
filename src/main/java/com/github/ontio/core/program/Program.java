@@ -77,7 +77,7 @@ public class Program {
     public static byte[][] sortPublicKeys(byte[]... publicKeys){
         publicKeys = Arrays.stream(publicKeys).sorted((o1, o2) -> {
             if (KeyType.fromPubkey(o1).getLabel() != KeyType.fromPubkey(o2).getLabel()) {
-                return KeyType.fromPubkey(o1).getLabel() > KeyType.fromPubkey(o2).getLabel() ? 1 : -1;
+                return KeyType.fromPubkey(o1).getLabel() >= KeyType.fromPubkey(o2).getLabel() ? 1 : -1;
             }
             switch (KeyType.fromPubkey(o1)) {
                 case SM2:

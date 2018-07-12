@@ -4,6 +4,7 @@ package com.github.neo.core.transaction;
 
 import com.github.neo.core.ContractParameterType;
 import com.github.ontio.common.Address;
+import com.github.ontio.common.Helper;
 import com.github.ontio.core.transaction.TransactionType;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
@@ -30,14 +31,15 @@ public class PublishTransaction extends TransactionNeo {
 	@Override
 	protected void deserializeExclusiveData(BinaryReader reader) throws IOException {
 		script = reader.readVarBytes();
-		parameterList = toEnum(reader.readVarBytes());
+		byte[] param = reader.readVarBytes();
+		parameterList = toEnum(param);
 		returnType = toEnum(reader.readByte());
 		needStorage = reader.readBoolean();
-		name = reader.readVarString();
-		codeVersion = reader.readVarString();
-		author = reader.readVarString();
-		email = reader.readVarString();
-		description = reader.readVarString();
+		name = new String(reader.readVarBytes(252));
+		codeVersion = new String(reader.readVarBytes(252));
+		author = new String(reader.readVarBytes(252));
+		email = new String(reader.readVarBytes(252));
+		description = new String(reader.readVarBytes(65535));
 	}
 	@Override
 	protected void serializeExclusiveData(BinaryWriter writer) throws IOException {

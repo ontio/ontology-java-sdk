@@ -156,7 +156,10 @@ public abstract class TransactionNeo extends Inventory {
 	public static TransactionNeo deserializeFrom(BinaryReader reader) throws IOException {
         try {
             TransactionType type = TransactionType.valueOf(reader.readByte());
-            String typeName = "NEO.Core." + type.toString();
+			String typeName = "NEO.Core." + type.toString();
+            if(type.toString().equals("InvokeCode")){
+				typeName = "com.github.neo.core.transaction.InvocationTransaction";
+			}
 			TransactionNeo transaction = (TransactionNeo)Class.forName(typeName).newInstance();
             transaction.deserializeUnsignedWithoutType(reader);
 			transaction.scripts = reader.readSerializableArray(Program.class);

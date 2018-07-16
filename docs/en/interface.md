@@ -67,7 +67,7 @@ include：
    3 | Account createAccountFromPriKey(String password, String prikey)            |   create with private key
    4 | AccountInfo createAccountInfo(String password)                             |   create with private key
    5 | AccountInfo createAccountInfoFromPriKey(String password, String prikey)    |   create with private key
-   6 | AccountInfo getAccountInfo(String address, String password,byte[] salt)                |   get account info
+   6 | AccountInfo getAccountInfo(String address, String password,byte[] salt)    |   get account info
    7 | List<Account> getAccounts()                                                |   get accounts
    8 | Account getAccount(String address)                                         |   get account
    9 | Account getDefaultAccount()                                                |   get default account
@@ -89,8 +89,25 @@ include：
   10 | Identity addOntIdController(String ontid, String key, String id)           |    
 ```        
 
+助记词和keystore接口：
+
+```  
+     |                        Main   Function                                     |     Description            
+ ----|----------------------------------------------------------------------------|------------------------ 
+   1 | Map exportIdentityQRCode(Wallet walletFile, Identity identity)  |   
+   2 | Map exportAccountQRCode(Wallet walletFile,Account account)                              |   
+   3 | String getPriKeyFromQrCode(String qrcode,String password)          |   
+   4 | String generateMnemonicCodesStr()                         |   
+   5 | byte[] getSeedFromMnemonicCodesStr(String mnemonicCodesStr) |   
+   6 | byte[] getPrikeyFromMnemonicCodesStrBip44(String mnemonicCodesStr)                |     
+   7 | String encryptMnemonicCodesStr(String mnemonicCodesStr, String password, String address)    |    
+   8 | decryptMnemonicCodesStr(String encryptedMnemonicCodesStr, String password,String address)     |    
+```     
+
 ### digit asset：
+
 1.native digit asset
+
 2.Nep-5 smartconstract digit asset
 
 * native digit asset：
@@ -148,8 +165,11 @@ ong:
 ```  
 
 ### digit identity：
+
 1.Register, AddPubKey,AddAttribute,AddRecovery
+
 2.claim create and verify
+
 3.claim record
 
 * ontid：
@@ -203,7 +223,7 @@ ong:
   
  ```
  
-* Cliam record：
+* Claim record：
   
  ```
      |                                            Function                                                         |     Description
@@ -250,3 +270,18 @@ ong:
      4 | Transaction makeDelegate(String ontid,String contractAddr,String toAddr,String role,int period,int level,int key,String payer,long gaslimit,long gasprice)|   
      5 | Transaction makeWithDraw(String ontid,String contractAddr,String delegate, String role,int key,String payer,long gaslimit,long gasprice)                  |   
  ```
+ 
+  #### Governance contract
+  
+   ```
+         |                                            Function                                                                                                                               |     Description
+     ----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------
+       1 | String registerCandidate(Account account, String peerPubkey, long initPos, String ontid,String ontidpwd,byte[] salt,  long keyNo, Account payerAcct, long gaslimit, long gasprice)                |
+       2 | String unRegisterCandidate(Account account, String peerPubkey,Account payerAcct, long gaslimit, long gasprice)   |
+       3 | String withdrawOng(Account account,Account payerAcct,long gaslimit,long gasprice)    |
+       4 | String getPeerInfo(String peerPubkey) |
+       5 | String getPeerInfoAll()       |
+       6 | VoteInfo getVoteInfo(String peerPubkey,Address addr)       |
+       7 | String withdraw(Account account,String peerPubkey[],long[] withdrawList,Account payerAcct,long gaslimit,long gasprice)
+       8 | String quitNode(Account account,String peerPubkey,Account payerAcct,long gaslimit,long gasprice)
+   ```

@@ -434,13 +434,13 @@ Transaction makeChangeRecovery(String ontid, String newRecovery, String oldRecov
 
 参数说明请参考上面的方法一
 
-## 可信申明
+## 可信声明
 
 ### 1 数据结构和规范
 
 具体标准请参考https://github.com/kunxian-xia/ontology-DID/blob/master/docs/en/claim_spec.md
 
-java-sdk采用JSON Web Token的格式表示claim以便于在申明发行者和申请者之间进行传递，jwt格式包含三部分header,payload,signature.
+java-sdk采用JSON Web Token的格式表示claim以便于在声明发行者和申请者之间进行传递，jwt格式包含三部分header,payload,signature.
 
 * Claim 具有以下数据结构
 
@@ -489,11 +489,11 @@ class Payload {
 `iat` 创建时间
 `exp` 超期时间
 `jti` claim的唯一标志
-`@context` 指定申明内容定义文档URI，其定义了每个字段的含义和值得类型
+`@context` 指定声明内容定义文档URI，其定义了每个字段的含义和值得类型
 `clm` 包含claim内容的对象
 `clm-rev` 定义个claim 的撤销机制，
 
-### 2 可信申明接口列表
+### 2 可信声明接口列表
 
 1. createOntIdClaim(String signerOntid, String password,byte[] salt, String context, Map<String, Object> claimMap, Map metaData,Map clmRevMap,long expire)
 
@@ -504,18 +504,18 @@ class Payload {
     | 输入参数 | signerOntid| String | 签名者ontid | 必选 |
     |        | password    | String | 签名者密码   | 必选 |
     |        | salt        | byte[] | 解密需要的参数|必选|
-    |        | context| String  |指定申明内容定义文档URI，其定义了每个字段的含义和值得类型 | 必选|
+    |        | context| String  |指定声明内容定义文档URI，其定义了每个字段的含义和值得类型 | 必选|
     |        | claimMap| Map  |声明的内容 | 必选|
-    |        | metaData   | Map | 申明发行者和申请者ontid | 必选 |
+    |        | metaData   | Map | 声明发行者和申请者ontid | 必选 |
     |        | clmRevMap   | Map | claim的撤回机制 | 必选 |
-    |        | expire   | long | 申明过期时间     | 必选 |
-    | 输出参数 | claim   | String  | 可信申明  |  |
+    |        | expire   | long | 声明过期时间     | 必选 |
+    | 输出参数 | claim   | String  | 可信声明  |  |
 
     具体参数说明请参考https://github.com/kunxian-xia/ontology-DID/blob/master/docs/en/claim_spec.md
 
 2. boolean verifyOntIdClaim(String claim)
 
-    功能说明： 验证可信申明
+    功能说明： 验证可信声明
 
     | 参数      | 字段   | 类型  | 描述 |             说明 |
     | ----- | ------- | ------ | ------------- | ----------- |
@@ -523,7 +523,7 @@ class Payload {
     | 输出参数 | true或false   | boolean  |   |  |
 
 
-### 3 签发可信申明
+### 3 签发可信声明
 根据用户输入内容构造声明对象，该声明对象里包含了签名后的数据。
 创建claim：
 * 1.查询链上是否存在Issuer的DDO
@@ -546,7 +546,7 @@ String claim = ontSdk.nativevm().ontId().createOntIdClaim(dids.get(0).ontid,pass
 > Note: Issuer可能有多把公钥，createOntIdClaim的参数ontid指定使用哪一把公钥。
 
 
-### 4 验证可信申明
+### 4 验证可信声明
 验证cliam：
 * 1.查询链上是否存在Metadata中Issuer的DDO
 * 2.Owner是否存在SIgnature中的PublicKeyId

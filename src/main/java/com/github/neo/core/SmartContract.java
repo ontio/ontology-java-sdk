@@ -72,15 +72,15 @@ public class SmartContract {
             for (int i = list.size() - 1; i >= 0; i--) {
                 Object val = list.get(i);
                 if (val instanceof byte[]) {
-                    builder.push((byte[]) val);
+                    builder.emitPushByteArray((byte[]) val);
                 } else if (val instanceof Boolean) {
-                    builder.push((Boolean) val);
+                    builder.emitPushBool((Boolean) val);
                 } else if (val instanceof Long) {
-                    builder.push(BigInteger.valueOf((long)val));
+                    builder.emitPushInteger(BigInteger.valueOf((long)val));
                 } else if (val instanceof List) {
                     List tmp = (List) val;
                     createCodeParamsScript(builder, tmp);
-                    builder.push(new BigInteger(String.valueOf(tmp.size())));
+                    builder.emitPushInteger(new BigInteger(String.valueOf(tmp.size())));
                     builder.pushPack();
 
                 } else {
@@ -102,15 +102,15 @@ public class SmartContract {
             for (int i = list.size() - 1; i >= 0; i--) {
                 Object val = list.get(i);
                 if (val instanceof byte[]) {
-                    sb.push((byte[]) val);
+                    sb.emitPushByteArray((byte[]) val);
                 } else if (val instanceof Boolean) {
-                    sb.push((Boolean) val);
+                    sb.emitPushBool((Boolean) val);
                 } else if (val instanceof Long) {
-                    sb.push(BigInteger.valueOf(((long)val)));
+                    sb.emitPushInteger(BigInteger.valueOf(((long)val)));
                 } else if (val instanceof List) {
                     List tmp = (List) val;
                     createCodeParamsScript(sb, tmp);
-                    sb.push(new BigInteger(String.valueOf(tmp.size())));
+                    sb.emitPushInteger(new BigInteger(String.valueOf(tmp.size())));
                     sb.pushPack();
                 } else {
                 }

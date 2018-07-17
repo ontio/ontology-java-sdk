@@ -25,10 +25,10 @@ public class ScriptBuilderTest {
 
     @Test
     public void push() {
-        ScriptBuilder sb = scriptBuilder.push(true);
+        ScriptBuilder sb = scriptBuilder.emitPushBool(true);
         assertNotNull(sb);
-        assertNotNull(scriptBuilder.push("test".getBytes()));
-        assertNotNull(scriptBuilder.push(new BigInteger("11")));
+        assertNotNull(scriptBuilder.emitPushByteArray("test".getBytes()));
+        assertNotNull(scriptBuilder.emitPushInteger(new BigInteger("11")));
     }
 
 

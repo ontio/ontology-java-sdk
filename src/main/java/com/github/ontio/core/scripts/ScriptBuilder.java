@@ -54,14 +54,14 @@ public class ScriptBuilder implements AutoCloseable {
         }
     }
 
-    public ScriptBuilder push(boolean b) {
+    public ScriptBuilder emitPushBool(boolean b) {
         if (b == true) {
             return add(ScriptOp.OP_PUSH1);
         }
         return add(ScriptOp.OP_PUSH0);
     }
 
-    public ScriptBuilder push(BigInteger number) {
+    public ScriptBuilder emitPushInteger(BigInteger number) {
         if (number.equals(BigInteger.ONE.negate())) {
             return add(ScriptOp.OP_PUSHM1);
         }
@@ -71,12 +71,13 @@ public class ScriptBuilder implements AutoCloseable {
         if (number.compareTo(BigInteger.ZERO) > 0 && number.compareTo(BigInteger.valueOf(16)) <= 0) {
             return add((byte) (ScriptOp.OP_PUSH1.getByte() - 1 + number.byteValue()));
         }
-        if (number.longValue() < 0 || number.longValue() >= Long.MAX_VALUE) {
-            throw new IllegalArgumentException();
-        }
-        ByteBuffer byteBuffer = ByteBuffer.allocate(Long.BYTES).order(ByteOrder.LITTLE_ENDIAN);
-        byteBuffer.putLong(number.longValue());
-        return push(byteBuffer.array());
+//        if (number.longValue() < 0 || number.longValue() >= Long.MAX_VALUE) {
+//            throw new IllegalArgumentException();
+//        }
+//        ByteBuffer byteBuffer = ByteBuffer.allocate(Long.BYTES).order(ByteOrder.LITTLE_ENDIAN);
+//        byteBuffer.putLong(number.longValue());
+        byte[] bytes = Helper.BigIntToNeoBytes(number);
+        return emitPushByteArray(bytes);
     }
 
     public ScriptBuilder pushNum(short num) {
@@ -86,11 +87,11 @@ public class ScriptBuilder implements AutoCloseable {
             return add(ScriptOp.valueOf(num - 1 + ScriptOp.OP_PUSH1.getByte()));
         }
         BigInteger bint = BigInteger.valueOf(num);
-        return push(Helper.BigIntToNeoBytes(bint));
+        return emitPushByteArray(Helper.BigIntToNeoBytes(bint));
     }
 
 
-    public ScriptBuilder push(byte[] data) {
+    public ScriptBuilder emitPushByteArray(byte[] data) {
         if (data == null) {
             throw new NullPointerException();
         }
@@ -114,9 +115,11 @@ public class ScriptBuilder implements AutoCloseable {
         }
         return this;
     }
-
+    public ScriptBuilder emit(ScriptOp op) {
+        return add(op.getByte());
+    }
     public ScriptBuilder push(UIntBase hash) {
-        return push(hash.toArray());
+        return emitPushByteArray(hash.toArray());
     }
 
     public ScriptBuilder pushPack() {

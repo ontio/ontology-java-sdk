@@ -79,21 +79,21 @@ public class NativeBuildParams {
             for (int i = list.size() - 1; i >= 0; i--) {
                 Object val = list.get(i);
                 if (val instanceof byte[]) {
-                    builder.push((byte[]) val);
+                    builder.emitPushByteArray((byte[]) val);
                 } else if (val instanceof Boolean) {
-                    builder.push((Boolean) val);
+                    builder.emitPushBool((Boolean) val);
                 } else if(val instanceof Integer){
-                    builder.push(BigInteger.valueOf((int) val));
+                    builder.emitPushInteger(BigInteger.valueOf((int) val));
                 } else if (val instanceof Long) {
-                    builder.push(BigInteger.valueOf((Long)val));
+                    builder.emitPushInteger(BigInteger.valueOf((Long)val));
                 } else if(val instanceof Address){
-                    builder.push(((Address) val).toArray());
+                    builder.emitPushByteArray(((Address) val).toArray());
                 } else if(val instanceof String){
-                    builder.push(((String)val).getBytes());
+                    builder.emitPushByteArray(((String)val).getBytes());
                 } else if (val instanceof List) {
                     List tmp = (List) val;
                     createCodeParamsScript(builder, tmp);
-                    builder.push(new BigInteger(String.valueOf(tmp.size())));
+                    builder.emitPushInteger(new BigInteger(String.valueOf(tmp.size())));
                     builder.pushPack();
 
                 } else {
@@ -109,17 +109,17 @@ public class NativeBuildParams {
         try {
             Object val = obj;
             if (val instanceof byte[]) {
-                builder.push((byte[]) val);
+                builder.emitPushByteArray((byte[]) val);
             } else if (val instanceof Boolean) {
-                builder.push((Boolean) val);
+                builder.emitPushBool((Boolean) val);
             } else if(val instanceof Integer){
-                builder.push(BigInteger.valueOf((int) val));
+                builder.emitPushInteger(BigInteger.valueOf((int) val));
             } else if (val instanceof Long) {
-                builder.push(BigInteger.valueOf((Long) val));
+                builder.emitPushInteger(BigInteger.valueOf((Long) val));
             } else if (val instanceof Address) {
-                builder.push(((Address) val).toArray());
+                builder.emitPushByteArray(((Address) val).toArray());
             }else if(val instanceof String){
-                builder.push(((String)val).getBytes());
+                builder.emitPushByteArray(((String)val).getBytes());
             }  else if(val instanceof Struct){
                 for(int k =0;k<((Struct) val).list.size();k++) {
                     Object o = ((Struct) val).list.get(k);
@@ -146,22 +146,22 @@ public class NativeBuildParams {
             for (int i = list.size() - 1; i >= 0; i--) {
                 Object val = list.get(i);
                 if (val instanceof byte[]) {
-                    sb.push((byte[]) val);
+                    sb.emitPushByteArray((byte[]) val);
                 } else if (val instanceof Boolean) {
-                    sb.push((Boolean) val);
+                    sb.emitPushBool((Boolean) val);
                 } else if(val instanceof Integer){
-                    sb.push(BigInteger.valueOf((int)val));
+                    sb.emitPushInteger(BigInteger.valueOf((int)val));
                 } else if (val instanceof Long) {
-                    sb.push(BigInteger.valueOf((Long) val));
+                    sb.emitPushInteger(BigInteger.valueOf((Long) val));
                 } else if(val instanceof BigInteger){
-                    sb.push((BigInteger)val);
+                    sb.emitPushInteger((BigInteger)val);
                 } else if(val instanceof Address){
-                    sb.push(((Address) val).toArray());
+                    sb.emitPushByteArray(((Address) val).toArray());
                 } else if(val instanceof String){
-                    sb.push(((String)val).getBytes());
+                    sb.emitPushByteArray(((String)val).getBytes());
                 }
                 else if(val instanceof Struct){
-                    sb.push(BigInteger.valueOf(0));
+                    sb.emitPushInteger(BigInteger.valueOf(0));
                     sb.add(ScriptOp.OP_NEWSTRUCT);
                     sb.add(ScriptOp.OP_TOALTSTACK);
                     for(int k =0;k<((Struct) val).list.size();k++) {
@@ -174,7 +174,7 @@ public class NativeBuildParams {
                     sb.add(ScriptOp.OP_FROMALTSTACK);
                 }
                 else if(val instanceof Struct[]){
-                    sb.push(BigInteger.valueOf(0));
+                    sb.emitPushInteger(BigInteger.valueOf(0));
                     sb.add(ScriptOp.OP_NEWSTRUCT);
                     sb.add(ScriptOp.OP_TOALTSTACK);
                     Struct[] structs = (Struct[])val;
@@ -182,12 +182,12 @@ public class NativeBuildParams {
                         createCodeParamsScript(sb,  structs[k]);
                     }
                     sb.add(ScriptOp.OP_FROMALTSTACK);
-                    sb.push(new BigInteger(String.valueOf(structs.length)));
+                    sb.emitPushInteger(new BigInteger(String.valueOf(structs.length)));
                     sb.pushPack();
                 } else if (val instanceof List) {
                     List tmp = (List) val;
                     createCodeParamsScript(sb, tmp);
-                    sb.push(new BigInteger(String.valueOf(tmp.size())));
+                    sb.emitPushInteger(new BigInteger(String.valueOf(tmp.size())));
                     sb.pushPack();
                 } else {
                 }

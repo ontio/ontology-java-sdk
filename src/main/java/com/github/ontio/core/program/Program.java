@@ -47,13 +47,13 @@ public class Program {
             return Helper.toHexString(o1).compareTo(Helper.toHexString(o2));
         }).toArray(byte[][]::new);
         for (byte[] sig : sigData) {
-            sb.push(sig);
+            sb.emitPushByteArray(sig);
         }
         return sb.toArray();
     }
     public static byte[] ProgramFromPubKey(byte[] publicKey) throws Exception {
         ScriptBuilder sb = new ScriptBuilder();
-        sb.push(publicKey);
+        sb.emitPushByteArray(publicKey);
         sb.add(ScriptOp.OP_CHECKSIG);
         return sb.toArray();
     }
@@ -64,12 +64,12 @@ public class Program {
             throw new SDKException(ErrorCode.ParamError);
         }
         try (ScriptBuilder sb = new ScriptBuilder()) {
-            sb.push(BigInteger.valueOf(m));
+            sb.emitPushInteger(BigInteger.valueOf(m));
             publicKeys = sortPublicKeys(publicKeys);
             for (byte[] publicKey : publicKeys) {
-                sb.push(publicKey);
+                sb.emitPushByteArray(publicKey);
             }
-            sb.push(BigInteger.valueOf(publicKeys.length));
+            sb.emitPushInteger(BigInteger.valueOf(publicKeys.length));
             sb.add(ScriptOp.OP_CHECKMULTISIG);
             return sb.toArray();
         }
@@ -209,14 +209,14 @@ public class Program {
     public static byte[] programFromParams(byte[][] sigs) {
         ScriptBuilder builder = new ScriptBuilder();
         for(byte[] sigdata : sigs){
-            builder.push(sigdata);
+            builder.emitPushByteArray(sigdata);
         }
         return builder.toArray();
     }
     public static byte[] programFromPubKey(byte[] publicKey) {
         ScriptBuilder builder = new ScriptBuilder();
-        builder.push(publicKey);
-        builder.add(ScriptOp.OP_CHECKSIG);
+        builder.emitPushByteArray(publicKey);
+        builder.emit(ScriptOp.OP_CHECKSIG);
         return builder.toArray();
     }
 

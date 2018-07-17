@@ -91,7 +91,7 @@ public class Address extends UIntBase implements Comparable<Address> {
 
     public static Address addressFromPubKey(byte[] publicKey) {
         ScriptBuilder sb = new ScriptBuilder();
-        sb.push(publicKey);
+        sb.emitPushByteArray(publicKey);
         sb.add(ScriptOp.OP_CHECKSIG);
         return Address.toScriptHash(sb.toArray());
     }

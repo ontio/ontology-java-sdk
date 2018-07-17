@@ -86,7 +86,7 @@ public class ScriptBuilder implements AutoCloseable {
             return add(ScriptOp.valueOf(num - 1 + ScriptOp.OP_PUSH1.getByte()));
         }
         BigInteger bint = BigInteger.valueOf(num);
-        return push(Helper.BigInt2Bytes(bint));
+        return push(Helper.BigIntToNeoBytes(bint));
     }
 
 

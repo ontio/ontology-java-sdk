@@ -49,13 +49,13 @@ public class Helper {
         return result;
     }
 
-    public static byte[] BigInt2Bytes(BigInteger bi){
-        if(bi.longValue() == 0) {
+    public static byte[] BigIntToNeoBytes(BigInteger data){
+        byte[] bs = data.toByteArray();
+        if(bs.length == 0) {
             return new byte[]{};
         }
-        byte[] bs = bi.toByteArray();
         byte b = bs[0];
-        if(bi.longValue() < 0) {
+        if(data.signum() < 0) {
             for(int i= 0;i < bs.length;i++){
                 bs[i] = (byte)~b;
             }
@@ -66,7 +66,7 @@ public class Helper {
             if(b >> 7 ==1){
                 byte[] t = new byte[res.length + 1];
                 System.arraycopy(res,0,t,0,res.length);
-                t[res.length] = (byte)0;
+                t[res.length] = (byte)255;
                 return t;
             }
             return res;
@@ -82,7 +82,7 @@ public class Helper {
         }
     }
 
-    public static BigInteger BigIntFromBytes(byte[] ba){
+    public static BigInteger BigIntFromNeoBytes(byte[] ba){
         if(ba.length == 0){
             return BigInteger.valueOf(0);
         }

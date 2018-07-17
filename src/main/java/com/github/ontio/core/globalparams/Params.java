@@ -22,7 +22,7 @@ public class Params implements Serializable {
     @Override
     public void serialize(BinaryWriter writer) throws IOException {
         long l = params.length;
-        byte[] aa = Helper.BigInt2Bytes(BigInteger.valueOf(l));
+        byte[] aa = Helper.BigIntToNeoBytes(BigInteger.valueOf(l));
         String bb = Helper.toHexString(aa);
         writer.writeVarBytes(aa);
         for(int i=0;i< params.length;i++) {

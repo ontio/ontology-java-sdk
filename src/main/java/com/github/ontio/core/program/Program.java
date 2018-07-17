@@ -195,7 +195,7 @@ public class Program {
             }
         }
         byte[] buff = readBytes(reader);
-        BigInteger bint = Helper.BigIntFromBytes(buff);
+        BigInteger bint = Helper.BigIntFromNeoBytes(buff);
         long num = bint.longValue();
         if(num > Short.MAX_VALUE || num < 16){
             throw new SDKException(ErrorCode.ParamErr("num is wrong"));

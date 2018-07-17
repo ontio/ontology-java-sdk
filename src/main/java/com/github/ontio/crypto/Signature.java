@@ -50,7 +50,6 @@ public class Signature {
     public byte[] toBytes() {
         ByteArrayOutputStream bs = new ByteArrayOutputStream();
         try {
-            byte[] res = new byte[this.value.length + 1];
             bs.write((byte)scheme.ordinal());
             if (scheme == SignatureScheme.SM3WITHSM2) {
                 // adding the ID

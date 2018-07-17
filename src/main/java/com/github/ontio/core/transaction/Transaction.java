@@ -37,7 +37,7 @@ import com.github.ontio.io.BinaryWriter;
 public abstract class Transaction extends Inventory {
 
     public byte version = 0;
-    public final TransactionType txType;
+    public TransactionType txType;
     public int nonce = new Random().nextInt();
     public long gasPrice = 0;
     public long gasLimit = 0;
@@ -93,10 +93,9 @@ public abstract class Transaction extends Inventory {
 
     @Override
     public void deserializeUnsigned(BinaryReader reader) throws IOException {
+        txType = TransactionType.valueOf(reader.readByte());
+        nonce = reader.readInt();
         version = reader.readByte();
-        if (txType.value() != reader.readByte()) {
-            throw new IOException();
-        }
         gasPrice = reader.readLong();
         gasLimit = reader.readLong();
         try {

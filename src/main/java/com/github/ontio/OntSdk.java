@@ -134,7 +134,7 @@ public class OntSdk {
     }
     public void setConnectTestNet(){
         try {
-            String rpcUrl = "http://polaris1.ont.io";
+            String rpcUrl = "http://polaris1.ont.io:20336";
             getInstance().setRpc(rpcUrl);
             connDefault = getInstance().getRpc();
         } catch (SDKException e) {
@@ -143,7 +143,7 @@ public class OntSdk {
     }
     public void setConnectMainNet(){
         try {
-            String rpcUrl = "http://dappnode1.ont.io";
+            String rpcUrl = "http://dappnode1.ont.io:20336";
             getInstance().setRpc(rpcUrl);
             connDefault = getInstance().getRpc();
         } catch (SDKException e) {

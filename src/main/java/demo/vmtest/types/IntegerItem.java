@@ -18,6 +18,6 @@ public class IntegerItem extends StackItems {
 
     @Override
     public byte[] GetByteArray() {
-        return Helper.BigInt2Bytes(value);
+        return Helper.BigIntToNeoBytes(value);
     }
 }

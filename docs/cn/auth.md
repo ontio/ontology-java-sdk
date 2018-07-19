@@ -39,8 +39,8 @@ Ontology智能合约不支持在部署的时候执行初始化，所以合约管
 
 结合下面的示例讲解使用流程：
 
-1. 将智能合约部署到链上。
-2. 调用该合约中init方法。
+A. 将智能合约部署到链上。
+B. 调用该合约中init方法。
 
 ```
 AbiInfo abiInfo = JSON.parseObject(abi,AbiInfo.class);
@@ -50,7 +50,7 @@ function.setParamsValue();
 String txhash = (String) sdk.neovm().sendTransaction(Helper.reverse(codeAddress),account,account,sdk.DEFAULT_GAS_LIMIT,0,function,false);
 ```
 
-3. 合约管理员设计角色role1和role2，并将角色role1和函数foo1绑定，将角色role2和函数foo2、foo3绑定。
+C. 合约管理员设计角色role1和role2，并将角色role1和函数foo1绑定，将角色role2和函数foo2、foo3绑定。
 
 ```
 String txhash = sdk.nativevm().auth().assignFuncsToRole(adminIdentity.ontid, password, adminIdentity.controls.get(0).getSalt(),
@@ -61,7 +61,7 @@ Helper.reverse(codeAddress), "role2", new String[]{"foo2","foo3"}, account, sdk.
 
 ```
 
-4. 合约管理员将角色"role1"分配给ontId1,将角色"role2"分配给ontId2，则ontId1拥有调用函数foo1的权限，ontId2拥有调用函数foo2和函数foo3的权限。
+D. 合约管理员将角色"role1"分配给ontId1,将角色"role2"分配给ontId2，则ontId1拥有调用函数foo1的权限，ontId2拥有调用函数foo2和函数foo3的权限。
 
 ```
 String txhash = sdk.nativevm().auth().assignOntIdsToRole(adminIdentity.ontid, password, adminIdentity.controls.get(0).getSalt(), 1,
@@ -73,7 +73,7 @@ Helper.reverse(codeAddress), "role2", new String[]{identity2.ontid}, account, sd
 
 ```
 
-5. 由于ontId1的角色是合约管理员分配的，其权限level默认是2，即ontId1可以将权限代理给其他ontidX，代理的Java-SDK接口是delegate,具体接口信息请参考下面的接口信息。
+E. 由于ontId1的角色是合约管理员分配的，其权限level默认是2，即ontId1可以将权限代理给其他ontidX，代理的Java-SDK接口是delegate,具体接口信息请参考下面的接口信息。
 在代理权限的时候需要指定被代理人权限的级别以及代理时间，如果代理人的level是2，则被代理人的level只能是1。
 
 ```
@@ -81,7 +81,7 @@ sdk.nativevm().auth().delegate(identity1.ontid,password,identity1.controls.get(0
 identityX.ontid,"role1",60*5,1,account,sdk.DEFAULT_GAS_LIMIT,0);
 ```
 
-6. 验证某个ontId是否有调用某个函数的权限，可以通过verifyToken接口查询。
+F. 验证某个ontId是否有调用某个函数的权限，可以通过verifyToken接口查询。
 
 ```
 String result = sdk.nativevm().auth().verifyToken(identityX.ontid, password, identityX.controls.get(0).getSalt(), 1, Helper.reverse(codeAddress), "foo1");
@@ -89,13 +89,13 @@ String result = sdk.nativevm().auth().verifyToken(identityX.ontid, password, ide
 返回值: "01"表示有权限，"00"表示没有权限。
 ```
 
-7. 如果被代理人的权限时间没有结束，代理人可以提前收回代理给别人的权限。
+G. 如果被代理人的权限时间没有结束，代理人可以提前收回代理给别人的权限。
 
 ```
 sdk.nativevm().auth().withdraw(identity1.ontid,password,identity1.controls.get(0).getSalt(),1,Helper.reverse(codeAddress),identityX.ontid,"role1",account,sdk.DEFAULT_GAS_LIMIT,0);
 ```
 
-8. 合约管理员可以将自己的管理权限转移给其他的ontId
+H. 合约管理员可以将自己的管理权限转移给其他的ontId
 
 ```
 String txhash = sdk.nativevm().auth().sendTransfer(adminIdentity.ontid,password,adminIdentity.controls.get(0).getSalt(),1,Helper.reverse(codeAddress),adminIdentity.ontid,

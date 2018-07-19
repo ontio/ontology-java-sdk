@@ -1,7 +1,9 @@
-<h1 align="center"> Ontology Java SDK User Guide </h1>
-<p align="center" class="version">Version 0.7.0 </p>
+<h1 align="center"> 区块链交互基本操作 </h1>
 
-# 区块链交互基本操作
+<p align="center" class="version">Version 1.0.0 </p>
+
+[English](../en/basic.md) / 中文
+
 
 以下针对使用SDK和区块交互的基本操作，以及相关数据结构定义。
 

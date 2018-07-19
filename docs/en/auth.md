@@ -1,7 +1,9 @@
-<h1 align="center"> Ontology Java SDK User Guide </h1>
-<p align="center" class="version">Version 0.7.0 </p>
+<h1 align="center"> Authorization management </h1>
 
-# Authorization management
+<p align="center" class="version">Version 1.0.0 </p>
+
+English / [中文](../cn/auth.md)
+
 
 Currently, the function of smart contract can be called by anyone, which obviously does not meet the actual requirements. The basic idea of ​​role-based authorization management is that each role can call a partial function, and each entity can be assigned multiple roles (the entity is identified by its ONT ID).
 

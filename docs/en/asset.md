@@ -1,7 +1,8 @@
-﻿<h1 align="center"> Ontology Java SDK User Guide </h1>
-<p align="center" class="version">Version 0.7.0 </p>
+<h1 align="center"> Digital assets </h1>
 
-# Digital assets
+<p align="center" class="version">Version 1.0.0 </p>
+
+English / [中文](../cn/asset.md)
 
 ## Data structure
 `address` base58 encoded account address  

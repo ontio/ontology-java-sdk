@@ -1,5 +1,8 @@
-<h1 align="center"> Ontology Java SDK User Guide </h1>
-<p align="center" class="version">Version 0.7.0 </p>
+<h1 align="center"> Ontology Java SDK 介绍 </h1>
+
+<p align="center" class="version">Version 1.0.0 </p>
+
+[English](../en/README.md) / 中文
 
 # 总体介绍
 

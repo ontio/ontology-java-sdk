@@ -1,7 +1,10 @@
-<h1 align="center"> Ontology Java SDK User Guide </h1>
-<p align="center" class="version">Version 0.7.0 </p>
+<h1 align="center"> 数字身份及可信声明管理 </h1>
 
-# 总体介绍
+<p align="center" class="version">Version 1.0.0 </p>
+
+[English](../en/identity_claim.md) / 中文
+
+## 介绍
 
 数字身份相关介绍可参考[ONT ID 身份标识协议及信任框架](https://github.com/ontio/ontology-DID)。
 

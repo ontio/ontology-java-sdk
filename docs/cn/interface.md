@@ -1,6 +1,10 @@
-# 接口
+<h1 align="center"> Ontology Java SDK 接口 </h1>
 
-包括如下接口：
+<p align="center" class="version">Version 1.0.0 </p>
+
+[English](../en/interface.md) / 中文
+
+## 包括如下接口：
 
 * 初始化接口
 * 与链交互接口

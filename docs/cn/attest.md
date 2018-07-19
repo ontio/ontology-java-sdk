@@ -1,7 +1,8 @@
-<h1 align="center"> Ontology Java SDK User Guide </h1>
-<p align="center" class="version">Version 0.7.0 </p>
+<h1 align="center"> 数字身份Claim存证 </h1>
 
-# 数字身份Claim存证
+<p align="center" class="version">Version 1.0.0 </p>
+
+[English](../en/attest.md) / 中文
 
 可信声明存证合约提供存证服务即存证可信声明Id，签发者ONT身份，属主ONT身份等信息，以及记录可用性信息即是否被吊销等信息。
 

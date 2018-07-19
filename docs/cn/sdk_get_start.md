@@ -1,4 +1,8 @@
-# Java sdk 使用说明
+<h1 align="center"> Java sdk 使用说明 </h1>
+
+<p align="center" class="version">Version 1.0.0 </p>
+
+[English](../en/sdk_get_start.md) / 中文
 
 ONT中有两种资产：原生资产和合约资产。原生资产如ont和ong。交易所对接时，主要处理这两种类型资产的充值、提现等操作。
 

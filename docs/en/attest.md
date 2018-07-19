@@ -1,7 +1,9 @@
-<h1 align="center"> Ontology Java SDK User Guide </h1>
-<p align="center" class="version">Version 0.7.0 </p>
+<h1 align="center"> Attest Attestation </h1>
 
-# Attest Attestation
+<p align="center" class="version">Version 1.0.0 </p>
+
+English / [中文](../cn/attest.md)
+
 
 The attest contract of verifiable claim provides the attest service and the record availability information, that is, whether it has been revoked.
 

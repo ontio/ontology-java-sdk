@@ -1,9 +1,8 @@
-<h1 align="center"> Ontology Java SDK User Guide </h1>
-<p align="center" class="version">Version 0.7.0 </p>
+<h1 align="center"> 数字资产 </h1>
 
+<p align="center" class="version">Version 1.0.0 </p>
 
-# 数字资产
-
+[English](../en/asset.md) / 中文
 
 ## 数据结构说明
 `address` 是base58编码的账户地址。

@@ -1,7 +1,10 @@
-<h1 align="center"> Ontology Java SDK User Guide </h1>
-<p align="center" class="version">Version 0.7.0 </p>
+<h1 align="center"> Digital Identity and Verifable Claim Management</h1>
 
-# Overivew
+<p align="center" class="version">Version 1.0.0 </p>
+
+English / [中文](../cn/identity_claim.md)
+
+## Introduction
 
 Relevant descriptions of digital ID can be found in [ONT ID Protocol and Trust Framework](https://github.com/ontio/ontology-DID).
 

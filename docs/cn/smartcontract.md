@@ -1,7 +1,9 @@
-<h1 align="center"> Ontology Java SDK User Guide </h1>
-<p align="center" class="version">Version 0.7.0 </p>
+<h1 align="center"> Java sdk 智能合约 </h1>
 
-# 智能合约基本说明
+<p align="center" class="version">Version 1.0.0 </p>
+
+[English](../en/smartcontract.md) / 中文
+
 
 * contractAddress是什么
 

@@ -1,7 +1,8 @@
-<h1 align="center"> Ontology Java SDK User Guide </h1>
-<p align="center" class="version">Version 0.7.0 </p>
+<h1 align="center"> Basic blockchain interop </h1>
 
-# Basic blockchain interop
+<p align="center" class="version">Version 1.0.0 </p>
+
+English / [中文](../cn/basic.md)
 
 
 The following describes basic blockchain interop function of SDK and defines relevant data structure.

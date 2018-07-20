@@ -57,6 +57,7 @@ include：
    19 | ontSdk.getConnect().getAllowance("ont","from","to")      |  query allowance
    20 | ontSdk.getConnect().getMemPoolTxCount()                  |  query memory pool transaction count
    21 | ontSdk.getConnect().getMemPoolTxState()                  |  query memory pool transaction state
+   22 | ontSdk.getConnect().syncSendRawTransaction("data")       |  sync Send RawTransaction
 ```  
 
 ### wallet manager：

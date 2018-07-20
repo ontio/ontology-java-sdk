@@ -55,6 +55,7 @@
    19 | ontSdk.getConnect().getAllowance("ont","from","to")      |  查询允许使用值
    20 | ontSdk.getConnect().getMemPoolTxCount()                  |  查询交易池中交易总量
    21 | ontSdk.getConnect().getMemPoolTxState()                  |  查询交易池中交易状态
+   22 | ontSdk.getConnect().syncSendRawTransaction("data")       |  同步发送交易
 ```  
 
 ### 钱包管理接口：

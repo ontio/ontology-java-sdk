@@ -146,8 +146,9 @@ public class Ont {
 //        System.out.println("params:"+Helper.toHexString(params));
 
         List list = new ArrayList();
-        Struct[] structs = new Struct[]{new Struct().add(Address.decodeBase58(sender),Address.decodeBase58(recvAddr),amount)};
-        list.add(structs);
+        List listStruct = new ArrayList();
+        listStruct.add(new Struct().add(Address.decodeBase58(sender),Address.decodeBase58(recvAddr),amount));
+        list.add(listStruct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ontContract)),"transfer",args,payer,gaslimit, gasprice);
         return tx;
@@ -161,11 +162,11 @@ public class Ont {
             throw new SDKException(ErrorCode.ParamError);
         }
         List list = new ArrayList();
-        Struct[] structs = new Struct[states.length];
+        List listStruct = new ArrayList();
         for (int i = 0; i < states.length; i++) {
-            structs[i] = new Struct().add(states[i].from, states[i].to, states[i].value);
+            listStruct.add(new Struct().add(states[i].from, states[i].to, states[i].value));
         }
-        list.add(structs);
+        list.add(listStruct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ontContract)), "transfer", args, payer, gaslimit, gasprice);
         return tx;

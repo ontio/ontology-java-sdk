@@ -16,18 +16,7 @@ include：
 * neo smart constract deploy and incoke
 * Native smart constract invoke
 
-### init ：
 
-包括打开钱包文件和设置与链交互方式
- ```
-     |                    Function                   |     Description            
- ----|-----------------------------------------------|------------------------
-   1 | sdk.setRpc(rpcUrl)                            |   set rpc            
-   2 | sdk.setRestful(restUrl)                       |   set restful
-   3 | sdk.setWesocket(wsUrl, lock)                  |   set websocket
-   4 | wm.setDefaultConnect(wm.getWebSocket());     |    set desualt
-   5 | wm.openWalletFile("OntAssetDemo.json");        |   open wallet
- ```
 
 ### communication with block chain interface：
 
@@ -155,16 +144,16 @@ ong:
 
  |     | Main   Function | Description |           
  |:-----|:--------|:-----------------------|
-    1 | void setContractAddress(String codeHash)                                                      | set contract address
-    2 | String sendInit(Account acct, Account payerAcct,long gaslimit,long gasprice)                   |  init 
-    3 | long sendInitGetGasLimit()                                                                     |  prepare execution init
-    4 | String sendTransfer(Account acct, String recvAddr, long amount,Account payerAcct, long gaslimit,long gasprice)        |  transfer
-    5 | long sendTransferGetGasLimit(Account acct, String recvAddr, long amount)                      |  prepare execution transfer                              
-    6 | String queryBalanceOf(String addr)                                                            |  query balance
-    7 | String queryTotalSupply()                                                                     |  query  TotalSupply
-    8 | String queryName()                                                                            |  query name
-    9 | String queryDecimals()                                                                        |  query decimals
-   10 | String querySymbol()                                                                          |  query Symbol
+|    1 | void setContractAddress(String codeHash)                                                      | set contract address|
+ |   2 | String sendInit(Account acct, Account payerAcct,long gaslimit,long gasprice)                   |  init |
+ |   3 | long sendInitGetGasLimit()                                                                     |  prepare execution init|
+|    4 | String sendTransfer(Account acct, String recvAddr, long amount,Account payerAcct, long gaslimit,long gasprice)        |  transfer|
+|    5 | long sendTransferGetGasLimit(Account acct, String recvAddr, long amount)                      |  prepare execution transfer    |                          
+|    6 | String queryBalanceOf(String addr)                                                            |  query balance|
+|    7 | String queryTotalSupply()                                                                     |  query  TotalSupply|
+ |   8 | String queryName()                                                                            |  query name|
+|    9 | String queryDecimals()                                                                        |  query decimals|
+|   10 | String querySymbol()                                                                          |  query Symbol|
 
 
 ### digit identity：
@@ -179,22 +168,22 @@ ong:
 
  |     | Main   Function | Description |           
  |:-----|:--------|:-----------------------|
-    1 | String getContractAddress()                                                                                                                             |  get contract address 
-    2 | Identity sendRegister(Identity ident, String password,byte[] salt,Account payerAcct,long gaslimit,long gasprice)                                         |  register ontid
-    3 | Identity sendRegisterPreExec(Identity ident, String password,byte[] salt,Account payerAcct,long gaslimit,long gasprice)                                  |  prepare execution registryontid
-    4 | Identity sendRegisterWithAttrs(Identity ident, String password,byte[] salt,Attribute[] attributes,Account payerAcct,long gaslimit,long gasprice)         |  register ontid with add attribute
-    5 | String sendAddPubKey(String ontid, String password,byte[] salt, String newpubkey,Account payerAcct,long gaslimit,long gasprice)                          |  add pubkey
-    6 | String sendAddPubKey(String ontid,String recoveryOntid, String password,byte[] salt, String newpubkey,Account payerAcct,long gaslimit,long gasprice)      |  add pubkey
-    7 | String sendGetPublicKeys(String ontid)                                                                                                                  |  add pubkey
-    8 | String sendRemovePubKey(String ontid, String password,byte[] salt, String removePubkey,Account payerAcct,long gaslimit,long gasprice)                    |  remove pubkey
-    9 | String sendRemovePubKey(String ontid, String recoveryOntid,String password,byte[] salt, String removePubkey,Account payerAcct,long gaslimit,long gasprice)|  remove pubkey
-   10 | String sendGetKeyState(String ontid,int index)                                                                                                          |  get pubkey status
-   11 | String sendAddAttributes(String ontid, String password,byte[] salt, Attribute[] attributes,Account payerAcct,long gaslimit,long gasprice)                |  add attribute
-   12 | String sendGetAttributes(String ontid)                                                                                                                  |  query attribute
-   13 | String sendRemoveAttribute(String ontid,String password,byte[] salt,String path,Account payerAcct,long gaslimit,long gasprice)                           |  remove attribute
-   14 | String sendAddRecovery(String ontid, String password,byte[] salt, String recoveryOntid,Account payerAcct,long gaslimit,long gasprice)                     |  add Recovery
-   15 | String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery, String password,byte[] salt,Account payerAcct, long gaslimit,long gasprice)                            |  change Recovery
-   16 | String sendGetDDO(String ontid)                                                                                                                         |  get DDO
+ |   1 | String getContractAddress()       |  get contract address |
+|    2 | Identity sendRegister(Identity ident, String password,byte[] salt,Account payerAcct,long gaslimit,long gasprice)  |  register ontid|
+|    3 | Identity sendRegisterPreExec(Identity ident, String password,byte[] salt,Account payerAcct,long gaslimit,long gasprice)                                  |  prepare execution registryontid|
+ |   4 | Identity sendRegisterWithAttrs(Identity ident, String password,byte[] salt,Attribute[] attributes,Account payerAcct,long gaslimit,long gasprice)         |  register ontid with add attribute|
+ |   5 | String sendAddPubKey(String ontid, String password,byte[] salt, String newpubkey,Account payerAcct,long gaslimit,long gasprice)                          |  add pubkey|
+ |   6 | String sendAddPubKey(String ontid,String recoveryOntid, String password,byte[] salt, String newpubkey,Account payerAcct,long gaslimit,long gasprice)      |  add pubkey|
+ |   7 | String sendGetPublicKeys(String ontid)                                                                                                                  |  add pubkey|
+ |   8 | String sendRemovePubKey(String ontid, String password,byte[] salt, String removePubkey,Account payerAcct,long gaslimit,long gasprice)                    |  remove pubkey|
+ |   9 | String sendRemovePubKey(String ontid, String recoveryOntid,String password,byte[] salt, String removePubkey,Account payerAcct,long gaslimit,long gasprice)|  remove pubkey|
+ |  10 | String sendGetKeyState(String ontid,int index)                                                                                                          |  get pubkey status|
+|   11 | String sendAddAttributes(String ontid, String password,byte[] salt, Attribute[] attributes,Account payerAcct,long gaslimit,long gasprice)                |  add attribute|
+ |  12 | String sendGetAttributes(String ontid)                                                                                                                  |  query attribute|
+ |  13 | String sendRemoveAttribute(String ontid,String password,byte[] salt,String path,Account payerAcct,long gaslimit,long gasprice)                           |  remove attribute|
+ |  14 | String sendAddRecovery(String ontid, String password,byte[] salt, String recoveryOntid,Account payerAcct,long gaslimit,long gasprice)                     |  add Recovery|
+ |  15 | String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery, String password,byte[] salt,Account payerAcct, long gaslimit,long gasprice)                            |  change Recovery|
+|   16 | String sendGetDDO(String ontid)  |  get DDO|
    
 
 * make tansaction：

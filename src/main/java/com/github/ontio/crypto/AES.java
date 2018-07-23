@@ -100,8 +100,7 @@ public class AES {
 		byte[] passwordBytes = null, passwordHash = null;
 		try {
 			passwordBytes = password.getBytes("UTF-8");
-			passwordHash = Digest.sha256(passwordBytes);
-			return Digest.sha256(passwordHash);
+			return Digest.hash256(passwordBytes);
 		} catch (UnsupportedEncodingException ex) {
 			throw new RuntimeException(ex);
 		} finally {

@@ -41,6 +41,7 @@ public class Account {
     public String encAlg = "aes-256-gcm";
     public String salt = "";
     public String hash = "sha256";
+    public String publicKey = "";
     public String signatureScheme = "SHA256withECDSA";
     public Object extra = null;
     public Account(){
@@ -91,7 +92,12 @@ public class Account {
     public void setSalt(byte[] salt){
         this.salt = new String(Base64.getEncoder().encode(salt));
     }
-
+    public String getPublicKey(){
+        return publicKey;
+    }
+    public void setPublicKey(String pk){
+        this.publicKey = pk;
+    }
     @Override
     public String toString() {
         return JSON.toJSONString(this);

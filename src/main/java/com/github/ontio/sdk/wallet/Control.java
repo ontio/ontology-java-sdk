@@ -36,13 +36,15 @@ public class Control {
     @JSONField(name = "enc-alg")
     public String encAlg = "aes-256-gcm";
     public String address = "";
+    public String publicKey = "";
     public Control(){
 
     }
-    public Control(String key,String id){
+    public Control(String key,String id,String pubkey){
         this.key = key;
         this.algorithm = "ECDSA";
         this.id = id;
+        this.publicKey = pubkey;
         this.parameters.put("curve","secp256r1");
     }
     public String getEncAlg(){
@@ -62,6 +64,12 @@ public class Control {
     }
     public void setAddress(String address){
         this.address = address;
+    }
+    public String getPublicKey(){
+        return publicKey;
+    }
+    public void setPublicKey(String pk){
+        this.publicKey = pk;
     }
     @Override
     public String toString() {

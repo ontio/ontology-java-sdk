@@ -36,28 +36,28 @@ include：
 
  |     | Main   Function | Description |           
  |:-----:|:--------:|:-----------------------:|
- |   1 | ontSdk.getConnect().getGenerateBlockTime()               |  query  GenerateBlockTime     |
- |   2 | ontSdk.getConnect().getNodeCount()                       |  query  node count |
- |    3 | ontSdk.getConnect().getBlock(15)                         |  query  block |
- |    4 | ontSdk.getConnect().getBlockJson(15)                     |  query   block    |
- |    5 | ontSdk.getConnect().getBlockJson("txhash")               |  query  block     |
- |    6 | ontSdk.getConnect().getBlock("txhash")                   |  query block      |
- |    7 | ontSdk.getConnect().getBlockHeight()                     |  query height |
- |    8 | ontSdk.getConnect().getTransaction("txhash")             |  query transaction        |                              
- |    9 | ontSdk.getConnect().getStorage("contractaddress", key)   |  query storage |
- |   10 | ontSdk.getConnect().getBalance("address")                |  query balance |
- |   11 | ontSdk.getConnect().getContractJson("contractaddress")   |  query contract           |
- |   12 | ontSdk.getConnect().getSmartCodeEvent(59)                |  query contract event |
- |   13 | ontSdk.getConnect().getSmartCodeEvent("txhash")          |  query contract event |
- |   14 | ontSdk.getConnect().getBlockHeightByTxHash("txhash")     |  query transaction block height |
- |   15 | ontSdk.getConnect().getMerkleProof("txhash")             |  get merkle proof |
- |   16 | ontSdk.getConnect().sendRawTransaction("txhexString")    |  send transaction |
- |   17 | ontSdk.getConnect().sendRawTransaction(Transaction)      |  send transaction |
- |  18 | ontSdk.getConnect().sendRawTransactionPreExec()          |  send prepare execution transaction |
- |   19 | ontSdk.getConnect().getAllowance("ont","from","to")      |  query allowance |
- |   20 | ontSdk.getConnect().getMemPoolTxCount()                  |  query memory pool transaction count |
- |   21 | ontSdk.getConnect().getMemPoolTxState()                  |  query memory pool transaction state |
- |   22 | ontSdk.getConnect().syncSendRawTransaction("data")       |  sync Send RawTransaction |
+ |   1 | getGenerateBlockTime()               |  query  GenerateBlockTime     |
+ |   2 | getNodeCount()                       |  query  node count |
+ |    3 | getBlock(15)                         |  query  block |
+ |    4 | getBlockJson(15)                     |  query   block    |
+ |    5 | getBlockJson("txhash")               |  query  block     |
+ |    6 | getBlock("txhash")                   |  query block      |
+ |    7 | getBlockHeight()                     |  query height |
+ |    8 | getTransaction("txhash")             |  query transaction        |                              
+ |    9 | getStorage("contractaddress", key)   |  query storage |
+ |   10 | getBalance("address")                |  query balance |
+ |   11 | getContractJson("contractaddress")   |  query contract           |
+ |   12 | getSmartCodeEvent(59)                |  query contract event |
+ |   13 | getSmartCodeEvent("txhash")          |  query contract event |
+ |   14 | getBlockHeightByTxHash("txhash")     |  query transaction block height |
+ |   15 | getMerkleProof("txhash")             |  get merkle proof |
+ |   16 | sendRawTransaction("txhexString")    |  send transaction |
+ |   17 | sendRawTransaction(Transaction)      |  send transaction |
+ |  18 | sendRawTransactionPreExec()          |  send prepare execution transaction |
+ |   19 | getAllowance("ont","from","to")      |  query allowance |
+ |   20 | getMemPoolTxCount()                  |  query memory pool transaction count |
+ |   21 | getMemPoolTxState()                  |  query memory pool transaction state |
+ |   22 | syncSendRawTransaction("data")       |  sync Send RawTransaction |
 
 
 ### wallet manager：

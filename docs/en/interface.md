@@ -35,7 +35,7 @@ include：
 
 
  |     | Main   Function | Description |           
- |:-----:|:--------:|:-----------------------:|
+ |:-----|:--------|:-----------------------|
  |   1 | getGenerateBlockTime()               |  query  GenerateBlockTime     |
  |   2 | getNodeCount()                       |  query  node count |
  |    3 | getBlock(15)                         |  query  block |

@@ -215,10 +215,10 @@ ong:
 * Claim record：
   
  |     | Main   Function |          
- |:-----|:--------|:-----------------------|
+ |:-----|:--------|
   | 1 | String sendCommit(String issuerOntid,String pwd,byte[] salt,String subjectOntid,String claimId,Account payerAcct,long gaslimit,long gasprice)  |
 |   2 | String sendRevoke(String issuerOntid,String password,byte[] salt,String claimId,Account payerAcct,long gaslimit,long gasprice)                 |
-|   3 | String sendGetStatus(String claimId)                                                                                               |   
+|   3 | String sendGetStatus(String claimId) |   
   
  
  ### neo smart contract deploy and invoke

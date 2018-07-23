@@ -225,7 +225,7 @@ ong:
  
  deploy and invoke
   
- |     | Main   Function |           
+ |     | Main   Function | Description |          
  |:-----|:--------|:-----------------------|
  |   1 | DeployCode makeDeployCodeTransaction(String code, boolean needStorage, String name, String version, String author, String email, String desp, byte vmtype,String payer,long gaslimit,long gasprice)|   deploy|
  |   2 | InvokeCode makeInvokeCodeTransaction(String codeAddr,String method,byte[] params, byte vmtype, String payer,long gaslimit,long gasprice)                                                           |   invoke|

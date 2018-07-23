@@ -81,8 +81,8 @@ include：
 
 * 数字身份：
 
- |     | Main   Function | Description |           
- |:-----|:--------|:-----------------------|
+ |     | Main   Function |       
+ |:-----|:--------|
 |   1 | Identity importIdentity(String encryptedPrikey, String pwd,String address) |   
 |   2 | Identity createIdentity(String password)                                   |   
 |   3 | Identity createIdentityFromPriKey(String password, String prikey)          |   
@@ -97,8 +97,8 @@ include：
 
 助记词和keystore接口：
 
- |     | Main   Function | Description |           
- |:-----|:--------|:-----------------------|
+ |     | Main   Function |           
+ |:-----|:--------|
  |  1 | Map exportIdentityQRCode(Wallet walletFile, Identity identity)  |   
 |   2 | Map exportAccountQRCode(Wallet walletFile,Account account)                              |   
 |   3 | String getPriKeyFromQrCode(String qrcode,String password)          |   

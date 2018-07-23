@@ -16,6 +16,18 @@ include：
 * neo smart constract deploy and incoke
 * Native smart constract invoke
 
+### init ：
+
+包括打开钱包文件和设置与链交互方式
+ 
+
+ |     | Main   Function | Description |           
+ |:-----|:--------|:-----------------------|
+|   1 | sdk.setRpc(rpcUrl)                            |   set rpc    |        
+|   2 | sdk.setRestful(restUrl)                       |   set restful|
+|   3 | sdk.setWesocket(wsUrl, lock)                  |   set websocket|
+|   4 | wm.setDefaultConnect(wm.getWebSocket());     |    set desualt|
+|   5 | wm.openWalletFile("OntAssetDemo.json");        |   open wallet|
 
 
 ### communication with block chain interface：

@@ -13,7 +13,7 @@ This is a comprehensive Java library for the Ontology blockchain,which is releas
 - [Getting Started](sdk_get_start.md)
 - [interface](interface.md)
 - [Basic operation of blockchain nodes](basic.md)
-- [Wallet file specification](Wallet_File_Specification.md)
+- [Wallet file specification](https://github.com/ontio/documentation/blob/master/docs/pages/doc_en/SDKs/Wallet_File_Specification_en.md)
 - [Digital identity and verifable claim management](identity_claim.md)
 - [Digital assets](asset.md)
 - [Digital Attest](attest.md)

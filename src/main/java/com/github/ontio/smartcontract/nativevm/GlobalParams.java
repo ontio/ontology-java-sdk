@@ -55,6 +55,12 @@ public class GlobalParams {
     }
 
     public String transferAdmin(Account adminAccount,Address newAdminAddr,Account payerAcct, long gaslimit,long gasprice) throws Exception {
+        if(adminAccount==null || newAdminAddr == null || payerAcct == null){
+            throw new SDKException("parameter should not be null");
+        }
+        if(gaslimit < 0 || gasprice < 0 ){
+            throw new SDKException("gaslimit or gasprice should not be less than 0");
+        }
         Transaction tx = makeTransferAdmin(newAdminAddr,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
         sdk.signTx(tx,new Account[][]{{adminAccount}});
         if(!adminAccount.equals(payerAcct)){
@@ -66,7 +72,16 @@ public class GlobalParams {
         }
         return null;
     }
-    public String transferAdmin(Address  multiAddr,int M,Account[] accounts,Address newAdminAddr,Account payerAcct, long gaslimit,long gasprice) throws Exception {
+    public String transferAdmin(int M,Account[] accounts,Address newAdminAddr,Account payerAcct, long gaslimit,long gasprice) throws Exception {
+        if(accounts.length== 0 || newAdminAddr == null || payerAcct == null){
+            throw new SDKException("parameter should not be null");
+        }
+        if(accounts.length < M) {
+            throw new SDKException("the accounts length should not be less than M");
+        }
+        if(gaslimit < 0 || gasprice < 0 ){
+            throw new SDKException("gaslimit or gasprice should not be less than 0");
+        }
         Transaction tx = makeTransferAdmin(newAdminAddr,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
         sdk.signTx(tx,new Account[][]{accounts},new int[]{M});
         sdk.addSign(tx,payerAcct);
@@ -78,6 +93,12 @@ public class GlobalParams {
     }
 
     public Transaction makeTransferAdmin(Address newAdminAddr,String payerAddr, long gaslimit,long gasprice) throws SDKException {
+        if(newAdminAddr == null || payerAddr == null || payerAddr.equals("")){
+            throw new SDKException("parameter should not be null");
+        }
+        if(gaslimit < 0 || gasprice < 0 ){
+            throw new SDKException("gaslimit or gasprice should not be less than 0");
+        }
         List list = new ArrayList();
         Struct struct = new Struct();
         struct.add(newAdminAddr.toArray());
@@ -88,6 +109,12 @@ public class GlobalParams {
     }
 
     public String acceptAdmin(Account account,Account payerAcct, long gaslimit,long gasprice) throws Exception {
+        if(account == null || payerAcct == null){
+            throw new SDKException("parameter should not be null");
+        }
+        if(gaslimit < 0 || gasprice < 0 ){
+            throw new SDKException("gaslimit or gasprice should not be less than 0");
+        }
         Transaction tx = makeAcceptAdmin(account.getAddressU160(),payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
         sdk.signTx(tx,new Account[][]{{account}});
         if(!account.equals(payerAcct)){
@@ -100,6 +127,15 @@ public class GlobalParams {
         return null;
     }
     public String acceptAdmin(Address multiAddr,int M,Account[] accounts,Account payerAcct, long gaslimit,long gasprice) throws Exception {
+        if(accounts.length== 0 || multiAddr == null || payerAcct == null){
+            throw new SDKException("parameter should not be null");
+        }
+        if(accounts.length < M) {
+            throw new SDKException("the accounts length should not be less than M");
+        }
+        if(gaslimit < 0 || gasprice < 0 ){
+            throw new SDKException("gaslimit or gasprice should not be less than 0");
+        }
         Transaction tx = makeAcceptAdmin(multiAddr,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
         sdk.signTx(tx,new Account[][]{accounts},new int[]{M});
         sdk.addSign(tx,payerAcct);
@@ -110,6 +146,12 @@ public class GlobalParams {
         return null;
     }
     public Transaction makeAcceptAdmin(Address multiAddr,String payerAddr, long gaslimit,long gasprice) throws SDKException {
+        if(multiAddr == null || payerAddr == null || payerAddr.equals("")){
+            throw new SDKException("parameter should not be null");
+        }
+        if(gaslimit < 0 || gasprice < 0 ){
+            throw new SDKException("gaslimit or gasprice should not be less than 0");
+        }
         List list = new ArrayList();
         Struct struct = new Struct();
         struct.add(multiAddr.toArray());
@@ -121,7 +163,9 @@ public class GlobalParams {
 
 
     public String getGlobalParam(String[] paramNameList) throws SDKException, ConnectorException, IOException {
-
+        if(paramNameList.length == 0) {
+            throw new SDKException("parameter should not be less than 0");
+        }
         List list = new ArrayList();
         Struct struct = new Struct();
         struct.add(paramNameList.length);
@@ -137,6 +181,12 @@ public class GlobalParams {
     }
 
     public String setGlobalParam(Account operatorAccount,Params params, Account payerAcct,long gaslimit,long gasprice) throws Exception {
+        if(operatorAccount == null || params == null || payerAcct == null){
+            throw new SDKException("parameter should not be null");
+        }
+        if(gaslimit < 0 || gasprice < 0 ){
+            throw new SDKException("gaslimit or gasprice should not be less than 0");
+        }
         Transaction tx = makeSetGlobalParam(params,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
         sdk.signTx(tx,new Account[][]{{operatorAccount}});
         if(!operatorAccount.equals(payerAcct)){
@@ -149,7 +199,16 @@ public class GlobalParams {
         return null;
     }
 
-    public String setGlobalParam(Address multiAddr,int M,Account[] operatorAccounts,Params params, Account payerAcct,long gaslimit,long gasprice) throws Exception {
+    public String setGlobalParam(int M,Account[] operatorAccounts,Params params, Account payerAcct,long gaslimit,long gasprice) throws Exception {
+        if(operatorAccounts.length== 0 || params == null || payerAcct == null){
+            throw new SDKException("parameter should not be null");
+        }
+        if(operatorAccounts.length < M) {
+            throw new SDKException("the operatorAccounts length should not be less than M");
+        }
+        if(gaslimit < 0 || gasprice < 0 ){
+            throw new SDKException("gaslimit or gasprice should not be less than 0");
+        }
         Transaction tx = makeSetGlobalParam(params,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
         sdk.signTx(tx,new Account[][]{operatorAccounts},new int[]{M});
         sdk.addSign(tx,payerAcct);
@@ -161,6 +220,12 @@ public class GlobalParams {
     }
 
     public Transaction makeSetGlobalParam(Params params,String payerAddr,long gaslimit,long gasprice) throws SDKException {
+        if(params == null || payerAddr == null || payerAddr.equals("")){
+            throw new SDKException("parameter should not be null");
+        }
+        if(gaslimit < 0 || gasprice < 0 ){
+            throw new SDKException("gaslimit or gasprice should not be less than 0");
+        }
         List list = new ArrayList();
         Struct struct = new Struct();
         struct.add(params.params.length);
@@ -175,6 +240,12 @@ public class GlobalParams {
 
 
     public String setOperator(Account adminAccount,Address addr,Account payerAcct,long gaslimit,long gasprice) throws Exception {
+        if(adminAccount == null || addr == null || payerAcct == null){
+            throw new SDKException("parameter should not be null");
+        }
+        if(gaslimit < 0 || gasprice < 0 ){
+            throw new SDKException("gaslimit or gasprice should not be less than 0");
+        }
         Transaction tx = makeSetOperator(addr,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
         sdk.signTx(tx,new Account[][]{{adminAccount}});
         if(!adminAccount.equals(payerAcct)){
@@ -187,7 +258,16 @@ public class GlobalParams {
         return null;
     }
 
-    public String setOperator(Address multiAddr,int M,Account[] accounts,Address addr,Account payerAcct,long gaslimit,long gasprice) throws Exception {
+    public String setOperator(int M,Account[] accounts,Address addr,Account payerAcct,long gaslimit,long gasprice) throws Exception {
+        if(accounts.length == 0 || addr == null || payerAcct == null){
+            throw new SDKException("parameter should not be null");
+        }
+        if(accounts.length < M){
+            throw new SDKException("accounts length should not be less than M");
+        }
+        if(gaslimit < 0 || gasprice < 0 ){
+            throw new SDKException("gaslimit or gasprice should not be less than 0");
+        }
         Transaction tx = makeSetOperator(addr,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
         sdk.signTx(tx,new Account[][]{accounts},new int[]{M});
         sdk.addSign(tx,payerAcct);
@@ -199,6 +279,12 @@ public class GlobalParams {
     }
 
     public Transaction makeSetOperator(Address addr,String payerAddr,long gaslimit,long gasprice) throws SDKException {
+        if(addr==null || payerAddr == null || payerAddr.equals("")){
+            throw new SDKException("parameter should not be null");
+        }
+        if(gaslimit < 0 || gasprice < 0 ){
+            throw new SDKException("gaslimit or gasprice should not be less than 0");
+        }
         List list = new ArrayList();
         Struct struct = new Struct();
         struct.add(addr.toArray());
@@ -209,6 +295,12 @@ public class GlobalParams {
     }
 
     public String createSnapshot(Account operatorAccount,Account payerAcct,long gaslimit,long gasprice) throws Exception {
+        if(operatorAccount==null || payerAcct == null){
+            throw new SDKException("parameter should not be null");
+        }
+        if(gaslimit < 0 || gasprice < 0 ){
+            throw new SDKException("gaslimit or gasprice should not be less than 0");
+        }
         Transaction tx = makeCreateSnapshot(payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
         sdk.signTx(tx,new Account[][]{{operatorAccount}});
         if(!operatorAccount.equals(payerAcct)){
@@ -220,7 +312,16 @@ public class GlobalParams {
         }
         return null;
     }
-    public String createSnapshot(Address multiAddr,int M,Account[] operatorAccounts,Account payerAcct,long gaslimit,long gasprice) throws Exception {
+    public String createSnapshot(int M,Account[] operatorAccounts,Account payerAcct,long gaslimit,long gasprice) throws Exception {
+        if(operatorAccounts.length==0 || payerAcct == null){
+            throw new SDKException("parameter should not be null");
+        }
+        if(operatorAccounts.length < M){
+            throw new SDKException("accounts length should not be less than M");
+        }
+        if(gaslimit < 0 || gasprice < 0 ){
+            throw new SDKException("gaslimit or gasprice should not be less than 0");
+        }
         Transaction tx = makeCreateSnapshot(payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
         sdk.signTx(tx,new Account[][]{operatorAccounts},new int[]{M});
         sdk.addSign(tx,payerAcct);
@@ -231,6 +332,12 @@ public class GlobalParams {
         return null;
     }
     public Transaction makeCreateSnapshot(String payerAddr,long gaslimit,long gasprice) throws SDKException {
+        if(payerAddr == null || payerAddr.equals("")){
+            throw new SDKException("parameter should not be null");
+        }
+        if(gaslimit < 0 || gasprice < 0 ){
+            throw new SDKException("gaslimit or gasprice should not be less than 0");
+        }
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"createSnapshot",new byte[]{0},payerAddr,gaslimit,gasprice);
         return tx;
     }

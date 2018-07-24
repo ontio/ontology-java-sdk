@@ -49,7 +49,7 @@ public class GlobalParamDemo {
 
         if(false){
 //            String txhash = ontSdk.nativevm().gParams().transferAdmin(account,account1.getAddressU160(),account,ontSdk.DEFAULT_GAS_LIMIT,0);
-            String txhash = ontSdk.nativevm().gParams().transferAdmin(multiAddress,5,new Account[]{account1s,account2s,account3s,account4s,account5s,account6s,account7s},
+            String txhash = ontSdk.nativevm().gParams().transferAdmin(5,new Account[]{account1s,account2s,account3s,account4s,account5s,account6s,account7s},
                     multiAddress2,account,ontSdk.DEFAULT_GAS_LIMIT,0);
             Thread.sleep(6000);
             System.out.println(ontSdk.getConnect().getSmartCodeEvent(txhash));
@@ -65,7 +65,7 @@ public class GlobalParamDemo {
         if(false){
             Address multiAddr3 = Address.addressFromMultiPubKeys(2,account2s.serializePublicKey(),account3s.serializePublicKey(),account4s.serializePublicKey());
 //            String txhash = ontSdk.nativevm().gParams().setOperator(account1,account2.getAddressU160(),account,ontSdk.DEFAULT_GAS_LIMIT,0);
-            String txhash = ontSdk.nativevm().gParams().setOperator(multiAddress2,2,new Account[]{account2s,account3s,account4s},
+            String txhash = ontSdk.nativevm().gParams().setOperator(2,new Account[]{account2s,account3s,account4s},
                     multiAddr3,account,ontSdk.DEFAULT_GAS_LIMIT,0);
             Thread.sleep(6000);
             System.out.println(ontSdk.getConnect().getSmartCodeEvent(txhash));
@@ -75,14 +75,14 @@ public class GlobalParamDemo {
             Params params = new Params(new com.github.ontio.core.globalparams.Param[]{new com.github.ontio.core.globalparams.Param("key2","value2")});
             System.out.println(Helper.toHexString(params.toArray()));
 //            String txhash = ontSdk.nativevm().gParams().setGlobalParam(account1,params,account,ontSdk.DEFAULT_GAS_LIMIT,0);
-            String txhash = ontSdk.nativevm().gParams().setGlobalParam(multiAddress2,2,new Account[]{account1s,account2s,account3s},
+            String txhash = ontSdk.nativevm().gParams().setGlobalParam(2,new Account[]{account1s,account2s,account3s},
                     params,account,ontSdk.DEFAULT_GAS_LIMIT,0);
             Thread.sleep(6000);
             System.out.println(ontSdk.getConnect().getSmartCodeEvent(txhash));
         }
         if(false){
 //            String txhash = ontSdk.nativevm().gParams().createSnapshot(account2,account,ontSdk.DEFAULT_GAS_LIMIT,0);
-            String txhash = ontSdk.nativevm().gParams().createSnapshot(multiAddress2,2,new Account[]{account1s,account2s,account3s},account,ontSdk.DEFAULT_GAS_LIMIT,0);
+            String txhash = ontSdk.nativevm().gParams().createSnapshot(2,new Account[]{account1s,account2s,account3s},account,ontSdk.DEFAULT_GAS_LIMIT,0);
             Thread.sleep(6000);
             System.out.println(ontSdk.getConnect().getSmartCodeEvent(txhash));
         }

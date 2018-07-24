@@ -127,7 +127,22 @@ public class ConnectMgr {
         }
         return false;
     }
-
+    public boolean trySendRawTransaction(String hexData,int reSendTime) throws ConnectorException, IOException {
+        boolean b = false;
+        for(int i=0;i<reSendTime;i++) {
+            try {
+                b = sendRawTransaction(hexData);
+            } catch (Exception e) {
+                if (e.getMessage().contains("\"Error\":58403") && i < reSendTime -1) {
+                    continue;
+                }else {
+                    e.printStackTrace();
+                    break;
+                }
+            }
+        }
+        return b;
+    }
     /**
      * wait result after send
      * @param hexData

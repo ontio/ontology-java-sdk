@@ -33,6 +33,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -45,15 +46,19 @@ import com.alibaba.fastjson.JSON;
 
 public class http {
     private static final String DEFAULT_CHARSET = "UTF-8";
-    
 
-    public static String post(String url, String body, boolean https) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, KeyManagementException {
-    	URL u = new URL(url);
+    public static String post(String url,Map<String,String> header, String body, boolean https) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, KeyManagementException {
+        URL u = new URL(url);
         HttpURLConnection http = (HttpURLConnection) u.openConnection();
         http.setConnectTimeout(10000);
         http.setReadTimeout(10000);
         http.setRequestMethod("POST");
         http.setRequestProperty("Content-Type","application/json");
+        if(header != null) {
+            for (Map.Entry<String, String> e : header.entrySet()) {
+                http.setRequestProperty(e.getKey(), (String) e.getValue());
+            }
+        }
         if(https) {
             SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
             sslContext.init(null, new TrustManager[]{new X509()}, new SecureRandom());
@@ -64,23 +69,26 @@ public class http {
         http.setDoInput(true);
         http.connect();
         try (OutputStream out = http.getOutputStream()) {
-	        out.write(body.getBytes(DEFAULT_CHARSET));
-	        out.flush();
+            out.write(body.getBytes(DEFAULT_CHARSET));
+            out.flush();
         }
         StringBuilder sb = new StringBuilder();
         try (InputStream is = http.getInputStream()) {
-        	try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, DEFAULT_CHARSET))) {
-        		String str = null;
-        		while((str = reader.readLine()) != null) {
-        			sb.append(str);
-					str = null;
-        		}
-        	}
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, DEFAULT_CHARSET))) {
+                String str = null;
+                while((str = reader.readLine()) != null) {
+                    sb.append(str);
+                    str = null;
+                }
+            }
         }
         if (http != null) {
             http.disconnect();
         }
         return sb.toString();
+    }
+    public static String post(String url, String body, boolean https) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, KeyManagementException {
+    	return post(url,null,body,https);
     }
     public static String delete(String url, String body, boolean https) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, KeyManagementException {
         URL u = new URL(url);

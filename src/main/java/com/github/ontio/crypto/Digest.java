@@ -21,7 +21,14 @@ package com.github.ontio.crypto;
 
 import java.security.*;
 
+
+import org.bouncycastle.crypto.digests.SHA512Digest;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.crypto.CipherParameters;
+import org.bouncycastle.crypto.digests.SHA1Digest;
+import org.bouncycastle.crypto.macs.HMac;
+import org.bouncycastle.crypto.params.KeyParameter;
+import javax.crypto.spec.SecretKeySpec;
 
 public class Digest {
 	static {
@@ -62,4 +69,15 @@ public class Digest {
 		}
 		return sha256(value);
 	}
+
+	public static byte[] hmacSha512(byte[] keyBytes, byte[] text) {
+		HMac hmac = new HMac(new SHA512Digest());
+		byte[] resBuf = new byte[hmac.getMacSize()];
+		CipherParameters pm = new KeyParameter(keyBytes);
+		hmac.init(pm);
+		hmac.update(text, 0, text.length);
+		hmac.doFinal(resBuf, 0);
+		return resBuf;
+	}
+
 }

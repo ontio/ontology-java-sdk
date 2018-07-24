@@ -23,8 +23,8 @@
    1 | sdk.setRpc(rpcUrl)                            |   设置rpc            
    2 | sdk.setRestful(restUrl)                       |   设置restful
    3 | sdk.setWesocket(wsUrl, lock)                  |   设置websocket
-   4 | wm.setDefaultConnect(wm.getWebSocket());     |    设置默认与链交互方式 
-   5 | wm.openWalletFile("OntAssetDemo.json");        |   打开钱包
+   4 | wm.setDefaultConnect(wm.getWebSocket());      |    设置默认与链交互方式
+   5 | wm.openWalletFile("OntAssetDemo.json");       |   打开钱包
  ```
 
 ### 与链交互接口：
@@ -72,7 +72,7 @@
    3 | Account createAccountFromPriKey(String password, String prikey)            |   根据私钥创建
    4 | AccountInfo createAccountInfo(String password)                             |   根据私钥创建
    5 | AccountInfo createAccountInfoFromPriKey(String password, String prikey)    |   根据私钥创建
-   6 | AccountInfo getAccountInfo(String address, String password,byte[] salt)                |   获取账号信息
+   6 | AccountInfo getAccountInfo(String address, String password,byte[] salt)    |   获取账号信息
    7 | List<Account> getAccounts()                                                |   查询所有账号
    8 | Account getAccount(String address)                                         |   获取账户
    9 | Account getDefaultAccount()                                                |   获取默认账户
@@ -99,6 +99,7 @@
 2.Nep-5智能合约数字资产
 
 * 原生数字资产：
+
 ont:
 ```
 
@@ -208,13 +209,13 @@ ong:
   
  ```
  
-* Cliam存证接口：
+* Claim存证接口：
   
  ```
      |                                            Function                                                         |     Description
  ----|-------------------------------------------------------------------------------------------------------------|------------------------
-   1 | String sendCommit(String issuerOntid,String pwd,String subjectOntid,String claimId,Account payerAcct,long gaslimit,long gasprice)  |   存储claim
-   2 | String sendRevoke(String issuerOntid,String password,byte[] salt,String claimId,Account payerAcct,long gaslimit,long gasprice)                 |   吊销
+   1 | String sendCommit(String issuerOntid,String password,byte[] salt,String subjectOntid,String claimId,Account payerAcct,long gaslimit,long gasprice) |   存储claim
+   2 | String sendRevoke(String issuerOntid,String password,byte[] salt,String claimId,Account payerAcct,long gaslimit,long gasprice)     |   吊销
    3 | String sendGetStatus(String claimId)                                                                                               |   获取状态
   
  ```
@@ -238,7 +239,7 @@ ong:
  ```
        |                                            Function                                                                                                                               |     Description
    ----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------
-     1 | String sendTransfer(String adminOntId,String password,byte[] salt,String contractAddr, String newAdminOntID,int key,Account payerAcct,long gaslimit,long gasprice)                 |   合约管理员转让合约管理权限
+     1 | String sendTransfer(String adminOntId,String password,byte[] salt,String contractAddr, String newAdminOntID,int key,Account payerAcct,long gaslimit,long gasprice)                  |   合约管理员转让合约管理权限
      2 | String assignFuncsToRole(String adminOntID,String password,byte[] salt,String contractAddr,String role,String[] funcName,int key,Account payerAcct, long gaslimit,long gasprice)    |   为角色分配函数
      3 | String assignOntIDsToRole(String adminOntId,String password,byte[] salt,String contractAddr,String role,String[] ontIDs, int key,Account payerAcct, long gaslimit,long gasprice)    |   绑定角色到实体身份
      4 | String delegate(String ontid,String password,byte[] salt,String contractAddr,String toOntId,String role,int period,int level,int key,Account payerAcct, long gaslimit,long gasprice)|   将合约调用权代理给其他人

@@ -18,7 +18,7 @@ include：
 
 ### init ：
 
-包括打开钱包文件和设置与链交互方式
+Including opening wallet files and setting how to interact with the chain
  
 
  |     | Main   Function | Description |           
@@ -26,19 +26,19 @@ include：
 |   1 | sdk.setRpc(rpcUrl)                            |   set rpc    |        
 |   2 | sdk.setRestful(restUrl)                       |   set restful|
 |   3 | sdk.setWesocket(wsUrl, lock)                  |   set websocket|
-|   4 | wm.setDefaultConnect(wm.getWebSocket());     |    set desualt|
-|   5 | wm.openWalletFile("OntAssetDemo.json");        |   open wallet|
+|   4 | wm.setDefaultConnect(wm.getWebSocket());      |    set desualt|
+|   5 | wm.openWalletFile("OntAssetDemo.json");       |   open wallet|
 
 
 ### communication with block chain interface：
 
-* 交互接口列表：
+* Interactive interface list：
 
 
  |     | Main   Function | Description |           
  |:-----|:--------|:-----------------------|
- |   1 | getGenerateBlockTime()               |  query  GenerateBlockTime     |
- |   2 | getNodeCount()                       |  query  node count |
+ |    1 | getGenerateBlockTime()               |  query  GenerateBlockTime     |
+ |    2 | getNodeCount()                       |  query  node count |
  |    3 | getBlock(15)                         |  query  block |
  |    4 | getBlockJson(15)                     |  query   block    |
  |    5 | getBlockJson("txhash")               |  query  block     |
@@ -54,7 +54,7 @@ include：
  |   15 | getMerkleProof("txhash")             |  get merkle proof |
  |   16 | sendRawTransaction("txhexString")    |  send transaction |
  |   17 | sendRawTransaction(Transaction)      |  send transaction |
- |  18 | sendRawTransactionPreExec()          |  send prepare execution transaction |
+ |   18 | sendRawTransactionPreExec()          |  send prepare execution transaction |
  |   19 | getAllowance("ont","from","to")      |  query allowance |
  |   20 | getMemPoolTxCount()                  |  query memory pool transaction count |
  |   21 | getMemPoolTxState()                  |  query memory pool transaction state |
@@ -63,9 +63,9 @@ include：
 
 ### wallet manager：
 
-包括数字资产和数字身份管理
+Including digital assets and digital identity management
  
-* 数字资产账户：
+* Digital asset account：
 
  |     | Main   Function | Description |           
  |:-----|:--------|:-----------------------|
@@ -80,7 +80,7 @@ include：
 |   9 | Account getDefaultAccount()                                                |   get default account|
 
 
-* 数字身份：
+* Digital identity：
 
  |     | Main   Function |       
  |:-----|:--------|
@@ -96,7 +96,7 @@ include：
 |  10 | Identity addOntIdController(String ontid, String key, String id)           |    
    
 
-助记词和keystore接口：
+Mnemonic and keystore interface：
 
  |     | Main   Function |           
  |:-----|:--------|
@@ -228,7 +228,7 @@ ong:
   
  |     | Main   Function |          
  |:-----|:--------|
-  | 1 | String sendCommit(String issuerOntid,String pwd,byte[] salt,String subjectOntid,String claimId,Account payerAcct,long gaslimit,long gasprice)  |
+  | 1 | String sendCommit(String issuerOntid,String password,byte[] salt,String subjectOntid,String claimId,Account payerAcct,long gaslimit,long gasprice)  |
 |   2 | String sendRevoke(String issuerOntid,String password,byte[] salt,String claimId,Account payerAcct,long gaslimit,long gasprice)                 |
 |   3 | String sendGetStatus(String claimId) |   
   

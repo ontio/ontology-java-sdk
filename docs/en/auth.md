@@ -213,7 +213,7 @@ Java-SDK has encapsulated the call interface for authority contract. The authori
 ||newAdminOntID|New administrator|
 ||keyNo|Contract administrator's public key KeyNo|
 ||payerAcct|Paid account|
-||gaslimit|Gas price|
+||gaslimit|Gaslimit|
 ||gasprice|Gas price|
 |Return value instruction|Transaction hash||
 
@@ -232,7 +232,7 @@ Java-SDK has encapsulated the call interface for authority contract. The authori
 ||funcName|Function name|
 ||keyNo|Contract administrator's KeyNo|
 ||payerAcct|Paid account|
-||gaslimit|Gas price|
+||gaslimit|Gaslimit|
 ||gasprice|Gas price|
 |Return value instruction|Transaction hash||
 
@@ -252,18 +252,18 @@ Java-SDK has encapsulated the call interface for authority contract. The authori
 ||ontIDs|ontid array|
 ||keyNo|Contract administrator's public key KeyNo|
 ||payerAcct|Paid account|
-||gaslimit|Gas price|
+||gaslimit|Gaslimit|
 ||gasprice|Gas price|
 |Return value instruction|Transaction hash||
 
 4. String delegate(String ontid,String password,salt,String contractAddr,String toOntId,String role,long period,long level,long keyNo,Account payerAcct,long gaslimit,long gasprice)
 
-The role owner can delegate the role to others. "from:" is the ONT ID of the transferor, "to" is the ONT ID of the delegator, "role" is the role of delegator, and the "period" parameter specifies the duration of the delegation. (use second as the unit).
+Role owner can assign a role to other people, from is the ONT ID for assigner, to is the ONT ID for the assignee/delegate, role is the assigned role, period parameter specifies the term time of delegation by second.
 
 
-The delegator can delegate his role to other people too, and the parameter level specifies the depth of the delegation level. E.g,
+Delegate can assign its role to more people, level parameter specifies the depth of the delegate level, for instance,
 
-level = 1: The delegator cannot delegate his role to others; the current implementation only supports this situation.
+ Level = 1：Delegate cannot assign its role. The current realization only supports this case.
 
 |instruction||Description|
 |:--|:--|:--|
@@ -278,13 +278,13 @@ level = 1: The delegator cannot delegate his role to others; the current impleme
 ||period|Use second as the unit|
 ||keyNo|The KeyNo of ontid public key|
 ||payerAcct|Paid account|
-||gaslimit|Gas price|
+||gaslimit|Gaslimit|
 ||gasprice|Gas price|
 |Return value instruction|Transaction hash||
 
 5. String withdraw(String initiatorOntid,String password,byte[] salt,String contractAddr,String delegate, String role,long keyNo,Account payerAcct,long gaslimit,long gasprice)
 
-The role owner can withdraw the role delegation in advance. initiator is the initiator, delegate is the role delegator, and the initiator can withdraw the role from the delegator in advance.
+Role owners can revoke the role delegation in advance. InitiatorOntid is the initiator, delegate is role delegate, initiator revokes the role delegated to the delegate in advance.
 
 |instruction||Description|
 |:--|:--|:--|
@@ -298,7 +298,7 @@ The role owner can withdraw the role delegation in advance. initiator is the ini
 ||role|Role|
 ||keyNo|ontid public key KeyNo|
 ||payerAcct|Paid account|
-||gaslimit|Gas price|
+||gaslimit|Gaslimit|
 ||gasprice|Gas price|
 |Return value instruction|Transaction hash||
 
@@ -315,6 +315,6 @@ The role owner can withdraw the role delegation in advance. initiator is the ini
 ||funcName|Function name|
 ||keyNo|ontid public key KeyNo|
 ||payerAcct|Paid account|
-||gaslimit|Gas price|
+||gaslimit|Gaslimit|
 ||gasprice|Gas price|
 |Return value instruction|Transaction hash||

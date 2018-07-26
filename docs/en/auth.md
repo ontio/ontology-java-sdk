@@ -6,17 +6,17 @@ English / [中文](../cn/auth.md)
 
 
 At present, smart contracts can be called on by anyone, but this does not conform to the real requirements. The basic idea of the role-based authority management is that each role can call on certain functions and each entity can be given multiple roles (entities are identified by ONT ID).
-If a smart contract needs to add an authority management function, then information such as roles allocated in the contract, roles’ callable function, and which entity does the role belong to etc. must be recorded. This can be a very elaborate process and can be managed by a system contract.
+If a smart contract needs to add an authority management function, then information such as roles allocated in the contract, roles’ callable function, and which entity does the role belong to, etc., must be recorded. This can be a very elaborate process and can be managed by a system contract.
 
-For details, please refer to
-https://github.com/ontio/ontology-smartcontract/blob/master/smartcontract/native/auth/auth.md
+For details, please refer to:
+https://github.com/ontio/ontology-smartcontract/blob/master/smartcontract/native/auth/auth.md.
 
 
 *  Authority Contract Management
 
 *  Usage Examples
 
-*  Interface list
+*  Interface List
 
 ### Authority Contract Management
 
@@ -26,21 +26,21 @@ Auth contract implements a role-based authority management solution. Each role c
 
 ### Usage Examples
 
-Ontology smart contract does not support initialization execution during employment, therefore, the contract administrator needs to hardcode it into contract code, where the contract administrator’s ONTID is defined as a constant in the contract. For more details please refer to the following contract example: Ontology smart contract can call VerifyToken function for authority verification. At the same time, for developers’ convenience to check if an ONTID has a role, Java-SDK also provides VerifyToken interface where one can check role allocations.
+Ontology smart contract does not support initialization execution during employment, therefore, the contract administrator needs to hardcode it into contract code, where the contract administrator's ONT ID is defined as a constant in the contract. For more details please refer to the following contract example: Ontology smart contract can call VerifyToken function for authority verification. At the same time, for developers’ convenience to check if an ONT ID has a role, Java-SDK also provides VerifyToken interface where one can check role allocations.
 
 Use flow:
-```
+
 1. Deploy smart contract on-chain.
 2. Call init methods in the smart contract. Use initContractAdmin method in the contract code to set up a pre-defined administrator ONT ID as the contract administration (please note: it is needed to register the administrator’s ONT ID on-chain).
 3. Contract administrator designs the role required and binds it with the function in the smart contract. This step can call assignFuncsToRole interface in Java-SDK for settings.
 4. Contract administrator allocates role to ONT ID, ONT ID that owns the role will have authority to call the corresponding function of the role. This step can call assignFuncsToRole interface in Java-SDK for settings.
-5. ONT ID with role, before calling its corresponding function, can use VerifyToken Interface in Java-SDK to verify if ONTID has the right to call the corresponding function
-```
+5. ONT ID with role, before calling its corresponding function, can use VerifyToken Interface in Java-SDK to verify if ONT ID has the right to call the corresponding function.
 
 Use the following examples to illustrate the use flow:
 
-A.	Deploy smart contract on-chain
-B.	Call init method in this contract
+A.	Deploy smart contract on-chain.
+
+B.	Call init method in this contract.
 
 ```
 AbiInfo abiInfo = JSON.parseObject(abi,AbiInfo.class);
@@ -83,12 +83,12 @@ String result = sdk.nativevm().auth().verifyToken(identityX.ontid, password, ide
 Returned Value: “01” means has authority, “00” means no authority.
 ```
 
-G.	If the principal’s authority time has not finished, the delegate can revoke the authority that is delegated to others.
+G.	If the principal's authority time has not finished, the delegate can revoke the authority that is delegated to others.
 ```
 sdk.nativevm().auth().withdraw(identity1.ontid,password,identity1.controls.get(0).getSalt(),1,Helper.reverse(codeAddress),identityX.ontid,"role1",account,sdk.DEFAULT_GAS_LIMIT,0);
 ```
 
-H.	Contract administrator can pass his or her administration authority to other ONTID.
+H.	Contract administrator can pass his or her administration authority to other ONT ID.
 ```
 String txhash = sdk.nativevm().auth().sendTransfer(adminIdentity.ontid,password,adminIdentity.controls.get(0).getSalt(),1,Helper.reverse(codeAddress),adminIdentity.ontid,
 account,sdk.DEFAULT_GAS_LIMIT,0);
@@ -196,7 +196,7 @@ namespace Example
 ```
 
 
-### Interface list
+### Interface List
 
 Java-SDK has encapsulated the call interface for authority contract. The authority can be managed through Java-SDK.
 
@@ -204,7 +204,7 @@ Java-SDK has encapsulated the call interface for authority contract. The authori
 
 |Instruction||Description|
 |:--|:--|:--|
-|Function instruction|Contract administrator transfers contract management authorization|This function must be called by the contract administrator and we use the public key with the number keyNo in the adminOntID to verify the validity of transaction signature. |
+|Function instruction|Contract administrator transfers contract management authorization|This function must be called by the contract administrator and we use the public key with the number keyNo in the adminOntID to verify the validity of the transaction signature. |
 |Parameter instruction|Field|Description|
 ||adminOntId|Contract administrator's ontid|
 ||password|Contract administrator's password|
@@ -222,7 +222,7 @@ Java-SDK has encapsulated the call interface for authority contract. The authori
 
 |instruction||Description|
 |:--|:--|:--|
-|Function instruction|Assign a function to a role|This function must be called by the contract administrator, and it will automatically bind all functions to the role. if it is already binded, the binding procedure will skip automatically, and return true in the end.|
+|Function instruction|Assign a function to a role|This function must be called by the contract administrator, and it will automatically bind all functions to the role. If it is already bound, the binding procedure will skip automatically, and return true in the end.|
 |Parameter instruction|Field|Description|
 ||adminOntId|Contract administrator's ontid|
 ||password|Contract administrator's password|
@@ -240,7 +240,7 @@ Java-SDK has encapsulated the call interface for authority contract. The authori
 
 3. String assignOntIDsToRole(String adminOntId,String password,salt,String contractAddr,String role,String[] ontIDs,long keyNo,Account payerAcct,long gaslimit,long gasprice)
 
-|instruction||Description|
+|Instruction||Description|
 |:--|:--|:--|
 |Function instruction|Bind a role to an entity|This function must be called by the contract administrator. The ONT ID in the ontIDs array is assigned the role and finally returns true. In the current implementation, the level of the permission token is equal to 2 by default.|
 |Parameter instruction|Field|Description|
@@ -258,10 +258,9 @@ Java-SDK has encapsulated the call interface for authority contract. The authori
 
 4. String delegate(String ontid,String password,salt,String contractAddr,String toOntId,String role,long period,long level,long keyNo,Account payerAcct,long gaslimit,long gasprice)
 
-The role owner can delegate the role to others. "from:" is the ONT ID of the transferor, "to" is the ONT ID of the delegator, "role" is the role of delegator, and the "period" parameter specifies the duration of the delegation. (use second as the unit).
+The role owner can delegate the role to others. "from:" is the ONT ID of the transferer, "to" is the ONT ID of the delegator, "role" is the role of delegator, and the "period" parameter specifies the duration of the delegation (using second as the unit).
 
-
-The delegator can delegate his role to other people too, and the parameter level specifies the depth of the delegation level. E.g,
+The delegator can delegate his role to other people too, and the parameter level specifies the depth of the delegation level, e.g.:
 
 level = 1: The delegator cannot delegate his role to others; the current implementation only supports this situation.
 
@@ -284,9 +283,9 @@ level = 1: The delegator cannot delegate his role to others; the current impleme
 
 5. String withdraw(String initiatorOntid,String password,byte[] salt,String contractAddr,String delegate, String role,long keyNo,Account payerAcct,long gaslimit,long gasprice)
 
-The role owner can withdraw the role delegation in advance. initiator is the initiator, delegate is the role delegator, and the initiator can withdraw the role from the delegator in advance.
+The role owner can withdraw the role delegation in advance. "initiator" is the initiator, "delegate" is the role delegator, and the initiator can withdraw the role from the delegator in advance.
 
-|instruction||Description|
+|Instruction||Description|
 |:--|:--|:--|
 |Function instruction|Revocate contract call authorization（use with delegate function）||
 |Parameter instruction|Field|Description|
@@ -304,7 +303,7 @@ The role owner can withdraw the role delegation in advance. initiator is the ini
 
 6. String verifyToken(String ontid,String password,byte[] salt,String contractAddr,String funcName,long keyNo,Account payerAcct,long gaslimit,long gasprice)
 
-|instruction||Description|
+|Instruction||Description|
 |:--|:--|:--|
 |Function instruction|Verify the validity of contract call token||
 |Parameter instruction|Field|Description|

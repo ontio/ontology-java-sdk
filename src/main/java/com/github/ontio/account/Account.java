@@ -161,7 +161,7 @@ public class Account {
         if (data.length != 38 || data[0] != (byte) 0x80 || data[33] != 0x01) {
             throw new IllegalArgumentException();
         }
-        byte[] checksum = Digest.sha256(Digest.sha256(data, 0, data.length - 4));
+        byte[] checksum = Digest.hash256(data, 0, data.length - 4);
         for (int i = 0; i < 4; i++) {
             if (data[data.length - 4 + i] != checksum[i]) {
                 throw new IllegalArgumentException();
@@ -226,7 +226,7 @@ public class Account {
         Account account = new Account(Helper.hexToBytes(priKey), scheme);
         Address script_hash = Address.addressFromPubKey(account.serializePublicKey());
         String address = script_hash.toBase58();
-        byte[] addresshashTmp = Digest.sha256(Digest.sha256(address.getBytes()));
+        byte[] addresshashTmp = Digest.hash256(address.getBytes());
         byte[] addresshashNew = Arrays.copyOfRange(addresshashTmp, 0, 4);
 
         if (!new String(addresshash).equals(new String(addresshashNew))) {
@@ -410,7 +410,7 @@ public class Account {
         byte[] prikey = serializePrivateKey();
         System.arraycopy(prikey, 0, data, 1, 32);
         data[33] = (byte) 0x01;
-        byte[] checksum = Digest.sha256(Digest.sha256(data, 0, data.length - 4));
+        byte[] checksum = Digest.hash256(data, 0, data.length - 4);
         System.arraycopy(checksum, 0, data, data.length - 4, 4);
         String wif = Base58.encode(data);
         Arrays.fill(data, (byte) 0);
@@ -425,7 +425,7 @@ public class Account {
         Address script_hash = Address.addressFromPubKey(serializePublicKey());
         String address = script_hash.toBase58();
 
-        byte[] addresshashTmp = Digest.sha256(Digest.sha256(address.getBytes()));
+        byte[] addresshashTmp = Digest.hash256(address.getBytes());
         byte[] addresshash = Arrays.copyOfRange(addresshashTmp, 0, 4);
 
         byte[] derivedkey = SCrypt.generate(passphrase.getBytes(StandardCharsets.UTF_8), addresshash, N, r, p, dkLen);
@@ -461,7 +461,7 @@ public class Account {
         Address script_hash = Address.addressFromPubKey(serializePublicKey());
         String address = script_hash.toBase58();
 
-        byte[] addresshashTmp = Digest.sha256(Digest.sha256(address.getBytes()));
+        byte[] addresshashTmp = Digest.hash256(address.getBytes());
         byte[] addresshash = Arrays.copyOfRange(addresshashTmp, 0, 4);
 
         byte[] derivedkey = SCrypt.generate(passphrase.getBytes(StandardCharsets.UTF_8), addresshash, N, r, p, dkLen);
@@ -508,7 +508,7 @@ public class Account {
     }
 
     public static String getCtrDecodedPrivateKey(String encryptedPriKey, String passphrase, String address, int n, SignatureScheme scheme) throws Exception {
-        byte[] addresshashTmp = Digest.sha256(Digest.sha256(address.getBytes()));
+        byte[] addresshashTmp = Digest.hash256(address.getBytes());
         byte[] addresshash = Arrays.copyOfRange(addresshashTmp, 0, 4);
         return getCtrDecodedPrivateKey(encryptedPriKey,passphrase,addresshash,n,scheme);
     }
@@ -538,7 +538,7 @@ public class Account {
         cipher.init(Cipher.DECRYPT_MODE, skeySpec, new IvParameterSpec(iv));
         byte[] rawkey = cipher.doFinal(encryptedkey);
         String address = new Account(rawkey, scheme).getAddressU160().toBase58();
-        byte[] addresshashTmp = Digest.sha256(Digest.sha256(address.getBytes()));
+        byte[] addresshashTmp = Digest.hash256(address.getBytes());
         byte[] addresshash = Arrays.copyOfRange(addresshashTmp, 0, 4);
         if (!Arrays.equals(addresshash,salt)) {
             throw new SDKException(ErrorCode.encryptedPriKeyAddressPasswordErr);

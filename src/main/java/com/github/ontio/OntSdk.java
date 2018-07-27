@@ -259,7 +259,7 @@ public class OntSdk {
                 throw new SDKException(ErrorCode.ParamError);
             }
             for (int i = 0; i < tx.sigs.length; i++) {
-                if(Arrays.equals(tx.sigs[i].pubKeys,pubKeys)){
+                if(Arrays.deepEquals(tx.sigs[i].pubKeys,pubKeys)){
                     if (tx.sigs[i].sigData.length + 1 > pubKeys.length) {
                         throw new SDKException(ErrorCode.ParamErr("too more sigData"));
                     }

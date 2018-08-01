@@ -43,12 +43,6 @@ public class ECC {
 		return a.getYCoord().toBigInteger().compareTo(b.getYCoord().toBigInteger());
 	}
 	
-	public static byte[] generateKey() {
-		byte[] key = new byte[32];
-		SecureRandom sr = new SecureRandom();
-		sr.nextBytes(key);
-		return key;
-	}
 	
 	public static String toString(ECPoint p) {
 		return Helper.toHexString(p.getEncoded(true));
@@ -60,5 +54,9 @@ public class ECC {
 		SecureRandom sr = new SecureRandom();
 		sr.nextBytes(key);
 		return key;
+	}
+	
+	public static byte[] generateKey() {
+		return generateKey(32);
 	}
 }

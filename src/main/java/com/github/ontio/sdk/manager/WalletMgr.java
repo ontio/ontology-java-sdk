@@ -33,7 +33,6 @@ import com.github.ontio.sdk.wallet.Wallet;
 import com.github.ontio.common.Common;
 import com.github.ontio.core.DataSignature;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.util.IOUtils;
 
 import java.io.*;
 import java.security.SecureRandom;
@@ -65,7 +64,9 @@ public class WalletMgr {
             writeWallet();
         }
         InputStream inputStream = new FileInputStream(filePath);
-        String text = IOUtils.toString(inputStream);
+        byte[] bytes = new byte[inputStream.available()];
+        inputStream.read(bytes);
+        String text = new String(bytes);
         walletInMem = JSON.parseObject(text, Wallet.class);
         walletFile = JSON.parseObject(text, Wallet.class);
         if (walletInMem.getIdentities() == null) {
@@ -90,7 +91,9 @@ public class WalletMgr {
             writeWallet();
         }
         InputStream inputStream = new FileInputStream(filePath);
-        String text = IOUtils.toString(inputStream);
+        byte[] bytes = new byte[inputStream.available()];
+        inputStream.read(bytes);
+        String text = new String(bytes);
         walletInMem = JSON.parseObject(text, Wallet.class);
         walletFile = JSON.parseObject(text, Wallet.class);
         if (walletInMem.getIdentities() == null) {

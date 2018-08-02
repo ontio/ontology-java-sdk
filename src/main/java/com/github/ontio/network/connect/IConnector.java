@@ -31,7 +31,6 @@ public interface IConnector {
 	Object sendRawTransaction(String hexData) throws ConnectorException, IOException;
 	Transaction getRawTransaction(String txhash) throws ConnectorException, IOException;
 	Object getRawTransactionJson(String txhash) throws ConnectorException, IOException;
-	int getGenerateBlockTime() throws ConnectorException, IOException;
 	int getNodeCount() throws ConnectorException, IOException;
 	int getBlockHeight() throws ConnectorException, IOException;
 	Block getBlock(int height) throws ConnectorException, IOException;

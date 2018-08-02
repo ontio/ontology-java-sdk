@@ -117,12 +117,6 @@ public class ConnectMgrTest {
     }
 
     @Test
-    public void getGenerateBlockTime() throws ConnectorException, IOException {
-        int res = ontSdk.getConnect().getGenerateBlockTime();
-        Assert.assertNotEquals(0,res);
-    }
-
-    @Test
     public void getBlockHeight() throws ConnectorException, IOException {
 
         int res = ontSdk.getConnect().getBlockHeight();

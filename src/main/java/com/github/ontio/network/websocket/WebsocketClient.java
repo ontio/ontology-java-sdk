@@ -141,15 +141,6 @@ public class WebsocketClient extends AbstractConnector {
         return null;
     }
     @Override
-    public int getGenerateBlockTime() throws ConnectorException, IOException{
-        Map map = new HashMap<>();
-        map.put("Action", "getgenerateblocktime");
-        map.put("Version", "1.0.0");
-        map.put("Id", generateReqId());
-        mWebSocket.send(JSON.toJSONString(map));
-        return 0;
-    }
-    @Override
     public int getNodeCount() throws ConnectorException, IOException{
         Map map = new HashMap<>();
         map.put("Action", "getconnectioncount");

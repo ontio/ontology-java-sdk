@@ -80,17 +80,6 @@ public class RestClient extends AbstractConnector {
     }
 
     @Override
-    public int getGenerateBlockTime() throws RestfulException {
-        String rs = api.getGenerateBlockTime();
-        Result rr = JSON.parseObject(rs, Result.class);
-        if (rr.Error == 0) {
-            return (int) rr.Result;
-        }
-        throw new RestfulException(to(rr));
-
-    }
-
-    @Override
     public int getNodeCount() throws RestfulException {
         String rs = api.getNodeCount();
         Result rr = JSON.parseObject(rs, Result.class);

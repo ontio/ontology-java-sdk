@@ -193,10 +193,6 @@ public class ConnectMgr {
         return connector.getRawTransactionJson(txhash);
     }
 
-    public int getGenerateBlockTime() throws ConnectorException, IOException {
-        return connector.getGenerateBlockTime();
-    }
-
     public int getNodeCount() throws ConnectorException, IOException {
         return connector.getNodeCount();
     }

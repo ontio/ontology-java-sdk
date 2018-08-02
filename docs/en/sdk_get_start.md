@@ -307,27 +307,26 @@ com.github.ontio.sdk.exception.SDKException: {"Action":"getmempooltxstate","Desc
 
 | No   |                    Main   Function                     |     Description      |
 | ---- | :----------------------------------------------------: | :------------------: |
-| 1    |       ontSdk.getConnect().getGenerateBlockTime()       |   Query VBFT block-out time   |
-| 2    |           ontSdk.getConnect().getNodeCount()           |     Query the number of nodes     |
-| 3    |            ontSdk.getConnect().getBlock(15)            |        Query block info        |
-| 4    |          ontSdk.getConnect().getBlockJson(15)          |        Query block info        |
-| 5    |       ontSdk.getConnect().getBlockJson("txhash")       |        Query block info        |
-| 6    |         ontSdk.getConnect().getBlock("txhash")         |        Query block info        |
-| 7    |          ontSdk.getConnect().getBlockHeight()          |     Query current block height     |
-| 8    |      ontSdk.getConnect().getTransaction("txhash")      |       Query transaction       |
-| 9    | ontSdk.getConnect().getStorage("contractaddress", key) |   Query smart contract storage   |
-| 10   |       ontSdk.getConnect().getBalance("address")        |       Query balance       |
-| 11   | ontSdk.getConnect().getContractJson("contractaddress") |     Query smart contract     |
-| 12   |       ontSdk.getConnect().getSmartCodeEvent(59)        |   Query the event in the smart contract   |
-| 13   |    ontSdk.getConnect().getSmartCodeEvent("txhash")     |   Query the event in the smart contract   |
-| 14   |  ontSdk.getConnect().getBlockHeightByTxHash("txhash")  |   Query the block height by transaction hash   |
-| 15   |      ontSdk.getConnect().getMerkleProof("txhash")      |    Get merkle proof    |
-| 16   | ontSdk.getConnect().sendRawTransaction("txhexString")  |       Send transaction       |
-| 17   |  ontSdk.getConnect().sendRawTransaction(Transaction)   |       Send transaction       |
-| 18   |    ontSdk.getConnect().sendRawTransactionPreExec()     |    Send a pre-execution transaction    |
-| 19   |  ontSdk.getConnect().getAllowance("ont","from","to")   |    Query Allowed Values    |
-| 20   |        ontSdk.getConnect().getMemPoolTxCount()         | Query total transaction volumn in the transaction pool  |
-| 21   |        ontSdk.getConnect().getMemPoolTxState()         | Query transaction status in the transaction pool |
+| 1    |           ontSdk.getConnect().getNodeCount()           |     Query the number of nodes     |
+| 2    |            ontSdk.getConnect().getBlock(15)            |        Query block info        |
+| 3    |          ontSdk.getConnect().getBlockJson(15)          |        Query block info        |
+| 4    |       ontSdk.getConnect().getBlockJson("txhash")       |        Query block info        |
+| 5    |         ontSdk.getConnect().getBlock("txhash")         |        Query block info        |
+| 6    |          ontSdk.getConnect().getBlockHeight()          |     Query current block height     |
+| 7    |      ontSdk.getConnect().getTransaction("txhash")      |       Query transaction       |
+| 8    | ontSdk.getConnect().getStorage("contractaddress", key) |   Query smart contract storage   |
+| 9   |       ontSdk.getConnect().getBalance("address")        |       Query balance       |
+| 10   | ontSdk.getConnect().getContractJson("contractaddress") |     Query smart contract     |
+| 11   |       ontSdk.getConnect().getSmartCodeEvent(59)        |   Query the event in the smart contract   |
+| 12   |    ontSdk.getConnect().getSmartCodeEvent("txhash")     |   Query the event in the smart contract   |
+| 13   |  ontSdk.getConnect().getBlockHeightByTxHash("txhash")  |   Query the block height by transaction hash   |
+| 14   |      ontSdk.getConnect().getMerkleProof("txhash")      |    Get merkle proof    |
+| 15   | ontSdk.getConnect().sendRawTransaction("txhexString")  |       Send transaction       |
+| 16   |  ontSdk.getConnect().sendRawTransaction(Transaction)   |       Send transaction       |
+| 17   |    ontSdk.getConnect().sendRawTransactionPreExec()     |    Send a pre-execution transaction    |
+| 18   |  ontSdk.getConnect().getAllowance("ont","from","to")   |    Query Allowed Values    |
+| 19   |        ontSdk.getConnect().getMemPoolTxCount()         | Query total transaction volumn in the transaction pool  |
+| 20   |        ontSdk.getConnect().getMemPoolTxState()         | Query transaction status in the transaction pool |
 
 
 ### 2.3 ONT transfer

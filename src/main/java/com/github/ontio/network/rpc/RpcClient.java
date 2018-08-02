@@ -85,15 +85,6 @@ public class RpcClient extends AbstractConnector {
     }
 
     @Override
-    public int getGenerateBlockTime() throws RpcException, IOException {
-        Object result = rpc.call("getgenerateblocktime");
-        if(result == null){
-            result = 0;
-        }
-        return (int) result;
-    }
-
-    @Override
     public int getNodeCount() throws RpcException, IOException {
         Object result = rpc.call("getconnectioncount");
         return (int) result;

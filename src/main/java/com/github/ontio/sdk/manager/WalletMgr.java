@@ -295,7 +295,9 @@ public class WalletMgr {
         com.github.ontio.account.Account act = new com.github.ontio.account.Account(Helper.hexToBytes(privateKey), scheme);
         return act.exportWif();
     }
-
+    public com.github.ontio.account.Account getAccount(String address, String password) throws Exception {
+        return getAccount(address, password,getWallet().getAccount(address).getSalt());
+    }
     public com.github.ontio.account.Account getAccount(String address, String password,byte[] salt) throws Exception {
         address = address.replace(Common.didont, "");
         return getAccountByAddress(Address.decodeBase58(address), password,salt);

@@ -33,7 +33,6 @@ import com.github.ontio.sdk.wallet.Wallet;
 import com.github.ontio.common.Common;
 import com.github.ontio.core.DataSignature;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.util.IOUtils;
 
 import java.io.*;
 import java.security.SecureRandom;
@@ -65,7 +64,9 @@ public class WalletMgr {
             writeWallet();
         }
         InputStream inputStream = new FileInputStream(filePath);
-        String text = IOUtils.toString(inputStream);
+        byte[] bytes = new byte[inputStream.available()];
+        inputStream.read(bytes);
+        String text = new String(bytes);
         walletInMem = JSON.parseObject(text, Wallet.class);
         walletFile = JSON.parseObject(text, Wallet.class);
         if (walletInMem.getIdentities() == null) {
@@ -90,7 +91,9 @@ public class WalletMgr {
             writeWallet();
         }
         InputStream inputStream = new FileInputStream(filePath);
-        String text = IOUtils.toString(inputStream);
+        byte[] bytes = new byte[inputStream.available()];
+        inputStream.read(bytes);
+        String text = new String(bytes);
         walletInMem = JSON.parseObject(text, Wallet.class);
         walletFile = JSON.parseObject(text, Wallet.class);
         if (walletInMem.getIdentities() == null) {
@@ -292,7 +295,9 @@ public class WalletMgr {
         com.github.ontio.account.Account act = new com.github.ontio.account.Account(Helper.hexToBytes(privateKey), scheme);
         return act.exportWif();
     }
-
+    public com.github.ontio.account.Account getAccount(String address, String password) throws Exception {
+        return getAccount(address, password,getWallet().getAccount(address).getSalt());
+    }
     public com.github.ontio.account.Account getAccount(String address, String password,byte[] salt) throws Exception {
         address = address.replace(Common.didont, "");
         return getAccountByAddress(Address.decodeBase58(address), password,salt);

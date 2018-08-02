@@ -72,15 +72,6 @@ class Interfaces {
         }
     }
 
-    public String getGenerateBlockTime() throws RestfulException {
-        Map<String, String> params = new HashMap<String, String>();
-        try {
-            return http.get(url + UrlConsts.Url_get_generate_block_time, params);
-        } catch (Exception e) {
-            throw new RestfulException(ErrorCode.ConnectUrlErr + url, e);
-        }
-    }
-
     public String getNodeCount() throws RestfulException {
         Map<String, String> params = new HashMap<String, String>();
         try {

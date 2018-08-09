@@ -141,7 +141,9 @@ public class WalletMgr {
         walletInMem = walletFile.clone();
         return walletInMem;
     }
-
+    public Wallet saveWallet() throws Exception {
+        return writeWallet();
+    }
     public Wallet writeWallet() throws Exception {
         writeFile(filePath, JSON.toJSONString(walletInMem));
         walletFile = walletInMem.clone();

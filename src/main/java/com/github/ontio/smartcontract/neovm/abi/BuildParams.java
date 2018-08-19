@@ -61,6 +61,8 @@ public class BuildParams {
                 Object val = list.get(i);
                 if (val instanceof byte[]) {
                     builder.emitPushByteArray((byte[]) val);
+                } else if (val instanceof String) {
+                    builder.emitPushByteArray(((String) val).getBytes());
                 } else if (val instanceof Boolean) {
                     builder.emitPushBool((Boolean) val);
                 } else if(val instanceof Integer){
@@ -160,6 +162,8 @@ public class BuildParams {
                 Object val = list.get(i);
                 if (val instanceof byte[]) {
                     sb.emitPushByteArray((byte[]) val);
+                } else if (val instanceof String) {
+                    sb.emitPushByteArray(((String) val).getBytes());
                 } else if (val instanceof Boolean) {
                     sb.emitPushBool((Boolean) val);
                 } else if(val instanceof Integer){

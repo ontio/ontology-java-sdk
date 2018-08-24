@@ -233,7 +233,7 @@ public class WebsocketClient extends AbstractConnector {
     @Override
     public Object getSmartCodeEvent(int height) throws ConnectorException, IOException{
         Map map = new HashMap<>();
-        map.put("Action", "getsmartcodeeventtxs");
+        map.put("Action", "getsmartcodeeventbyheight");
         map.put("Version", "1.0.0");
         map.put("Height", height);
         map.put("Id", generateReqId());
@@ -242,7 +242,7 @@ public class WebsocketClient extends AbstractConnector {
     @Override
     public Object getSmartCodeEvent(String hash) throws ConnectorException, IOException{
         Map map = new HashMap<>();
-        map.put("Action", "getsmartcodeevent");
+        map.put("Action", "getsmartcodeeventbyhash");
         map.put("Version", "1.0.0");
         map.put("Hash", hash);
         return mWebSocket.send(JSON.toJSONString(map));

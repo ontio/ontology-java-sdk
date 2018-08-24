@@ -575,7 +575,6 @@ public class Account {
             cipher.updateAAD(address.getBytes());
             rawkey = cipher.doFinal(encryptedkey);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new SDKException(ErrorCode.encryptedPriKeyAddressPasswordErr);
         }
         Account account = new Account(rawkey, scheme);

@@ -282,7 +282,7 @@ public class WebsocketClient extends AbstractConnector {
     @Override
     public String getAllowance(String asset,String from,String to) throws ConnectorException, IOException{
         Map map = new HashMap<>();
-        map.put("Action", "getmerkleproof");
+        map.put("Action", "getallowance");
         map.put("Version", "1.0.0");
         map.put("Asset", asset);
         map.put("From", from);

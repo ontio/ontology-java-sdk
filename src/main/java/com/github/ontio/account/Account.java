@@ -381,6 +381,9 @@ public class Account {
                 byte[] d = new byte[32];
                 if (pri.getD().toByteArray().length == 33) {
                     System.arraycopy(pri.getD().toByteArray(), 1, d, 0, 32);
+                } else if (pri.getD().toByteArray().length == 31){
+                    d[0] = 0;
+                    System.arraycopy(pri.getD().toByteArray(), 0, d, 1, 31);
                 } else {
                     return pri.getD().toByteArray();
                 }

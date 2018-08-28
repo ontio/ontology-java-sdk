@@ -282,7 +282,7 @@ public class ConnectMgr {
             try {
                 Thread.sleep(3000);
                 objEvent = connector.getSmartCodeEvent(hash);
-                if (objEvent.equals("") || objEvent == null) {
+                if (objEvent == null || objEvent.equals("")) {
                     Thread.sleep(1000);
                     objTxState = connector.getMemPoolTxState(hash);
                     continue;

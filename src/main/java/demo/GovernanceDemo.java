@@ -7,7 +7,7 @@ import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.Helper;
-import com.github.ontio.core.governance.VoteInfo;
+import com.github.ontio.core.governance.AuthorizeInfo;
 import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.sdk.wallet.Identity;
 
@@ -150,7 +150,7 @@ public class GovernanceDemo {
                 String res = sdk.nativevm().governance().getPeerInfoAll();
                 JSONObject jsr = JSONObject.parseObject(res);
 //                System.out.println(Helper.toHexString(account7.serializePublicKey()));
-                VoteInfo voteInfo= sdk.nativevm().governance().getVoteInfo("0250c791cecb1191913f1e49c0b3492edc4f6a507be4a9adfa6ee15f843f220396",account.getAddressU160());
+                AuthorizeInfo voteInfo= sdk.nativevm().governance().getAuthorizeInfo("0250c791cecb1191913f1e49c0b3492edc4f6a507be4a9adfa6ee15f843f220396",account.getAddressU160());
                 if(voteInfo != null) {
                     System.out.println("voteInfo:" + voteInfo.json());
                 }

@@ -556,8 +556,13 @@ public class Account {
         if (salt.length != 16) {
             throw new SDKException(ErrorCode.ParamError);
         }
+        byte[] encryptedkey = new byte[]{};
+        try{
+            encryptedkey = Base64.getDecoder().decode(encryptedPriKey);
+        }catch (Exception e){
+            throw new SDKException(ErrorCode.ParamErr("encryptedPriKey is wrong"));
+        }
 
-        byte[] encryptedkey = Base64.getDecoder().decode(encryptedPriKey);
 
         int N = n;
         int r = 8;

@@ -903,7 +903,7 @@ public class OntId {
      * @throws Exception
      */
     public String createOntIdClaim(String signerOntid, String password,byte[] salt, String context, Map<String, Object> claimMap, Map metaData, Map clmRevMap, long expire) throws Exception {
-        if (signerOntid == null || signerOntid.equals("") || password == null || password.equals("") || context == null || context.equals("") || claimMap == null || metaData == null || clmRevMap == null || expire < 0) {
+        if (signerOntid == null || signerOntid.equals("") || password == null || password.equals("") || context == null || context.equals("") || claimMap == null || metaData == null || clmRevMap == null || expire <= 0) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
         if (expire < System.currentTimeMillis() / 1000) {

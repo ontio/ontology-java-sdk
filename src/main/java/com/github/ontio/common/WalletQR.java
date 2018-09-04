@@ -77,7 +77,7 @@ public class WalletQR {
         return map;
     }
     public static String getPriKeyFromQrCode(String qrcode,String password) throws SDKException {
-        if(qrcode==null || qrcode == "" || password == null || password == ""){
+        if(qrcode==null || qrcode.equals("") || password == null || password.equals("")){
             throw new SDKException(ErrorCode.ParamErr("qrcode or password should not be null"));
         }
         Map map = JSON.parseObject(qrcode,Map.class);

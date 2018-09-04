@@ -218,7 +218,7 @@ public class Governance {
      * @param addr
      * @return
      */
-    public AuthorizeInfo getAuthorizeInfo(String peerPubkey,Address addr) {
+    public String getAuthorizeInfo(String peerPubkey,Address addr) {
         byte[] peerPubkeyPrefix = Helper.hexToBytes(peerPubkey);
         byte[] address = addr.toArray();
         byte[] authorizeInfoPool = AUTHORIZE_INFO_POOL.getBytes();
@@ -230,7 +230,8 @@ public class Governance {
         try {
             res = sdk.getConnect().getStorage(Helper.reverse(contractAddress),Helper.toHexString(key));
             if(res !=null && !res.equals("")){
-                return Serializable.from(Helper.hexToBytes(res), AuthorizeInfo.class);
+                AuthorizeInfo authorizeInfo = Serializable.from(Helper.hexToBytes(res), AuthorizeInfo.class);
+                return authorizeInfo.toJson();
             }
         } catch (ConnectorException e) {
             return null;

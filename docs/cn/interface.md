@@ -258,13 +258,19 @@ ong:
 
 #### 治理合约
 
- |     | Main   Function |
- |:-----|:--------|
- |      1 | String registerCandidate(Account account, String peerPubkey, long initPos, String ontid,String ontidpwd,byte[] salt,  long keyNo, Account payerAcct, long gaslimit, long gasprice)                |
-|       2 | String unRegisterCandidate(Account account, String peerPubkey,Account payerAcct, long gaslimit, long gasprice)   |
-|       3 | String withdrawOng(Account account,Account payerAcct,long gaslimit,long gasprice)    |
-|       4 | String getPeerInfo(String peerPubkey) |
-|       5 | String getPeerInfoAll()       |
-|       6 | VoteInfo getAuthorizeInfo(String peerPubkey,Address addr)       |
-|       7 | String withdraw(Account account,String peerPubkey[],long[] withdrawList,Account payerAcct,long gaslimit,long gasprice)|
-|       8 | String quitNode(Account account,String peerPubkey,Account payerAcct,long gaslimit,long gasprice)|
+         |   Function                                                                                                                                                                         |   Description
+    -----|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+       1 | String registerCandidate(Account account, String peerPubkey, long initPos, String ontid,String ontidpwd,byte[] salt,  long keyNo, Account payerAcct, long gaslimit, long gasprice) | 抵押一定的ONT，消耗一定的额外ONG，申请成为候选节点
+       2 | String unRegisterCandidate(Account account, String peerPubkey,Account payerAcct, long gaslimit, long gasprice)                  | 取消申请成为候选节点，解冻抵押的ONT
+       3 | String withdrawOng(Account account,Account payerAcct,long gaslimit,long gasprice)                                               | 提取解绑ong
+       4 | String getPeerInfo(String peerPubkey)                                                                                           | 查询节点信息
+       5 | String getPeerInfoAll()                                                                                                         | 查询所有节点
+       6 | String getAuthorizeInfo(String peerPubkey,Address addr)                                                                  | 查询某个地址对某个节点的授权信息
+       7 | String withdraw(Account account,String peerPubkey[],long[] withdrawList,Account payerAcct,long gaslimit,long gasprice)          | 取出处于未冻结状态的抵押ONT
+       8 | String quitNode(Account account,String peerPubkey,Account payerAcct,long gaslimit,long gasprice)                                | 退出节点
+       9 | String addInitPos(Account account,String peerPubkey,int pos,Account payerAcct,long gaslimit,long gasprice)                      | 节点增加initPos接口，只能由节点所有者调用
+       10| String reduceInitPos(Account account,String peerPubkey,int pos,Account payerAcct,long gaslimit,long gasprice)                   | 节点减少initPos接口，只能由节点所有者调用，initPos不能低于承诺值，不能低于已接受授权数量的1/10
+       11| String setPeerCost(Account account,String peerPubkey,int peerCost,Account payerAcct,long gaslimit,long gasprice)                | 节点设置自己独占激励的比例
+       12| String changeMaxAuthorization(Account account,String peerPubkey,int maxAuthorize,Account payerAcct,long gaslimit,long gasprice) | 节点修改自己接受的最大授权ONT数量
+       13| String getPeerAttributes(String peerPubkey)                                                                                     | 查询节点属性信息
+       14| String getSplitFeeAddress(String address)                                                                                       | 查询某地址得到的激励

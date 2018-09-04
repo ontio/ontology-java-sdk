@@ -38,7 +38,10 @@ public class MnemonicCode {
         return sb.toString();
     }
 
-    public static byte[] getSeedFromMnemonicCodesStr(String mnemonicCodesStr){
+    public static byte[] getSeedFromMnemonicCodesStr(String mnemonicCodesStr) throws SDKException {
+        if(mnemonicCodesStr == null || mnemonicCodesStr.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("mnemonicCodesStr should not be null"));
+        }
         String[] mnemonicCodesArray = mnemonicCodesStr.split(" ");
         byte[] seed = new SeedCalculator()
                 .withWordsFromWordList(English.INSTANCE)
@@ -58,6 +61,9 @@ public class MnemonicCode {
 //    }
 
     public static byte[] getPrikeyFromMnemonicCodesStrBip44(String mnemonicCodesStr) throws Exception{
+        if(mnemonicCodesStr == null || mnemonicCodesStr.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("mnemonicCodesStr should not be null"));
+        }
         byte[] seed = MnemonicCode.getSeedFromMnemonicCodesStr(mnemonicCodesStr);
         ExtendedPrivateKey key = ExtendedPrivateKey.fromSeed(seed,"Nist256p1 seed".getBytes("UTF-8"), Bitcoin.MAIN_NET);
         ExtendedPrivateKey child = key.derive("m/44'/1024'/0'/0/0");
@@ -67,6 +73,9 @@ public class MnemonicCode {
         return tmp;
     }
     public static String encryptMnemonicCodesStr(String mnemonicCodesStr, String password, String address) throws Exception {
+        if(mnemonicCodesStr == null || mnemonicCodesStr.equals("") || password==null || password.equals("")||address==null||address.equals("")){
+            throw new SDKException(ErrorCode.ParamError);
+        }
         int N = 4096;
         int r = 8;
         int p = 8;

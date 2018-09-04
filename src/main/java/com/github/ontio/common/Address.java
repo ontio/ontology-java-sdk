@@ -101,7 +101,12 @@ public class Address extends UIntBase implements Comparable<Address> {
     }
 
     public static Address decodeBase58(String address) throws SDKException {
-        byte[] data = Base58.decode(address);
+        byte[] data = new byte[]{};
+        try{
+            data = Base58.decode(address);
+        }catch (Exception e){
+            throw new SDKException(ErrorCode.ParamError);
+        }
         if (data.length != 25) {
             throw new SDKException(ErrorCode.ParamError);
         }

@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class VoteInfo implements Serializable {
+public class AuthorizeInfo implements Serializable {
     public String peerPubkey;
     public Address address;
     public long consensusPos;
@@ -39,7 +39,7 @@ public class VoteInfo implements Serializable {
     public long withdrawFreezePos;
     public long withdrawUnfreezePos;
 
-    public VoteInfo(){}
+    public AuthorizeInfo(){}
 
     @Override
     public void deserialize(BinaryReader reader) throws IOException {

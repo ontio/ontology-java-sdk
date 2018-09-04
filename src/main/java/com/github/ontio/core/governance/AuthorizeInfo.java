@@ -64,7 +64,7 @@ public class AuthorizeInfo implements Serializable {
 
     }
 
-    public String json(){
+    public String toJson(){
         Map map = new HashMap();
         map.put("peerPubkey",peerPubkey);
         map.put("address",address.toBase58());

@@ -255,3 +255,16 @@ ong:
      4 | Transaction makeDelegate(String ontid,String contractAddr,String toAddr,String role,int period,int level,int key,String payer,long gaslimit,long gasprice)|   将合约调用权代理给其他人
      5 | Transaction makeWithDraw(String ontid,String contractAddr,String delegate, String role,int key,String payer,long gaslimit,long gasprice)                  |   收回合约调用权
  ```
+
+#### 治理合约
+
+ |     | Main   Function |
+ |:-----|:--------|
+ |      1 | String registerCandidate(Account account, String peerPubkey, long initPos, String ontid,String ontidpwd,byte[] salt,  long keyNo, Account payerAcct, long gaslimit, long gasprice)                |
+|       2 | String unRegisterCandidate(Account account, String peerPubkey,Account payerAcct, long gaslimit, long gasprice)   |
+|       3 | String withdrawOng(Account account,Account payerAcct,long gaslimit,long gasprice)    |
+|       4 | String getPeerInfo(String peerPubkey) |
+|       5 | String getPeerInfoAll()       |
+|       6 | VoteInfo getAuthorizeInfo(String peerPubkey,Address addr)       |
+|       7 | String withdraw(Account account,String peerPubkey[],long[] withdrawList,Account payerAcct,long gaslimit,long gasprice)|
+|       8 | String quitNode(Account account,String peerPubkey,Account payerAcct,long gaslimit,long gasprice)|

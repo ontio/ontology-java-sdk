@@ -29,6 +29,7 @@ import com.github.ontio.sdk.exception.SDKException;
 import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -211,7 +212,9 @@ public class BuildParams {
             } else if ("Integer".equals(obj.getType())) {
                 tmp.add(JSON.parseObject(obj.getValue(), Long.class));
             } else if ("Array".equals(obj.getType())) {
-                tmp.add(JSON.parseObject(obj.getValue(), List.class));
+                List l = JSON.parseObject(obj.getValue(), List.class);
+                l = listConvert(l);
+                tmp.add(l);
             } else if ("InteropInterface".equals(obj.getType())) {
                 tmp.add(JSON.parseObject(obj.getValue(), Object.class));
             } else if ("Void".equals(obj.getType())) {
@@ -229,5 +232,17 @@ public class BuildParams {
         }
         byte[] params = createCodeParamsScript(list);
         return params;
+    }
+    private static List listConvert(List l){
+        for(int i = 0; i < l.size();i++){
+            if(l.get(i) instanceof String) {
+                if (l.get(i) instanceof String) {
+                    l.set(i, Base64.getDecoder().decode((String) l.get(i)));
+                }
+            }else if (l.get(i) instanceof List) {
+                l.set(i,listConvert((List)l.get(i)));
+            }
+        }
+        return l;
     }
 }

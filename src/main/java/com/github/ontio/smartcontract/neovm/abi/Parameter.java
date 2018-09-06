@@ -64,6 +64,11 @@ public class Parameter {
                 this.value = JSON.toJSONString(tmp);
             } else if ("Array".equals(type)) {
                 List tmp = (List) value;
+                for (int i = 0; i < tmp.size(); i++) {
+                    if(tmp.get(i) instanceof String){
+                        tmp.set(i,((String) tmp.get(i)).getBytes());
+                    }
+                }
                 this.value = JSON.toJSONString(tmp);
             } else if ("InteropInterface".equals(type)) {
                 Object tmp = (Object) value;

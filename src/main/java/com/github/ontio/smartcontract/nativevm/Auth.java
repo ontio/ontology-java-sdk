@@ -426,8 +426,8 @@ public class Auth {
         return tx;
     }
 
-    public Object queryAuth(String contractAddr,String ontid) throws Exception {
-        Object obj = sdk.getConnect().getStorage(contractAddr,contractAddr+Helper.toHexString("role".getBytes())+Helper.toHexString(ontid.getBytes()));
+    public Object queryAuth(String contractAddr, String role, String ontid) throws Exception {
+        Object obj = sdk.getConnect().getStorage(contractAddr,contractAddr+Helper.toHexString(role.getBytes())+Helper.toHexString(ontid.getBytes()));
         return obj;
     }
 }

@@ -118,7 +118,7 @@ public class AuthDemo {
                 System.out.println(object2);
             }
             if(true){
-                ontSdk.nativevm().auth().queryAuth(contractAddr,identity2.ontid);
+                ontSdk.nativevm().auth().queryAuth(contractAddr,"role",identity2.ontid);
             }
             if(false){
                 AbiInfo abiinfo = JSON.parseObject(abi, AbiInfo.class);

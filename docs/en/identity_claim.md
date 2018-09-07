@@ -25,7 +25,7 @@ Note: Only a wallet file in the operating file format is currently supported, wi
 
 
 
-## Digital ID account management
+## Digital ID management
 
 **Data structure**
 

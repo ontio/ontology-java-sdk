@@ -185,28 +185,29 @@ clmRevMap,System.currentTimeMillis()/1000 +100000);
 The specification of the following interface document is: https://github.com/kunxian-xia/ontology-DID/blob/master/docs/en/claim_spec.md.
 
 
-### 2.3 
+### 2.3 Storage Claim
 
-
+**sendCommit**
+```
 String sendCommit (String issuerOntid, String password,byte[] salt, String subjectOntid, String claimId, Account payerAcct, long gaslimit, long gasprice)
-
+```
 Function description: Save data to the chain
 
 Parameter description：
 
-issuerOntid：Issuer ONT ID
+```issuerOntid```：Issuer ONT ID
 
-subjectOntid: Subject ONT ID
+```subjectOntid```: Subject ONT ID
 
-password: Identity password
+```password```: Identity password
 
-claimId: Trusted claims claim uniqueness mark, i.e. Jti field in Claim
+```claimId```: Trusted claims claim uniqueness mark, i.e. Jti field in Claim
 
-payerAcct: Payment transaction account
+```payerAcct```: Payment transaction account
 
-gaslimit: Gas limit
+```gaslimit```: Gas limit
 
-gasprice: Gas price
+```gasprice```: Gas price
 
 return value: Transaction hash
 
@@ -220,14 +221,17 @@ ontSdk.neovm().claimRecord().sendCommit(ontid,password,payload.getString("jti"),
 ```
 
 
-### 2.4
- String sendGetStatus(String claimId)
+### 2.4 Get Status
 
+**sendGetStatus**
+```
+ String sendGetStatus(String claimId)
+```
 Function description: Query status of trusted claim
 
 Parameter description:
 
-claimId: Trusted claims claim uniqueness mark, i.e. Jti field in Claim
+```claimId```: Trusted claims claim uniqueness mark, i.e. Jti field in Claim
 
 return value：There are two parts: In the first part, the status of the claim: "Not attested", "Attested", "Attest has been revoked"; the second part is the certificate's ONT ID.
 
@@ -237,22 +241,26 @@ String getstatusRes2 = ontSdk.neovm().claimRecord().sendGetStatus(payload.getStr
 ```
 
 
-### 2.5 String sendRevoke(String issuerOntid,String password,byte[] salt,String claimId,Account payerAcct,long gaslimit,long gas)
+### 2.5 Revoke
 
+**sendRevoke**
+```
+String sendRevoke(String issuerOntid,String password,byte[] salt,String claimId,Account payerAcct,long gaslimit,long gas)
+```
 Function description:Repeal of a trust claim
 
 Parameter description:
 
-issuerOntid: Issuer ONT ID
+```issuerOntid```: Issuer ONT ID
 
-password: Attester's ONT ID password
+```password```: Attester's ONT ID password
 
-claimId: Trusted claims claim uniqueness mark, i.e. Jti field in Claim
+```claimId```: Trusted claims claim uniqueness mark, i.e. Jti field in Claim
 
-payerAcct: Payment transaction account
+```payerAcct```: Payment transaction account
 
-gaslimit: Gas limit
+```gaslimit```: Gas limit
 
-gasprice: Gas price
+```gasprice```: Gas price
 
 return value：This function will return true if and only if the claim is attested, and the revokerOntId is equal to the attester's ONT identity; Otherwise, it will return false.

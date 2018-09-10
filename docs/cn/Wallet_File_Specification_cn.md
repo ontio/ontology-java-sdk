@@ -19,6 +19,8 @@
   "extra": null
 }
 ```
+
+
 ```name``` 钱包名.
 
 ```version``` 钱包版本号.
@@ -99,6 +101,8 @@ Scrypt数据结构:
   "dkLen" : 64
 }
 ```
+
+
 ```n``` is a parameter that defines the CPU/memory cost. Must be a value 2^N.
 
 ```r``` is a tuning parameter.
@@ -119,6 +123,8 @@ Scrypt数据结构:
   "controls": []
 }
 ```
+
+
 ```ontid``` 身份id.
 
 ```label``` 昵称.
@@ -132,6 +138,8 @@ Scrypt数据结构:
 #### 1.2.1 Control
 
 ```Control```数据结构:
+
+
 ```
 {
   "algorithm": "ECDSA",
@@ -157,6 +165,8 @@ Scrypt数据结构:
 #### 1.2.2 Parameter
 
 ```Parameter``` 数据结构:
+
+
 ```
 {
   "curve":"P-256"
@@ -167,6 +177,8 @@ Scrypt数据结构:
 ### 1.3 Account
 
 ```Account``` 数据结构:
+
+
 ```
 {
     "address": "AadQ5xRwrSsFTGzKfLHc1brzykdnf7phhD",
@@ -184,6 +196,8 @@ Scrypt数据结构:
     "signatureScheme": "SHA256withECDSA"
 }
 ```
+
+
 ```address``` base58 地址.
 
 ```enc-alg``` 私钥加密算法名称.
@@ -231,6 +245,7 @@ Scrypt数据结构:
 	}
 }
 ```
+
 
 ```type``` 类型, **I** 代表身份 , **A** 代表账号.
 

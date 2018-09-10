@@ -19,7 +19,7 @@
   "extra": null
 }
 ```
-
+参数描述：
 
 ```name``` 钱包名.
 
@@ -102,14 +102,15 @@ Scrypt数据结构:
 }
 ```
 
+参数描述：
 
-```n``` is a parameter that defines the CPU/memory cost. Must be a value 2^N.
+```n``` 内存消耗，必须是 2^N.
 
-```r``` is a tuning parameter.
+```r``` 参数.
 
-```p``` is a tuning parameter (parallelization parameter). A large value of p can increase computational cost of SCrypt without increasing the memory usage.
+```p``` SCrypt算法的并行参数.
 
-```dkLen``` is intended output length in octets of the derived key.
+```dkLen``` 派生key的长度.
 
 ### 1.2 数字身份
 
@@ -123,7 +124,7 @@ Scrypt数据结构:
   "controls": []
 }
 ```
-
+参数描述：
 
 ```ontid``` 身份id.
 
@@ -150,6 +151,8 @@ Scrypt数据结构:
   "salt": "Rv4v3a4U1zFEq28/"
 }
 ```
+参数描述：
+
 ```algorithm``` 签名算法名称.
 
 ```parameters``` 曲线参数.
@@ -172,6 +175,8 @@ Scrypt数据结构:
   "curve":"P-256"
 }
 ```
+参数描述：
+
 ```curve``` is the name of the elliptic curve.
 
 ### 1.3 Account
@@ -196,7 +201,7 @@ Scrypt数据结构:
     "signatureScheme": "SHA256withECDSA"
 }
 ```
-
+参数描述：
 
 ```address``` base58 地址.
 
@@ -245,7 +250,7 @@ Scrypt数据结构:
 	}
 }
 ```
-
+参数描述：
 
 ```type``` 类型, **I** 代表身份 , **A** 代表账号.
 

@@ -50,20 +50,17 @@ public class Helper {
     }
 
     public static byte[] BigIntToNeoBytes(BigInteger data){
+        if (data.equals(BigInteger.ZERO)) {
+            return new byte[0];
+        }
         byte[] bs = data.toByteArray();
         if(bs.length == 0) {
-            return new byte[]{};
+            return new byte[0];
         }
-        byte b = bs[0];
         if(data.signum() < 0) {
-            for(int i= 0;i < bs.length;i++){
-                bs[i] = (byte)~b;
-            }
-            BigInteger temp = new BigInteger(bs);
-            BigInteger temp2 = temp.add(BigInteger.valueOf(1));
-            bs = temp2.toByteArray();
+            byte b = data.negate().toByteArray()[0];
             byte[] res = reverse(bs);
-            if(b >> 7 ==1){
+            if(b >> 7 == 1){
                 byte[] t = new byte[res.length + 1];
                 System.arraycopy(res,0,t,0,res.length);
                 t[res.length] = (byte)255;
@@ -71,6 +68,7 @@ public class Helper {
             }
             return res;
         }else{
+            byte b = bs[0];
             byte[] res = reverse(bs);
             if(b >> 7 == 1){
                 byte[] t = new byte[res.length + 1];
@@ -84,7 +82,7 @@ public class Helper {
 
     public static BigInteger BigIntFromNeoBytes(byte[] ba){
         if(ba.length == 0){
-            return BigInteger.valueOf(0);
+            return BigInteger.ZERO;
         }
         byte[] bs = reverse(ba);
         if(bs[0] >> 7 == 1) {
@@ -92,7 +90,7 @@ public class Helper {
                 bs[i] = (byte)~bs[i];
             }
             BigInteger temp = new BigInteger(bs);
-            temp.add(BigInteger.valueOf(1));
+            temp.add(BigInteger.ONE);
             return temp.negate();
         }
         return new BigInteger(bs);

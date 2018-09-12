@@ -26,6 +26,7 @@ import com.github.ontio.account.Account;
 import com.github.ontio.common.*;
 import com.github.ontio.core.VmType;
 import com.github.ontio.core.asset.Sig;
+import com.github.ontio.core.block.Block;
 import com.github.ontio.core.governance.PeerPoolItem;
 import com.github.ontio.core.governance.AuthorizeInfo;
 import com.github.ontio.core.transaction.Transaction;
@@ -48,9 +49,14 @@ import java.util.Map;
 public class Governance {
     private OntSdk sdk;
     private final String contractAddress = "0000000000000000000000000000000000000007";
-    private final String AUTHORIZE_INFO_POOL = "authorizeInfoPool";
+    private final String AUTHORIZE_INFO_POOL = "766f7465496e666f506f6f6c";
     private final String PEER_ATTRIBUTES   = "peerAttributes";
     private final String SPLIT_FEE_ADDRESS  = "splitFeeAddress";
+    private final String TOTAL_STAKE = "totalStake";
+    private final String PEER_POOL = "peerPool";
+    private final long[] UNBOUND_GENERATION_AMOUNT = new long[]{5, 4, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    private final int UNBOUND_TIME_INTERVAL = 31536000;
+    private final long ONT_TOTAL_SUPPLY = 1000000000;
     public Governance(OntSdk sdk) {
         this.sdk = sdk;
     }
@@ -221,7 +227,7 @@ public class Governance {
     public String getAuthorizeInfo(String peerPubkey,Address addr) {
         byte[] peerPubkeyPrefix = Helper.hexToBytes(peerPubkey);
         byte[] address = addr.toArray();
-        byte[] authorizeInfoPool = AUTHORIZE_INFO_POOL.getBytes();
+        byte[] authorizeInfoPool = Helper.hexToBytes(AUTHORIZE_INFO_POOL);
         byte[] key = new byte[authorizeInfoPool.length + peerPubkeyPrefix.length + address.length];
         System.arraycopy(authorizeInfoPool,0,key,0,authorizeInfoPool.length);
         System.arraycopy(peerPubkeyPrefix,0,key,authorizeInfoPool.length,peerPubkeyPrefix.length);
@@ -833,6 +839,63 @@ public class Governance {
         }
     }
 
+    public long getPeerUbindOng(String address) throws ConnectorException, IOException, SDKException {
+        int timestamp0 = 1530316800;//创世块时间戳
+        int current_height = sdk.getConnect().getBlockHeight();
+        Block block = sdk.getConnect().getBlock(current_height);
+        int timestamp = block.timestamp - timestamp0;
+        TotalStake totalStake = getTotalStake(address);
+        return calcUnbindOng(totalStake.stake,totalStake.timeOffset,timestamp);
+    }
+
+    public long calcUnbindOng(long balance, int startOffset, int endOffset){
+        long amount = 0;
+        if(startOffset >= endOffset){
+            return 0;
+        }
+        int unboundDeadLine = unboundDeadLine();
+        if(startOffset < unboundDeadLine){
+            int ustart = startOffset / UNBOUND_TIME_INTERVAL;
+            int istart = startOffset % UNBOUND_TIME_INTERVAL;
+            if(endOffset >= unboundDeadLine){
+                endOffset = unboundDeadLine;
+            }
+            int uend = endOffset / UNBOUND_TIME_INTERVAL;
+            int iend = endOffset % UNBOUND_TIME_INTERVAL;
+            while(ustart < uend){
+                amount = (UNBOUND_TIME_INTERVAL - istart) * UNBOUND_GENERATION_AMOUNT[ustart];
+                ustart += 1;
+                istart = 0;
+            }
+            amount += (iend - istart) * UNBOUND_GENERATION_AMOUNT[ustart];
+        }
+        return amount * balance;
+    }
+
+    private int unboundDeadLine(){
+        long count = 0;
+        for(long i: UNBOUND_GENERATION_AMOUNT){
+            count += i;
+        }
+        count *= UNBOUND_TIME_INTERVAL;
+        int numInterval = UNBOUND_GENERATION_AMOUNT.length;
+        return (int) (UNBOUND_TIME_INTERVAL * numInterval - (count - ONT_TOTAL_SUPPLY));
+    }
+
+    private TotalStake getTotalStake(String address) throws SDKException, ConnectorException, IOException {
+        byte[] totalStakeBytes = TOTAL_STAKE.getBytes();
+        byte[] addressBytes = Address.decodeBase58(address).toArray();
+        byte[] key = new byte[totalStakeBytes.length + addressBytes.length];
+        System.arraycopy(totalStakeBytes,0,key,0,totalStakeBytes.length);
+        System.arraycopy(addressBytes,0,key,totalStakeBytes.length,addressBytes.length);
+        String res = sdk.getConnect().getStorage(Helper.reverse(contractAddress),Helper.toHexString(key));
+        TotalStake totalStake = new TotalStake();
+        ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(res));
+        BinaryReader reader = new BinaryReader(bais);
+        totalStake.deserialize(reader);
+        return totalStake;
+    }
+
     /**
      *
      * @param config
@@ -905,6 +968,31 @@ public class Governance {
             return tx.hash().toString();
         }
         return null;
+    }
+}
+
+class TotalStake implements Serializable{
+    public Address address;
+    public long stake;
+    public int timeOffset;
+    public TotalStake(){}
+
+    @Override
+    public void deserialize(BinaryReader reader) throws IOException {
+        try {
+            this.address = reader.readSerializable(Address.class);
+            this.stake = reader.readLong();
+            this.timeOffset = reader.readInt();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void serialize(BinaryWriter writer) throws IOException {
+
     }
 }
 

@@ -61,7 +61,7 @@ public class Record {
         }
         addr = addr.replace(Common.didont,"");
         byte[] did = (Common.didont + addr).getBytes();
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,salt);
+        AccountInfo info = sdk.getWalletMgr().getAccountInfo(Common.didont + addr, password,salt);
         byte[] pk = Helper.hexToBytes(info.pubkey);
         List list = new ArrayList<Object>();
         list.add("Put".getBytes());

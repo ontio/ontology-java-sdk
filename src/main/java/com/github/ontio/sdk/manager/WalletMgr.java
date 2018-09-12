@@ -300,15 +300,14 @@ public class WalletMgr {
     public com.github.ontio.account.Account getAccount(String address, String password) throws Exception {
         return getAccount(address, password,getWallet().getAccount(address).getSalt());
     }
-    public com.github.ontio.account.Account getAccount(String address, String password,byte[] salt) throws Exception {
-        return getAccountByAddressOrOntId(address, password,salt);
+    public com.github.ontio.account.Account getAccount(String addressOrOntId, String password,byte[] salt) throws Exception {
+        return getAccountByAddressOrOntId(addressOrOntId, password,salt);
     }
 
-    public AccountInfo getAccountInfo(String address, String password,byte[] salt) throws Exception {
-        address = address.replace(Common.didont, "");
+    public AccountInfo getAccountInfo(String addressOrOntId, String password,byte[] salt) throws Exception {
         AccountInfo info = new AccountInfo();
-        com.github.ontio.account.Account acc = getAccountByAddressOrOntId(address, password,salt);
-        info.addressBase58 = address;
+        com.github.ontio.account.Account acc = getAccountByAddressOrOntId(addressOrOntId, password,salt);
+        info.addressBase58 = addressOrOntId.replace(Common.didont, "");
         info.pubkey = Helper.toHexString(acc.serializePublicKey());
         info.setPrikey(Helper.toHexString(acc.serializePrivateKey()));
         info.encryptedPrikey = acc.exportGcmEncryptedPrikey(password,salt, walletFile.getScrypt().getN());

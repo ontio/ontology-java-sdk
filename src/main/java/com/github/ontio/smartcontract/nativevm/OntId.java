@@ -509,7 +509,7 @@ public class OntId {
         }
         byte[] arg;
         if (recoveryAddr == null) {
-            AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid.replace(Common.didont, ""), password,salt);
+            AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid, password,salt);
             byte[] pk = Helper.hexToBytes(info.pubkey);
 //            parabytes = NativeBuildParams.buildParams(ontid, Helper.hexToBytes(removePubkey), pk);
             List list = new ArrayList();
@@ -580,8 +580,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        String addr = ontid.replace(Common.didont, "");
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,salt);
+        AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid, password,salt);
         byte[] pk = Helper.hexToBytes(info.pubkey);
 
         List list = new ArrayList();
@@ -733,8 +732,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        String addr = ontid.replace(Common.didont, "");
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,salt);
+        AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid, password,salt);
         password = null;
         byte[] pk = Helper.hexToBytes(info.pubkey);
         List list = new ArrayList();
@@ -801,8 +799,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        String addr = ontid.replace(Common.didont, "");
-        AccountInfo info = sdk.getWalletMgr().getAccountInfo(addr, password,salt);
+        AccountInfo info = sdk.getWalletMgr().getAccountInfo(ontid, password,salt);
         byte[] pk = Helper.hexToBytes(info.pubkey);
 
         List list = new ArrayList();

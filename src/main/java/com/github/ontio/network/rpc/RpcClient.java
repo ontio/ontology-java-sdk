@@ -93,7 +93,7 @@ public class RpcClient extends AbstractConnector {
     @Override
     public int getBlockHeight() throws RpcException, IOException {
         Object result = rpc.call("getblockcount");
-        return (int) result;
+        return (int) result - 1;
     }
 
     @Override

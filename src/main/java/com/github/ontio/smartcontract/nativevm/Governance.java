@@ -845,6 +845,9 @@ public class Governance {
         Block block = sdk.getConnect().getBlock(current_height);
         int timestamp = block.timestamp - timestamp0;
         TotalStake totalStake = getTotalStake(address);
+        if(totalStake == null){
+            return 0;
+        }
         return calcUnbindOng(totalStake.stake,totalStake.timeOffset,timestamp);
     }
 
@@ -889,6 +892,9 @@ public class Governance {
         System.arraycopy(totalStakeBytes,0,key,0,totalStakeBytes.length);
         System.arraycopy(addressBytes,0,key,totalStakeBytes.length,addressBytes.length);
         String res = sdk.getConnect().getStorage(Helper.reverse(contractAddress),Helper.toHexString(key));
+        if(res == null){
+            return null;
+        }
         TotalStake totalStake = new TotalStake();
         ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(res));
         BinaryReader reader = new BinaryReader(bais);

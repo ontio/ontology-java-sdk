@@ -76,7 +76,7 @@ public class ConnectMgrTest {
         Thread.sleep(6000);
 
 
-        AccountInfo info = ontSdk.getWalletMgr().getAccountInfo(identity.ontid.replace(Common.didont,""), password,identity.controls.get(0).getSalt());
+        AccountInfo info = ontSdk.getWalletMgr().getAccountInfo(identity.ontid, password,identity.controls.get(0).getSalt());
         List list = new ArrayList<Object>();
         list.add("Commit".getBytes());
         List tmp = new ArrayList<Object>();

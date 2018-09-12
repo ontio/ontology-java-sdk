@@ -86,7 +86,7 @@ public class NativeOntIdDemo {
             if(ontSdk.getWalletMgr().getWallet().getIdentities().size() < 3){
                 Identity identity = ontSdk.getWalletMgr().createIdentity(password);
                 Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,new byte[]{}, identity.controls.get(0).publicKey,payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
-                ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password,new byte[]{});
+                ontSdk.signTx(tx,identity.ontid,password,new byte[]{});
                 ontSdk.addSign(tx,payerAcct);
                 ontSdk.getConnect().sendRawTransaction(tx);
 

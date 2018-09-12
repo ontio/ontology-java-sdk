@@ -198,7 +198,7 @@ public class WalletMgr {
 
 
     public IdentityInfo getIdentityInfo(String ontid, String password,byte[] salt) throws Exception {
-        com.github.ontio.account.Account acct = getAccountByAddress(Address.decodeBase58(ontid.replace(Common.didont, "")), password,salt);
+        com.github.ontio.account.Account acct = getAccountByAddressOrOntId(ontid, password,salt);
         IdentityInfo info = new IdentityInfo();
         info.ontid = Common.didont + Address.addressFromPubKey(acct.serializePublicKey()).toBase58();
         info.pubkey = Helper.toHexString(acct.serializePublicKey());
@@ -301,14 +301,13 @@ public class WalletMgr {
         return getAccount(address, password,getWallet().getAccount(address).getSalt());
     }
     public com.github.ontio.account.Account getAccount(String address, String password,byte[] salt) throws Exception {
-        address = address.replace(Common.didont, "");
-        return getAccountByAddress(Address.decodeBase58(address), password,salt);
+        return getAccountByAddressOrOntId(address, password,salt);
     }
 
     public AccountInfo getAccountInfo(String address, String password,byte[] salt) throws Exception {
         address = address.replace(Common.didont, "");
         AccountInfo info = new AccountInfo();
-        com.github.ontio.account.Account acc = getAccountByAddress(Address.decodeBase58(address), password,salt);
+        com.github.ontio.account.Account acc = getAccountByAddressOrOntId(address, password,salt);
         info.addressBase58 = address;
         info.pubkey = Helper.toHexString(acc.serializePublicKey());
         info.setPrikey(Helper.toHexString(acc.serializePrivateKey()));
@@ -380,22 +379,25 @@ public class WalletMgr {
         return account;
     }
 
-    private com.github.ontio.account.Account getAccountByAddress(Address address,String password,byte[] salt) throws Exception {
+    private com.github.ontio.account.Account getAccountByAddressOrOntId(String addressOrOntId,String password,byte[] salt) throws Exception {
         try {
-            for (Account e : walletInMem.getAccounts()) {
-                if (e.address.equals(address.toBase58())) {
-                    String prikey = com.github.ontio.account.Account.getGcmDecodedPrivateKey(e.key, password, e.address,salt, walletFile.getScrypt().getN(), scheme);
-                    return new com.github.ontio.account.Account(Helper.hexToBytes(prikey), scheme);
+            if(addressOrOntId.startsWith(Common.didont)){
+                for (Identity e : walletInMem.getIdentities()) {
+                    if (e.ontid.equals(addressOrOntId)) {
+                        String addr = e.ontid.replace(Common.didont, "");
+                        String prikey = com.github.ontio.account.Account.getGcmDecodedPrivateKey(e.controls.get(0).key, password, addr,salt, walletFile.getScrypt().getN(), scheme);
+                        return new com.github.ontio.account.Account(Helper.hexToBytes(prikey), scheme);
+                    }
+                }
+            }else {
+                for (Account e : walletInMem.getAccounts()) {
+                    if (e.address.equals(addressOrOntId)) {
+                        String prikey = com.github.ontio.account.Account.getGcmDecodedPrivateKey(e.key, password, e.address,salt, walletFile.getScrypt().getN(), scheme);
+                        return new com.github.ontio.account.Account(Helper.hexToBytes(prikey), scheme);
+                    }
                 }
             }
 
-            for (Identity e : walletInMem.getIdentities()) {
-                if (e.ontid.equals(Common.didont + address.toBase58())) {
-                    String addr = e.ontid.replace(Common.didont, "");
-                    String prikey = com.github.ontio.account.Account.getGcmDecodedPrivateKey(e.controls.get(0).key, password, addr,salt, walletFile.getScrypt().getN(), scheme);
-                    return new com.github.ontio.account.Account(Helper.hexToBytes(prikey), scheme);
-                }
-            }
         } catch (Exception e) {
             throw new SDKException(ErrorCode.GetAccountByAddressErr);
         }

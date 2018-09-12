@@ -33,8 +33,18 @@ public class NativeOntIdDemo {
             String privatekey1 = "2ab720ff80fcdd31a769925476c26120a879e235182594fbb57b67c0743558d7";
             com.github.ontio.account.Account account1 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey1),SignatureScheme.SHA256WITHECDSA);
 
-
             if(true){
+                Account account = ontSdk.getWalletMgr().createAccount(password);
+                com.github.ontio.account.Account account2 = ontSdk.getWalletMgr().getAccount(account.address,password,account.getSalt());
+                Identity identity = ontSdk.getWalletMgr().createIdentityFromPriKey(password, Helper.toHexString(account2.serializePrivateKey()));
+                ontSdk.nativevm().ontId().sendRegister(identity,password,account2,20000,0);
+                Thread.sleep(6000);
+                System.out.println(ontSdk.nativevm().ontId().sendGetDDO(identity.ontid));
+                return;
+            }
+
+
+            if(false){
                 Identity identity3 = ontSdk.getWalletMgr().createIdentity(password);
                 Attribute[] attributes = new Attribute[1];
                 attributes[0] = new Attribute("key1".getBytes(),"String".getBytes(),"value1".getBytes());
@@ -45,12 +55,14 @@ public class NativeOntIdDemo {
                 System.out.println(ddo);
                 System.exit(0);
             }
-            if(false){
+            if(true){
                 if(ontSdk.getWalletMgr().getWallet().getIdentities().size() < 1){
-                    Identity identity = ontSdk.getWalletMgr().createIdentity(password);
+//                    Identity identity = ontSdk.getWalletMgr().createIdentity(password);
+                    Identity identity = ontSdk.getWalletMgr().createIdentityFromPriKey(password,privatekey0);
                     ontSdk.nativevm().ontId().sendRegister(identity,password,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
                     ontSdk.getWalletMgr().writeWallet();
                     Thread.sleep(6000);
+                    return;
                 }
                 Identity identity = ontSdk.getWalletMgr().getWallet().getIdentities().get(0);
 //                String ddo = ontSdk.nativevm().ontId().sendGetDDO(identity.ontid);
@@ -73,7 +85,7 @@ public class NativeOntIdDemo {
             Account account = ontSdk.getWalletMgr().createAccountFromPriKey(password,privatekey0);
             if(ontSdk.getWalletMgr().getWallet().getIdentities().size() < 3){
                 Identity identity = ontSdk.getWalletMgr().createIdentity(password);
-                Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,new byte[]{},payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
+                Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,new byte[]{}, identity.controls.get(0).publicKey,payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
                 ontSdk.signTx(tx,identity.ontid.replace(Common.didont,""),password,new byte[]{});
                 ontSdk.addSign(tx,payerAcct);
                 ontSdk.getConnect().sendRawTransaction(tx);

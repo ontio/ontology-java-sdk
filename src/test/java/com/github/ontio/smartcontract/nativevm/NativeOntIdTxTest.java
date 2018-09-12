@@ -56,7 +56,7 @@ public class NativeOntIdTxTest {
 
     @Test
     public void sendRegister() throws Exception {
-        Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,identity.controls.get(0).getSalt(),payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
+        Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,identity.controls.get(0).getSalt(),identity.controls.get(0).publicKey,payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
         ontSdk.signTx(tx, identity.ontid,password,identity.controls.get(0).getSalt());
         ontSdk.addSign(tx,payerAcct);
         ontSdk.getConnect().sendRawTransaction(tx);

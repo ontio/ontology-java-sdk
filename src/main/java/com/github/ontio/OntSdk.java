@@ -290,9 +290,8 @@ public class OntSdk {
         tx.sigs = sigs;
         return tx;
     }
-    public Transaction signTx(Transaction tx, String address, String password,byte[] salt) throws Exception{
-        address = address.replace(Common.didont, "");
-        signTx(tx, new Account[][]{{getWalletMgr().getAccount(address, password,salt)}});
+    public Transaction signTx(Transaction tx, String addressOrOntId, String password,byte[] salt) throws Exception{
+        signTx(tx, new Account[][]{{getWalletMgr().getAccount(addressOrOntId, password,salt)}});
         return tx;
     }
     /**

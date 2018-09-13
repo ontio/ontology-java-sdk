@@ -1,8 +1,11 @@
+English / [中文](../cn/Wallet_File_Specification_cn.md)
+
+
 <h1 align="center">Wallet File Specification </h1>
 
 <p align="center" class="version">Version 1.0.0 </p>
 
-English / [中文](../cn/Wallet_File_Specification_cn.md)
+
 
 
 

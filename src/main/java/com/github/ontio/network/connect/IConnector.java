@@ -52,4 +52,6 @@ public interface IConnector {
 	Object getMemPoolTxCount() throws ConnectorException, IOException;
 	Object getMemPoolTxState(String hash) throws ConnectorException, IOException;
 	String getVersion() throws ConnectorException, IOException;
+	String getGrantOng(String address) throws ConnectorException, IOException;
+	int getNetworkId() throws ConnectorException, IOException;
 }

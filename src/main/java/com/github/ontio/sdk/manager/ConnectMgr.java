@@ -274,6 +274,13 @@ public class ConnectMgr {
         return connector.getVersion();
     }
 
+    public String getGrantOng(String address) throws ConnectorException, IOException {
+        return connector.getGrantOng(address);
+    }
+    public int getNetworkId() throws ConnectorException, IOException {
+        return connector.getNetworkId();
+    }
+
     public Object waitResult(String hash) throws Exception {
         Object objEvent = null;
         Object objTxState = null;

@@ -5,12 +5,15 @@
 [English](../en/smartcontract.md) / 中文
 
 
-## 智能合约部署和调用
+## 智能合约部署、调用、事件推送
 
-> Note:目前java-sdk支持neo和wasm智能合约部署和调用，NEO和WASM合约部署操作一样，调用略有不同，见下面详解：
+> Note:目前java-sdk支持neo智能合约部署和调用，暂不支持WASM合约，NEO和WASM合约部署操作一样，调用略有不同，见下面详解：
 
 
-### 部署智能合约Demo例子
+### 部署
+
+通过[SmartX](https://smartx.ont.io/)编译智能合约，可以在SmartX上直接部署合约，也可以通过java sdk部署合约。
+
 ```
 InputStream is = new FileInputStream("/Users/sss/dev/ontologytest/IdContract/IdContract.avm");
 byte[] bys = new byte[is.available()];
@@ -29,6 +32,13 @@ Thread.sleep(6000);
 DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnect().getTransaction(txHex);
 ```
 
+**makeDeployCodeTransaction**
+
+```java
+public DeployCode makeDeployCodeTransaction(String codeStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp,String payer,long gaslimit,long gasprice) 
+
+```
+
 | 参数      | 字段   | 类型  | 描述 |             说明 |
 | ----- | ------- | ------ | ------------- | ----------- |
 | 输入参数 | codeHexStr| String | 合约code十六进制字符串 | 必选 |
@@ -44,9 +54,9 @@ DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnect().getTransac
 |        | gasprice   | long | gas价格   | 必选 |
 | 输出参数 | tx   | Transaction  | 交易实例  |  |
 
-## 智能合约调用
+### 调用
 
-### NEO智能合约调用
+#### NEO智能合约调用
 
 * 基本流程：
 
@@ -58,7 +68,7 @@ DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnect().getTransac
 
 * 示例
 
-```
+```java
 //读取智能合约的abi文件
 InputStream is = new FileInputStream("C:\\ZX\\NeoContract1.abi.json");
 byte[] bys = new byte[is.available()];
@@ -94,7 +104,7 @@ String hash = ontSdk.neovm().sendTransaction(Helper.reverse("872a56c4583570e46dd
 
 * AbiInfo结构(NEO合约调用的时候需要，WASM合约不需要)
 
-```
+```java
 public class AbiInfo {
     public String hash;
     public String entrypoint;
@@ -113,7 +123,7 @@ public class Parameter {
 }
 ```
 
-### WASM智能合约调用-目前不支持WASM
+#### WASM智能合约调用-目前不支持WASM
 
 * 基本流程：
   1. 构造调用合约中的方法需要的参数；
@@ -135,10 +145,11 @@ Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontSdk.getSmartcodeTx().g
 ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 ```
 
-## 智能合约调用demo
+#### 智能合约调用例子
 
 合约中的方法
-```
+```c#
+
 public static bool Transfer(byte[] from, byte[] to, object[] param)
 {
     StorageContext context = Storage.CurrentContext;
@@ -157,10 +168,10 @@ public static bool Transfer(byte[] from, byte[] to, object[] param)
     return true;
 }
 struct TransferPair
-        {
-            public string Key;
-            public ulong Amount;
-        }
+{
+     public string Key;
+     public ulong Amount;
+}
 ```
 
 Java-SDK 调用Transfer函数的方法
@@ -200,15 +211,15 @@ System.out.println(ontSdk.getConnect().getSmartCodeEvent(tx.hash().toHexString()
 
 > 如果需要监控推送结果，可以了解下面章节。
 
-## 智能合约执行过程推送
+### 智能合约事件推送
 
 创建websocket线程，解析推送结果。
 
 
-### 1 设置websocket链接
+#### 1. 设置websocket链接
 
 
-```
+```java
 //lock 全局变量,同步锁
 public static Object lock = new Object();
 
@@ -223,20 +234,20 @@ wm.openWalletFile("OntAssetDemo.json");
 ```
 
 
-### 2 启动websocket线程
+#### 2. 启动websocket线程
 
 
-```
+```java
 //false 表示不打印回调函数信息
 ontSdk.getWebSocket().startWebsocketThread(false);
 
 ```
 
 
-### 3 启动结果处理线程
+#### 3. 启动结果处理线程
 
 
-```
+```java
 Thread thread = new Thread(
                     new Runnable() {
                         @Override
@@ -270,10 +281,10 @@ Thread thread = new Thread(
 ```
 
 
-### 4 每6秒发送一次心跳程序，维持socket链接
+#### 4. 每6秒发送一次心跳程序，维持socket链接
 
 
-```
+```java
 for (;;){
                     Map map = new HashMap();
                     if(i >0) {
@@ -291,14 +302,14 @@ for (;;){
 ```
 
 
-### 5 推送结果事例详解
+#### 5. 推送事例详解
 
 
 以调用存证合约的put函数为例，
 
 //存证合约abi.json文件部分内容如下
 
-```
+```json
 {
     "hash":"0x27f5ae9dd51499e7ac4fe6a5cc44526aff909669",
     "entrypoint":"Main",

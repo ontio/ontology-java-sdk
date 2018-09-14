@@ -17,7 +17,7 @@ byte[] bys = new byte[is.available()];
 is.read(bys);
 is.close();
 code = Helper.toHexString(bys);
-ontSdk.setCodeAddress(Helper.getCodeAddress(code,VmType.NEOVM.value()));
+ontSdk.setCodeAddress(Address.AddressFromVmCode(code).toHexString());
 
 //部署合约
 Transaction tx = ontSdk.vm().makeDeployCodeTransaction(code, true, "name",
@@ -133,8 +133,69 @@ String params = ontSdk.vm().buildWasmContractJsonParam(new Object[]{20,30});
 Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontSdk.getSmartcodeTx().getCodeAddress(),funcName,params.getBytes(),VmType.WASMVM.value(),payer,gas);
 //发送交易
 ontSdk.getConnect().sendRawTransaction(tx.toHexString());
+```
+
+## 智能合约调用demo
+
+合约中的方法
+```
+public static bool Transfer(byte[] from, byte[] to, object[] param)
+{
+    StorageContext context = Storage.CurrentContext;
+
+    if (from.Length != 20 || to.Length != 20) return false;
+
+    for (int i = 0; i < param.Length; i++)
+    {
+
+        TransferPair transfer = (TransferPair)param[i];
+        byte[] hash = GetContractHash(transfer.Key);
+        if (hash.Length != 20 || transfer.Amount < 0) throw new Exception();
+        if (!TransferNEP5(from, to, hash, transfer.Amount)) throw new Exception();
+
+    }
+    return true;
+}
+struct TransferPair
+        {
+            public string Key;
+            public ulong Amount;
+        }
+```
+
+Java-SDK 调用Transfer函数的方法
 
 ```
+String functionName = "Transfer";
+//构造参数  请参考
+List list = new ArrayList();
+List list2 = new ArrayList();
+list2.add("Atoken");
+list2.add(100);
+list.add(list2);
+List list3 = new ArrayList();
+list3.add("Btoken");
+list3.add(100);
+list.add(list3);
+
+List list1 = new ArrayList();
+list1.add(account.getAddressU160().toArray());//发送方
+list1.add(Address.decodeBase58("AacHGsQVbTtbvSWkqZfvdKePLS6K659dgp").toArray());//接收方
+list1.add(list);
+
+List listF = new ArrayList<Object>();
+listF.add(functionName.getBytes());
+listF.add(list1);
+byte[] params = BuildParams.createCodeParamsScript(listF);
+Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractHash),null,params,account3.getAddressU160().toBase58(),20000,0);
+ontSdk.signTx(tx,new Account[][]{{account999}});
+ontSdk.addSign(tx,account3);
+System.out.println(tx.hash().toHexString());
+ontSdk.getConnect().sendRawTransaction(tx);
+Thread.sleep(6000);
+System.out.println(ontSdk.getConnect().getSmartCodeEvent(tx.hash().toHexString()));
+```
+
 
 
 > 如果需要监控推送结果，可以了解下面章节。

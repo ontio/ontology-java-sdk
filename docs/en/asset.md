@@ -4,7 +4,7 @@
 
 English / [中文](../cn/asset.md)
 
-The storing of Digital Assets such as ONT and ONG is handled by the Java SDK using the Account structure, wwhich is outlined below.
+The storing of Digital Assets such as ONT and ONG is handled by the Java SDK using the Account structure, which is outlined below.
 
 ## Data structure
 

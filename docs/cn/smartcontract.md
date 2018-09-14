@@ -14,7 +14,7 @@
 
 通过[SmartX](https://smartx.ont.io/)编译智能合约，可以在SmartX上直接部署合约，也可以通过java sdk部署合约。
 
-```
+```java
 InputStream is = new FileInputStream("/Users/sss/dev/ontologytest/IdContract/IdContract.avm");
 byte[] bys = new byte[is.available()];
 is.read(bys);
@@ -133,7 +133,7 @@ public class Parameter {
 
 * 示例：
 
-```
+```java
 //设置要调用的合约地址codeAddress
 ontSdk.getSmartcodeTx().setCodeAddress(codeAddress);
 String funcName = "add";
@@ -176,7 +176,7 @@ struct TransferPair
 
 Java-SDK 调用Transfer函数的方法
 
-```
+```java
 String functionName = "Transfer";
 //构造参数  请参考
 List list = new ArrayList();
@@ -347,9 +347,30 @@ for (;;){
 
 例子如下：
 
-```
-RECV: {"Action":"Log","Desc":"SUCCESS","Error":0,"Result":{"Message":"Put","TxHash":"8cb32f3a1817d88d8562fdc0097a0f9aa75a926625c6644dfc5417273ca7ed71","ContractAddress":"80f6bff7645a84298a1a52aa3745f84dba6615cf"},"Version":"1.0.0"}
-RECV: {"Action":"Notify","Desc":"SUCCESS","Error":0,"Result":[{"States":["7075745265636f7264","507574","6b6579","7b2244617461223a7b22416c6772697468656d223a22534d32222c2248617368223a22222c2254657874223a2276616c75652d7465737431222c225369676e6174757265223a22227d2c2243416b6579223a22222c225365714e6f223a22222c2254696d657374616d70223a307d"],"TxHash":"8cb32f3a1817d88d8562fdc0097a0f9aa75a926625c6644dfc5417273ca7ed71","ContractAddress":"80f6bff7645a84298a1a52aa3745f84dba6615cf"}],"Version":"1.0.0"}
+```json
+RECV: 
+{
+	"Action": "Log",
+	"Desc": "SUCCESS",
+	"Error": 0,
+	"Result": {
+		"Message": "Put",
+		"TxHash": "8cb32f3a1817d88d8562fdc0097a0f9aa75a926625c6644dfc5417273ca7ed71",
+		"ContractAddress": "80f6bff7645a84298a1a52aa3745f84dba6615cf"
+	},
+	"Version": "1.0.0"
+}
+RECV: {
+      	"Action": "Notify",
+      	"Desc": "SUCCESS",
+      	"Error": 0,
+      	"Result": [{
+      		"States": ["7075745265636f7264", "507574", "6b6579", "7b2244617461223a7b22416c6772697468656d223a22534d32222c2248617368223a22222c2254657874223a2276616c75652d7465737431222c225369676e6174757265223a22227d2c2243416b6579223a22222c225365714e6f223a22222c2254696d657374616d70223a307d"],
+      		"TxHash": "8cb32f3a1817d88d8562fdc0097a0f9aa75a926625c6644dfc5417273ca7ed71",
+      		"ContractAddress": "80f6bff7645a84298a1a52aa3745f84dba6615cf"
+      	}],
+      	"Version": "1.0.0"
+      }
 ```
 
 
@@ -362,7 +383,7 @@ contractAddress是智能合约的唯一标识。
 
 * 如何获得contractAddress ？
 
-```
+```java
 InputStream is = new FileInputStream("IdContract.avm");
 byte[] bys = new byte[is.available()];
 is.read(bys);
@@ -376,7 +397,7 @@ System.out.println("CodeAddress:" + Address.AddressFromVmCode(code).toHexString(
 
 * 调用智能合约invokeTransaction的过程，sdk中具体做了什么
 
-```
+```java
 //step1：构造交易
 //需先将智能合约参数转换成vm可识别的opcode
 Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(ontContractAddr, null, contract.toArray(), VmType.Native.value(), sender.toBase58(),gaslimit，gasprice);
@@ -396,6 +417,6 @@ ontSdk.getConnectMgr().sendRawTransaction(tx.toHexString());
 * 查询资产操作时，智能合约预执行是怎么回事，如何使用？
 
 如智能合约get相关操作，从智能合约存储空间里读取数据，无需走节点共识，只在该节点执行即可返回结果。发送交易时调用预执行接口。
-```
+```java
 String result = (String) sdk.getConnect().sendRawTransactionPreExec(txHex);
 ```

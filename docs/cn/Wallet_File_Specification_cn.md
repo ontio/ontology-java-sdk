@@ -8,9 +8,9 @@
 
 钱包规范描述了钱包数据结构及导出数字身份或资产账号二维码的数据结构。
 
-## 1. 钱包
+## 1. 钱包文件结构
 
-钱包文件数据结构如下:
+钱包文件数据以json格式存储，文件名后缀并无要求，钱包文件数据结构如下:
 
 ```
 {
@@ -47,7 +47,7 @@
 
 一个真实的钱包数据如下:
 
-```
+```json
 {
 	"name": "mickey",
 	"defaultOntid": "",
@@ -97,9 +97,9 @@
 
 ### 1.1 Scrypt参数
 
-Scrypt数据结构:
+SCrypt算法参数，Scrypt数据结构:
 
-```
+```json
 {
   "n": 16384,
   "r": 8,
@@ -121,7 +121,7 @@ Scrypt数据结构:
 ### 1.2 数字身份
 
 数字身份数据结构:
-```
+```json
 {
   "ontid": "did:ont:TQLASLtT6pWbThcSCYU1biVqhMnzhTgLFq",
   "label": "MyIdentity",
@@ -144,8 +144,9 @@ Scrypt数据结构:
 
 #### Control数据结构
 
+Control是数字身份的控制人，里面包含控制人的加密后算法名，私钥，公钥，地址，salt等。
 
-```
+```json
 {
   "algorithm": "ECDSA",
   "parameters": {},
@@ -172,8 +173,8 @@ Scrypt数据结构:
 
 #### Parameter数据结构
 
-
-```
+签名算法参数数据结构
+```json
 {
   "curve":"P-256"
 }
@@ -184,10 +185,11 @@ Scrypt数据结构:
 
 ### 1.3 Account
 
-```Account``` 数据结构:
+
+资产账户信息```Account``` 数据结构:
 
 
-```
+```json
 {
     "address": "AadQ5xRwrSsFTGzKfLHc1brzykdnf7phhD",
     "label": "a6575fd9",
@@ -232,9 +234,9 @@ Scrypt数据结构:
 
 ## 2. 二维码规范 
 
-二维码同时支持数字身份和资产账号规范. 
+身份和账号二维码的作用是方便通过扫描导入身份或账号，二维码同时支持数字身份和资产账号规范. 
 
-```
+```json
 {
 	"type":"I",
 	"label": "MyIdentity",

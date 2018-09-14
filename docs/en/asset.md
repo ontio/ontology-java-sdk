@@ -9,20 +9,35 @@ The storing of Digital Assets such as ONT and ONG is handled by the Java SDK usi
 ## Data structure
 
 `address` Base58 encoded account address
-`label` Name of account
-`isDefault`Indicates whether the account is the default 
-`lock`  Indicates whether the account is locked by the client user(s). Locked accounts can't spend
-`algorithm` Name of the encryption algorithm used
-`parameters` Encryption parameters  
-`curve` Elliptic curve used
-`key` NEP-2 private key - whose value can be null in case of read-only or non-standard addresses
-`contract` Smart contract hash - whose value can be null in case of read-only addresses
-`encAlg` Private key encryption algorithm name - fixed at aes-256-ctr
-`salt` Private key decryption salt  
-`extra` Extra information stored by client developer - value can be null
-`signatureScheme` `signatureScheme` Signature scheme used for transaction signatures.  
-`hash` Hash algorithm for derived privateKey.
 
+`label` Name of account
+
+`isDefault`Indicates whether the account is the default
+
+`lock`  Indicates whether the account is locked by the client user - Locked accounts can't spend
+
+`algorithm` Name of the encryption algorithm used
+
+`parameters` Encryption parameters
+
+`curve` Elliptic curve used
+
+`key` NEP-2 private key - whose value can be null in case of read-only or non-standard addresses
+
+`contract` Smart contract hash - whose value can be null in case of read-only addresses
+
+`encAlg` Private key encryption algorithm name - fixed at aes-256-ctr
+
+`salt` Private key decryption salt  
+
+`extra` Extra information stored by client developer - value can be null
+
+`signatureScheme` `signatureScheme` Signature scheme used for transaction signatures
+
+`hash` Hash algorithm for derived privateKey
+<p><br>
+
+##### Example Account class:
 ```
 public class Account {
     public String label = "";

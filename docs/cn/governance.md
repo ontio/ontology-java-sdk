@@ -16,24 +16,24 @@
 String registerCandidate(Account account, String peerPubkey, long initPos, String ontid,String ontidpwd,byte[] salt,  long keyNo, Account payerAcct, long gaslimit, long gasprice)
 ```
 
-参数说明
-```
-account 节点钱包账户
-peerPubkey 节点公钥
-initPos 初始化权益
-ontid  已授权的ontid
-ontidpwd ontid密码
-salt ontid对应的salt
-keyNo 公钥索引
-payerAcct 支付交易费用的账户
-gaslimit 用于计算gas
-gasprice 用于计算gas
-```
+参数说明:
 
-返回值
-```
-交易hash
-```
+| 参数      | 字段   | 类型  | 描述 |             说明 |
+| ----- | ------- | ------ | ------------- | ----------- |
+| 输入参数 | account       | Account | 节点钱包账户            | 必选 |
+|         | peerPubkey    | String  | 节点公钥               | 必选 |
+|         | initPos       | long    | 初始化权益             |必选|
+|         | ontid         | String  |已授权的ontid           | 必选|
+|         | ontidpwd      | String  | ontid密码              |必选|
+|         | salt          | byte[]  | ontid对应的salt        |必选|
+|         | keyNo         | long    | 公钥索引               |必选|
+|         | payerAcct     | Account | 支付交易费用的账户      |必选|
+|         | gaslimit      | long    | gaslimit | 必选 |
+|         | gasprice      | long    | gas价格               | 必选|
+| 输出参数 | 交易hash       | String  | 交易hash  |  |
+
+
+
 ### 2. 取消申请成为候选节点
 
 * 取消申请成为候选节点，解冻抵押的ONT
@@ -42,19 +42,18 @@ gasprice 用于计算gas
 String unRegisterCandidate(Account account, String peerPubkey,Account payerAcct, long gaslimit, long gasprice)
 ```
 
-参数说明
-```
-account 节点钱包账户
-peerPubkey 节点公钥
-payerAcct 支付交易费用的账户
-gaslimit
-gasprice
-```
 
-返回值
-```
-交易hash
-```
+参数说明:
+
+| 参数      | 字段   | 类型  | 描述 |             说明 |
+| ----- | ------- | ------ | ------------- | ----------- |
+| 输入参数 | account       | Account | 节点钱包账户            | 必选 |
+|         | peerPubkey    | String  | 节点公钥               | 必选 |
+|         | payerAcct     | Account | 支付交易费用的账户      |必选|
+|         | gaslimit      | long    | gaslimit | 必选 |
+|         | gasprice      | long    | gas价格               | 必选|
+| 输出参数 | 交易hash       | String  | 交易hash  |  |
+
 
 ### 3. 提取解绑ong
 
@@ -64,18 +63,17 @@ gasprice
 String withdrawOng(Account account,Account payerAcct,long gaslimit,long gasprice)
 ```
 
-参数说明
-```
-account 节点钱包账户
-payerAcct 支付交易费用的账户
-gaslimit
-gasprice
-```
+参数说明:
 
-返回值
-```
-交易hash
-```
+
+| 参数      | 字段   | 类型  | 描述 |             说明 |
+| ----- | ------- | ------ | ------------- | ----------- |
+| 输入参数 | account       | Account | 节点钱包账户            | 必选 |
+|         | payerAcct     | Account | 支付交易费用的账户      |必选|
+|         | gaslimit      | long    | gaslimit | 必选 |
+|         | gasprice      | long    | gas价格               | 必选|
+| 输出参数 | 交易hash       | String  | 交易hash  |  |
+
 
 ### 4. 查询节点信息
 
@@ -85,17 +83,47 @@ gasprice
 String getPeerInfo(String peerPubkey)
 ```
 
-参数说明
-```
-peerPubkey 节点公钥
+参数说明:
+
+| 参数      | 字段   | 类型  | 描述 |             说明 |
+| ----- | ------- | ------ | ------------- | ----------- |
+| 输入参数 | peerPubkey     | String | 节点公钥| 必选 |
+| 输出参数 | 节点信息       | String  | 节点信息  |  |
+
+### 5. 查询所有节点信息
+
+* 查询节点信息
+
+```java
+String getPeerInfoAll()
 ```
 
-返回值
-```
-节点信息
+参数说明:
+
+| 参数      | 字段   | 类型  | 描述 |             说明 |
+| ----- | ------- | ------ | ------------- | ----------- |
+| 输入参数 |      |  | |  |
+| 输出参数 | 节点信息       | String  | 节点信息  |  |
+
+
+### 6. 查询某个地址对某个节点的授权信息
+
+* 查询某个地址对某个节点的授权信息
+
+```java
+String getAuthorizeInfo(String peerPubkey,Address addr)
 ```
 
-### 5. 取出处于未冻结状态的抵押ONT
+参数说明:
+
+| 参数      | 字段   | 类型  | 描述 |             说明 |
+| ----- | ------- | ------ | ------------- | ----------- |
+| 输入参数 | peerPubkey     | String | 节点公钥|需要  |
+| 输入参数 | addr     | String | 地址|需要  |
+| 输出参数 | 节点授权信息       | String  | 节点授权信息  |  |
+
+
+### 6. 取出处于未冻结状态的抵押ONT
 
 * 取出处于未冻结状态的抵押ONT
 
@@ -103,18 +131,20 @@ peerPubkey 节点公钥
 String withdraw(Account account,String peerPubkey[],long[] withdrawList,Account payerAcct,long gaslimit,long gasprice)
 ```
 
-参数说明
+参数说明:
 
-```
-peerPubkey 节点公钥
-withdrawList 取出的ont数量
-```
+| 参数      | 字段   | 类型  | 描述 |             说明 |
+| ----- | ------- | ------ | ------------- | ----------- |
+| 输入参数 | account       | Account | 节点钱包账户            | 必选 |
+|         | peerPubkey    | String[]| 节点公钥               | 必选 |
+|         | withdrawList  | long[]  | 初始化权益             |必选|
+|         | payerAcct     | Account | 支付交易费用的账户      |必选|
+|         | gaslimit      | long    | gaslimit | 必选 |
+|         | gasprice      | long    | gas价格               | 必选|
+| 输出参数 | 交易hash       | String  | 交易hash  |  |
 
-返回值
-```
-交易hash
-```
-### 6. 退出节点
+
+### 7. 退出节点
 
 * 退出节点
 
@@ -122,14 +152,17 @@ withdrawList 取出的ont数量
 String quitNode(Account account,String peerPubkey,Account payerAcct,long gaslimit,long gasprice)
 ```
 
-参数说明
-```
-account 节点钱包账户
-peerPubkey 节点公钥
-payerAcct 支付交易费用的账户
-gaslimit
-gasprice
-```
+参数说明:
+
+| 参数      | 字段   | 类型  | 描述 |             说明 |
+| ----- | ------- | ------ | ------------- | ----------- |
+| 输入参数 | account       | Account | 节点钱包账户            | 必选 |
+|         | peerPubkey    | String  | 节点公钥               | 必选 |
+|         | payerAcct     | Account | 支付交易费用的账户      |必选|
+|         | gaslimit      | long    | gaslimit| 必选 |
+|         | gasprice      | long    | gas价格               | 必选|
+| 输出参数 | 交易hash       | String  | 交易hash  |  |
+
 
 返回值
 ```
@@ -143,20 +176,19 @@ gasprice
 String addInitPos(Account account,String peerPubkey,int pos,Account payerAcct,long gaslimit,long gasprice)
 ```
 
-参数说明
-```
-account 节点钱包账户
-peerPubkey 节点公钥
-pos 增加抵押的ont数量
-payerAcct 支付交易费用的账户
-gaslimit
-gasprice
-```
+参数说明:
 
-返回值
-```
-交易hash
-```
+| 参数      | 字段   | 类型  | 描述 |             说明 |
+| ----- | ------- | ------ | ------------- | ----------- |
+| 输入参数 | account       | Account | 节点钱包账户            | 必选 |
+|         | peerPubkey    | String  | 节点公钥               | 必选 |
+|         | pos           | int     | 增加抵押的ont数量       | 必选 |
+|         | payerAcct     | Account | 支付交易费用的账户      |必选|
+|         | gaslimit      | long    | gaslimit| 必选 |
+|         | gasprice      | long    | gas价格               | 必选|
+| 输出参数 | 交易hash       | String  | 交易hash  |  |
+
+
 ### 8. 节点减少initPos
 * 节点减少initPos接口，只能由节点所有者调用，initPos不能低于承诺值，不能低于已接受授权数量的1/10
 
@@ -164,20 +196,19 @@ gasprice
 String reduceInitPos(Account account,String peerPubkey,int pos,Account payerAcct,long gaslimit,long gasprice)
 ```
 
-参数说明
-```
-account 节点钱包账户
-peerPubkey 节点公钥
-pos 减少抵押的ont数量
-payerAcct 支付交易费用的账户
-gaslimit
-gasprice
-```
+参数说明:
 
-返回值
-```
-交易hash
-```
+| 参数      | 字段   | 类型  | 描述 |             说明 |
+| ----- | ------- | ------ | ------------- | ----------- |
+| 输入参数 | account       | Account | 节点钱包账户            | 必选 |
+|         | peerPubkey    | String  | 节点公钥               | 必选 |
+|         | pos           | int     | 减少抵押的ont数量       | 必选 |
+|         | payerAcct     | Account | 支付交易费用的账户      |必选|
+|         | gaslimit      | long    | gaslimit| 必选 |
+|         | gasprice      | long    | gas价格               | 必选|
+| 输出参数 | 交易hash       | String  | 交易hash  |  |
+
+
 ### 9. 节点设置自己独占激励的比例
 
 * 节点设置自己独占激励的比例
@@ -186,20 +217,19 @@ gasprice
 String setPeerCost(Account account,String peerPubkey,int peerCost,Account payerAcct,long gaslimit,long gasprice)
 ```
 
-参数说明
-```
-account 节点钱包账户
-peerPubkey 节点公钥
-peerCost 节点自己独占的比例
-payerAcct 支付交易费用的账户
-gaslimit
-gasprice
-```
+参数说明:
 
-返回值
-```
-交易hash
-```
+| 参数      | 字段   | 类型  | 描述 |             说明 |
+| ----- | ------- | ------ | ------------- | ----------- |
+| 输入参数 | account       | Account | 节点钱包账户            | 必选 |
+|         | peerPubkey    | String  | 节点公钥               | 必选 |
+|         | peerCost      | int     | 节点自己独占的比例       | 必选 |
+|         | payerAcct     | Account | 支付交易费用的账户      |必选|
+|         | gaslimit      | long    | gaslimit| 必选 |
+|         | gasprice      | long    | gas价格               | 必选|
+| 输出参数 | 交易hash       | String  | 交易hash  |  |
+
+
 ### 10. 节点修改自己接受的最大授权ONT数量
 * 节点修改自己接受的最大授权ONT数量
 
@@ -207,20 +237,19 @@ gasprice
 String changeMaxAuthorization(Account account,String peerPubkey,int maxAuthorize,Account payerAcct,long gaslimit,long gasprice)
 ```
 
-参数说明
-```
-account 节点钱包账户
-peerPubkey 节点公钥
-maxAuthorize 节点自己接受的最大授权ont数量
-payerAcct 支付交易费用的账户
-gaslimit
-gasprice
-```
+参数说明:
 
-返回值
-```
-交易hash
-```
+| 参数      | 字段   | 类型  | 描述 |             说明 |
+| ----- | ------- | ------ | ------------- | ----------- |
+| 输入参数 | account       | Account | 节点钱包账户            | 必选 |
+|         | peerPubkey    | String  | 节点公钥               | 必选 |
+|         | maxAuthorize  | int     | 节点自己接受的最大授权ont数量 | 必选 |
+|         | payerAcct     | Account | 支付交易费用的账户      |必选|
+|         | gaslimit      | long    | gaslimit| 必选 |
+|         | gasprice      | long    | gas价格               | 必选|
+| 输出参数 | 交易hash       | String  | 交易hash  |  |
+
+
 ### 11. 查询节点属性信息
 
 * 查询节点属性信息
@@ -229,15 +258,13 @@ gasprice
 String getPeerAttributes(String peerPubkey)
 ```
 
-参数说明
-```
-peerPubkey 节点公钥
-```
+参数说明:
 
-返回值
-```
-节点属性信息
-```
+| 参数      | 字段   | 类型  | 描述 |             说明 |
+| ----- | ------- | ------ | ------------- | ----------- |
+| 输入参数 | peerPubkey    | String | 节点公钥            | 必选 |
+| 输出参数 |        | String  | 节点属性信息  |  |
+
 
 ### 12. 查询某地址得到的激励
 
@@ -247,12 +274,11 @@ peerPubkey 节点公钥
 String getSplitFeeAddress(String address)
 ```
 
-参数说明
-```
-address 账户bas58编码的地址
-```
 
-返回值
-```
-查询某地址得到的激励
-```
+参数说明:
+
+| 参数      | 字段   | 类型  | 描述 |             说明 |
+| ----- | ------- | ------ | ------------- | ----------- |
+| 输入参数 | address    | String | 地址            | 必选 |
+| 输出参数 |        | String  | 查询某地址得到的激励  |  |
+

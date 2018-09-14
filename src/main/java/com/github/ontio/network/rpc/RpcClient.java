@@ -251,5 +251,25 @@ public class RpcClient extends AbstractConnector {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public String getGrantOng(String address) throws ConnectorException, IOException {
+        Object result = rpc.call("getgrantong",address);
+        try {
+            return (String) result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public int getNetworkId() throws ConnectorException, IOException {
+        Object result = rpc.call("getnetworkid");
+        try {
+            return (int)result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 

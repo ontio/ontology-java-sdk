@@ -324,6 +324,8 @@ public class NeoVmDemo3 {
                 AbiInfo abiinfo = JSON.parseObject(abi, AbiInfo.class);
 
                 String functionName = "GroupTransfer";
+                AbiFunction func = abiinfo.getFunction(functionName);
+
                 //构造参数
                 List list = new ArrayList();
                 List list2 = new ArrayList();
@@ -335,25 +337,18 @@ public class NeoVmDemo3 {
                 list3.add(1);
                 list.add(list3);
 
-                List list1 = new ArrayList();
-                list1.add(account999.getAddressU160().toArray());
-                System.out.println(account999.getAddressU160().toBase58());
-                list1.add(Address.decodeBase58("AacHGsQVbTtbvSWkqZfvdKePLS6K659dgp").toArray());
-                list1.add(list);
+                func.setParamsValue(account999.getAddressU160().toArray(),Address.decodeBase58("AacHGsQVbTtbvSWkqZfvdKePLS6K659dgp").toArray(),list);
 
-                List listF = new ArrayList<Object>();
-                listF.add(functionName.getBytes());
-                listF.add(list1);
-                byte[] params = BuildParams.createCodeParamsScript(listF);
+                ontSdk.neovm().sendTransaction(Helper.reverse("44f1f4ee6940b4f162d857411842f2d533892084"),acct,acct,20000,500,func,false);
 //
-                Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(Helper.reverse("44f1f4ee6940b4f162d857411842f2d533892084"),null,params,account3.getAddressU160().toBase58(),20000,0);
-                ontSdk.signTx(tx,new Account[][]{{account999}});
-                ontSdk.addSign(tx,account3);
-                System.out.println(tx.hash().toHexString());
-                ontSdk.getConnect().sendRawTransaction(tx);
-                Thread.sleep(6000);
-
-                System.out.println(ontSdk.getConnect().getSmartCodeEvent(tx.hash().toHexString()));
+//                Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(Helper.reverse("44f1f4ee6940b4f162d857411842f2d533892084"),null,params,account3.getAddressU160().toBase58(),20000,0);
+//                ontSdk.signTx(tx,new Account[][]{{account999}});
+//                ontSdk.addSign(tx,account3);
+//                System.out.println(tx.hash().toHexString());
+//                ontSdk.getConnect().sendRawTransaction(tx);
+//                Thread.sleep(6000);
+//
+//                System.out.println(ontSdk.getConnect().getSmartCodeEvent(tx.hash().toHexString()));
 
             }
             //多转多的测试

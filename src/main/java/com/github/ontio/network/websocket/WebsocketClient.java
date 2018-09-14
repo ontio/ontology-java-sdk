@@ -319,6 +319,28 @@ public class WebsocketClient extends AbstractConnector {
         mWebSocket.send(JSON.toJSONString(map));
         return "";
     }
+
+    @Override
+    public String getGrantOng(String address) throws ConnectorException, IOException {
+        Map map = new HashMap<>();
+        map.put("Action", "getgrantong");
+        map.put("Version", "1.0.0");
+        map.put("Id", generateReqId());
+        map.put("Addr", address);
+        mWebSocket.send(JSON.toJSONString(map));
+        return "";
+    }
+
+    @Override
+    public int getNetworkId() throws ConnectorException, IOException {
+        Map map = new HashMap<>();
+        map.put("Action", "getnetworkid");
+        map.put("Version", "1.0.0");
+        map.put("Id", generateReqId());
+        mWebSocket.send(JSON.toJSONString(map));
+        return 0;
+    }
+
     public void wsStart() {
         //request = new Request.Builder().url(WS_URL).build();
         String httpUrl = null;

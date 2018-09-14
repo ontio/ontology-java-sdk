@@ -4,19 +4,22 @@
 
 English / [中文](../cn/asset.md)
 
+The storing of Digital Assets such as ONT and ONG is handled by the Java SDK using the Account structure, wwhich is outlined below.
+
 ## Data structure
-`address`   Base58 encoded account address.  
-`label` Name of account.  
-`isDefault`Indicates whether the account is a default one, whose default value is set as "false".  
-`lock`  Indicates whether the account is locked by client users, who cannot spend in locked account.  
-`algorithm` Name of encryption algorithm.  
-`parameters` Encryption parameters.  
-`curve` Elliptic curve.  
-`key` NEP-2 private key, whose value can be null (in case of read-only or non-standard address).  
-`contract` Smart contract, whose value can be null (in case of read-only address).  
-`encAlg` Private key encryption algorithm name, fixed at aes-256-ctr.  
-`salt` Private key decryption parameters.  
-`extra` Extra information stored by client developer, whose value can be null.  
+
+`address` Base58 encoded account address
+`label` Name of account
+`isDefault`Indicates whether the account is the default 
+`lock`  Indicates whether the account is locked by the client user(s). Locked accounts can't spend
+`algorithm` Name of the encryption algorithm used
+`parameters` Encryption parameters  
+`curve` Elliptic curve used
+`key` NEP-2 private key - whose value can be null in case of read-only or non-standard addresses
+`contract` Smart contract hash - whose value can be null in case of read-only addresses
+`encAlg` Private key encryption algorithm name - fixed at aes-256-ctr
+`salt` Private key decryption salt  
+`extra` Extra information stored by client developer - value can be null
 `signatureScheme` `signatureScheme` Signature scheme used for transaction signatures.  
 `hash` Hash algorithm for derived privateKey.
 

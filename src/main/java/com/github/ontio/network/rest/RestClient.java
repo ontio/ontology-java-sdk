@@ -277,6 +277,27 @@ public class RestClient extends AbstractConnector {
         }
         throw new RestfulException(to(rr));
     }
+
+    @Override
+    public String getGrantOng(String address) throws ConnectorException, IOException {
+        String rs = api.getGrantOng(address);
+        Result rr = JSON.parseObject(rs, Result.class);
+        if (rr.Error == 0) {
+            return (String)rr.Result;
+        }
+        throw new RestfulException(to(rr));
+    }
+
+    @Override
+    public int getNetworkId() throws ConnectorException, IOException {
+        String rs = api.getNetworkId();
+        Result rr = JSON.parseObject(rs, Result.class);
+        if (rr.Error == 0) {
+            return (int)rr.Result;
+        }
+        throw new RestfulException(to(rr));
+    }
+
     private String to(Result rr) {
         return JSON.toJSONString(rr);
     }

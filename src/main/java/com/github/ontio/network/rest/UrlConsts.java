@@ -42,4 +42,6 @@ public class UrlConsts {
 	public static String Url_get_mem_pool_tx_state = "/api/v1/mempool/txstate/";
 	public static String Url_get_allowance = "/api/v1/allowance/";
 	public static String Url_get_version = "/api/v1/version";
+	public static String Url_get_grant_ong = "/api/v1/grantong";
+	public static String Url_get_networkid = "/api/v1/networkid";
 }

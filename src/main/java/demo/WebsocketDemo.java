@@ -82,6 +82,9 @@ public class WebsocketDemo {
 
             for (int i = 0; i >= 0; i++) {
 
+                ontSdk.getConnect().getNetworkId();
+                ontSdk.getConnect().getGrantOng("AHX1wzvdw9Yipk7E9MuLY4GGX4Ym9tHeDe");
+
                 //System.out.println(ontid);
                 //String hash = ontSdk.getOntIdTx().updateAttribute(ontid, "passwordtest", attri.getBytes(), "Json".getBytes(), JSON.toJSONString(recordMap).getBytes());
                 //System.out.println("hash:" + hash);

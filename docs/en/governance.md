@@ -1,20 +1,20 @@
-<h1 align="center"> governance </h1>
+<h1 align="center"> Governance </h1>
 
 <p align="center" class="version">Version 1.0.0 </p>
 
 [English](../cn/governance.md) / English
 
-## interface list
+## Interface list
 
-### 1. Apply to become a candidate node
-* Mortgage a certain ONT, consume a certain amount of additional ONG, apply to become a candidate node
+
+### Apply to become a candidate node
+#### Mortgage a certain ONT, consume a certain amount of additional ONG, apply to become a candidate node
 
 ```
 String registerCandidate(Account account, String peerPubkey, long initPos, String ontid,String ontidpwd,byte[] salt,  long keyNo, Account payerAcct, long gaslimit, long gasprice)
 ```
-
-parameter instruction
-
+	Parameters:
+  
 | Parameter| Field   | Type  | description |          instruction |
 | ----- | ------- | ------ | ------------- | ----------- |
 | input | account       | Account | peer wallet account            | Required |
@@ -30,15 +30,13 @@ parameter instruction
 | output | transactionhash| String  | transaction hash  |  |
 
 
-### 2. Cancel application to become a candidate node
-
-* Cancel the application to become a candidate node, unfreeze the mortgaged ONT
-
+#### Cancel the application to become a candidate node, unfreeze the mortgaged ONT
 ```
 String unRegisterCandidate(Account account, String peerPubkey,Account payerAcct, long gaslimit, long gasprice)
 ```
 
-parameter instruction
+	Parameters:
+
 | Parameter| Field   | Type  | description |          instruction |
 | ----- | ------- | ------ | ------------- | ----------- |
 | input | account       | Account | peer wallet account            | Required |
@@ -49,15 +47,13 @@ parameter instruction
 | output | transaction hash| String  | transaction hash  |  |
 
 
-### 3. Extract untied ong
-
-* Extract untied ong
-
+#### Extract unbound ONG
 ```
 String withdrawOng(Account account,Account payerAcct,long gaslimit,long gasprice)
 ```
 
-parameter instruction
+  Parameters:
+
 | Parameter| Field   | Type  | description |          instruction |
 | ----- | ------- | ------ | ------------- | ----------- |
 | input | account       | Account | peer wallet account         | Required |
@@ -67,38 +63,34 @@ parameter instruction
 | output | transaction hash       | String  | transaction hash  |  |
 
 
-### 4. Query node information
-
-* Query node information
-
+#### Query node information
 ```
 String getPeerInfo(String peerPubkey)
 ```
 
-parameter instruction
+	Parameters:
+
 | Parameter| Field   | Type  | description |          instruction |
 | ----- | ------- | ------ | ------------- | ----------- |
 | input | peerPubkey     | String | peer publickey| Required |
 | output | peer information       | String  | peer information  |  |
 
-### 5. Query all node information
-* Query all node information
 
+#### Query all node information
 ```
 String getPeerInfoAll()
 ```
 
-
-### 6. query authorization information
-
-* Query the authorization information of a certain address to a node
+  return value: all nodes information
 
 
+
+#### Query the authorization information of a certain address to a node
 ```
 String getAuthorizeInfo(String peerPubkey,Address addr)
 ```
 
-parameter instruction
+	Parameters:
 
 | Parameter| Field   | Type  | description |          instruction |
 | ----- | ------- | ------ | ------------- | ----------- |
@@ -106,15 +98,13 @@ parameter instruction
 |         | addr    | String| adddress               | Required |
 | output |       | String  | peer AuthorizeInfo  |  |
 
-### 7.  Extracting thawed ont
 
-* Take out the mortgage ONT in an unfrozen state
-
+#### Take out the mortgage ONT in an unfrozen state
 ```
 String quitNode(Account account,String peerPubkey,Account payerAcct,long gaslimit,long gasprice)
 ```
+	Parameters:
 
-parameter instruction
 | Parameter| Field   | Type  | description |          instruction |
 | ----- | ------- | ------ | ------------- | ----------- |
 | input | account       | Account | peer wallet account            | Required |
@@ -125,14 +115,13 @@ parameter instruction
 | output | transaction hash       | String  | transaction hash  |  |
 
 
-### 8. Node adds initPos
-* The node adds the initPos interface, which can only be called by the node owner
-
+#### addInitPos interface (can only be called by the node owner)
 ```
 String addInitPos(Account account,String peerPubkey,int pos,Account payerAcct,long gaslimit,long gasprice)
 ```
 
-parameter instruction
+	Parameters:
+
 | Parameter| Field   | Type  | description |          instruction |
 | ----- | ------- | ------ | ------------- | ----------- |
 | input | account       | Account   | peer wallet account     | Required |
@@ -143,15 +132,13 @@ parameter instruction
 |         | gasprice      | long    | gas price               | Required|
 | output | transaction hash       | String  | transaction hash  |  |
 
-### 9. Node reduces initPos
 
-* The node reduces the initPos interface and can only be called by the node owner. The initPos cannot be lower than the promised value, and cannot be lower than 1/10 of the accepted number of licenses
-
+#### reduceInitPos (can only be called by the node owner)
+The initPos cannot be lower than the promised value, and cannot be lower than 1/10 of the accepted number of licenses.
 ```
 String reduceInitPos(Account account,String peerPubkey,int pos,Account payerAcct,long gaslimit,long gasprice)
 ```
-
-parameter instruction
+	Parameters:
 
 | Parameter| Field   | Type  | description |          instruction |
 | ----- | ------- | ------ | ------------- | ----------- |
@@ -164,15 +151,13 @@ parameter instruction
 | output | transaction hash       | String  | transaction hash  |  |
 
 
-### 10. The node sets the proportion of its own exclusive incentives
-
-* The node sets the proportion of its own exclusive incentives
-
+#### setPeerCost
+The node sets the proportion of its own exclusive incentives
 ```
 String setPeerCost(Account account,String peerPubkey,int peerCost,Account payerAcct,long gaslimit,long gasprice)
 ```
+	Parameters:
 
-parameter instruction
 | Parameter| Field   | Type  | description |          instruction |
 | ----- | ------- | ------ | ------------- | ----------- |
 | input | account       | Account | peer wallet account            | Required |
@@ -184,14 +169,14 @@ parameter instruction
 | output | transaction hash       | String  | transaction hash  |  |
 
 
-### 11. The node modifies the maximum number of authorized ONTs it accepts.
-* The node modifies the maximum number of authorized ONTs it accepts
-
+#### changeMaxAuthorization
+The node modifies the maximum number of authorized ONT nodes it accepts
 ```
 String changeMaxAuthorization(Account account,String peerPubkey,int maxAuthorize,Account payerAcct,long gaslimit,long gasprice)
 ```
 
-parameter instruction
+	Parameters:
+
 | Parameter| Field   | Type  | description |          instruction |
 | ----- | ------- | ------ | ------------- | ----------- |
 | input | account       | Account | peer wallet account  | Required |
@@ -202,28 +187,27 @@ parameter instruction
 |         | gasprice      | long    | gas price   | Required|
 | output | transaction hash       | String  | transaction hash  |  |
 
-### 12. Query node attribute information
-* Query node attribute information
 
+#### Query node attribute information
 ```
 String getPeerAttributes(String peerPubkey)
 ```
 
-parameter instruction
+	Parameters:
+
 | Parameter| Field   | Type  | description |          instruction |
 | ----- | ------- | ------ | ------------- | ----------- |
 | input | peerPubkey    | String |peer public key | Required |
 | output |        | String  | peer attribute information  |  |
 
 
-### 13. Query the incentives for an address
-* Query the incentives for an address
-
+#### Query the incentives for an address
 ```
 String getSplitFeeAddress(String address)
 ```
 
-parameter instruction
+	Parameters:
+
 | Parameter| Field   | Type  | description |          instruction |
 | ----- | ------- | ------ | ------------- | ----------- |
 | input | address    | String | address            | Required |

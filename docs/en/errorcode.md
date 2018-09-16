@@ -1,9 +1,8 @@
-<h1 align="center"> Error code </h1>
+<h1 align="center"> Java SDK Error code list </h1>
 
 <p align="center" class="version">Version 1.0.0 </p>
 
 English / [中文](../cn/errorcode.md)
-
 
 | Return code | Description                   | Explanation                                     |
 | :----------:|:-----------------------------:|:------------------------------------------------:|

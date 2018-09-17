@@ -57,6 +57,7 @@ String result = (String) sdk.getConnect().sendRawTransactionPreExec(txHex);
 Note: At present, the Java SDK supports both NEO and WASM smart contract deployment and invocation. Deployment operations of NEO and WASM contract are the same, but the invocation is slightly different. See below for details.
 
 ### Example smart contract deployment 
+
 | Parameters    | Field       | Type                  | Description                       | Explaination                           |
 | -----         | -------     | ------                | -------------                     | -----------                            |
 | Input params  | codeHexStr  | String                | Contract code hexadecimal string  | Required                               |
@@ -184,6 +185,7 @@ ontSdk.getConnect().sendRawTransaction(tx.toHexString());
 ##### Example to create a WebSocket thread and analyze the push notification.
 
 1. Set WebSocket link.
+
 ```
 //lock global variable, synchronization lock
 public static Object lock = new Object();
@@ -199,12 +201,14 @@ wm.openWalletFile("OntAssetDemo.json");
 
 
 2. Start WebSocket thread.
+
 ```
 //false means not printing callback function information
 ontSdk.getWebSocket().startWebsocketThread(false);
 ```
 
 3. Start result processing thread.
+
 ```
 Thread thread = new Thread(
                 new Runnable() {
@@ -240,6 +244,7 @@ Thread thread = new Thread(
 
 
 4. Send a heartbeat every 6 seconds to maintain the socket link.
+
 ```
 for (;;){
                 Map map = new HashMap();
@@ -264,6 +269,7 @@ for (;;){
 ##### Deposit certificate example
 
 The certificate abi.json document is as follows.
+
 ```
 {
     "hash":"0x27f5ae9dd51499e7ac4fe6a5cc44526aff909669",

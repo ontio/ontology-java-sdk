@@ -5,7 +5,7 @@
 English / [中文](../cn/smartcontract.md)
 
 ## Introduction
-This chapter outlines the usage of smart contracts in the Java SDK <p><br>
+This chapter outlines the usage of smart contracts in the Java SDK <br>
 
 ## Smart code identifier (codeAddress)
 #### What is a codeAddress? 
@@ -166,7 +166,7 @@ Process overview
   3. Generate transaction signature (no signature required for pre-execution);
   4. send Transaction.
 
-###### Example:
+##### Example:
 ```
 //set codeAddress
 ontSdk.getSmartcodeTx().setCodeAddress(codeAddress);
@@ -266,9 +266,7 @@ for (;;){
 * Push result case details
 
 
-**Deposit certificate example**
-
-The certificate abi.json document is as follows.
+**Deposit certificate example**，The certificate abi.json document is as follows.
 
 ```
 {
@@ -305,7 +303,7 @@ The certificate abi.json document is as follows.
 
 When the put function is called to save the data, the putRecord event is fired. The result of the WebSocket push is the hexadecimal string of {"putRecord", "arg1", "arg2", "arg3"}.
 
-###### Example:
+##### Example:
 
 ```
 RECV: {"Action":"Log","Desc":"SUCCESS","Error":0,"Result":{"Message":"Put","TxHash":"8cb32f3a1817d88d8562fdc0097a0f9aa75a926625c6644dfc5417273ca7ed71","ContractAddress":"80f6bff7645a84298a1a52aa3745f84dba6615cf"},"Version":"1.0.0"}

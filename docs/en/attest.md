@@ -141,7 +141,7 @@ String claim = ontSdk.nativevm().ontId().createOntIdClaim(dids.get(0).ontid,pass
 boolean b = ontSdk.nativevm().ontId().verifyOntIdClaim(claim);
 ```
 
-----
+
 
 ## Attestation Example
 
@@ -196,13 +196,13 @@ String sendCommit (String issuerOntid, String password,byte[] salt, String subje
 Function description: Save data to the chain
 
 Parameters:
-        ```issuerOntid```:  Issuer ONT ID
-        ```subjectOntid```:  Subject ONT ID
-        ```password```: Identity password
-        ```claimId```: Trusted claims claim uniqueness mark, i.e. Jti field in Claim
-        ```payerAcct```: Payment transaction account
-        ```gaslimit```: Gas limit
-        ```gasprice```: Gas price
+```issuerOntid```:  Issuer ONT ID
+```subjectOntid```:  Subject ONT ID
+```password```: Identity password
+```claimId```: Trusted claims claim uniqueness mark, i.e. Jti field in Claim
+```payerAcct```: Payment transaction account
+```gaslimit```: Gas limit
+```gasprice```: Gas price
 return value: Transaction hash
 
 
@@ -245,11 +245,11 @@ String sendRevoke(String issuerOntid,String password,byte[] salt,String claimId,
 Function description:Repeal of a trust claim
 
 Parameters:
-        ```issuerOntid```: Issuer ONT ID
-        ```password```: Attester's ONT ID password
-        ```claimId```: Trusted claims claim uniqueness mark, i.e. Jti field in Claim
-        ```payerAcct```: Payment transaction account
-        ```gaslimit```: Gas limit
-        ```gasprice```: Gas price
+```issuerOntid```: Issuer ONT ID
+```password```: Attester's ONT ID password
+```claimId```: Trusted claims claim uniqueness mark, i.e. Jti field in Claim
+```payerAcct```: Payment transaction account
+```gaslimit```: Gas limit
+```gasprice```: Gas price
 
 return value： This function will return true if and only if the claim is attested, and the revokerOntId is equal to the attester's ONT identity; Otherwise, it will return false.

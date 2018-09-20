@@ -77,7 +77,7 @@ public class MerkleVerifierTest {
         Identity identity = ontSdk.getWalletMgr().createIdentity(password);
         Account payer = ontSdk.getWalletMgr().createAccount(password);
         byte[] salt = identity.controls.get(0).getSalt();
-        Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,password,salt,identity.controls.get(0).publicKey,payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
+        Transaction tx = ontSdk.nativevm().ontId().makeRegister(identity.ontid,identity.controls.get(0).publicKey,payer.address,ontSdk.DEFAULT_GAS_LIMIT,0);
         ontSdk.signTx(tx,identity.ontid,password,salt);
         ontSdk.addSign(tx,payer.address,password,payer.getSalt());
         ontSdk.getConnect().sendRawTransaction(tx);

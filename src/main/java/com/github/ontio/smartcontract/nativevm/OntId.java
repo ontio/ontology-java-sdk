@@ -83,7 +83,7 @@ public class OntId {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
 
-        Transaction tx = makeRegister(ident.ontid, password,ident.controls.get(0).getSalt(),ident.controls.get(0).publicKey, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeRegister(ident.ontid,ident.controls.get(0).publicKey, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.getWalletMgr().writeWallet();
         sdk.signTx(tx, ident.ontid, password,ident.controls.get(0).getSalt());
         sdk.addSign(tx, payerAcct);
@@ -113,14 +113,13 @@ public class OntId {
 
     /**
      * @param ontid
-     * @param password
      * @param payer
      * @param gasprice
      * @return
      * @throws Exception
      */
-    public Transaction makeRegister(String ontid, String password, byte[] salt, String publickey, String payer, long gaslimit, long gasprice) throws Exception {
-        if (password == null || password.equals("") || payer == null || payer.equals("")) {
+    public Transaction makeRegister(String ontid,String publickey, String payer, long gaslimit, long gasprice) throws Exception {
+        if (payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
         if (gasprice < 0 || gaslimit < 0) {
@@ -137,7 +136,6 @@ public class OntId {
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"regIDWithPublicKey",args,payer,gaslimit, gasprice);
         return tx;
     }
-
 
     /**
      * @param ident

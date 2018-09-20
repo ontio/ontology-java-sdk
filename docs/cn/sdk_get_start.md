@@ -679,9 +679,7 @@ SDK发送注册Ontid和转账等交易时，根据钱包中账户和身份信息
 ### 4.1 批量构造交易
 
 1. 打开文件
-
 2. 构造交易，下面以构造注册Ontid交易为例。
-
 3. 写入交易
 
 > 构造交易时，如果新创建账户，需要用户自己保存账户私钥。
@@ -692,9 +690,9 @@ File file = new File(filePath);
 if (!file.exists()) {
     file.createNewFile();
 }
+com.github.ontio.account.Account payerAcct = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey1), SignatureScheme.SHA256WITHECDSA);
 FileOutputStream fos = new FileOutputStream(file);
 for (int i = 0; i < 3; i++) {
-    com.github.ontio.account.Account payerAcct = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey1), SignatureScheme.SHA256WITHECDSA);
     com.github.ontio.account.Account account = new com.github.ontio.account.Account(SignatureScheme.SHA256WITHECDSA);
     String ontid = Common.didont + account.getAddressU160().toBase58();
     Transaction tx = ontSdk.nativevm().ontId().makeRegister(ontid, Helper.toHexString(account.serializePublicKey()), payerAcct.getAddressU160().toBase58(), 20000, 500);
@@ -725,9 +723,7 @@ for (int i = 0; i < 3; i++) {
 ### 4.2 批量发送交易
 
 1. 打开文件
-
 2. 读取一行数据
-
 3. 提取交易数据，发送交易数据
 
 ```

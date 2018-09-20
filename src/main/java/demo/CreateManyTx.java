@@ -19,6 +19,7 @@ public class CreateManyTx {
 
         try {
             OntSdk ontSdk = getOntSdk();
+            com.github.ontio.account.Account payerAcct = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey1), SignatureScheme.SHA256WITHECDSA);
             if(true) {  //open file, make registry ontid transaction, save tx to file.
                 File file = new File(filePath);
                 if (!file.exists()) {
@@ -26,7 +27,6 @@ public class CreateManyTx {
                 }
                 FileOutputStream fos = new FileOutputStream(file);
                 for (int i = 0; i < 3; i++) {
-                    com.github.ontio.account.Account payerAcct = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey1), SignatureScheme.SHA256WITHECDSA);
                     com.github.ontio.account.Account account = new com.github.ontio.account.Account(SignatureScheme.SHA256WITHECDSA);
                     String ontid = Common.didont + account.getAddressU160().toBase58();
                     Transaction tx = ontSdk.nativevm().ontId().makeRegister(ontid, Helper.toHexString(account.serializePublicKey()), payerAcct.getAddressU160().toBase58(), 20000, 500);

@@ -1033,9 +1033,9 @@ class SplitFeeAddress implements Serializable{
 class PeerAttributes implements Serializable{
     public String peerPubkey;
     public long maxAuthorize; //max authorzie pos this peer can receive
-    public long oldPeerCost; //old peer cost, active when current view - SetCostView < 2
-    public long newPeerCost; //new peer cost, active when current view - SetCostView >= 2
-    public int setCostView; //the view when when set new peer cost
+    public long T2PeerCost; //old peer cost, active when current view - SetCostView < 2
+    public long T1PeerCost; //new peer cost, active when current view - SetCostView >= 2
+    public long TPeerCost; //the view when when set new peer cost
     public byte[] field1;
     public byte[] field2;
     public byte[] field3;
@@ -1045,9 +1045,9 @@ class PeerAttributes implements Serializable{
     public void deserialize(BinaryReader reader) throws IOException {
         this.peerPubkey = reader.readVarString();
         this.maxAuthorize = reader.readLong();
-        this.oldPeerCost = reader.readLong();
-        this.newPeerCost = reader.readLong();
-        this.setCostView = reader.readInt();
+        this.T2PeerCost = reader.readLong();
+        this.T1PeerCost = reader.readLong();
+        this.TPeerCost = reader.readLong();
         this.field1 = reader.readVarBytes();
         this.field2 = reader.readVarBytes();
         this.field3 = reader.readVarBytes();

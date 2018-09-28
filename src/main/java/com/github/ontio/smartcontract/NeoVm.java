@@ -77,7 +77,7 @@ public class NeoVm {
     }
     public Object sendTransaction(String contractAddr, Account acct,Account payerAcct, long gaslimit, long gasprice, AbiFunction func, boolean preExec) throws Exception {
         byte[] params;
-        if(func != null) {
+        if (func != null && func.getParameters().size() != 0) {
             params = BuildParams.serializeAbiFunction(func);
         } else {
             params = new byte[]{};

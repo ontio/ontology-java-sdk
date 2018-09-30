@@ -136,7 +136,7 @@ public class Program {
         }else if(code == ScriptOp.OP_PUSHDATA1.getByte()) {
             int temp;
             temp = br.readByte();
-            keyLen = Long.valueOf(temp);
+            keyLen = Long.valueOf(temp&0xFF);
         }else if(code <= ScriptOp.OP_PUSHBYTES75.getByte() && code >= ScriptOp.OP_PUSHBYTES1.getByte()){
             keyLen = Long.valueOf(code) - Long.valueOf(ScriptOp.OP_PUSHBYTES1.getByte()) + 1;
         }else{

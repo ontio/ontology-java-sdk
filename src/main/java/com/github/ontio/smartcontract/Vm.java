@@ -21,6 +21,7 @@ package com.github.ontio.smartcontract;
 
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Common;
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.core.scripts.ScriptOp;
 import com.github.ontio.core.transaction.Attribute;
 import com.github.ontio.core.transaction.Transaction;
@@ -69,6 +70,9 @@ public class Vm {
      * @throws SDKException
      */
     public DeployCode makeDeployCodeTransaction(String codeStr, boolean needStorage, String name, String codeVersion, String author, String email, String desp,String payer,long gaslimit,long gasprice) throws SDKException {
+        if (name == null || name.equals("") || codeVersion == null || codeVersion.equals("") || author == null || author.equals("") || email == null || email.equals("") || desp == null || desp.equals("")) {
+            throw new SDKException(ErrorCode.OtherError("param error,can not be empty"));
+        }
         DeployCode tx = new DeployCode();
         if(payer != null){
             tx.payer = Address.decodeBase58(payer.replace(Common.didont,""));

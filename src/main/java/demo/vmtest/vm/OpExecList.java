@@ -1,7 +1,6 @@
 package demo.vmtest.vm;
 
 import com.github.ontio.core.scripts.ScriptOp;
-import com.sun.org.apache.bcel.internal.generic.PUSH;
 import demo.vmtest.types.ArrayItem;
 import demo.vmtest.types.MapItem;
 import demo.vmtest.types.StackItems;

@@ -62,6 +62,21 @@ String withdrawOng(Account account,Account payerAcct,long gaslimit,long gasprice
 |         | gasprice      | long    | gas price               | Required|
 | output | transaction hash       | String  | transaction hash  |  |
 
+#### Redeem rewards of stake authorization
+```
+String withdrawFee(Account account,Account payerAcct,long gaslimit,long gasprice)
+```
+
+Parameters:
+
+| Parameter| Field   | Type  | description |          instruction |
+| ----- | ------- | ------ | ------------- | ----------- |
+| input | account       | Account | peer wallet account         | Required |
+|         | payerAcct     | Account | account for payment of transaction fees      |Required|
+|         | gaslimit      | long    | gaslimit | Required |
+|         | gasprice      | long    | gas price               | Required|
+| output | transaction hash       | String  | transaction hash  |  |
+
 
 #### Query node information
 ```
@@ -81,7 +96,7 @@ String getPeerInfo(String peerPubkey)
 String getPeerInfoAll()
 ```
 
-  return value: all nodes information
+return value: all nodes information
 
 
 
@@ -202,7 +217,7 @@ String getPeerAttributes(String peerPubkey)
 
 
 #### Query the incentives for an address
-```
+```java
 String getSplitFeeAddress(String address)
 ```
 
@@ -212,3 +227,41 @@ String getSplitFeeAddress(String address)
 | ----- | ------- | ------ | ------------- | ----------- |
 | input | address    | String | address            | Required |
 | output |        | String  | Query the incentives for an address  |  |
+
+### Authorize stake for some node
+
+Authorize stake for some node
+```java
+String authorizeForPeer(Account account,String peerPubkey[],long[] posList,Account payerAcct,long gaslimit,long gasprice)
+```
+
+Parameters:
+
+| Parameter| Field   | Type  | description |          instruction |
+| ----- | ------- | ------ | ------------- | ----------- |
+| input | account       | Account | peer wallet account            | Required |
+|         | peerPubkey    | String[]  | peer public key               | Required |
+|         | posList       | long[]     |   Mortgage interest     | Required |
+|         | payerAcct     | Account | account for payment of transaction fees |Required|
+|         | gaslimit      | long    | gaslimit| Required |
+|         | gasprice      | long    | gas price               | Required|
+| output | transaction hash       | String  | transaction hash  |  |
+
+### unAuthorize stake for some node
+
+unAuthorize stake for some node
+```java
+String unAuthorizeForPeer(Account account,String peerPubkey[],long[] posList,Account payerAcct,long gaslimit,long gasprice)
+```
+
+Parameters:
+
+| Parameter| Field   | Type  | description |          instruction |
+| ----- | ------- | ------ | ------------- | ----------- |
+| input | account       | Account | peer wallet account            | Required |
+|         | peerPubkey    | String[]  | peer public key               | Required |
+|         | posList       | long[]     |   Mortgage interest     | Required |
+|         | payerAcct     | Account | account for payment of transaction fees |Required|
+|         | gaslimit      | long    | gaslimit| Required |
+|         | gasprice      | long    | gas price               | Required|
+| output | transaction hash       | String  | transaction hash  |  |

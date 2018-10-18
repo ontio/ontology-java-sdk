@@ -1,4 +1,4 @@
-package com.github.ontio.core.oep8;
+package com.github.ontio.smartcontract.neovm.oep8;
 
 public class Oep8State {
     public byte[] from;

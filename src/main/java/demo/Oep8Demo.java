@@ -3,8 +3,8 @@ package demo;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Helper;
-import com.github.ontio.core.oep8.Oep8State;
-import com.github.ontio.core.oep8.TransferFrom;
+import com.github.ontio.smartcontract.neovm.oep8.Oep8State;
+import com.github.ontio.smartcontract.neovm.oep8.TransferFrom;
 
 public class Oep8Demo {
     public static void main(String[] args) {

@@ -31,6 +31,7 @@ import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 public class NeoVm {
     private Nep5 nep5Tx = null;
     private Oep4 oep4Tx = null;
+    private Oep5 oep5Tx = null;
     private Oep8 oep8Tx = null;
     private Record recordTx = null;
     private ClaimRecord claimRecordTx = null;
@@ -48,6 +49,12 @@ public class NeoVm {
             oep4Tx = new Oep4(sdk);
         }
         return oep4Tx;
+    }
+    public Oep5 oep5(){
+        if(oep5Tx == null) {
+            oep5Tx = new Oep5(sdk);
+        }
+        return oep5Tx;
     }
     public Oep8 oep8(){
         if(oep8Tx == null) {

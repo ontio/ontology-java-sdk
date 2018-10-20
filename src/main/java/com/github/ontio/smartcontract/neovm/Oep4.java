@@ -149,13 +149,15 @@ public class Oep4 {
         }
         List paramList = new ArrayList<>();
         paramList.add("transferMulti".getBytes());
+        List tempList = new ArrayList();
         for(State state : states){
             List list = new ArrayList();
             list.add(state.from.toArray());
             list.add(state.to.toArray());
             list.add(state.value);
-            paramList.add(list);
+            tempList.add(list);
         }
+        paramList.add(tempList);
         byte[] params = BuildParams.createCodeParamsScript(paramList);
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,null,params,payerAcct.getAddressU160().toBase58(),20000,0);
         return tx;

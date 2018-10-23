@@ -42,9 +42,21 @@ public class Oep8Demo {
                 System.out.println("balance: " + name);
                 return;
             }
-            if(true){
+            if(false){
                 System.out.println(sdk.neovm().oep8().balancesOf(account.getAddressU160().toBase58()));
                 System.out.println(sdk.neovm().oep8().totalBalanceOf(account.getAddressU160().toBase58()));
+                return;
+            }
+            if(true){
+                byte[] tokenId = Helper.hexToBytes("01");
+                System.out.println(sdk.neovm().oep8().queryTotalSupply(tokenId));
+                return;
+            }
+            if(true){
+                byte[] tokenId = Helper.hexToBytes("01");
+                String txhash = sdk.neovm().oep8().mint(account,tokenId,1, account, 20000, 0);
+                Thread.sleep(3);
+                System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
                 return;
             }
             if(true){

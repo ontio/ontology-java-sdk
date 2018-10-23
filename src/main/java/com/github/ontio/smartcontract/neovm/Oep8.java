@@ -466,7 +466,7 @@ public class Oep8 {
         Object obj =   sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
         return Long.parseLong(Helper.reverse(((JSONObject)obj).getString("Result")), 16);
     }
-    public String mint(Account adminAccount,byte[] tokenId, int amount, Account payer, long gaslimit, long gasprice) throws Exception {
+    public String mint(Account adminAccount,byte[] tokenId, long amount, Account payer, long gaslimit, long gasprice) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }

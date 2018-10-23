@@ -36,16 +36,26 @@ public class Oep8Demo {
                 long name = sdk.neovm().oep8().queryDecimals();
                 System.out.println("decimal: " + name);
             }
-            if(true){
-                byte[] tokenId = Helper.hexToBytes("09");
+            if(false){
+                byte[] tokenId = Helper.hexToBytes("07");
                 long name = sdk.neovm().oep8().queryBalanceOf(account.getAddressU160().toBase58(), tokenId);
                 System.out.println("balance: " + name);
                 return;
             }
             if(true){
-                String txhash = sdk.neovm().oep8().sendCompound(account, account, 71378, 0);
+                System.out.println(sdk.neovm().oep8().balancesOf(account.getAddressU160().toBase58()));
+                System.out.println(sdk.neovm().oep8().totalBalanceOf(account.getAddressU160().toBase58()));
+                return;
+            }
+            if(true){
+                String txhash = sdk.neovm().oep8().sendCompound(account,1, account, 71442, 0);
                 Thread.sleep(3);
                 System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
+            }
+            if(true){
+                System.out.println(sdk.neovm().oep8().balancesOf(account.getAddressU160().toBase58()));
+                System.out.println(sdk.neovm().oep8().totalBalanceOf(account.getAddressU160().toBase58()));
+                return;
             }
             if (false){
                 byte[] tokenId = Helper.hexToBytes("01");
@@ -128,7 +138,7 @@ public class Oep8Demo {
         wm.setRpc(rpcUrl);
         wm.setRestful(restUrl);
         wm.setDefaultConnect(wm.getRestful());
-        wm.neovm().oep8().setContractAddress(Helper.reverse("1c000c989817eefeb6dd58cb9551a0a3a0ce2ee5"));
+        wm.neovm().oep8().setContractAddress(Helper.reverse("a2054b2d84a87190ea3a96e122e0710e95da36f3"));
         wm.openWalletFile("oep8.dat");
         return wm;
     }

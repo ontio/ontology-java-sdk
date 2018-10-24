@@ -185,6 +185,17 @@ public class Governance {
     public Map getPeerPoolMap() throws ConnectorException, IOException {
         return (Map) getPeerPoolMap(null,true);
     }
+    public GovernanceView getGovernanceView() throws ConnectorException, IOException, SDKException {
+        String view = sdk.getConnect().getStorage(Helper.reverse(contractAddress),Helper.toHexString("governanceView".getBytes()));
+        if(view == null || view.equals("")){
+            throw new SDKException(ErrorCode.OtherError("view is null"));
+        }
+        GovernanceView governanceView = new GovernanceView();
+        ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(view));
+        BinaryReader br = new BinaryReader(bais);
+        governanceView.deserialize(br);
+        return governanceView;
+    }
     /**
      *
      * @return

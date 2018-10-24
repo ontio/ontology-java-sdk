@@ -4,10 +4,7 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
-import com.github.ontio.core.governance.Configuration;
-import com.github.ontio.core.governance.GlobalParam;
-import com.github.ontio.core.governance.InputPeerPoolMapParam;
-import com.github.ontio.core.governance.SplitCurve;
+import com.github.ontio.core.governance.*;
 import com.github.ontio.crypto.SignatureScheme;
 
 import java.util.Base64;
@@ -41,6 +38,11 @@ public class GovernanceDemo2 {
             if(false){
                 SplitCurve curve = sdk.nativevm().governance().getSplitCurve();
                 System.out.println(curve);
+            }
+            if(true){
+                GovernanceView view = sdk.nativevm().governance().getGovernanceView();
+                System.out.println(view);
+                return;
             }
             if(true){
                 InputPeerPoolMapParam param = sdk.nativevm().governance().getInputPeerPoolMapParam("123456");

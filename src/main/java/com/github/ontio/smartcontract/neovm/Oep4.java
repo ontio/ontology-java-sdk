@@ -275,7 +275,7 @@ public class Oep4 {
         return Long.parseLong(Helper.reverse(balance), 16);
     }
 
-    public String queryTotalSupply() throws Exception {
+    public long queryTotalSupply() throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -284,7 +284,7 @@ public class Oep4 {
         func.name = "totalSupply";
         func.setParamsValue();
         Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
-        return ((JSONObject) obj).getString("Result");
+        return Long.parseLong(Helper.reverse(((JSONObject) obj).getString("Result")), 16);
     }
 
     public String queryName() throws Exception {
@@ -299,7 +299,7 @@ public class Oep4 {
         return new String(Helper.hexToBytes(((JSONObject) obj).getString("Result")));
     }
 
-    public String queryDecimals() throws Exception {
+    public long queryDecimals() throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -308,7 +308,7 @@ public class Oep4 {
         func.name = "decimals";
         func.setParamsValue();
         Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
-        return ((JSONObject) obj).getString("Result");
+        return Long.parseLong(Helper.reverse(((JSONObject) obj).getString("Result")), 16);
     }
 
     public String querySymbol() throws Exception {

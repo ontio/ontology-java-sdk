@@ -19,6 +19,7 @@ public class Oep8Demo {
             Account account2 = sdk.getWalletMgr().getAccount("AacHGsQVbTtbvSWkqZfvdKePLS6K659dgp", "xinhao");
             Account account = new Account(Helper.hexToBytes(privateKey),SignatureScheme.SHA256WITHECDSA);
             if (false){
+                System.out.println(privateKey);
                 String txhash = sdk.neovm().oep8().sendInit(account1, account,200000, 500);
                 System.out.println(txhash);
                 Thread.sleep(6000);
@@ -33,7 +34,7 @@ public class Oep8Demo {
             byte[] tokenId6 = Helper.hexToBytes("06");
             byte[] tokenId7 = Helper.hexToBytes("07");
             byte[] tokenId8 = Helper.hexToBytes("08");
-            if (false){
+            if (true){
                 String name = sdk.neovm().oep8().queryName(tokenId1);
                 System.out.println("name: " + name);
                 System.out.println(sdk.neovm().oep8().queryName(tokenId2));
@@ -45,9 +46,8 @@ public class Oep8Demo {
                 System.out.println(sdk.neovm().oep8().queryName(tokenId8));
                 return;
             }
-            if(false){
-                long name = sdk.neovm().oep8().queryTotalSupply(tokenId1);
-                System.out.println("totalsupply: " + name);
+            if(true){
+                System.out.println("totalsupply: " + sdk.neovm().oep8().queryTotalSupply(tokenId1));
                 System.out.println("totalsupply: " + sdk.neovm().oep8().queryTotalSupply(tokenId2));
                 System.out.println("totalsupply: " + sdk.neovm().oep8().queryTotalSupply(tokenId3));
                 System.out.println("totalsupply: " + sdk.neovm().oep8().queryTotalSupply(tokenId4));
@@ -66,8 +66,7 @@ public class Oep8Demo {
                 return;
             }
             if(false){
-                long name = sdk.neovm().oep8().queryBalanceOf(account1.getAddressU160().toBase58(), tokenId1);
-                System.out.println("balance: " + name);
+                System.out.println("balance: " + sdk.neovm().oep8().queryBalanceOf(account1.getAddressU160().toBase58(), tokenId1));
                 System.out.println("balance: " + sdk.neovm().oep8().queryBalanceOf(account1.getAddressU160().toBase58(), tokenId2));
                 System.out.println("balance: " + sdk.neovm().oep8().queryBalanceOf(account1.getAddressU160().toBase58(), tokenId3));
                 System.out.println("balance: " + sdk.neovm().oep8().queryBalanceOf(account1.getAddressU160().toBase58(), tokenId4));
@@ -120,8 +119,7 @@ public class Oep8Demo {
             }
 
             if (false){
-                long res = sdk.neovm().oep8().queryAllowance(account1.getAddressU160().toBase58(),account2.getAddressU160().toBase58(), tokenId1);
-                System.out.println("res: " + res);
+                System.out.println("res: " + sdk.neovm().oep8().queryAllowance(account1.getAddressU160().toBase58(),account2.getAddressU160().toBase58(), tokenId1));
                 return;
             }
             if (false){

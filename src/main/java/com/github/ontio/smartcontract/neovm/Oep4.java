@@ -14,6 +14,7 @@ import com.github.ontio.smartcontract.neovm.abi.AbiFunction;
 import com.github.ontio.smartcontract.neovm.abi.AbiInfo;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -237,7 +238,7 @@ public class Oep4 {
         return tx;
     }
 
-    public long queryAllowance(String owner, String spender) throws Exception {
+    public String queryAllowance(String owner, String spender) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -250,13 +251,13 @@ public class Oep4 {
         func.setParamsValue(Address.decodeBase58(owner).toArray(), Address.decodeBase58(spender).toArray());
         Object obj =  sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
         String balance = ((JSONObject) obj).getString("Result");
-        if(balance.equals("")){
-            return 0;
+        if(balance == null || balance.equals("")){
+            return BigInteger.ZERO.toString();
         }
-        return Long.parseLong(Helper.reverse(balance), 16);
+        return Helper.BigIntFromNeoBytes(Helper.hexToBytes(balance)).toString();
     }
 
-    public long queryBalanceOf(String addr) throws Exception {
+    public String queryBalanceOf(String addr) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -269,13 +270,13 @@ public class Oep4 {
         func.setParamsValue(Address.decodeBase58(addr).toArray());
         Object obj =  sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
         String balance = ((JSONObject) obj).getString("Result");
-        if(balance.equals("")){
-            return 0;
+        if(balance == null || balance.equals("")){
+            return BigInteger.ZERO.toString();
         }
-        return Long.parseLong(Helper.reverse(balance), 16);
+        return Helper.BigIntFromNeoBytes(Helper.hexToBytes(balance)).toString();
     }
 
-    public long queryTotalSupply() throws Exception {
+    public String queryTotalSupply() throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -284,7 +285,11 @@ public class Oep4 {
         func.name = "totalSupply";
         func.setParamsValue();
         Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
-        return Long.parseLong(Helper.reverse(((JSONObject) obj).getString("Result")), 16);
+        String total = ((JSONObject) obj).getString("Result");
+        if(total.equals("")){
+            return BigInteger.ZERO.toString();
+        }
+        return Helper.BigIntFromNeoBytes(Helper.hexToBytes(total)).toString();
     }
 
     public String queryName() throws Exception {
@@ -299,7 +304,7 @@ public class Oep4 {
         return new String(Helper.hexToBytes(((JSONObject) obj).getString("Result")));
     }
 
-    public long queryDecimals() throws Exception {
+    public String queryDecimals() throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -308,7 +313,11 @@ public class Oep4 {
         func.name = "decimals";
         func.setParamsValue();
         Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
-        return Long.parseLong(Helper.reverse(((JSONObject) obj).getString("Result")), 16);
+        String decimals = ((JSONObject) obj).getString("Result");
+        if(decimals.equals("")){
+            return BigInteger.ZERO.toString();
+        }
+        return Helper.BigIntFromNeoBytes(Helper.hexToBytes(decimals)).toString();
     }
 
     public String querySymbol() throws Exception {

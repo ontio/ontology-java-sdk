@@ -16,6 +16,7 @@ import com.github.ontio.smartcontract.neovm.abi.AbiFunction;
 import com.github.ontio.smartcontract.neovm.abi.AbiInfo;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -351,7 +352,7 @@ public class Oep8 {
         return (String) obj;
     }
 
-    public long queryAllowance(String owner, String spender, byte[] tokenId) throws Exception {
+    public String queryAllowance(String owner, String spender, byte[] tokenId) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -364,13 +365,13 @@ public class Oep8 {
         func.setParamsValue(Address.decodeBase58(owner).toArray(), Address.decodeBase58(spender).toArray(), tokenId);
         Object obj =  sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
         String balance = ((JSONObject) obj).getString("Result");
-        if(balance.equals("")){
-            return 0;
+        if(balance == null || balance.equals("")){
+            return BigInteger.ZERO.toString();
         }
-        return Long.parseLong(Helper.reverse(balance), 16);
+        return Helper.BigIntFromNeoBytes(Helper.hexToBytes(balance)).toString();
     }
 
-    public long queryBalanceOf(String addr, byte[] tokenId) throws Exception {
+    public String queryBalanceOf(String addr, byte[] tokenId) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -384,12 +385,12 @@ public class Oep8 {
         Object obj =  sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
         String balance = ((JSONObject) obj).getString("Result");
         if(balance.equals("")){
-            balance = "00";
+            balance = BigInteger.ZERO.toString();
         }
-        return Long.parseLong(Helper.reverse(balance), 16);
+        return Helper.BigIntFromNeoBytes(Helper.hexToBytes(balance)).toString();
     }
 
-    public long queryTotalSupply(byte[] tokenId) throws Exception {
+    public String queryTotalSupply(byte[] tokenId) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -398,10 +399,11 @@ public class Oep8 {
         func.name = "totalSupply";
         func.setParamsValue(tokenId);
         Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
-        if(((JSONObject) obj).getString("Result").equals("")){
-            return 0;
+        String total = ((JSONObject) obj).getString("Result");
+        if(total.equals("")){
+            return BigInteger.ZERO.toString();
         }
-        return Long.parseLong(Helper.reverse(((JSONObject) obj).getString("Result")),16);
+        return Helper.BigIntFromNeoBytes(Helper.hexToBytes(total)).toString();
     }
 
     public String queryName(byte[] tokenId) throws Exception {
@@ -439,14 +441,14 @@ public class Oep8 {
         List resList = new ArrayList();
         for(Object i : res){
             if(!((String)i).equals("")){
-                resList.add(Long.parseLong(Helper.reverse((String)i),16));
+                resList.add(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String)i)).toString());
             }else{
-                resList.add(0);
+                resList.add(BigInteger.ZERO.toString());
             }
         }
         return JSON.toJSONString(resList);
     }
-    public long totalBalanceOf(String address) throws Exception {
+    public String totalBalanceOf(String address) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -454,7 +456,8 @@ public class Oep8 {
         AbiFunction func = abiinfo.getFunction("totalBalanceOf");
         func.setParamsValue(Address.decodeBase58(address).toArray());
         Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
-        return Long.parseLong(Helper.reverse(((JSONObject)obj).getString("Result")), 16);
+        String totalBalance = ((JSONObject)obj).getString("Result");
+        return Helper.BigIntFromNeoBytes(Helper.hexToBytes(totalBalance)).toString();
     }
     public String mint(Account adminAccount,byte[] tokenId, long amount, Account payer, long gaslimit, long gasprice) throws Exception {
         if (contractAddress == null) {

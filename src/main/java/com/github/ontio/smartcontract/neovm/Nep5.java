@@ -25,11 +25,14 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.ErrorCode;
+import com.github.ontio.common.Helper;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.smartcontract.neovm.abi.AbiFunction;
 import com.github.ontio.smartcontract.neovm.abi.AbiInfo;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
+
+import java.math.BigInteger;
 
 
 /**
@@ -162,10 +165,10 @@ public class Nep5 {
         func.setParamsValue(Address.decodeBase58(addr).toArray());
         Object obj =  sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
         String balance = ((JSONObject) obj).getString("Result");
-        if(balance.equals("")){
-            balance = "00";
+        if(balance == null || balance.equals("")){
+            return BigInteger.ZERO.toString();
         }
-        return balance;
+        return Helper.BigIntFromNeoBytes(Helper.hexToBytes(balance)).toString();
     }
 
     public String queryTotalSupply() throws Exception {
@@ -177,7 +180,8 @@ public class Nep5 {
         func.name = "totalSupply";
         func.setParamsValue();
         Object obj =   sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
-        return ((JSONObject) obj).getString("Result");
+        String total = ((JSONObject) obj).getString("Result");
+        return Helper.BigIntFromNeoBytes(Helper.hexToBytes(total)).toString();
     }
 
     public String queryName() throws Exception {
@@ -189,7 +193,7 @@ public class Nep5 {
         func.name = "name";
         func.setParamsValue();
         Object obj =   sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
-        return ((JSONObject) obj).getString("Result");
+        return new String(Helper.hexToBytes(((JSONObject) obj).getString("Result")));
     }
 
     public String queryDecimals() throws Exception {
@@ -201,7 +205,8 @@ public class Nep5 {
         func.name = "decimals";
         func.setParamsValue();
         Object obj =   sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
-        return ((JSONObject) obj).getString("Result");
+        String decimal = ((JSONObject) obj).getString("Result");
+        return Helper.BigIntFromNeoBytes(Helper.hexToBytes(decimal)).toString();
     }
 
     public String querySymbol() throws Exception {
@@ -213,7 +218,7 @@ public class Nep5 {
         func.name = "symbol";
         func.setParamsValue();
         Object obj =   sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
-        return ((JSONObject) obj).getString("Result");
+        return new String(Helper.hexToBytes(((JSONObject) obj).getString("Result")));
     }
 
 

@@ -22,6 +22,10 @@ public class Oep4Demo {
     public static void main(String[] args) {
         try {
             OntSdk ontSdk = getOntSdk();
+            if(false){
+                System.out.println(BigInteger.ZERO.toString());
+                return;
+            }
             String privateKey = Account.getGcmDecodedPrivateKey("8p2q0vLRqyfKmFHhnjUYVWOm12kPm78JWqzkTOi9rrFMBz624KjhHQJpyPmiSSOa","111111","AHX1wzvdw9Yipk7E9MuLY4GGX4Ym9tHeDe",Base64.getDecoder().decode("KbiCUr53CZUfKG1M3Gojjw=="),16384,SignatureScheme.SHA256WITHECDSA);
 //            Account account = sdk.getWalletMgr().getAccount("AQf4Mzu1YJrhz9f3aRkkwSm9n3qhXGSh4p", "xinhao");
             System.out.println(privateKey);
@@ -39,6 +43,7 @@ public class Oep4Demo {
 //
 //            showBalance(ontSdk,new Account[]{acct1,acct2,acct3});
 //            System.out.println("------------------------------------------------------");
+
 
             if(false){
                 System.out.println(acct.getAddressU160().toBase58());
@@ -173,9 +178,8 @@ public class Oep4Demo {
 
     public static void showBalance(OntSdk ontSdk,Account[] accounts) throws Exception {
         for (int i=0;i<accounts.length;i++){
-            long balance = ontSdk.neovm().oep4().queryBalanceOf(accounts[i].getAddressU160().toBase58());
             int a = i+1;
-            System.out.println("account"+ a +":"+ balance);
+            System.out.println("account"+ a +":"+ ontSdk.neovm().oep4().queryBalanceOf(accounts[i].getAddressU160().toBase58()));
         }
     }
 

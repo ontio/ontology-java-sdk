@@ -27,8 +27,7 @@ import com.github.ontio.common.*;
 import com.github.ontio.core.VmType;
 import com.github.ontio.core.asset.Sig;
 import com.github.ontio.core.block.Block;
-import com.github.ontio.core.governance.PeerPoolItem;
-import com.github.ontio.core.governance.AuthorizeInfo;
+import com.github.ontio.core.governance.*;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
@@ -49,11 +48,16 @@ import java.util.Map;
 public class Governance {
     private OntSdk sdk;
     private final String contractAddress = "0000000000000000000000000000000000000007";
+    private final String sideChainContractAddress = "0000000000000000000000000000000000000008";
     private final String AUTHORIZE_INFO_POOL = "766f7465496e666f506f6f6c";
     private final String PEER_ATTRIBUTES   = "peerAttributes";
     private final String SPLIT_FEE_ADDRESS  = "splitFeeAddress";
     private final String TOTAL_STAKE = "totalStake";
     private final String PEER_POOL = "peerPool";
+    private final String SIDE_CHAIN_NODE_INFO = "sideChainNodeInfo";
+    private final String GLOBAL_PARAM  = "globalParam";
+    private final String GLOBAL_PARAM2 = "globalParam2";
+    private final String SPLIT_CURVE       = "splitCurve";
     private final long[] UNBOUND_GENERATION_AMOUNT = new long[]{5, 4, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
     private final int UNBOUND_TIME_INTERVAL = 31536000;
     private final long ONT_TOTAL_SUPPLY = 1000000000;
@@ -166,7 +170,7 @@ public class Governance {
      * @throws IOException
      */
     public String getPeerInfo(String peerPubkey) throws ConnectorException, IOException {
-        return getPeerPoolMap(peerPubkey);
+        return (String) getPeerPoolMap(peerPubkey,false);
     }
 
     /**
@@ -176,7 +180,10 @@ public class Governance {
      * @throws IOException
      */
     public String getPeerInfoAll() throws ConnectorException, IOException {
-        return getPeerPoolMap(null);
+        return (String) getPeerPoolMap(null, false);
+    }
+    public Map getPeerPoolMap() throws ConnectorException, IOException {
+        return (Map) getPeerPoolMap(null,true);
     }
     /**
      *
@@ -184,7 +191,7 @@ public class Governance {
      * @throws ConnectorException
      * @throws IOException
      */
-    private String getPeerPoolMap(String peerPubkey) throws ConnectorException, IOException {
+    private Object getPeerPoolMap(String peerPubkey, boolean isResultMap) throws ConnectorException, IOException {
         String view = sdk.getConnect().getStorage(Helper.reverse(contractAddress),Helper.toHexString("governanceView".getBytes()));
         GovernanceView governanceView = new GovernanceView();
         ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(view));
@@ -204,10 +211,15 @@ public class Governance {
         BinaryReader reader = new BinaryReader(bais2);
         int length = reader.readInt();
         Map peerPoolMap = new HashMap<String,PeerPoolItem>();
+        Map peerPoolMap2 = new HashMap<String,PeerPoolItem>();
         for(int i = 0;i < length;i++){
             PeerPoolItem item = new PeerPoolItem();
             item.deserialize(reader);
             peerPoolMap.put(item.peerPubkey,item.Json());
+            peerPoolMap2.put(item.peerPubkey, item);
+        }
+        if(isResultMap){
+            return peerPoolMap2;
         }
         if(peerPubkey != null) {
             if(!peerPoolMap.containsKey(peerPubkey)) {
@@ -926,6 +938,7 @@ public class Governance {
         return null;
     }
 
+
     /**
      *
      * @param candidateFee
@@ -975,6 +988,73 @@ public class Governance {
         }
         return null;
     }
+    //please get data from mainchain
+    public Configuration getConfiguration() throws ConnectorException, IOException {
+        String res = sdk.getConnect().getStorage(Helper.reverse(contractAddress), Helper.toHexString("vbftConfig".getBytes()));
+        if(res == null){
+            return null;
+        }
+        Configuration configuration = new Configuration();
+        ByteArrayInputStream in = new ByteArrayInputStream(Helper.hexToBytes(res));
+        BinaryReader reader = new BinaryReader(in);
+        configuration.deserialize(reader);
+        return configuration;
+    }
+    public InputPeerPoolMapParam getInputPeerPoolMapParam(String sideChainId) throws ConnectorException, IOException, SDKException {
+        Map peerPoolMap = sdk.nativevm().governance().getPeerPoolMap();
+        byte[] sideChainIdBytes = sideChainId.getBytes();
+        byte[] sideChainNodeInfoBytes = SIDE_CHAIN_NODE_INFO.getBytes();
+        byte[] key = new byte[sideChainIdBytes.length + sideChainNodeInfoBytes.length];
+        System.arraycopy(sideChainNodeInfoBytes,0, key,0,sideChainNodeInfoBytes.length);
+        System.arraycopy(sideChainIdBytes,0, key,sideChainNodeInfoBytes.length,sideChainIdBytes.length);
+        String resNode = sdk.getConnect().getStorage(Helper.reverse(sideChainContractAddress), Helper.toHexString(key));
+        if(resNode == null || resNode.equals("")){
+            throw new SDKException(ErrorCode.OtherError("NodeToSideChainParams is null"));
+        }
+        SideChainNodeInfo info = new SideChainNodeInfo();
+        ByteArrayInputStream in = new ByteArrayInputStream(Helper.hexToBytes(resNode));
+        BinaryReader reader = new BinaryReader(in);
+        info.deserialize(reader);
+        InputPeerPoolMapParam param = new InputPeerPoolMapParam(peerPoolMap, info.nodeInfoMap);
+        return param;
+    }
+    public GlobalParam getGlobalParam() throws ConnectorException, IOException {
+        String res = sdk.getConnect().getStorage(Helper.reverse(contractAddress),Helper.toHexString(GLOBAL_PARAM.getBytes()));
+        if(res == null || res.equals("")){
+            return null;
+        }
+        ByteArrayInputStream in = new ByteArrayInputStream(Helper.hexToBytes(res));
+        BinaryReader reader = new BinaryReader(in);
+        GlobalParam1 globalParam1 = new GlobalParam1();
+        globalParam1.deserialize(reader);
+        String res2 = sdk.getConnect().getStorage(Helper.reverse(contractAddress),Helper.toHexString(GLOBAL_PARAM2.getBytes()));
+        GlobalParam2 globalParam2 = null;
+        if(res2 != null && !res2.equals("")){
+            globalParam2 = new GlobalParam2();
+            ByteArrayInputStream in2 = new ByteArrayInputStream(Helper.hexToBytes(res2));
+            BinaryReader reader2 = new BinaryReader(in);
+            globalParam2.deserialize(reader2);
+        }
+        GlobalParam param = new GlobalParam();
+        if(globalParam2 != null){
+            param.candidateFeeSplitNum = globalParam2.candidateFeeSplitNum;
+        }else {
+            param.candidateFeeSplitNum = globalParam1.candidateNum;
+        }
+        param.A = globalParam1.A;
+        param.B = globalParam1.B;
+        param.yita =globalParam1.yita;
+        return param;
+    }
+    public SplitCurve getSplitCurve() throws ConnectorException, IOException {
+        String res = sdk.getConnect().getStorage(Helper.reverse(contractAddress), Helper.toHexString(SPLIT_CURVE.getBytes()));
+        SplitCurve curve = new SplitCurve();
+        ByteArrayInputStream in = new ByteArrayInputStream(Helper.hexToBytes(res));
+        BinaryReader reader = new BinaryReader(in);
+        curve.deserialize(reader);
+        return curve;
+    }
+
 }
 
 class TotalStake implements Serializable{
@@ -1064,37 +1144,7 @@ class PeerAttributes implements Serializable{
     }
 }
 
-class GovernanceView implements Serializable{
-    int view;
-    int height;
-    UInt256 txhash;
-    GovernanceView(){
-    }
-    GovernanceView(int view,int height,UInt256 txhash){
-        this.view = view;
-        this.height = height;
-        this.txhash = txhash;
-    }
-    @Override
-    public void deserialize(BinaryReader reader) throws IOException {
-        this.view = reader.readInt();
-        this.height = reader.readInt();
-        try {
-            this.txhash = reader.readSerializable(UInt256.class);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
 
-    @Override
-    public void serialize(BinaryWriter writer) throws IOException {
-        writer.writeInt(view);
-        writer.writeInt(height);
-        writer.writeSerializable(txhash);
-    }
-}
 class RegisterSyncNodeParam implements Serializable {
     public String peerPubkey;
     public String address;
@@ -1271,29 +1321,29 @@ class AuthorizeCommitDposParam implements Serializable {
         writer.writeVarString(String.valueOf(pos));
     }
 }
-class Configuration implements Serializable {
-    public long N = 7;
-    public long C = 2;
-    public long K = 7;
-    public long L = 112;
-    public long blockMsgDelay = 10000;
-    public long hashMsgDelay = 10000;
-    public long peerHandshakeTimeout = 10;
-    public long maxBlockChangeView = 1000;
-    @Override
-    public void deserialize(BinaryReader reader) throws IOException {}
-    @Override
-    public void serialize(BinaryWriter writer) throws IOException {
-        writer.writeVarInt(N);
-        writer.writeVarInt(C);
-        writer.writeVarInt(K);
-        writer.writeVarInt(L);
-        writer.writeVarInt(blockMsgDelay);
-        writer.writeVarInt(hashMsgDelay);
-        writer.writeVarInt(peerHandshakeTimeout);
-        writer.writeVarInt(maxBlockChangeView);
-    }
-}
+//class Configuration implements Serializable {
+//    public long N = 7;
+//    public long C = 2;
+//    public long K = 7;
+//    public long L = 112;
+//    public long blockMsgDelay = 10000;
+//    public long hashMsgDelay = 10000;
+//    public long peerHandshakeTimeout = 10;
+//    public long maxBlockChangeView = 1000;
+//    @Override
+//    public void deserialize(BinaryReader reader) throws IOException {}
+//    @Override
+//    public void serialize(BinaryWriter writer) throws IOException {
+//        writer.writeVarInt(N);
+//        writer.writeVarInt(C);
+//        writer.writeVarInt(K);
+//        writer.writeVarInt(L);
+//        writer.writeVarInt(blockMsgDelay);
+//        writer.writeVarInt(hashMsgDelay);
+//        writer.writeVarInt(peerHandshakeTimeout);
+//        writer.writeVarInt(maxBlockChangeView);
+//    }
+//}
 class GovernanceGlobalParam implements Serializable {
     public long candidateFee;
     public long minInitStake;

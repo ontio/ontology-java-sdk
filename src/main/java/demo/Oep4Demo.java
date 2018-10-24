@@ -54,7 +54,7 @@ public class Oep4Demo {
                 System.out.println(ontSdk.getConnect().getSmartCodeEvent(result));
                 System.exit(0);
             }
-            if(false){
+            if(true){
                 System.out.println(ontSdk.neovm().oep4().queryDecimals());
                 System.out.println(ontSdk.neovm().oep4().queryName());
                 System.out.println(ontSdk.neovm().oep4().querySymbol());
@@ -157,17 +157,10 @@ public class Oep4Demo {
 //            System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(balance))).longValue());
 //            System.exit(0);
 
-            String totalSupply = ontSdk.neovm().oep4().queryTotalSupply();
-            System.out.println(totalSupply);
-            if(!totalSupply.equals("")){
-                System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(totalSupply))).longValue());
-            }
 
 
 //            System.exit(0);
 
-            String decimals = ontSdk.neovm().oep4().queryDecimals();
-            System.out.println(decimals);
 
             String name = ontSdk.neovm().oep4().queryName();
             System.out.println(new String(Helper.hexToBytes(name)));

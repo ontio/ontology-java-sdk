@@ -20,7 +20,21 @@ import java.util.List;
 public class Oep4 {
     private OntSdk sdk;
     private String contractAddress = null;
-    private String oep4abi = "{\"hash\":\"0xcf409996f7abbf8afd659a298c26cd1239e0c19e\",\"entrypoint\":\"Main\",\"functions\":[{\"name\":\"Name\",\"parameters\":[],\"returntype\":\"String\"},{\"name\":\"Symbol\",\"parameters\":[],\"returntype\":\"String\"},{\"name\":\"Decimals\",\"parameters\":[],\"returntype\":\"Integer\"},{\"name\":\"Main\",\"parameters\":[{\"name\":\"operation\",\"type\":\"String\"},{\"name\":\"args\",\"type\":\"Array\"}],\"returntype\":\"Any\"},{\"name\":\"Init\",\"parameters\":[],\"returntype\":\"Boolean\"},{\"name\":\"Transfer\",\"parameters\":[{\"name\":\"from\",\"type\":\"ByteArray\"},{\"name\":\"to\",\"type\":\"ByteArray\"},{\"name\":\"value\",\"type\":\"Integer\"}],\"returntype\":\"Boolean\"},{\"name\":\"TransferMulti\",\"parameters\":[{\"name\":\"args\",\"type\":\"Array\"}],\"returntype\":\"Boolean\"},{\"name\":\"BalanceOf\",\"parameters\":[{\"name\":\"address\",\"type\":\"ByteArray\"}],\"returntype\":\"Integer\"},{\"name\":\"TotalSupply\",\"parameters\":[],\"returntype\":\"Integer\"},{\"name\":\"Approve\",\"parameters\":[{\"name\":\"owner\",\"type\":\"ByteArray\"},{\"name\":\"spender\",\"type\":\"ByteArray\"},{\"name\":\"amount\",\"type\":\"Integer\"}],\"returntype\":\"Boolean\"},{\"name\":\"TransferFrom\",\"parameters\":[{\"name\":\"spender\",\"type\":\"ByteArray\"},{\"name\":\"from\",\"type\":\"ByteArray\"},{\"name\":\"to\",\"type\":\"ByteArray\"},{\"name\":\"amount\",\"type\":\"Integer\"}],\"returntype\":\"Boolean\"},{\"name\":\"Allowance\",\"parameters\":[{\"name\":\"owner\",\"type\":\"ByteArray\"},{\"name\":\"spender\",\"type\":\"ByteArray\"}],\"returntype\":\"Integer\"}],\"events\":[{\"name\":\"transfer\",\"parameters\":[{\"name\":\"from\",\"type\":\"ByteArray\"},{\"name\":\"to\",\"type\":\"ByteArray\"},{\"name\":\"value\",\"type\":\"Integer\"}],\"returntype\":\"Void\"},{\"name\":\"approval\",\"parameters\":[{\"name\":\"onwer\",\"type\":\"ByteArray\"},{\"name\":\"spender\",\"type\":\"ByteArray\"},{\"name\":\"value\",\"type\":\"Integer\"}],\"returntype\":\"Void\"}]}";
+    private String oep4abi = "{\"hash\":\"0xcf409996f7abbf8afd659a298c26cd1239e0c19e\",\"entrypoint\":\"Main\",\"functions\":[" +
+            "{\"name\":\"Name\",\"parameters\":[],\"returntype\":\"String\"}," +
+            "{\"name\":\"Symbol\",\"parameters\":[],\"returntype\":\"String\"}," +
+            "{\"name\":\"Decimals\",\"parameters\":[],\"returntype\":\"Integer\"}," +
+            "{\"name\":\"Main\",\"parameters\":[{\"name\":\"operation\",\"type\":\"String\"},{\"name\":\"args\",\"type\":\"Array\"}],\"returntype\":\"Any\"}," +
+            "{\"name\":\"Init\",\"parameters\":[],\"returntype\":\"Boolean\"}," +
+            "{\"name\":\"Transfer\",\"parameters\":[{\"name\":\"from\",\"type\":\"ByteArray\"},{\"name\":\"to\",\"type\":\"ByteArray\"},{\"name\":\"value\",\"type\":\"Integer\"}],\"returntype\":\"Boolean\"}," +
+            "{\"name\":\"TransferMulti\",\"parameters\":[{\"name\":\"args\",\"type\":\"Array\"}],\"returntype\":\"Boolean\"}," +
+            "{\"name\":\"BalanceOf\",\"parameters\":[{\"name\":\"address\",\"type\":\"ByteArray\"}],\"returntype\":\"Integer\"}," +
+            "{\"name\":\"TotalSupply\",\"parameters\":[],\"returntype\":\"Integer\"}," +
+            "{\"name\":\"Approve\",\"parameters\":[{\"name\":\"owner\",\"type\":\"ByteArray\"},{\"name\":\"spender\",\"type\":\"ByteArray\"},{\"name\":\"amount\",\"type\":\"Integer\"}],\"returntype\":\"Boolean\"}," +
+            "{\"name\":\"TransferFrom\",\"parameters\":[{\"name\":\"spender\",\"type\":\"ByteArray\"},{\"name\":\"from\",\"type\":\"ByteArray\"},{\"name\":\"to\",\"type\":\"ByteArray\"},{\"name\":\"amount\",\"type\":\"Integer\"}],\"returntype\":\"Boolean\"}," +
+            "{\"name\":\"Allowance\",\"parameters\":[{\"name\":\"owner\",\"type\":\"ByteArray\"},{\"name\":\"spender\",\"type\":\"ByteArray\"}],\"returntype\":\"Integer\"}]," +
+            "\"events\":[{\"name\":\"transfer\",\"parameters\":[{\"name\":\"from\",\"type\":\"ByteArray\"},{\"name\":\"to\",\"type\":\"ByteArray\"},{\"name\":\"value\",\"type\":\"Integer\"}],\"returntype\":\"Void\"}," +
+            "{\"name\":\"approval\",\"parameters\":[{\"name\":\"onwer\",\"type\":\"ByteArray\"},{\"name\":\"spender\",\"type\":\"ByteArray\"},{\"name\":\"value\",\"type\":\"Integer\"}],\"returntype\":\"Void\"}]}";
 
     public Oep4(OntSdk sdk) {
         this.sdk = sdk;
@@ -64,7 +78,7 @@ public class Oep4 {
         if(acct == null || payerAcct == null){
             throw new SDKException(ErrorCode.ParamError);
         }
-        Object obj = sdk.neovm().sendTransaction(contractAddress,acct,payerAcct,gaslimit,gasprice,func,preExec);
+        Object obj = sdk.neovm().sendTransaction(Helper.reverse(contractAddress),acct,payerAcct,gaslimit,gasprice,func,preExec);
         return obj;
     }
 
@@ -99,7 +113,7 @@ public class Oep4 {
             }
             return ((JSONObject) obj).getLong("Gas");
         }
-        Object obj = sdk.neovm().sendTransaction(contractAddress,acct,payerAcct,gaslimit,gasprice,func, preExec);
+        Object obj = sdk.neovm().sendTransaction(Helper.reverse(contractAddress),acct,payerAcct,gaslimit,gasprice,func, preExec);
         return obj;
     }
     public Transaction makeTransfer(String sendAddr,String recvAddr, long amount, Account payerAcct, long gaslimit, long gasprice) throws Exception{
@@ -112,7 +126,7 @@ public class Oep4 {
         func.setParamsValue(Address.decodeBase58(sendAddr).toArray(), Address.decodeBase58(recvAddr).toArray(), amount);
         byte[] params = BuildParams.serializeAbiFunction(func);
         String payer = payerAcct.getAddressU160().toBase58();
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(getContractAddress(), null, params, payer,gaslimit, gasprice);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractAddress), null, params, payer,gaslimit, gasprice);
         return tx;
     }
 
@@ -159,7 +173,7 @@ public class Oep4 {
         }
         paramList.add(tempList);
         byte[] params = BuildParams.createCodeParamsScript(paramList);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,null,params,payerAcct.getAddressU160().toBase58(),20000,0);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractAddress),null,params,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
         return tx;
     }
 
@@ -174,7 +188,7 @@ public class Oep4 {
         AbiFunction func = abiinfo.getFunction("Approve");
         func.name = "approve";
         func.setParamsValue(owner.getAddressU160().toArray(), Address.decodeBase58(spender).toArray(), amount);
-        Object obj = sdk.neovm().sendTransaction(contractAddress,owner,payerAcct,gaslimit,gasprice,func, false);
+        Object obj = sdk.neovm().sendTransaction(Helper.reverse(contractAddress),owner,payerAcct,gaslimit,gasprice,func, false);
         return (String) obj;
     }
 
@@ -188,12 +202,12 @@ public class Oep4 {
         func.setParamsValue(Address.decodeBase58(owner).toArray(), Address.decodeBase58(spender).toArray(), amount);
         byte[] params = BuildParams.serializeAbiFunction(func);
         String payer = payerAcct.getAddressU160().toBase58();
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(getContractAddress(), null, params, payer,gaslimit, gasprice);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractAddress), null, params, payer,gaslimit, gasprice);
         return tx;
     }
 
 
-    public Object sendTransferFrom(Account sender, String from,String to, long amount, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendTransferFrom(Account sender, String from,String to, long amount, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -204,8 +218,8 @@ public class Oep4 {
         AbiFunction func = abiinfo.getFunction("TransferFrom");
         func.name = "transferFrom";
         func.setParamsValue(sender.getAddressU160().toArray(), Address.decodeBase58(from).toArray(),Address.decodeBase58(to).toArray(), amount);
-        Object obj = sdk.neovm().sendTransaction(contractAddress,sender,payerAcct,gaslimit,gasprice,func, false);
-        return obj;
+        Object obj = sdk.neovm().sendTransaction(Helper.reverse(contractAddress),sender,payerAcct,gaslimit,gasprice,func, false);
+        return (String) obj;
     }
 
     public Transaction makeTransferFrom(String sender, String from,String to, long amount, Account payerAcct, long gaslimit, long gasprice) throws Exception {
@@ -219,11 +233,11 @@ public class Oep4 {
         func.setParamsValue(Address.decodeBase58(sender).toArray(), Address.decodeBase58(from).toArray(),Address.decodeBase58(to).toArray(), amount);
         byte[] params = BuildParams.serializeAbiFunction(func);
         String payer = payerAcct.getAddressU160().toBase58();
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(getContractAddress(), null, params, payer,gaslimit, gasprice);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractAddress), null, params, payer,gaslimit, gasprice);
         return tx;
     }
 
-    public String queryAllowance(String owner, String spender) throws Exception {
+    public long queryAllowance(String owner, String spender) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -234,15 +248,15 @@ public class Oep4 {
         AbiFunction func = abiinfo.getFunction("Allowance");
         func.name = "allowance";
         func.setParamsValue(Address.decodeBase58(owner).toArray(), Address.decodeBase58(spender).toArray());
-        Object obj =  sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
+        Object obj =  sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
         String balance = ((JSONObject) obj).getString("Result");
         if(balance.equals("")){
-            balance = "00";
+            return 0;
         }
-        return balance;
+        return Long.parseLong(Helper.reverse(balance), 16);
     }
 
-    public String queryBalanceOf(String addr) throws Exception {
+    public long queryBalanceOf(String addr) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -253,12 +267,12 @@ public class Oep4 {
         AbiFunction func = abiinfo.getFunction("BalanceOf");
         func.name = "balanceOf";
         func.setParamsValue(Address.decodeBase58(addr).toArray());
-        Object obj =  sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
+        Object obj =  sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
         String balance = ((JSONObject) obj).getString("Result");
         if(balance.equals("")){
-            balance = "00";
+            return 0;
         }
-        return balance;
+        return Long.parseLong(Helper.reverse(balance), 16);
     }
 
     public String queryTotalSupply() throws Exception {
@@ -269,7 +283,7 @@ public class Oep4 {
         AbiFunction func = abiinfo.getFunction("TotalSupply");
         func.name = "totalSupply";
         func.setParamsValue();
-        Object obj =   sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
+        Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
         return ((JSONObject) obj).getString("Result");
     }
 
@@ -281,8 +295,8 @@ public class Oep4 {
         AbiFunction func = abiinfo.getFunction("Name");
         func.name = "name";
         func.setParamsValue();
-        Object obj =   sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
-        return ((JSONObject) obj).getString("Result");
+        Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
+        return new String(Helper.hexToBytes(((JSONObject) obj).getString("Result")));
     }
 
     public String queryDecimals() throws Exception {
@@ -293,7 +307,7 @@ public class Oep4 {
         AbiFunction func = abiinfo.getFunction("Decimals");
         func.name = "decimals";
         func.setParamsValue();
-        Object obj =   sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
+        Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
         return ((JSONObject) obj).getString("Result");
     }
 
@@ -305,8 +319,8 @@ public class Oep4 {
         AbiFunction func = abiinfo.getFunction("Symbol");
         func.name = "symbol";
         func.setParamsValue();
-        Object obj =   sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
-        return ((JSONObject) obj).getString("Result");
+        Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
+        return new String(Helper.hexToBytes(((JSONObject) obj).getString("Result")));
     }
 
 

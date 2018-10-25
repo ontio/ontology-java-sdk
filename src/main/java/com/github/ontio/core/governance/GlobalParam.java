@@ -3,6 +3,7 @@ package com.github.ontio.core.governance;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.io.Serializable;
+import com.github.ontio.io.utils;
 
 import java.io.IOException;
 
@@ -21,10 +22,10 @@ public class GlobalParam implements Serializable {
 
     @Override
     public void deserialize(BinaryReader reader) throws IOException {
-        this.candidateFeeSplitNum = (int)reader.readVarInt();
-        this.A = (int)reader.readVarInt();
-        this.B = (int)reader.readVarInt();
-        this.yita = (int)reader.readVarInt();
+        this.candidateFeeSplitNum = (int)utils.readVarInt(reader);
+        this.A = (int)utils.readVarInt(reader);
+        this.B = (int)utils.readVarInt(reader);
+        this.yita = (int)utils.readVarInt(reader);
     }
 
     @Override

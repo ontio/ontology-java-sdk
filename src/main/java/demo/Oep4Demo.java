@@ -202,8 +202,6 @@ public class Oep4Demo {
         wm.setDefaultConnect(wm.getRestful());
         wm.neovm().oep4().setContractAddress("0933f577ff7ad57e1eea69591998578b133d9c6f");
         wm.openWalletFile("nep5.json");
-
-
         return wm;
     }
 }

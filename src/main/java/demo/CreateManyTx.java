@@ -1,10 +1,12 @@
 package demo;
 
+import com.alibaba.fastjson.JSON;
 import com.github.ontio.OntSdk;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.SignatureScheme;
+import com.github.ontio.sdk.wallet.Identity;
 
 import java.io.*;
 
@@ -33,6 +35,8 @@ public class CreateManyTx {
                     ontSdk.addSign(tx, account);
                     ontSdk.addSign(tx, payerAcct);
                     System.out.println("PrivateKey:"+Helper.toHexString(account.serializePrivateKey())+",txhash:"+tx.hash().toString());
+                    Identity identity = ontSdk.getWalletMgr().createIdentityFromPriKey("password",Helper.toHexString(account.serializePrivateKey()));
+                    System.out.println(JSON.toJSONString(identity));
 
                     fos.write(tx.toHexString().getBytes());
                     fos.write(",".getBytes());

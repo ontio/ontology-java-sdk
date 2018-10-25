@@ -22,10 +22,7 @@ package com.github.ontio.smartcontract.nativevm.abi;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.account.Account;
-import com.github.ontio.common.Address;
-import com.github.ontio.common.Common;
-import com.github.ontio.common.ErrorCode;
-import com.github.ontio.common.Helper;
+import com.github.ontio.common.*;
 import com.github.ontio.core.ontid.Attribute;
 import com.github.ontio.core.scripts.ScriptBuilder;
 import com.github.ontio.core.scripts.ScriptOp;
@@ -84,6 +81,8 @@ public class NativeBuildParams {
                     builder.emitPushInteger(BigInteger.valueOf((Long) val));
                 } else if (val instanceof Address) {
                     builder.emitPushByteArray(((Address) val).toArray());
+                } else if(val instanceof UInt256){
+                    builder.emitPushByteArray(((UInt256)val).toArray());
                 } else if (val instanceof String) {
                     builder.emitPushByteArray(((String) val).getBytes());
                 } else if (val instanceof Struct) {

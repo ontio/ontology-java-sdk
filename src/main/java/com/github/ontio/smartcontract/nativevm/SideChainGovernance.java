@@ -5,6 +5,8 @@ import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
+import com.github.ontio.core.governance.InputPeerPoolMapParam;
+import com.github.ontio.core.governance.SideChainNodeInfo;
 import com.github.ontio.core.sidechaingovernance.*;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.BinaryReader;
@@ -18,14 +20,35 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SideChainGovernance {
 
     private OntSdk sdk;
     private final String contractAddress = "0000000000000000000000000000000000000008";
     private final String SIDE_CHAIN = "sideChain";
+    private final String SIDE_CHAIN_NODE_INFO = "sideChainNodeInfo";
     public SideChainGovernance(OntSdk sdk){
         this.sdk = sdk;
+    }
+
+    public InputPeerPoolMapParam getInputPeerPoolMapParam(String sideChainId) throws ConnectorException, IOException, SDKException {
+        Map peerPoolMap = sdk.nativevm().governance().getPeerPoolMap();
+        byte[] sideChainIdBytes = sideChainId.getBytes();
+        byte[] sideChainNodeInfoBytes = SIDE_CHAIN_NODE_INFO.getBytes();
+        byte[] key = new byte[sideChainIdBytes.length + sideChainNodeInfoBytes.length];
+        System.arraycopy(sideChainNodeInfoBytes,0, key,0,sideChainNodeInfoBytes.length);
+        System.arraycopy(sideChainIdBytes,0, key,sideChainNodeInfoBytes.length,sideChainIdBytes.length);
+        String resNode = sdk.getConnect().getStorage(Helper.reverse(contractAddress), Helper.toHexString(key));
+        if(resNode == null || resNode.equals("")){
+            throw new SDKException(ErrorCode.OtherError("NodeToSideChainParams is null"));
+        }
+        SideChainNodeInfo info = new SideChainNodeInfo();
+        ByteArrayInputStream in = new ByteArrayInputStream(Helper.hexToBytes(resNode));
+        BinaryReader reader = new BinaryReader(in);
+        info.deserialize(reader);
+        InputPeerPoolMapParam param = new InputPeerPoolMapParam(peerPoolMap, info.nodeInfoMap);
+        return param;
     }
 
     public String getSideChain(String sideChainId) throws ConnectorException, IOException {

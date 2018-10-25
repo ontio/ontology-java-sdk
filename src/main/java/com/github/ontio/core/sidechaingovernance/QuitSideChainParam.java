@@ -1,6 +1,7 @@
 package com.github.ontio.core.sidechaingovernance;
 
-import sun.jvm.hotspot.debugger.Address;
+
+import com.github.ontio.common.Address;
 
 public class QuitSideChainParam {
     public String sideChainID;

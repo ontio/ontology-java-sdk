@@ -48,13 +48,11 @@ import java.util.Map;
 public class Governance {
     private OntSdk sdk;
     private final String contractAddress = "0000000000000000000000000000000000000007";
-    private final String sideChainContractAddress = "0000000000000000000000000000000000000008";
     private final String AUTHORIZE_INFO_POOL = "766f7465496e666f506f6f6c";
     private final String PEER_ATTRIBUTES   = "peerAttributes";
     private final String SPLIT_FEE_ADDRESS  = "splitFeeAddress";
     private final String TOTAL_STAKE = "totalStake";
     private final String PEER_POOL = "peerPool";
-    private final String SIDE_CHAIN_NODE_INFO = "sideChainNodeInfo";
     private final String GLOBAL_PARAM  = "globalParam";
     private final String GLOBAL_PARAM2 = "globalParam2";
     private final String SPLIT_CURVE       = "splitCurve";
@@ -1011,24 +1009,7 @@ public class Governance {
         configuration.deserialize(reader);
         return configuration;
     }
-    public InputPeerPoolMapParam getInputPeerPoolMapParam(String sideChainId) throws ConnectorException, IOException, SDKException {
-        Map peerPoolMap = sdk.nativevm().governance().getPeerPoolMap();
-        byte[] sideChainIdBytes = sideChainId.getBytes();
-        byte[] sideChainNodeInfoBytes = SIDE_CHAIN_NODE_INFO.getBytes();
-        byte[] key = new byte[sideChainIdBytes.length + sideChainNodeInfoBytes.length];
-        System.arraycopy(sideChainNodeInfoBytes,0, key,0,sideChainNodeInfoBytes.length);
-        System.arraycopy(sideChainIdBytes,0, key,sideChainNodeInfoBytes.length,sideChainIdBytes.length);
-        String resNode = sdk.getConnect().getStorage(Helper.reverse(sideChainContractAddress), Helper.toHexString(key));
-        if(resNode == null || resNode.equals("")){
-            throw new SDKException(ErrorCode.OtherError("NodeToSideChainParams is null"));
-        }
-        SideChainNodeInfo info = new SideChainNodeInfo();
-        ByteArrayInputStream in = new ByteArrayInputStream(Helper.hexToBytes(resNode));
-        BinaryReader reader = new BinaryReader(in);
-        info.deserialize(reader);
-        InputPeerPoolMapParam param = new InputPeerPoolMapParam(peerPoolMap, info.nodeInfoMap);
-        return param;
-    }
+
     public GlobalParam getGlobalParam() throws ConnectorException, IOException {
         String res = sdk.getConnect().getStorage(Helper.reverse(contractAddress),Helper.toHexString(GLOBAL_PARAM.getBytes()));
         if(res == null || res.equals("")){

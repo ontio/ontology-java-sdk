@@ -45,7 +45,7 @@ public class GovernanceDemo2 {
                 return;
             }
             if(true){
-                InputPeerPoolMapParam param = sdk.nativevm().governance().getInputPeerPoolMapParam("123456");
+                InputPeerPoolMapParam param = sdk.nativevm().sideChainGovernance().getInputPeerPoolMapParam("123456");
                 System.out.println(param);
             }
         } catch (Exception e) {

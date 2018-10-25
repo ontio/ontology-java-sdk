@@ -932,14 +932,48 @@ public class Governance {
      * @return
      * @throws Exception
      */
-    public String updateConfig(Configuration config,Account payerAcct,long gaslimit,long gasprice) throws Exception{
-//        byte[] params = config.toArray();
-//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"updateConfig",params,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
+    public String updateConfig(Account[] accounts, byte[][] pks,int M,Configuration config,Account payerAcct,long gaslimit,long gasprice) throws Exception{
         List list = new ArrayList();
-        list.add(new Struct().add(config.toArray()));
+        list.add(new Struct().add((long)config.N, (long)config.C, (long)config.K, (long)config.L, (long)config.BlockMsgDelay,
+                (long)config.HashMsgDelay, (long)config.PeerHandshakeTimeout, (long)config.MaxBlockChangeView));
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"updateConfig",args,payerAcct.getAddressU160().toBase58(),gaslimit, gasprice);
-        sdk.signTx(tx,new Account[][]{{payerAcct}});
+        boolean hasPayer = false;
+        for(Account account : accounts){
+            sdk.addMultiSign(tx, M,pks,account);
+            if(account.equals(payerAcct)){
+                hasPayer = true;
+            }
+        }
+        if(!hasPayer){
+            sdk.addSign(tx,payerAcct);
+        }
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
+        if (b) {
+            return tx.hash().toString();
+        }
+        return null;
+    }
+
+    public String updateSplitCurve(Account[] accounts, byte[][] pks,int M,SplitCurve curve,Account payerAcct,long gaslimit,long gasprice) throws Exception{
+        List list = new ArrayList();
+        Struct struct = new Struct();
+        struct.add((long)curve.Yi.length);
+        for(int yi : curve.Yi){
+            struct.add((long)yi);
+        }
+        byte[] args = NativeBuildParams.createCodeParamsScript(list);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"updateConfig",args,payerAcct.getAddressU160().toBase58(),gaslimit, gasprice);
+        boolean hasPayer = false;
+        for(Account account : accounts){
+            sdk.addMultiSign(tx, M,pks,account);
+            if(account.equals(payerAcct)){
+                hasPayer = true;
+            }
+        }
+        if(!hasPayer){
+            sdk.addSign(tx,payerAcct);
+        }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -948,29 +982,43 @@ public class Governance {
     }
 
 
-    /**
-     *
-     * @param candidateFee
-     * @param minInitStake
-     * @param candidateNum
-     * @param A
-     * @param B
-     * @param Yita
-     * @param payerAcct
-     * @param gaslimit
-     * @param gasprice
-     * @return
-     * @throws Exception
-     */
-    public String updateGlobalParam(long candidateFee,long minInitStake,long candidateNum,long A,long B,long Yita,Account payerAcct,long gaslimit,long gasprice) throws Exception{
-//        byte[] params = new GovernanceGlobalParam(candidateFee,minInitStake,candidateNum,A,B,Yita).toArray();
-//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"updateGlobalParam",params,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
-
+    public String updateGlobalParam(Account[] accounts,byte[][] pks, int M,GlobalParam1 param1,Account payerAcct,long gaslimit,long gasprice) throws Exception{
         List list = new ArrayList();
-        list.add(new Struct().add(candidateFee,minInitStake,candidateNum,A,B,Yita));
+        list.add(new Struct().add(param1.candidateFee,(long)param1.minInitStake,(long)param1.candidateNum,(long)param1.A,
+                (long)param1.B,(long)param1.yita));
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"updateGlobalParam",args,payerAcct.getAddressU160().toBase58(),gaslimit, gasprice);
-        sdk.signTx(tx,new Account[][]{{payerAcct}});
+        boolean hasPayer = false;
+        for(Account account : accounts){
+            sdk.addMultiSign(tx, M,pks,account);
+            if(account.equals(payerAcct)){
+                hasPayer = true;
+            }
+        }
+        if(!hasPayer){
+            sdk.addSign(tx,payerAcct);
+        }
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
+        if (b) {
+            return tx.hash().toString();
+        }
+        return null;
+    }
+    public String updateGlobalParam2(Account[] accounts,byte[][] pks, int M,GlobalParam2 param2,Account payerAcct,long gaslimit,long gasprice) throws Exception{
+        List list = new ArrayList();
+        list.add(new Struct().add((long)param2.minAuthorizePos,(long)param2.candidateFeeSplitNum, param2.field1,param2.field2,param2.field3,param2.field4,param2.field5,param2.field6));
+        byte[] args = NativeBuildParams.createCodeParamsScript(list);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"updateGlobalParam",args,payerAcct.getAddressU160().toBase58(),gaslimit, gasprice);
+        boolean hasPayer = false;
+        for(Account account : accounts){
+            sdk.addMultiSign(tx, M,pks,account);
+            if(account.equals(payerAcct)){
+                hasPayer = true;
+            }
+        }
+        if(!hasPayer){
+            sdk.addSign(tx,payerAcct);
+        }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();

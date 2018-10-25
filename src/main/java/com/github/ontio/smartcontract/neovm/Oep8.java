@@ -131,8 +131,7 @@ public class Oep8 {
             throw new SDKException(ErrorCode.ParamError);
         }
         AbiInfo abiinfo = JSON.parseObject(oep8abi, AbiInfo.class);
-        AbiFunction func = abiinfo.getFunction("Transfer");
-        func.name = "transfer";
+        AbiFunction func = abiinfo.getFunction("transfer");
         func.setParamsValue(Address.decodeBase58(sendAddr).toArray(), Address.decodeBase58(recvAddr).toArray(), tokenId, amount);
         byte[] params = BuildParams.serializeAbiFunction(func);
         String payer = payerAcct.getAddressU160().toBase58();
@@ -197,7 +196,6 @@ public class Oep8 {
         }
         AbiInfo abiinfo = JSON.parseObject(oep8abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("approve");
-        func.name = "approve";
         func.setParamsValue(owner.getAddressU160().toArray(), Address.decodeBase58(spender).toArray(), tokenId, amount);
         Object obj = sdk.neovm().sendTransaction(Helper.reverse(contractAddress),owner,payerAcct,gaslimit,gasprice,func, false);
         return (String) obj;
@@ -209,7 +207,6 @@ public class Oep8 {
         }
         AbiInfo abiinfo = JSON.parseObject(oep8abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("approve");
-        func.name = "approve";
         func.setParamsValue(Address.decodeBase58(owner).toArray(), Address.decodeBase58(spender).toArray(), tokenId, amount);
         byte[] params = BuildParams.serializeAbiFunction(func);
         String payer = payerAcct.getAddressU160().toBase58();

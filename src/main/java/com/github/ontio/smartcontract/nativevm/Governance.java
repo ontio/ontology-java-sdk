@@ -48,13 +48,11 @@ import java.util.Map;
 public class Governance {
     private OntSdk sdk;
     private final String contractAddress = "0000000000000000000000000000000000000007";
-    private final String sideChainContractAddress = "0000000000000000000000000000000000000008";
     private final String AUTHORIZE_INFO_POOL = "766f7465496e666f506f6f6c";
     private final String PEER_ATTRIBUTES   = "peerAttributes";
     private final String SPLIT_FEE_ADDRESS  = "splitFeeAddress";
     private final String TOTAL_STAKE = "totalStake";
     private final String PEER_POOL = "peerPool";
-    private final String SIDE_CHAIN_NODE_INFO = "sideChainNodeInfo";
     private final String GLOBAL_PARAM  = "globalParam";
     private final String GLOBAL_PARAM2 = "globalParam2";
     private final String SPLIT_CURVE       = "splitCurve";
@@ -184,6 +182,17 @@ public class Governance {
     }
     public Map getPeerPoolMap() throws ConnectorException, IOException {
         return (Map) getPeerPoolMap(null,true);
+    }
+    public GovernanceView getGovernanceView() throws ConnectorException, IOException, SDKException {
+        String view = sdk.getConnect().getStorage(Helper.reverse(contractAddress),Helper.toHexString("governanceView".getBytes()));
+        if(view == null || view.equals("")){
+            throw new SDKException(ErrorCode.OtherError("view is null"));
+        }
+        GovernanceView governanceView = new GovernanceView();
+        ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(view));
+        BinaryReader br = new BinaryReader(bais);
+        governanceView.deserialize(br);
+        return governanceView;
     }
     /**
      *
@@ -923,14 +932,37 @@ public class Governance {
      * @return
      * @throws Exception
      */
-    public String updateConfig(Configuration config,Account payerAcct,long gaslimit,long gasprice) throws Exception{
-//        byte[] params = config.toArray();
-//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"updateConfig",params,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
+    public String updateConfig(Account[] accounts, byte[][] pks,int M,Configuration config,Account payerAcct,long gaslimit,long gasprice) throws Exception{
         List list = new ArrayList();
-        list.add(new Struct().add(config.toArray()));
+        list.add(new Struct().add(config.N, config.C, config.K, config.L, config.BlockMsgDelay,
+                config.HashMsgDelay, config.PeerHandshakeTimeout, config.MaxBlockChangeView));
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"updateConfig",args,payerAcct.getAddressU160().toBase58(),gaslimit, gasprice);
-        sdk.signTx(tx,new Account[][]{{payerAcct}});
+        sdk.signTx(tx, new Account[][]{{payerAcct}});
+        for(Account account : accounts){
+            sdk.addMultiSign(tx, M,pks,account);
+        }
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
+        if (b) {
+            return tx.hash().toString();
+        }
+        return null;
+    }
+
+    public String updateSplitCurve(Account[] accounts, byte[][] pks,int M,SplitCurve curve,Account payerAcct,long gaslimit,long gasprice) throws Exception{
+        List list = new ArrayList();
+        Struct struct = new Struct();
+        struct.add(curve.Yi.length);
+        for(int i=0;i< curve.Yi.length;i++){
+            struct.add(curve.Yi[i]);
+        }
+        list.add(struct);
+        byte[] args = NativeBuildParams.createCodeParamsScript(list);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"updateSplitCurve",args,payerAcct.getAddressU160().toBase58(),gaslimit, gasprice);
+        sdk.signTx(tx, new Account[][]{{payerAcct}});
+        for(Account account : accounts){
+            sdk.addMultiSign(tx, M,pks,account);
+        }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -939,29 +971,31 @@ public class Governance {
     }
 
 
-    /**
-     *
-     * @param candidateFee
-     * @param minInitStake
-     * @param candidateNum
-     * @param A
-     * @param B
-     * @param Yita
-     * @param payerAcct
-     * @param gaslimit
-     * @param gasprice
-     * @return
-     * @throws Exception
-     */
-    public String updateGlobalParam(long candidateFee,long minInitStake,long candidateNum,long A,long B,long Yita,Account payerAcct,long gaslimit,long gasprice) throws Exception{
-//        byte[] params = new GovernanceGlobalParam(candidateFee,minInitStake,candidateNum,A,B,Yita).toArray();
-//        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,"updateGlobalParam",params,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
-
+    public String updateGlobalParam1(Account[] accounts,byte[][] pks, int M,GlobalParam1 param1,Account payerAcct,long gaslimit,long gasprice) throws Exception{
         List list = new ArrayList();
-        list.add(new Struct().add(candidateFee,minInitStake,candidateNum,A,B,Yita));
+        list.add(new Struct().add(param1.candidateFee,param1.minInitStake,param1.candidateNum,param1.posLimit,param1.A,
+                param1.B,param1.yita, param1.penalty));
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"updateGlobalParam",args,payerAcct.getAddressU160().toBase58(),gaslimit, gasprice);
-        sdk.signTx(tx,new Account[][]{{payerAcct}});
+        sdk.signTx(tx, new Account[][]{{payerAcct}});
+        for(Account account : accounts){
+            sdk.addMultiSign(tx, M,pks,account);
+        }
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
+        if (b) {
+            return tx.hash().toString();
+        }
+        return null;
+    }
+    public String updateGlobalParam2(Account[] accounts,byte[][] pks, int M,GlobalParam2 param2,Account payerAcct,long gaslimit,long gasprice) throws Exception{
+        List list = new ArrayList();
+        list.add(new Struct().add(param2.minAuthorizePos,param2.candidateFeeSplitNum, param2.field1,param2.field2,param2.field3,param2.field4,param2.field5,param2.field6));
+        byte[] args = NativeBuildParams.createCodeParamsScript(list);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"updateGlobalParam2",args,payerAcct.getAddressU160().toBase58(),gaslimit, gasprice);
+        sdk.signTx(tx, new Account[][]{{payerAcct}});
+        for(Account account : accounts){
+            sdk.addMultiSign(tx, M,pks,account);
+        }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -1000,24 +1034,30 @@ public class Governance {
         configuration.deserialize(reader);
         return configuration;
     }
-    public InputPeerPoolMapParam getInputPeerPoolMapParam(String sideChainId) throws ConnectorException, IOException, SDKException {
-        Map peerPoolMap = sdk.nativevm().governance().getPeerPoolMap();
-        byte[] sideChainIdBytes = sideChainId.getBytes();
-        byte[] sideChainNodeInfoBytes = SIDE_CHAIN_NODE_INFO.getBytes();
-        byte[] key = new byte[sideChainIdBytes.length + sideChainNodeInfoBytes.length];
-        System.arraycopy(sideChainNodeInfoBytes,0, key,0,sideChainNodeInfoBytes.length);
-        System.arraycopy(sideChainIdBytes,0, key,sideChainNodeInfoBytes.length,sideChainIdBytes.length);
-        String resNode = sdk.getConnect().getStorage(Helper.reverse(sideChainContractAddress), Helper.toHexString(key));
-        if(resNode == null || resNode.equals("")){
-            throw new SDKException(ErrorCode.OtherError("NodeToSideChainParams is null"));
+
+    public GlobalParam1 getGlobalParam1() throws ConnectorException, IOException {
+        String res = sdk.getConnect().getStorage(Helper.reverse(contractAddress),Helper.toHexString(GLOBAL_PARAM.getBytes()));
+        if(res == null || res.equals("")){
+            return null;
         }
-        SideChainNodeInfo info = new SideChainNodeInfo();
-        ByteArrayInputStream in = new ByteArrayInputStream(Helper.hexToBytes(resNode));
+        ByteArrayInputStream in = new ByteArrayInputStream(Helper.hexToBytes(res));
         BinaryReader reader = new BinaryReader(in);
-        info.deserialize(reader);
-        InputPeerPoolMapParam param = new InputPeerPoolMapParam(peerPoolMap, info.nodeInfoMap);
-        return param;
+        GlobalParam1 globalParam1 = new GlobalParam1();
+        globalParam1.deserialize(reader);
+        return globalParam1;
     }
+    public GlobalParam2 getGlobalParam2() throws ConnectorException, IOException {
+        String res2 = sdk.getConnect().getStorage(Helper.reverse(contractAddress),Helper.toHexString(GLOBAL_PARAM2.getBytes()));
+        if(res2 != null && !res2.equals("")){
+            GlobalParam2 globalParam2 = new GlobalParam2();
+            ByteArrayInputStream in2 = new ByteArrayInputStream(Helper.hexToBytes(res2));
+            BinaryReader reader2 = new BinaryReader(in2);
+            globalParam2.deserialize(reader2);
+            return globalParam2;
+        }
+        return null;
+    }
+
     public GlobalParam getGlobalParam() throws ConnectorException, IOException {
         String res = sdk.getConnect().getStorage(Helper.reverse(contractAddress),Helper.toHexString(GLOBAL_PARAM.getBytes()));
         if(res == null || res.equals("")){

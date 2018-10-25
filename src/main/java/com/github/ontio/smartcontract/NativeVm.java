@@ -29,6 +29,7 @@ public class NativeVm {
     private GlobalParams globalParams = null;
     private Auth auth = null;
     private Governance governance = null;
+    private SideChainGovernance sideChainGovernance = null;
     private OntSdk sdk;
     public NativeVm(OntSdk sdk){
         this.sdk = sdk;
@@ -72,5 +73,11 @@ public class NativeVm {
             governance = new Governance(sdk);
         }
         return governance;
+    }
+    public SideChainGovernance sideChainGovernance(){
+        if(sideChainGovernance == null){
+            sideChainGovernance = new SideChainGovernance(sdk);
+        }
+        return sideChainGovernance;
     }
 }

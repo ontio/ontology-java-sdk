@@ -60,10 +60,11 @@ public class Oep4Demo {
                 System.exit(0);
             }
             if(true){
-                System.out.println(ontSdk.neovm().oep4().queryDecimals());
-                System.out.println(ontSdk.neovm().oep4().queryName());
-                System.out.println(ontSdk.neovm().oep4().querySymbol());
-                System.out.println(ontSdk.neovm().oep4().queryTotalSupply());
+//                System.out.println(Helper.toHexString(account.getAddressU160().toArray()));
+//                System.out.println(ontSdk.neovm().oep4().queryDecimals());
+//                System.out.println(ontSdk.neovm().oep4().queryName());
+//                System.out.println(ontSdk.neovm().oep4().querySymbol());
+//                System.out.println(ontSdk.neovm().oep4().queryTotalSupply());
                 System.out.println(ontSdk.neovm().oep4().queryBalanceOf(account.getAddressU160().toBase58()));
                 return;
             }
@@ -202,8 +203,6 @@ public class Oep4Demo {
         wm.setDefaultConnect(wm.getRestful());
         wm.neovm().oep4().setContractAddress("0933f577ff7ad57e1eea69591998578b133d9c6f");
         wm.openWalletFile("nep5.json");
-
-
         return wm;
     }
 }

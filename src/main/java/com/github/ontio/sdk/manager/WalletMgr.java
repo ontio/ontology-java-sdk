@@ -398,7 +398,7 @@ public class WalletMgr {
             }
 
         } catch (Exception e) {
-            throw new SDKException(ErrorCode.GetAccountByAddressErr);
+            throw new SDKException(ErrorCode.OtherError(e.getMessage()));
         }
         throw new SDKException(ErrorCode.OtherError("Account null"));
     }

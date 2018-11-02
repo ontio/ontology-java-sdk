@@ -1,5 +1,7 @@
 package com.github.ontio.core.governance;
 
+import com.github.ontio.core.sidechaingovernance.NodeToSideChainParams;
+
 import java.util.Map;
 
 public class InputPeerPoolMapParam {

@@ -5,8 +5,6 @@ import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
-import com.github.ontio.core.governance.InputPeerPoolMapParam;
-import com.github.ontio.core.governance.SideChainNodeInfo;
 import com.github.ontio.core.sidechaingovernance.*;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.BinaryReader;
@@ -20,7 +18,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class SideChainGovernance {
 
@@ -28,28 +25,11 @@ public class SideChainGovernance {
     private final String contractAddress = "0000000000000000000000000000000000000008";
     private final String SIDE_CHAIN = "sideChain";
     private final String SIDE_CHAIN_NODE_INFO = "sideChainNodeInfo";
+
     public SideChainGovernance(OntSdk sdk){
         this.sdk = sdk;
     }
 
-    public InputPeerPoolMapParam getInputPeerPoolMapParam(String sideChainId) throws ConnectorException, IOException, SDKException {
-        Map peerPoolMap = sdk.nativevm().governance().getPeerPoolMap();
-        byte[] sideChainIdBytes = sideChainId.getBytes();
-        byte[] sideChainNodeInfoBytes = SIDE_CHAIN_NODE_INFO.getBytes();
-        byte[] key = new byte[sideChainIdBytes.length + sideChainNodeInfoBytes.length];
-        System.arraycopy(sideChainNodeInfoBytes,0, key,0,sideChainNodeInfoBytes.length);
-        System.arraycopy(sideChainIdBytes,0, key,sideChainNodeInfoBytes.length,sideChainIdBytes.length);
-        String resNode = sdk.getConnect().getStorage(Helper.reverse(contractAddress), Helper.toHexString(key));
-        if(resNode == null || resNode.equals("")){
-            throw new SDKException(ErrorCode.OtherError("NodeToSideChainParams is null"));
-        }
-        SideChainNodeInfo info = new SideChainNodeInfo();
-        ByteArrayInputStream in = new ByteArrayInputStream(Helper.hexToBytes(resNode));
-        BinaryReader reader = new BinaryReader(in);
-        info.deserialize(reader);
-        InputPeerPoolMapParam param = new InputPeerPoolMapParam(peerPoolMap, info.nodeInfoMap);
-        return param;
-    }
 
     public String getSideChain(String sideChainId) throws ConnectorException, IOException {
         byte[] sideChainBytes = SIDE_CHAIN.getBytes();
@@ -66,6 +46,22 @@ public class SideChainGovernance {
         BinaryReader reader = new BinaryReader(bais);
         sideChain.deserialize(reader);
         return sideChain.toJson();
+    }
+    public SideChainNodeInfo getSideChainNodeInfo(String sideChainId) throws ConnectorException, IOException {
+        byte[] sideChainNodeInfoBytes = SIDE_CHAIN_NODE_INFO.getBytes();
+        byte[] sideChainIdBytes = sideChainId.getBytes();
+        byte[] key = new byte[sideChainNodeInfoBytes.length + sideChainIdBytes.length];
+        System.arraycopy(sideChainNodeInfoBytes,0,key,0,sideChainNodeInfoBytes.length);
+        System.arraycopy(sideChainIdBytes,0,key,sideChainNodeInfoBytes.length,sideChainIdBytes.length);
+        String sideChainStr = sdk.getConnect().getStorage(Helper.reverse(contractAddress), Helper.toHexString(key));
+        if (sideChainStr == null || sideChainStr==""){
+            return null;
+        }
+        SideChainNodeInfo sideChainNodeInfo = new SideChainNodeInfo();
+        ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(sideChainStr));
+        BinaryReader reader = new BinaryReader(bais);
+        sideChainNodeInfo.deserialize(reader);
+        return sideChainNodeInfo;
     }
     public String registerSideChain(Account account, RegisterSideChainParam param, Identity identity, String password, Account payer, long gaslimit, long gasprice) throws Exception {
         if(account == null || param == null || payer == null || gaslimit < 0|| gasprice < 0){
@@ -98,15 +94,9 @@ public class SideChainGovernance {
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"approveSideChain",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
-        boolean hasPayer = false;
+        sdk.signTx(tx, new Account[][]{{payer}});
         for(Account account : accounts){
             sdk.addMultiSign(tx, M,allPubkeys, account);
-            if (account.equals(payer)){
-                hasPayer = true;
-            }
-        }
-        if(! hasPayer){
-            sdk.addSign(tx,payer);
         }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -124,15 +114,9 @@ public class SideChainGovernance {
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"rejectSideChain",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
-        boolean hasPayer = false;
+        sdk.signTx(tx, new Account[][]{{payer}});
         for(Account account : accounts){
             sdk.addMultiSign(tx, M,allPubkeys, account);
-            if (account.equals(payer)){
-                hasPayer = true;
-            }
-        }
-        if(! hasPayer){
-            sdk.addSign(tx,payer);
         }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -170,15 +154,9 @@ public class SideChainGovernance {
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"approveQuitSideChain",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
-        boolean hasPayer = false;
+        sdk.signTx(tx, new Account[][]{{payer}});
         for(Account account : accounts){
             sdk.addMultiSign(tx, M,allPubkeys, account);
-            if (account.equals(payer)){
-                hasPayer = true;
-            }
-        }
-        if(! hasPayer){
-            sdk.addSign(tx,payer);
         }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -256,15 +234,9 @@ public class SideChainGovernance {
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"approveInflation",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
-        boolean hasPayer = false;
+        sdk.signTx(tx, new Account[][]{{payer}});
         for(Account account : accounts){
             sdk.addMultiSign(tx, M,allPubkeys, account);
-            if (account.equals(payer)){
-                hasPayer = true;
-            }
-        }
-        if(! hasPayer){
-            sdk.addSign(tx,payer);
         }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -282,15 +254,9 @@ public class SideChainGovernance {
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"rejectInflation",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
-        boolean hasPayer = false;
+        sdk.signTx(tx, new Account[][]{{payer}});
         for(Account account : accounts){
             sdk.addMultiSign(tx, M,allPubkeys, account);
-            if (account.equals(payer)){
-                hasPayer = true;
-            }
-        }
-        if(! hasPayer){
-            sdk.addSign(tx,payer);
         }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -308,15 +274,9 @@ public class SideChainGovernance {
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"setGlobalParams",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
-        boolean hasPayer = false;
+        sdk.signTx(tx, new Account[][]{{payer}});
         for(Account account : accounts){
             sdk.addMultiSign(tx, M,allPubkeys, account);
-            if (account.equals(payer)){
-                hasPayer = true;
-            }
-        }
-        if(! hasPayer){
-            sdk.addSign(tx,payer);
         }
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {

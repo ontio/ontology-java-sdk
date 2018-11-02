@@ -28,6 +28,7 @@ import com.github.ontio.core.VmType;
 import com.github.ontio.core.asset.Sig;
 import com.github.ontio.core.block.Block;
 import com.github.ontio.core.governance.*;
+import com.github.ontio.core.sidechaingovernance.SideChainNodeInfo;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
@@ -56,6 +57,8 @@ public class Governance {
     private final String GLOBAL_PARAM  = "globalParam";
     private final String GLOBAL_PARAM2 = "globalParam2";
     private final String SPLIT_CURVE       = "splitCurve";
+    private final String SIDE_CHAIN_NODE_INFO = "sideChainNodeInfo";
+    private final String SIDE_GOVERNANCE_CONTRACT_ADDRESS = "0000000000000000000000000000000000000008";
     private final long[] UNBOUND_GENERATION_AMOUNT = new long[]{5, 4, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
     private final int UNBOUND_TIME_INTERVAL = 31536000;
     private final long ONT_TOTAL_SUPPLY = 1000000000;
@@ -1093,6 +1096,25 @@ public class Governance {
         BinaryReader reader = new BinaryReader(in);
         curve.deserialize(reader);
         return curve;
+    }
+
+    public InputPeerPoolMapParam getInputPeerPoolMapParam(String sideChainId) throws ConnectorException, IOException, SDKException {
+        Map peerPoolMap = getPeerPoolMap();
+        byte[] sideChainIdBytes = sideChainId.getBytes();
+        byte[] sideChainNodeInfoBytes = SIDE_CHAIN_NODE_INFO.getBytes();
+        byte[] key = new byte[sideChainIdBytes.length + sideChainNodeInfoBytes.length];
+        System.arraycopy(sideChainNodeInfoBytes,0, key,0,sideChainNodeInfoBytes.length);
+        System.arraycopy(sideChainIdBytes,0, key,sideChainNodeInfoBytes.length,sideChainIdBytes.length);
+        String resNode = sdk.getConnect().getStorage(Helper.reverse(SIDE_GOVERNANCE_CONTRACT_ADDRESS), Helper.toHexString(key));
+        if(resNode == null || resNode.equals("")){
+            throw new SDKException(ErrorCode.OtherError("NodeToSideChainParams is null"));
+        }
+        SideChainNodeInfo info = new SideChainNodeInfo();
+        ByteArrayInputStream in = new ByteArrayInputStream(Helper.hexToBytes(resNode));
+        BinaryReader reader = new BinaryReader(in);
+        info.deserialize(reader);
+        InputPeerPoolMapParam param = new InputPeerPoolMapParam(peerPoolMap, info.nodeInfoMap);
+        return param;
     }
 
 }

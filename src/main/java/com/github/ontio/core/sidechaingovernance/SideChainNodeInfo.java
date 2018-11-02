@@ -1,4 +1,4 @@
-package com.github.ontio.core.governance;
+package com.github.ontio.core.sidechaingovernance;
 
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
@@ -13,19 +13,20 @@ public class SideChainNodeInfo implements Serializable {
     public Map<String, NodeToSideChainParams> nodeInfoMap;
 
     public SideChainNodeInfo(){
-
+        this.nodeInfoMap = new HashMap<String, NodeToSideChainParams>();
     }
 
     @Override
     public void deserialize(BinaryReader reader) throws IOException {
         this.sideChainId = reader.readVarString();
-        this.nodeInfoMap = new HashMap<>();
         int n = reader.readInt();
-        for(int i=0; i<n; i++){
+        for(int i=0;i<n;i++){
             NodeToSideChainParams params = new NodeToSideChainParams();
             params.deserialize(reader);
             this.nodeInfoMap.put(params.peerPubkey, params);
         }
+
+
     }
 
     @Override

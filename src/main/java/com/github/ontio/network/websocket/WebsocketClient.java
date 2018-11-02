@@ -341,6 +341,11 @@ public class WebsocketClient extends AbstractConnector {
         return 0;
     }
 
+    @Override
+    public String getSideChainData(String sideChainID) throws ConnectorException, IOException {
+        return null;
+    }
+
     public void wsStart() {
         //request = new Request.Builder().url(WS_URL).build();
         String httpUrl = null;

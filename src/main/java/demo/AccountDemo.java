@@ -18,6 +18,24 @@ public class AccountDemo {
 
         try {
             OntSdk ontSdk = getOntSdk();
+            com.github.ontio.account.Account account = ontSdk.getWalletMgr().getAccount("AHX1wzvdw9Yipk7E9MuLY4GGX4Ym9tHeDe","111111");
+
+            if(false){
+                ontSdk.nativevm().ong().withdrawOng(account,account.getAddressU160().toBase58(),53620575000000000L,account,20000,0);
+                Thread.sleep(6000);
+                System.out.println(ontSdk.getConnect().getBalance(account.getAddressU160().toBase58()));
+                return;
+            }
+
+            if(true){
+                System.out.println(ontSdk.getConnect().getBalance("AHX1wzvdw9Yipk7E9MuLY4GGX4Ym9tHeDe"));
+
+                ontSdk.nativevm().ont().sendTransfer(account,"APrfMuKrAQB5sSb5GF8tx96ickZQJjCvwG",10000,account,20000,0);
+                Thread.sleep(6000);
+                System.out.println(ontSdk.nativevm().ong().unboundOng(account.getAddressU160().toBase58()));
+
+                return;
+            }
             byte[] saltt = Base64.getDecoder().decode("0X3NC1UHQGltHc4ikzgzmA==");
             String prikeyg = com.github.ontio.account.Account.getGcmDecodedPrivateKey("7a1ccOWFQUGl0HQmc+PSLeKMwbVZ45/YDHTH/+um4O1z/YAWuv+vsr9zusvYXWbj", "1","ANH5bHrrt111XwNEnuPZj6u95Dd6u7G4D6",saltt,16384,ontSdk.defaultSignScheme);
             com.github.ontio.account.Account a = new com.github.ontio.account.Account(Helper.hexToBytes(prikeyg),ontSdk.defaultSignScheme);
@@ -87,7 +105,7 @@ public class AccountDemo {
         wm.setRestful(restUrl);
         wm.setDefaultConnect(wm.getRestful());
 
-        wm.openWalletFile("AccountDemo.json");
+        wm.openWalletFile("wallet2.dat");
 
         return wm;
     }

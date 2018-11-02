@@ -298,6 +298,11 @@ public class RestClient extends AbstractConnector {
         throw new RestfulException(to(rr));
     }
 
+    @Override
+    public String getSideChainData(String sideChainID) throws ConnectorException, IOException {
+        return null;
+    }
+
     private String to(Result rr) {
         return JSON.toJSONString(rr);
     }

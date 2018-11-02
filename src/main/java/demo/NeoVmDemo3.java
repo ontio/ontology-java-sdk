@@ -31,6 +31,331 @@ public class NeoVmDemo3 {
             Account acct1 = new Account(Helper.hexToBytes(privatekey1), ontSdk.defaultSignScheme);
             Account acct2 = new Account(Helper.hexToBytes(privatekey2), ontSdk.defaultSignScheme);
             Account acct = new Account(Helper.hexToBytes(privatekey0), ontSdk.defaultSignScheme);
+            if(true){
+                String abi = "{\n" +
+                        "   \"hash\":\"0xdedc8c61d03dcc3387737fbddbe8096300be84de\",\n" +
+                        "   \"entrypoint\":\"Main\",\n" +
+                        "   \"functions\":[\n" +
+                        "      {\n" +
+                        "         \"name\":\"init\",\n" +
+                        "         \"parameters\":[\n" +
+                        "\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Boolean\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"startNewRound\",\n" +
+                        "         \"parameters\":[\n" +
+                        "\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Boolean\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"addReferral\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"toBeReferred\",\n" +
+                        "               \"type\":\"ByteArray\"\n" +
+                        "            },\n" +
+                        "            {\n" +
+                        "               \"name\":\"referral\",\n" +
+                        "               \"type\":\"ByteArray\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Boolean\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"addMultiReferral\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"args\",\n" +
+                        "               \"type\":\"Array\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Boolean\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"withdrawGas\",\n" +
+                        "         \"parameters\":[\n" +
+                        "\n" +
+                        "         ]\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"endCurrentRound\",\n" +
+                        "         \"parameters\":[\n" +
+                        "\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"buyPaper\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"account\",\n" +
+                        "               \"type\":\"ByteArray\"\n" +
+                        "            },\n" +
+                        "            {\n" +
+                        "               \"name\":\"paperAmount\",\n" +
+                        "               \"type\":\"Integer\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"reinvest\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"account\",\n" +
+                        "               \"type\":\"ByteArray\"\n" +
+                        "            },\n" +
+                        "            {\n" +
+                        "               \"name\":\"paperAmount\",\n" +
+                        "               \"type\":\"Integer\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"fillPaper\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"account\",\n" +
+                        "               \"type\":\"ByteArray\"\n" +
+                        "            },\n" +
+                        "            {\n" +
+                        "               \"name\":\"guessNumberList\",\n" +
+                        "               \"type\":\"Array\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"withdraw\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"account\",\n" +
+                        "               \"type\":\"ByteArray\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"updateDividendBalance\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"account\",\n" +
+                        "               \"type\":\"ByteArray\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"getTotalPaper\",\n" +
+                        "         \"parameters\":[\n" +
+                        "\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Integer\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"getGasVault\",\n" +
+                        "         \"parameters\":[\n" +
+                        "\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Integer\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"getCurrentRound\",\n" +
+                        "         \"parameters\":[\n" +
+                        "\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Integer\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"getCurrentPrice\",\n" +
+                        "         \"parameters\":[\n" +
+                        "\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Integer\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"getPaperBalance\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"account\",\n" +
+                        "               \"type\":\"ByteArray\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Integer\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"getInvestOngBalance\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"account\",\n" +
+                        "               \"type\":\"ByteArray\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Integer\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"getReferralBalance\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"account\",\n" +
+                        "               \"type\":\"ByteArray\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Integer\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"getDividendBalance\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"account\",\n" +
+                        "               \"type\":\"ByteArray\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Integer\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"getAwardBalance\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"account\",\n" +
+                        "               \"type\":\"ByteArray\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Integer\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"getWithdrawnBalance\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"account\",\n" +
+                        "               \"type\":\"ByteArray\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Integer\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"getFilledPaperBalance\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"account\",\n" +
+                        "               \"type\":\"ByteArray\"\n" +
+                        "            },\n" +
+                        "            {\n" +
+                        "               \"name\":\"roundNum\",\n" +
+                        "               \"type\":\"Integer\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Integer\"\n" +
+                        "      },\n" +
+                        "     {\n" +
+                        "         \"name\":\"getReferral\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"account\",\n" +
+                        "               \"type\":\"ByteArray\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"ByteArray\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"getAwardVault\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"roundNum\",\n" +
+                        "               \"type\":\"Integer\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Integer\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"getNextVault\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"roundNum\",\n" +
+                        "               \"type\":\"Integer\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Integer\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"getGameStatus\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"roundNum\",\n" +
+                        "               \"type\":\"Integer\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"String\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"getRoundSoldPaperAmount\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"roundNum\",\n" +
+                        "               \"type\":\"Integer\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Integer\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"getFilledPaperAmount\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"roundNum\",\n" +
+                        "               \"type\":\"Integer\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Integer\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"getFilledNumberList\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"roundNum\",\n" +
+                        "               \"type\":\"Integer\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Array\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"getPlayersList\",\n" +
+                        "         \"parameters\":[\n" +
+                        "            {\n" +
+                        "               \"name\":\"roundNum\",\n" +
+                        "               \"type\":\"Integer\"\n" +
+                        "            },\n" +
+                        "            {\n" +
+                        "               \"name\":\"guessNumber\",\n" +
+                        "               \"type\":\"Integer\"\n" +
+                        "            }\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Array\"\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "         \"name\":\"getLuckyNumber\",\n" +
+                        "         \"parameters\":[\n" +
+                        "\n" +
+                        "         ],\n" +
+                        "        \"returntype\":\"Integer\"\n" +
+                        "      }\n" +
+                        "   ],\n" +
+                        "   \"events\":[\n" +
+                        "\n" +
+                        "   ]\n" +
+                        "}";
+                ontSdk.setRpc("http://polaris3.ont.io:20336");
+                AbiInfo info = JSON.parseObject(abi,AbiInfo.class);
+                AbiFunction function = info.getFunction("getTotalPaper");
+                Object res = ontSdk.neovm().sendTransaction(Helper.reverse("dedc8c61d03dcc3387737fbddbe8096300be84de"),acct,acct,
+                        20000,0,function,true);
+                System.out.println(res);
+                return;
+            }
+
 
 //            Account account1 = getAccount("YfOr9im4rOciy3cV7JkVo9QCfrRT4IGLa/CZKUJfL29pM6Zi1oVEM67+8MezMIro","1","AXmQDzzvpEtPkNwBEFsREzApTTDZFW6frD","RCIo60eCJAwzkTYmIfp3GA==");
 //            Account account2 = getAccount("gpgMejEHzawuXG+ghLkZ8/cQsOJcs4BsFgFjSaqE7SC8zob8hqc6cDNhJI/NBkk+","1","AY5W6p4jHeZG2jjW6nS1p4KDUhcqLkU6jz","tuLGZOimilSnypT91WrenQ==");
@@ -395,7 +720,7 @@ public class NeoVmDemo3 {
     }
 
     public static OntSdk getOntSdk() throws Exception {
-        String ip = "http://127.0.0.1";
+        String ip = "http://polaris3.ont.io";
 //        String ip = "http://polaris1.ont.io";
         String restUrl = ip + ":" + "20334";
         String rpcUrl = ip + ":" + "20336";

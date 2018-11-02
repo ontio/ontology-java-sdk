@@ -280,6 +280,9 @@ public class ConnectMgr {
     public int getNetworkId() throws ConnectorException, IOException {
         return connector.getNetworkId();
     }
+    public String getSideChainData(String sideChianId) throws ConnectorException, IOException {
+        return connector.getSideChainData(sideChianId);
+    }
 
     public Object waitResult(String hash) throws Exception {
         Object objEvent = null;

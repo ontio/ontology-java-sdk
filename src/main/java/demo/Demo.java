@@ -27,6 +27,7 @@ import com.github.ontio.core.block.Block;
 import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Identity;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,18 @@ public class Demo {
     public static void main(String[] args) {
         try {
             OntSdk ontSdk = getOntSdk();
+
+
+            if(false){
+                 Account account = ontSdk.getWalletMgr().importAccount("UcZl6tYzuUwikWnlSBkv1aDrFG80RadPqwoKINRe0+wzCR5o5QqBrrklFXgC5uz9",
+                        "LUlu@665211","AKSTMpAL1MWujdmE1oZNBXLTo4yr4sdF3g",Base64.getDecoder().decode("2kMG+JvubSz5Llw07ewiWQ=="));
+                System.out.println(account.address);
+                com.github.ontio.account.Account account1 = ontSdk.getWalletMgr().getAccount(account.address,"LUlu@665211");
+                System.out.println(account1.exportWif());
+                return;
+            }
+
+
 //            System.out.println(ontSdk.getConnect().getBalance("TA5NzM9iE3VT9X8SGk5h3dii6GPFQh2vme"));
 //            System.out.println(Helper.toHexString(ontSdk.getConnect().getBlock(1).transactions[0].sigs[0].sigData[0]));
             System.out.println(ontSdk.getConnect().getBlock(15));

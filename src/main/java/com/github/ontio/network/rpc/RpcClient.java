@@ -271,5 +271,15 @@ public class RpcClient extends AbstractConnector {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public String getSideChainData(String sideChainID) throws ConnectorException, IOException {
+        Object result = rpc.call("getsidechaindata", sideChainID);
+        try {
+            return (String) result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
 

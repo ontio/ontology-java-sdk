@@ -54,4 +54,5 @@ public interface IConnector {
 	String getVersion() throws ConnectorException, IOException;
 	String getGrantOng(String address) throws ConnectorException, IOException;
 	int getNetworkId() throws ConnectorException, IOException;
+	String getSideChainData(String sideChainID) throws ConnectorException, IOException;
 }

@@ -5,10 +5,15 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
+import com.github.ontio.common.NotifyEventInfo;
 import com.github.ontio.core.governance.*;
+import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.SignatureScheme;
+import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 
 public class GovernanceDemo2 {
@@ -35,32 +40,83 @@ public class GovernanceDemo2 {
 
         try {
             OntSdk sdk = getOntSdk();
+
+
+            if(false){
+                NotifyEventInfo info = new NotifyEventInfo();
+                info.setContractAddress("0200000000000000000000000000000000000000");
+                List<Object> list = new ArrayList<>();
+                list.add("hahaha");
+                info.setStates(list);
+                System.out.println(info);
+                System.out.println(info.toJson());
+                return;
+            }
+
+
+
+            if(false){
+                sdk.setRpc("http://139.219.128.220:20336");
+//                System.out.println(multiAddress.toBase58());
+//                System.out.println(sdk.getConnect().getBalance(multiAddress.toBase58()));
+                System.out.println(sdk.getConnect().getSideChainData("123456"));
+                return;
+            }
+
+
             if(false){
                 String txhash = sdk.nativevm().governance().commitDpos(multiAddress,5,new Account[]{account1,account2,account3,account4,account5},new byte[][]{account6.serializePublicKey(),account7.serializePublicKey()},
                         account1,sdk.DEFAULT_GAS_LIMIT,0);
 
                 Thread.sleep(6000);
                 System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
+                return;
             }
             if(false){
                 GovernanceView view = sdk.nativevm().governance().getGovernanceView();
                 System.out.println(JSON.toJSONString(view));
             }
-            if(true){
+            if(false){
+//                success
                 GlobalParam1 param1 = sdk.nativevm().governance().getGlobalParam1();
                 GlobalParam2 param2 = sdk.nativevm().governance().getGlobalParam2();
                 System.out.println(JSON.toJSONString(param1));
                 System.out.println(JSON.toJSONString(param2));
-//                param1.A = 60;
-//                param1.B = 40;
-//                String txhash = sdk.nativevm().governance().updateGlobalParam1(accounts1,pks,5,param1,account,20000,0);
-//                Thread.sleep(6000);
-//                System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
+                System.out.println(Long.MAX_VALUE);
+                param1.candidateFee = (long)1000*1000000000;
+                String txhash = sdk.nativevm().governance().updateGlobalParam1(accounts1,pks,5,param1,account,20000,0);
+                Thread.sleep(6000);
+                System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
+                GlobalParam1 param11 = sdk.nativevm().governance().getGlobalParam1();
+                GlobalParam2 param22 = sdk.nativevm().governance().getGlobalParam2();
+                System.out.println(JSON.toJSONString(param11));
+                System.out.println(JSON.toJSONString(param22));
+                return;
+            }
+            if(false){
+//                success
+                GlobalParam2 param2 = sdk.nativevm().governance().getGlobalParam2();
+                if(param2 == null){
+                    param2 = new GlobalParam2(1000,1,Helper.hexToBytes("00"),Helper.hexToBytes("00"),
+                            Helper.hexToBytes("00"),Helper.hexToBytes("00"),Helper.hexToBytes("00"),Helper.hexToBytes("00"));
+                }
+                System.out.println(JSON.toJSONString(param2));
+                String txhash = sdk.nativevm().governance().updateGlobalParam2(accounts1,pks,5,param2,account,20000,0);
+                Thread.sleep(6000);
+                System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
+                GlobalParam2 param22 = sdk.nativevm().governance().getGlobalParam2();
+                System.out.println(JSON.toJSONString(param22));
+            }
+
+            if(false){
+//                success
+                InputPeerPoolMapParam param= sdk.nativevm().governance().getInputPeerPoolMapParam("123456");
+                System.out.println(JSON.toJSONString(param));
                 return;
             }
 
-
             if(false){
+//                success
                 SplitCurve curve = sdk.nativevm().governance().getSplitCurve();
                 System.out.println(JSON.toJSONString(curve));
                 curve.Yi[0] = 0;
@@ -68,6 +124,8 @@ public class GovernanceDemo2 {
                 System.out.println(txhash);
                 Thread.sleep(6000);
                 System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
+                SplitCurve curve2 = sdk.nativevm().governance().getSplitCurve();
+                System.out.println(JSON.toJSONString(curve2));
                 return;
             }
             if(false){
@@ -97,17 +155,18 @@ public class GovernanceDemo2 {
                 return;
             }
             if(false){
-                InputPeerPoolMapParam param = sdk.nativevm().sideChainGovernance().getInputPeerPoolMapParam("123456");
+                InputPeerPoolMapParam param = sdk.nativevm().governance().getInputPeerPoolMapParam("123456");
                 System.out.println(param);
             }
-            if(false){
+            if(true){
                 Configuration c = sdk.nativevm().governance().getConfiguration();
                 System.out.println(JSON.toJSONString(c));
+                return;
 
             }
-            if(false){
-
-                Configuration c = new Configuration(7,2,7,112,10000,10000,10,10000);
+            if(true){
+                sdk.setRpc("http://139.219.128.220:20336");
+                Configuration c = new Configuration(8,3,8,128,10000,10000,10,10000);
                 String txhash = sdk.nativevm().governance().updateConfig(accounts1,pks,5,c,account1,20000,0);
                 System.out.println(txhash);
                 Thread.sleep(6000);

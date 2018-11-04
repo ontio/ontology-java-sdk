@@ -32,9 +32,9 @@ public class Oep5 {
             "{\"name\":\"concatkey\",\"parameters\":[{\"name\":\"str1\",\"type\":\"\"},{\"name\":\"str2\",\"type\":\"\"}],\"returntype\":\"\"}," +
             "{\"name\":\"init\",\"parameters\":[],\"returntype\":\"\"}," +
             "{\"name\":\"totalSupply\",\"parameters\":[],\"returntype\":\"\"}," +
-            "{\"name\":\"queryTokenIDByIndex\",\"parameters\":[{\"name\":\"idx\",\"type\":\"\"}],\"returntype\":\"\"}," +
-            "{\"name\":\"queryTokenByID\",\"parameters\":[{\"name\":\"tokenID\",\"type\":\"\"}],\"returntype\":\"\"}," +
-            "{\"name\":\"getApproved\",\"parameters\":[{\"name\":\"tokenID\",\"type\":\"\"}],\"returntype\":\"\"}," +
+            "{\"name\":\"queryTokenIDByIndex\",\"parameters\":[{\"name\":\"idx\",\"type\":\"Integer\"}],\"returntype\":\"\"}," +
+            "{\"name\":\"queryTokenByID\",\"parameters\":[{\"name\":\"tokenID\",\"type\":\"ByteArray\"}],\"returntype\":\"\"}," +
+            "{\"name\":\"getApproved\",\"parameters\":[{\"name\":\"tokenID\",\"type\":\"ByteArray\"}],\"returntype\":\"\"}," +
             "{\"name\":\"createMultiTokens\",\"parameters\":[],\"returntype\":\"\"}," +
             "{\"name\":\"createOneToken\",\"parameters\":[{\"name\":\"name\",\"type\":\"\"},{\"name\":\"url\",\"type\":\"\"},{\"name\":\"type\",\"type\":\"\"}],\"returntype\":\"\"}]}";
 
@@ -60,7 +60,7 @@ public class Oep5 {
         AbiFunction func = abiinfo.getFunction("init");
         if(preExec) {
             byte[] params = BuildParams.serializeAbiFunction(func);
-            Transaction tx = sdk.vm().makeInvokeCodeTransaction(getContractAddress(), null, params,null,0, 0);
+            Transaction tx = sdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractAddress), null, params,null,gaslimit, gasprice);
             if (acct != null) {
                 sdk.signTx(tx, new Account[][]{{acct}});
             }
@@ -73,7 +73,7 @@ public class Oep5 {
         if(acct == null || payerAcct == null){
             throw new SDKException(ErrorCode.ParamError);
         }
-        Object obj = sdk.neovm().sendTransaction(contractAddress,acct,payerAcct,gaslimit,gasprice,func,preExec);
+        Object obj = sdk.neovm().sendTransaction(Helper.reverse(contractAddress),acct,payerAcct,gaslimit,gasprice,func,preExec);
         return obj;
     }
 
@@ -85,7 +85,7 @@ public class Oep5 {
         AbiFunction func = abiinfo.getFunction("ownerOf");
         func.name = "ownerOf";
         func.setParamsValue(tokenID);
-        Object obj =   sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
+        Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
         return ((JSONObject) obj).getString("Result");
     }
 
@@ -97,7 +97,7 @@ public class Oep5 {
         AbiFunction func = abiinfo.getFunction("transfer");
         func.name = "transfer";
         func.setParamsValue(oep5Transfer.toAcct, oep5Transfer.tokenId);
-        Object obj =   sdk.neovm().sendTransaction(contractAddress,owner,payer,gaslimit,gasprice,func, false);
+        Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),owner,payer,gaslimit,gasprice,func, false);
         return (String) obj;
     }
     public String transferMulti(Account[] owners, Oep5Param[] oep5Transfers, Account payer, long gaslimit, long gasprice) throws Exception {
@@ -131,14 +131,16 @@ public class Oep5 {
         }
         List paramList = new ArrayList<>();
         paramList.add("transferMulti".getBytes());
+        List tempList = new ArrayList();
         for(Oep5Param oep5Transfer : oep5Transfers){
             List list = new ArrayList();
             list.add(oep5Transfer.toAcct);
             list.add(oep5Transfer.tokenId);
-            paramList.add(list);
+            tempList.add(list);
         }
+        paramList.add(tempList);
         byte[] params = BuildParams.createCodeParamsScript(paramList);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress,null,params,payerAcct.getAddressU160().toBase58(),20000,0);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractAddress),null,params,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
         return tx;
     }
 
@@ -152,7 +154,7 @@ public class Oep5 {
         AbiInfo abiinfo = JSON.parseObject(oep5abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("approve");
         func.setParamsValue(oep5Param.toAcct, oep5Param.tokenId);
-        Object obj =   sdk.neovm().sendTransaction(contractAddress,owner,payer,gaslimit,gasprice,func, false);
+        Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),owner,payer,gaslimit,gasprice,func, false);
         return (String) obj;
     }
     public String takeOwnership(Account owner, Oep5Param oep5Param, Account payer, long gaslimit, long gasprice) throws Exception {
@@ -164,21 +166,20 @@ public class Oep5 {
         }
         AbiInfo abiinfo = JSON.parseObject(oep5abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("takeOwnership");
-        func.name = "takeOwnership";
         func.setParamsValue(oep5Param.toAcct, oep5Param.tokenId);
-        Object obj =   sdk.neovm().sendTransaction(contractAddress,owner,payer,gaslimit,gasprice,func, false);
+        Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),owner,payer,gaslimit,gasprice,func, false);
         return (String) obj;
     }
 
-    public long queryTotalSupply() throws Exception {
+    public String queryTotalSupply() throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         AbiInfo abiinfo = JSON.parseObject(oep5abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("totalSupply");
         func.setParamsValue();
-        Object obj =   sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
-        return Long.parseLong(Helper.reverse(((JSONObject) obj).getString("Result")), 16);
+        Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
+        return Helper.BigIntFromNeoBytes(Helper.hexToBytes(((JSONObject) obj).getString("Result"))).toString();
     }
     public String queryTokenIDByIndex(String idx) throws Exception {
         if (contractAddress == null) {
@@ -188,7 +189,7 @@ public class Oep5 {
         AbiFunction func = abiinfo.getFunction("queryTokenIDByIndex");
         func.name = "queryTokenIDByIndex";
         func.setParamsValue(idx);
-        Object obj =   sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
+        Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
         return ((JSONObject) obj).getString("Result");
     }
     public String queryTokenByID(String tokenID) throws Exception {
@@ -198,7 +199,7 @@ public class Oep5 {
         AbiInfo abiinfo = JSON.parseObject(oep5abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("queryTokenByID");
         func.setParamsValue(tokenID);
-        Object obj =   sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
+        Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
         return ((JSONObject) obj).getString("Result");
     }
     public String getApproved(String tokenID) throws Exception {
@@ -208,8 +209,8 @@ public class Oep5 {
         AbiInfo abiinfo = JSON.parseObject(oep5abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("getApproved");
         func.name = "getApproved";
-        func.setParamsValue(tokenID);
-        Object obj =   sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
+        func.setParamsValue(Helper.hexToBytes(tokenID));
+        Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
         return ((JSONObject) obj).getString("Result");
     }
     public String queryName() throws Exception {
@@ -220,8 +221,8 @@ public class Oep5 {
         AbiFunction func = abiinfo.getFunction("name");
         func.name = "name";
         func.setParamsValue();
-        Object obj =   sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
-        return ((JSONObject) obj).getString("Result");
+        Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
+        return new String(Helper.hexToBytes(((JSONObject) obj).getString("Result")));
     }
 
     public String querySymbol() throws Exception {
@@ -232,11 +233,11 @@ public class Oep5 {
         AbiFunction func = abiinfo.getFunction("symbol");
         func.name = "symbol";
         func.setParamsValue();
-        Object obj =   sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
-        return new String(Helper.hexToBytes(Helper.reverse(((JSONObject) obj).getString("Result"))));
+        Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
+        return new String(Helper.hexToBytes(((JSONObject) obj).getString("Result")));
     }
 
-    public long queryBalanceOf(String addr) throws Exception {
+    public String queryBalanceOf(String addr) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -247,12 +248,29 @@ public class Oep5 {
         AbiFunction func = abiinfo.getFunction("balanceOf");
         func.name = "balanceOf";
         func.setParamsValue(Address.decodeBase58(addr).toArray());
-        Object obj =  sdk.neovm().sendTransaction(contractAddress,null,null,0,0,func, true);
+        Object obj =  sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
         String balance = ((JSONObject) obj).getString("Result");
         if(balance.equals("")){
             balance = "00";
         }
-        return Long.parseLong(Helper.reverse(balance), 16);
+        return Helper.BigIntFromNeoBytes(Helper.hexToBytes(balance)).toString();
+    }
+    public String queryTokenIDByIndex(int index) throws Exception {
+        if (contractAddress == null) {
+            throw new SDKException(ErrorCode.NullCodeHash);
+        }
+        if(index < 0){
+            throw new SDKException(ErrorCode.ParamError);
+        }
+        AbiInfo abiinfo = JSON.parseObject(oep5abi, AbiInfo.class);
+        AbiFunction func = abiinfo.getFunction("queryTokenIDByIndex");
+        func.setParamsValue((long)index);
+        Object obj =  sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
+        String tokenId = ((JSONObject) obj).getString("Result");
+        if(tokenId.equals("")){
+            tokenId = "00";
+        }
+        return tokenId;
     }
 }
 

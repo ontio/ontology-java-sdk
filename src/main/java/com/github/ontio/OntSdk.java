@@ -35,6 +35,7 @@ import com.github.ontio.crypto.Digest;
 import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.manager.*;
+import com.github.ontio.sidechain.SidechainVm;
 import com.github.ontio.smartcontract.NativeVm;
 import com.github.ontio.smartcontract.NeoVm;
 import com.github.ontio.smartcontract.Vm;
@@ -55,6 +56,8 @@ public class OntSdk {
     private ConnectMgr connRestful;
     private ConnectMgr connWebSocket;
     private ConnectMgr connDefault;
+    private  ConnectMgr sideChainConnectMgr;
+    private SidechainVm sidechainVm;
 
     private Vm vm = null;
     private NativeVm nativevm = null;
@@ -103,6 +106,14 @@ public class OntSdk {
         return wasmvm;
     }
 
+    public SidechainVm sidechainVm() {
+        if (sidechainVm == null) {
+            vm();
+            sidechainVm = new SidechainVm(getInstance());
+        }
+        return sidechainVm;
+    }
+
     public Vm vm() {
         if(vm == null){
             vm = new Vm(getInstance());
@@ -136,6 +147,20 @@ public class OntSdk {
             return  connWebSocket;
         }
         return null;
+    }
+
+    public ConnectMgr getSideChainConnectMgr() {
+        return sideChainConnectMgr;
+    }
+
+    public void setSideChainRpc(String url) {
+        this.sideChainConnectMgr = new ConnectMgr(url, "rpc");
+    }
+    public void setSideChainRest(String url) {
+        this.sideChainConnectMgr = new ConnectMgr(url, "restful");
+    }
+    public void setSideChainWebsocket(String url,Object lock) {
+        this.sideChainConnectMgr = new ConnectMgr(url, "websocket", lock);
     }
     public void setDefaultConnect(ConnectMgr conn){
         connDefault = conn;

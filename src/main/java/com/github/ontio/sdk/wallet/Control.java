@@ -45,7 +45,7 @@ public class Control {
         this.algorithm = "ECDSA";
         this.id = id;
         this.publicKey = pubkey;
-        this.parameters.put("curve","secp256r1");
+        this.parameters.put("curve","P-256");
     }
     public String getEncAlg(){
         return encAlg;

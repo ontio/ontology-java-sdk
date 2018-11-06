@@ -170,7 +170,7 @@ public class SideChainGovernanceDemo {
         if(false){
 //            success
             SwapParam param = new SwapParam("12345678",account.getAddressU160(), 1000);
-            String txhash = sideChainGovernance.ongxSwap(account,param,account,20000,0);
+            String txhash = sideChainGovernance.ongxSwap(account,new SwapParam[]{param},account,20000,0);
             System.out.println(txhash);
             Thread.sleep(6000);
             System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));

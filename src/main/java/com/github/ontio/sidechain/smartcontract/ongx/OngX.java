@@ -8,10 +8,15 @@ import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.asset.State;
 import com.github.ontio.core.transaction.Transaction;
+import com.github.ontio.io.BinaryReader;
+import com.github.ontio.io.utils;
+import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
 import com.github.ontio.smartcontract.nativevm.abi.Struct;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -185,13 +190,16 @@ public class OngX {
         return tx.hash().toHexString();
     }
 
-    public String ongSwap(Account account, Swap swap, Account payer, long gaslimit, long gasprice) throws Exception {
-        if(account == null || swap == null|| swap.value <0 || payer == null || gaslimit < 0||gasprice < 0){
+    public String ongSwap(Account account, Swap[] swaps, Account payer, long gaslimit, long gasprice) throws Exception {
+        if(account == null || swaps == null|| swaps.length == 0 || payer == null || gaslimit < 0||gasprice < 0){
             throw new SDKException(ErrorCode.ParamError);
         }
         List list = new ArrayList();
         Struct struct = new Struct();
-        struct.add(swap.address, swap.value);
+        struct.add(swaps.length);
+        for(Swap swap : swaps) {
+            struct.add(swap.address, swap.value);
+        }
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)),"ongSwap",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
@@ -201,9 +209,19 @@ public class OngX {
 
     }
 
+    public String getSyncAddress() throws ConnectorException, IOException, IllegalAccessException, InstantiationException {
+        Object obj = sdk.getSideChainConnectMgr().getStorage(Helper.reverse(ongXContract), Helper.toHexString("syncAddress".getBytes()));
+        if(obj == null) {
+            return null;
+        }
+        ByteArrayInputStream in = new ByteArrayInputStream(Helper.hexToBytes((String)obj));
+        BinaryReader reader = new BinaryReader(in);
+        Address address = utils.readAddress(reader);
+        return address.toBase58();
+    }
 
     public String ongxSwap(Account account, Swap swap, Account payer, long gaslimit, long gasprice) throws Exception {
-        if(account == null || swap == null|| swap.value <0 || payer == null || gaslimit < 0||gasprice < 0){
+        if(account == null || swap == null|| swap.value <=0 || payer == null || gaslimit < 0||gasprice < 0){
             throw new SDKException(ErrorCode.ParamError);
         }
         List list = new ArrayList();

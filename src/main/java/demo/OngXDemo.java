@@ -16,7 +16,7 @@ public class OngXDemo {
 
     public static void main(String[] args) throws Exception {
 //        String mainChainUrl = "http://139.219.128.220:20336";
-        String sideChainUrl = "http://139.219.128.220:30336";
+        String sideChainUrl = "http://23.99.137.227:30336";
         OntSdk sdk = OntSdk.getInstance();
         sdk.openWalletFile("ongx.dat");
         sdk.setSideChainRpc(sideChainUrl);
@@ -63,8 +63,9 @@ public class OngXDemo {
             System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
             return;
         }
-        if(true){
+        if(false){
             System.out.println(sdk.sidechainVm().ongX().queryBalanceOf(account.getAddressU160().toBase58()));
+            return;
         }
         if(false){
 //            sdk.setRpc(mainChainUrl);
@@ -88,7 +89,7 @@ public class OngXDemo {
         }
         if(false){
             Swap swap = new Swap(account.getAddressU160(),(long)1000*1000000000);
-            String txhash = sdk.sidechainVm().ongX().ongSwap(account,swap,account,20000,0);
+            String txhash = sdk.sidechainVm().ongX().ongSwap(account,new Swap[]{swap},account,20000,0);
             System.out.println("txhash: " + txhash);
             Thread.sleep(6000);
             System.out.println(sdk.getSideChainConnectMgr().getSmartCodeEvent(txhash));

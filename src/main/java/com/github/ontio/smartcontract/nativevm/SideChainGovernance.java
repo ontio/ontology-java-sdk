@@ -8,6 +8,7 @@ import com.github.ontio.common.Helper;
 import com.github.ontio.core.sidechaingovernance.*;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.BinaryReader;
+import com.github.ontio.io.utils;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.wallet.Identity;
@@ -184,13 +185,16 @@ public class SideChainGovernance {
         }
         return null;
     }
-    public String ongxSwap(Account account, SwapParam param, Account payer, long gaslimit, long gasprice) throws Exception {
-        if(account == null || param == null || payer == null || gaslimit < 0|| gasprice < 0){
+    public String ongxSwap(Account account, SwapParam[] params, Account payer, long gaslimit, long gasprice) throws Exception {
+        if(account == null || params == null || params.length == 0|| payer == null || gaslimit < 0|| gasprice < 0){
             throw new SDKException(ErrorCode.OtherError("parameter is wrong"));
         }
         List list = new ArrayList();
         Struct struct = new Struct();
-        struct.add(param.sideChainId, param.address, param.ongXAccount);
+        struct.add(params.length);
+        for(SwapParam param : params) {
+            struct.add(param.sideChainId, param.address, param.ongXAccount);
+        }
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"ongxSwap",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
@@ -283,6 +287,16 @@ public class SideChainGovernance {
             return tx.hash().toString();
         }
         return null;
+    }
+    public String getSyncAddress() throws ConnectorException, IOException, IllegalAccessException, InstantiationException {
+        Object obj = sdk.getSideChainConnectMgr().getStorage(Helper.reverse(contractAddress), Helper.toHexString("globalParams".getBytes()));
+        if(obj == null) {
+            return null;
+        }
+        ByteArrayInputStream in = new ByteArrayInputStream(Helper.hexToBytes((String)obj));
+        BinaryReader reader = new BinaryReader(in);
+        Address addr =  utils.readAddress(reader);
+        return addr.toBase58();
     }
     public String registerNodeToSideChain(Account account, NodeToSideChainParams params, Account payer, long gaslimit, long gasprice) throws Exception {
         if(account == null || params == null || payer == null || gaslimit < 0|| gasprice < 0){

@@ -23,6 +23,9 @@ package com.github.ontio.smartcontract.neovm.abi;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.sdk.exception.SDKException;
 import com.alibaba.fastjson.JSON;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -31,7 +34,16 @@ import java.util.List;
 public class AbiFunction {
     public String name;
     public String returntype;
-    public List<Parameter> parameters;
+    public List<Parameter> parameters = new ArrayList<>();
+
+    public AbiFunction() {
+    }
+
+    public AbiFunction(String name, Parameter... parameters) {
+        this.name = name;
+        this.returntype = "String";
+        this.parameters = Arrays.asList(parameters);
+    }
 
     public String getName() {
         return name;
@@ -40,6 +52,7 @@ public class AbiFunction {
     public List<Parameter> getParameters() {
         return parameters;
     }
+
     public void setParamsValue(Object... objs) throws Exception{
         if(objs.length != parameters.size()){
             throw new SDKException(ErrorCode.ParamError);

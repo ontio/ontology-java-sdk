@@ -31,9 +31,21 @@ import java.util.Map;
  *
  */
 public class Parameter {
+
+    public enum Type { ByteArray, String, Boolean, Integer, Array, InteropInterface, Void, Main, Struct }
+
     public String name;
     public String type;
     public String value;
+
+    public Parameter(String name, Type type, Object value) {
+        this.name = name;
+        this.type = type.name();
+        setValue(value);
+    }
+
+    public Parameter() {
+    }
 
     public String getName() {
         return name;

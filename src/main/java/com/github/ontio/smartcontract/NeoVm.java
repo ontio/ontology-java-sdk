@@ -104,7 +104,7 @@ public class NeoVm {
             String payer = payerAcct.getAddressU160().toBase58();
             Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, payer,gaslimit, gasprice);
             sdk.signTx(tx, new Account[][]{{acct}});
-            if(!acct.equals(payerAcct.getAddressU160().toBase58())){
+            if(!acct.getAddressU160().toBase58().equals(payerAcct.getAddressU160().toBase58())){
                 sdk.addSign(tx,payerAcct);
             }
             boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());

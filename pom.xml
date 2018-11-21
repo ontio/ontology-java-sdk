@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ontology-sdk-java</groupId>
+    <groupId>com.github.ontio</groupId>
     <artifactId>ontology-sdk-java</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.5</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -14,6 +14,44 @@
         <compiler.target>1.8</compiler.target>
         <junit.version>4.12</junit.version>
     </properties>
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ontology-java-sdk-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ontology-java-sdk-release</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+    </distributionManagement>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <tag>master</tag>
+        <url>https://github.com/ontio/ontology-java-sdk</url>
+        <connection>scm:git:git@github.com:ontio/ontology-java-sdk.git</connection>
+        <developerConnection>scm:git:git@github.com:ontio/ontology-java-sdk.git</developerConnection>
+    </scm>
+    <developers>
+        <developer>
+            <name>hellomyworld</name>
+            <email>shandsome95@gmail.com</email>
+            <organization>ontology</organization>
+        </developer>
+    </developers>
 
     <repositories>
         <repository>
@@ -80,14 +118,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>2.12.2</version>
-                <configuration>
-                    <showSuccess>false</showSuccess>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.12.2</version>
                 <configuration>
@@ -102,26 +132,7 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.2</version>
-                <executions>
-                    <execution>
-                        <id>prepare-agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>

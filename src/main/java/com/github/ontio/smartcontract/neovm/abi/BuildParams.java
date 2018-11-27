@@ -71,9 +71,8 @@ public class BuildParams {
                 } else if (val instanceof Long) {
                     builder.emitPushByteArray(Helper.BigIntToNeoBytes(BigInteger.valueOf((long)val)));
                 } else if(val instanceof Map){
-                    byte[] bys = getMapBytes(val);
-                    System.out.println(Helper.toHexString(bys));
-                    builder.emitPushByteArray(bys);
+                    pushMap(builder,val);
+                    //builder.emitPushByteArray(bys);
                 } else if(val instanceof Struct){
                     byte[] bys = getStructBytes(val);
                     builder.emitPushByteArray(bys);
@@ -110,9 +109,6 @@ public class BuildParams {
                 } else if (eValue instanceof Boolean) {
                     sb.add(Type.BooleanType.getValue());
                     sb.emitPushBool((Boolean) eValue);
-                } else if (eValue instanceof Map) {
-                    sb.add(Type.MapType.getValue());
-                    sb.emitPushByteArray(getMapBytes(eValue));
                 } else if (eValue instanceof Struct) {
                     sb.add(Type.StructType.getValue());
                     sb.emitPushByteArray(getStructBytes(eValue));
@@ -135,6 +131,47 @@ public class BuildParams {
             e.printStackTrace();
         }
         return sb.toArray();
+    }
+    public static void pushParam(ScriptBuilder sb,Object eValue){
+        try {
+            if (eValue instanceof byte[]) {
+                sb.emitPushByteArray((byte[]) eValue);
+            } else if (eValue instanceof String) {
+                sb.emitPushByteArray(((String) eValue).getBytes());
+            } else if (eValue instanceof Boolean) {
+                sb.emitPushBool((Boolean) eValue);
+            } else if (eValue instanceof Map) {
+                pushMap(sb,eValue);
+            } else if (eValue instanceof Struct) {
+                sb.emitPushByteArray(getStructBytes(eValue));
+            } else if (eValue instanceof List) {
+                List tmp = (List) eValue;
+                createCodeParamsScript(sb, tmp);
+                sb.emitPushInteger(new BigInteger(String.valueOf(tmp.size())));
+                sb.pushPack();
+            } else if (eValue instanceof Integer) {
+                sb.emitPushByteArray(Helper.BigIntToNeoBytes(BigInteger.valueOf((Integer) eValue)));
+            } else if (eValue instanceof Long) {
+                sb.emitPushByteArray(Helper.BigIntToNeoBytes(BigInteger.valueOf((Long) eValue)));
+            } else {
+                throw new SDKException(ErrorCode.ParamError);
+            }
+        }catch (SDKException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void pushMap(ScriptBuilder sb,Object val) {
+        Map<String, Object> map = (Map) val;
+        sb.add(ScriptOp.OP_NEWMAP);
+        sb.add(ScriptOp.OP_TOALTSTACK);
+        for (Map.Entry e : map.entrySet()) {
+            sb.add(ScriptOp.OP_DUPFROMALTSTACK);
+            pushParam(sb, e.getKey());
+            pushParam(sb, e.getValue());
+            sb.add(ScriptOp.OP_SETITEM);
+        }
+        sb.add(ScriptOp.OP_FROMALTSTACK);
     }
     public static byte[] getMapBytes(Object val){
         ScriptBuilder sb = null;
@@ -204,8 +241,9 @@ public class BuildParams {
                 } else if(val instanceof BigInteger){
                     sb.emitPushInteger((BigInteger)val);
                 } else if(val instanceof Map){
-                    byte[] bys = getMapBytes(val);
-                    sb.emitPushByteArray(bys);
+                    pushMap(sb,val);
+                    //byte[] bys = getMapBytes(val);
+                   // sb.emitPushByteArray(bys);
                 } else if(val instanceof Struct){
                     byte[] bys = getStructBytes(val);
                     sb.emitPushByteArray(bys);

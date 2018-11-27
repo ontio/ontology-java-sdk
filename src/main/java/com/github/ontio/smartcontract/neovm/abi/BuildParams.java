@@ -106,6 +106,15 @@ public class BuildParams {
                 } else if(list.get(i) instanceof String){
                     sb.add(Type.ByteArrayType.getValue());
                     sb.emitPushByteArray(((String) list.get(i)).getBytes());
+                } else if (val instanceof Boolean) {
+                    sb.add(Type.BooleanType.getValue());
+                    sb.emitPushBool((Boolean) val);
+                } else if (val instanceof Map) {
+                    sb.add(Type.MapType.getValue());
+                    sb.emitPushByteArray(getMapBytes(val));
+                } else if (val instanceof Struct) {
+                    sb.add(Type.StructType.getValue());
+                    sb.emitPushByteArray(getStructBytes(val));
                 } else if(list.get(i) instanceof Integer){
                     sb.add(Type.ByteArrayType.getValue());
                     sb.emitPushByteArray(Helper.BigIntToNeoBytes(BigInteger.valueOf((Integer)list.get(i))));
@@ -137,6 +146,15 @@ public class BuildParams {
                 } else if(e.getValue() instanceof String){
                     sb.add(Type.ByteArrayType.getValue());
                     sb.emitPushByteArray(((String) e.getValue()).getBytes());
+                } else if (val instanceof Boolean) {
+                    sb.add(Type.BooleanType.getValue());
+                    sb.emitPushBool((Boolean) val);
+                } else if (val instanceof Map) {
+                    sb.add(Type.MapType.getValue());
+                    sb.emitPushByteArray(getMapBytes(val));
+                } else if (val instanceof Struct) {
+                    sb.add(Type.StructType.getValue());
+                    sb.emitPushByteArray(getStructBytes(val));
                 } else if(e.getValue() instanceof Integer){
                     sb.add(Type.IntegerType.getValue());
                     sb.emitPushByteArray(Helper.BigIntToNeoBytes(BigInteger.valueOf((Integer) e.getValue())));

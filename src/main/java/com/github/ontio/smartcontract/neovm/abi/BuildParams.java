@@ -115,7 +115,12 @@ public class BuildParams {
                 } else if (val instanceof Struct) {
                     sb.add(Type.StructType.getValue());
                     sb.emitPushByteArray(getStructBytes(val));
-                } else if(list.get(i) instanceof Integer){
+                } else if (val instanceof List) {
+                    List tmp = (List) val;
+                    createCodeParamsScript(sb, tmp);
+                    sb.emitPushInteger(new BigInteger(String.valueOf(tmp.size())));
+                    sb.pushPack();
+                }else if(list.get(i) instanceof Integer){
                     sb.add(Type.ByteArrayType.getValue());
                     sb.emitPushByteArray(Helper.BigIntToNeoBytes(BigInteger.valueOf((Integer)list.get(i))));
                 } else if(list.get(i) instanceof Long){
@@ -155,7 +160,12 @@ public class BuildParams {
                 } else if (val instanceof Struct) {
                     sb.add(Type.StructType.getValue());
                     sb.emitPushByteArray(getStructBytes(val));
-                } else if(e.getValue() instanceof Integer){
+                } else if (val instanceof List) {
+                    List tmp = (List) val;
+                    createCodeParamsScript(sb, tmp);
+                    sb.emitPushInteger(new BigInteger(String.valueOf(tmp.size())));
+                    sb.pushPack();
+                }else if(e.getValue() instanceof Integer){
                     sb.add(Type.IntegerType.getValue());
                     sb.emitPushByteArray(Helper.BigIntToNeoBytes(BigInteger.valueOf((Integer) e.getValue())));
                 } else if(e.getValue() instanceof Long){

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+// Smart contract is in : https://github.com/punica-box/punica-init-default-box/tree/master/contracts
 public class PunicaInitDemo {
 
     private static OntSdk ontSdk = null;

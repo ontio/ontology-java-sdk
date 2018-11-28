@@ -24,14 +24,14 @@ import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.scripts.ScriptBuilder;
 import com.github.ontio.core.scripts.ScriptOp;
+import com.github.ontio.io.BinaryReader;
+import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.sdk.exception.SDKException;
 
-import java.lang.reflect.Array;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BuildParams {
     public enum Type {
@@ -71,8 +71,9 @@ public class BuildParams {
                 } else if (val instanceof Long) {
                     builder.emitPushByteArray(Helper.BigIntToNeoBytes(BigInteger.valueOf((long)val)));
                 } else if(val instanceof Map){
-                    pushMap(builder,val);
-                    //builder.emitPushByteArray(bys);
+//                    pushMap(builder,val);
+                    byte[] bys = getMapBytes(val);
+                    builder.emitPushByteArray(bys);
                 } else if(val instanceof Struct){
                     byte[] bys = getStructBytes(val);
                     builder.emitPushByteArray(bys);
@@ -132,6 +133,50 @@ public class BuildParams {
         }
         return sb.toArray();
     }
+
+    public static Object deserializeItem(BinaryReader reader){
+        try {
+            byte t = reader.readByte();
+            if (t == Type.ByteArrayType.getValue()) {
+                return reader.readVarBytes();
+            }else if (t == Type.BooleanType.getValue()) {
+                return reader.readBoolean();
+            } else if (t == Type.IntegerType.getValue()) {
+                long v = Helper.BigIntFromNeoBytes(reader.readVarBytes()).longValue();
+                return v;
+            } else if (t == Type.ArrayType.getValue() || t == Type.StructType.getValue()) {
+                int count = (int)reader.readVarInt();
+                List list = new ArrayList();
+                for (int i = count; i > 0; i--) {
+                    Object ele = deserializeItem(reader);
+                    if(ele instanceof byte[]){
+                        ele = new String((byte[])ele);
+                    }
+                    list.add(ele);
+                    count--;
+                }
+                return list;
+            } else if (t == Type.MapType.getValue()) {
+                int count = (int)reader.readVarInt();
+                Map map = new HashMap();
+                for (int i = count; i > 0; i--) {
+                    byte[] key = (byte[])deserializeItem(reader);
+                    Object value = deserializeItem(reader);
+                    if(value instanceof byte[]){
+                        value = new String((byte[])value);
+                    }
+                    map.put(new String(key),value);
+                    count--;
+                }
+                return map;
+            } else {
+                throw new SDKException(ErrorCode.ParamError);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     public static void pushParam(ScriptBuilder sb,Object eValue){
         try {
             if (eValue instanceof byte[]) {
@@ -169,55 +214,70 @@ public class BuildParams {
             sb.add(ScriptOp.OP_DUPFROMALTSTACK);
             pushParam(sb, e.getKey());
             pushParam(sb, e.getValue());
+            if( e.getValue() instanceof Integer || e.getValue() instanceof Long){
+                sb.add(ScriptOp.OP_PUSH0);
+                sb.add(ScriptOp.OP_ADD);
+            } else if( e.getValue() instanceof Boolean ){
+                sb.add(ScriptOp.OP_PUSH0);
+                sb.add(ScriptOp.OP_BOOLAND);
+            }
             sb.add(ScriptOp.OP_SETITEM);
         }
         sb.add(ScriptOp.OP_FROMALTSTACK);
     }
-    public static byte[] getMapBytes(Object val){
-        ScriptBuilder sb = null;
+    public static void serializeStackItem(BinaryWriter bw,Object eValue){
         try {
-            sb = new ScriptBuilder();
-            Map<String,Object> map = (Map)val;
-            sb.add(Type.MapType.getValue());
-            sb.add(Helper.BigIntToNeoBytes(BigInteger.valueOf( map.size())));
-            for(Map.Entry e:map.entrySet()){
-                sb.add(Type.ByteArrayType.getValue());
-                sb.emitPushByteArray(((String) e.getKey()).getBytes());
-                Object eValue = e.getValue();
-                if(eValue instanceof byte[]){
-                    sb.add(Type.ByteArrayType.getValue());
-                    sb.emitPushByteArray((byte[]) eValue);
-                } else if(eValue instanceof String){
-                    sb.add(Type.ByteArrayType.getValue());
-                    sb.emitPushByteArray(((String) eValue).getBytes());
-                } else if (eValue instanceof Boolean) {
-                    sb.add(Type.BooleanType.getValue());
-                    sb.emitPushBool((Boolean) eValue);
-                } else if (eValue instanceof Map) {
-                    sb.add(Type.MapType.getValue());
-                    sb.emitPushByteArray(getMapBytes(eValue));
-                } else if (eValue instanceof Struct) {
-                    sb.add(Type.StructType.getValue());
-                    sb.emitPushByteArray(getStructBytes(eValue));
-                } else if (eValue instanceof List) {
-                    List tmp = (List) eValue;
-                    createCodeParamsScript(sb, tmp);
-                    sb.emitPushInteger(new BigInteger(String.valueOf(tmp.size())));
-                    sb.pushPack();
-                }else if(eValue instanceof Integer){
-                    sb.add(Type.IntegerType.getValue());
-                    sb.emitPushByteArray(Helper.BigIntToNeoBytes(BigInteger.valueOf((Integer) eValue)));
-                } else if(eValue instanceof Long){
-                    sb.add(Type.IntegerType.getValue());
-                    sb.emitPushByteArray(Helper.BigIntToNeoBytes(BigInteger.valueOf((Long) eValue)));
-                } else {
-                    throw new SDKException(ErrorCode.ParamError);
+            if(eValue instanceof byte[]){
+                bw.writeByte(Type.ByteArrayType.getValue());
+                bw.writeVarBytes((byte[]) eValue);
+            } else if(eValue instanceof String){
+                bw.writeByte(Type.ByteArrayType.getValue());
+                bw.writeVarBytes(((String) eValue).getBytes());
+            } else if (eValue instanceof Boolean) {
+                bw.writeByte(Type.BooleanType.getValue());
+                bw.writeBoolean((Boolean) eValue);
+            } else if (eValue instanceof Map) {
+                bw.write(getMapBytes(eValue));
+            } else if (eValue instanceof Struct) {
+                bw.writeVarBytes(getStructBytes(eValue));
+            } else if (eValue instanceof List) {
+                List tmp = (List) eValue;
+                bw.writeByte(Type.ArrayType.getValue());
+                bw.writeVarInt(tmp.size());
+                for (int i = 0; i < tmp.size(); i++) {
+                    serializeStackItem(bw, tmp.get(i));
                 }
+            }else if(eValue instanceof Integer){
+                bw.writeByte(Type.IntegerType.getValue());
+                bw.writeVarBytes(Helper.BigIntToNeoBytes(BigInteger.valueOf((Integer) eValue)));
+            } else if(eValue instanceof Long){
+                bw.writeByte(Type.IntegerType.getValue());
+                bw.writeVarBytes(Helper.BigIntToNeoBytes(BigInteger.valueOf((Long) eValue)));
+            } else {
+                throw new SDKException(ErrorCode.ParamError);
             }
-        } catch (SDKException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return sb.toArray();
+    }
+    public static byte[] getMapBytes(Object val){
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        BinaryWriter bw = new BinaryWriter(baos);
+        try {
+            Map<String,Object> map = (Map)val;
+            bw.writeByte(Type.MapType.getValue());
+            bw.writeVarInt(map.size());
+            for(Map.Entry e:map.entrySet()){
+                bw.writeByte(Type.ByteArrayType.getValue());
+                bw.writeVarBytes(((String) e.getKey()).getBytes());
+                Object eValue = e.getValue();
+                serializeStackItem(bw,eValue);
+            }
+            bw.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return baos.toByteArray();
     }
     /**
      * @param list
@@ -241,9 +301,9 @@ public class BuildParams {
                 } else if(val instanceof BigInteger){
                     sb.emitPushInteger((BigInteger)val);
                 } else if(val instanceof Map){
-                    pushMap(sb,val);
-                    //byte[] bys = getMapBytes(val);
-                   // sb.emitPushByteArray(bys);
+                    //pushMap(sb,val);
+                    byte[] bys = getMapBytes(val);
+                    sb.emitPushByteArray(bys);
                 } else if(val instanceof Struct){
                     byte[] bys = getStructBytes(val);
                     sb.emitPushByteArray(bys);

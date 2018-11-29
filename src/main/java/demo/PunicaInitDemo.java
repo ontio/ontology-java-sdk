@@ -277,9 +277,6 @@ public class PunicaInitDemo {
 
                 paramList.add(args);
                 byte[] params = BuildParams.createCodeParamsScript(paramList);
-                //c76b6a036b65790668656c6c6f32c46c51c107746573744d617067137f018b161cb07da5703a965d29704753957c54
-                //c76b6a036b65790668656c6c6f32c46c51c107746573744d6170  3dc4af5ecaad646e046c0b318a483d759a7a1ada
-
 
                 System.out.println(Helper.toHexString(params));
                 String preResult = invokeContract(params, account, 20000, 500,true);
@@ -338,9 +335,7 @@ public class PunicaInitDemo {
                 System.out.println(preResult);
 
                 byte[] mBytes = Helper.hexToBytes(JSON.parseObject(preResult).getString("Result"));
-                ByteArrayInputStream ms = new ByteArrayInputStream(mBytes);
-                BinaryReader reader = new BinaryReader(ms);
-                Object obj = BuildParams.deserializeItem(reader);
+                Object obj = BuildParams.deserializeItem(mBytes);
                 System.out.println(JSON.toJSONString(obj));
 
                 String result = invokeContract(params, account, 20000, 500,false);

@@ -28,6 +28,7 @@ import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.sdk.exception.SDKException;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -92,7 +93,11 @@ public class BuildParams {
         }
         return builder.toArray();
     }
-
+    public static Object deserializeItem(byte[] mBytes){
+        ByteArrayInputStream ms = new ByteArrayInputStream(mBytes);
+        BinaryReader reader = new BinaryReader(ms);
+        return deserializeItem(reader);
+    }
     public static Object deserializeItem(BinaryReader reader){
         try {
             byte t = reader.readByte();

@@ -127,7 +127,13 @@ public class BuildParams {
                     byte[] key = (byte[])deserializeItem(reader);
                     Object value = deserializeItem(reader);
                     if(value instanceof byte[]){
-                        value = new String((byte[])value);
+                        value = Helper.toHexString((byte[])value);
+                    } else if(value instanceof Long){
+                        if((Long)value == 0){
+                            value = "00";
+                        }else {
+                            value = Helper.toHexString(Helper.BigIntToNeoBytes(BigInteger.valueOf((long) value)));
+                        }
                     }
                     map.put(new String(key),value);
                     count--;

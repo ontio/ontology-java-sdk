@@ -35,10 +35,14 @@ byte[] bys = new byte[is.available()];
 is.read(bys);
 is.close();
 code = Helper.toHexString(bys);
-ontSdk.setCodeAddress(Helper.getCodeAddress(codeHexStr,vmtype));
+
 
 //Deploy the contract
 Transaction tx = ontSdk.vm().makeDeployCodeTransaction(codeHexStr, true, "name", "1.0", "1", "1", "1", VmType.NEOVM.value(),payer,gaslimit,gasprice);
+ontSdk.vm().setCodeAddress(Address.AddressFromVmCode(code).toHexString());
+Account account = new Account(Helper.hexToBytes("75de8489fcb2dcaf2ef3cd607feffde18789de7da129b5e97c81e001793cb7cf"),SignatureScheme.SHA256WITHECDSA);
+Transaction tx = ontSdk.vm().makeDeployCodeTransaction(code, true, "name",
+                    "v1.0", "author", "email", "desp", account.getAddressU160().toBase58(),ontSdk.DEFAULT_DEPLOY_GAS_LIMIT,0);
 String txHex = Helper.toHexString(tx.toArray());
 ontSdk.getConnect().sendRawTransaction(txHex);
 //Waiting for block generation
@@ -280,7 +284,7 @@ is.read(bys);
 is.close();
 code = Helper.toHexString(bys);
 System.out.println("Code:" + Helper.toHexString(bys));
-System.out.println("CodeAddress:" + Helper.getCodeAddress(code, VmType.NEOVM.value()));
+System.out.println("CodeAddress:" + Address.AddressFromVmCode(code).toHexString());
 ```
 
 Note: When you are attempting to get the codeAddress, you need to set which virtual machine the contract needs to run on. The currently supports Java SDK virtual machines are NEO and WASM.

@@ -399,7 +399,42 @@ public class OntSdk {
             throw new SDKException(e);
         }
     }
-
+    public boolean verifyTransaction(Transaction tx) {
+        try {
+            boolean result = true;
+            for (int i = 0; i < tx.sigs.length; i++) {
+                if (tx.sigs[i].M == 1) {
+                    if (tx.sigs[i].pubKeys.length != 1 || tx.sigs[i].sigData.length != 1) {
+                        throw new SDKException(ErrorCode.OtherError("index" + i + "pubKeys or sigData number != 1"));
+                    }
+                    Account account = new Account(false, tx.sigs[i].pubKeys[0]);
+                    boolean verify = account.verifySignature(Digest.hash256(tx.getHashData()), tx.sigs[i].sigData[0]);
+                    if (!verify) {
+                        return false;
+                    }
+                } else if (tx.sigs[i].M > 1) {
+                    int m = 0;
+                    for (int j = 0; j < tx.sigs[i].pubKeys.length; j++) {
+                        Account account = new Account(false, tx.sigs[i].pubKeys[j]);
+                        for (int k = 0; k < tx.sigs[i].sigData.length; k++) {
+                            boolean verify = account.verifySignature(Digest.hash256(tx.getHashData()), tx.sigs[i].sigData[k]);
+                            if (verify) {
+                                m++;
+                                break;
+                            }
+                        }
+                    }
+                    if (m < tx.sigs[i].M) {
+                        return false;
+                    }
+                }
+            }
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
     public Map parseTransaction(String txhexstr) throws SDKException {
         Map map = new HashMap();
         try {

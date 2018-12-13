@@ -40,12 +40,11 @@ import com.github.ontio.smartcontract.NativeVm;
 import com.github.ontio.smartcontract.NeoVm;
 import com.github.ontio.smartcontract.Vm;
 import com.github.ontio.smartcontract.WasmVm;
+import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Ont Sdk
@@ -435,6 +434,118 @@ public class OntSdk {
         }
         return false;
     }
+    private void buildMap(Map map,Object ele){
+        try {
+            for(Map.Entry<String, Object> e:((Map<String,Object>) ele).entrySet()) {
+                Object tmp = e.getValue();
+                if(tmp instanceof String){
+                    String pre = ((String) tmp).substring(0,10);
+                    if(pre.contains("String")) {
+                        String data = ((String) tmp).replace("String:","");
+                        e.setValue(data);
+                    }else if(pre.contains("ByteArray")) {
+                        String data = ((String) tmp).replace("ByteArray:","");
+                        e.setValue(Helper.hexToBytes(data));
+                    }else if(pre.contains("Long")) {
+                        String data = ((String) tmp).replace("Long:","");
+                        e.setValue(data);
+                    }else {
+                        throw new Exception(ErrorCode.OtherError("String type data error: "+ e));
+                    }
+                }else if(tmp instanceof Map){
+                    Map data = new HashMap();
+                    buildMap(data, tmp);
+                    e.setValue(data);
+                }
+                map.put(e.getKey(),e.getValue());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void buildArgs(List args,Object ele){
+        try {
+            if(ele instanceof Boolean){
+                args.add(ele);
+            }else if(ele instanceof Long){
+                args.add(ele);
+            } else if(ele instanceof Integer){
+                args.add(ele);
+            } else if(ele instanceof Map){
+                Map map = new HashMap();
+                buildMap(map,ele);
+                args.add(map);
+            } else if(ele instanceof String){
+                String pre = ((String) ele).substring(0,10);
+                if(pre.contains("String")) {
+                    String data = ((String) ele).replace("String:","");
+                    args.add(data);
+                }else if(pre.contains("ByteArray")) {
+                    String data = ((String) ele).replace("ByteArray:","");
+                    args.add(Helper.hexToBytes(data));
+                }else if(pre.contains("Long")) {
+                    String data = ((String) ele).replace("Long:","");
+                    args.add(new BigInteger(data).longValue());
+                }
+            } else if(ele instanceof List){
+                List tmp = new ArrayList();
+                for (int i = 0; i < ((List)ele).size(); i++) {
+                    buildArgs(tmp, ((List) ele).get(i));
+                }
+                args.add(tmp);
+            } else{
+                throw new Exception(ErrorCode.OtherError("type not found"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List buildInvokeFunctionByJson(String configStr) {
+        try {
+            Map config = (Map) JSON.parseObject(configStr);
+            Map func = (Map)((List)config.get("functions")).get(0);
+            String operation = (String) func.get("operation");
+            List args = (List) func.get("args");
+            List paramList = new ArrayList<>();
+            paramList.add(operation);
+            List args2 = new ArrayList();
+            for (int i = 0; i < args.size(); i++) {
+                Object ele = ((Map) args.get(i)).get("value");
+                buildArgs(args2, ele);
+            }
+            paramList.add(args2);
+            return paramList;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Transaction makeTransactionByJson(String str) {
+        Transaction tx = null;
+        Map map = JSON.parseObject(str);
+        Map config = null;
+        try {
+            if (!((String) map.get("action")).equals("invoke")) {
+                throw new Exception(ErrorCode.OtherError("not found action is invoke"));
+            }
+            config = (Map) ((Map) map.get("params")).get("invokeConfig");
+            String payer = (String) config.get("payer");
+            long gasLimit = (int) config.get("gasLimit");
+            long gasPrice = (int) config.get("gasPrice");
+            String contractHash = (String) config.get("contractHash");
+
+            List paramList = buildInvokeFunctionByJson(JSON.toJSONString(config));
+            System.out.println(paramList);
+            byte[] params = BuildParams.createCodeParamsScript(paramList);
+            tx = vm().makeInvokeCodeTransaction(Helper.reverse(contractHash), null, params, payer, gasLimit, gasPrice);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return tx;
+    }
+
     public Map parseTransaction(String txhexstr) throws SDKException {
         Map map = new HashMap();
         try {

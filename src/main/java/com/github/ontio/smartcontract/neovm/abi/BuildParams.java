@@ -20,6 +20,7 @@
 package com.github.ontio.smartcontract.neovm.abi;
 
 import com.alibaba.fastjson.JSON;
+import com.github.ontio.common.Address;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.scripts.ScriptBuilder;
@@ -63,6 +64,8 @@ public class BuildParams {
                 Object val = list.get(i);
                 if (val instanceof byte[]) {
                     builder.emitPushByteArray((byte[]) val);
+                } else if (val instanceof Address) {
+                    builder.emitPushByteArray(((Address) val).toArray());
                 } else if (val instanceof String) {
                     builder.emitPushByteArray(((String) val).getBytes());
                 } else if (val instanceof Boolean) {

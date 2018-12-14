@@ -1,6 +1,7 @@
 package demo;
 
 import com.github.ontio.OntSdk;
+import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.payload.InvokeCode;
 import com.github.ontio.core.transaction.Transaction;
@@ -16,10 +17,53 @@ public class MakeTxWithJsonDemo {
 
         try {
             OntSdk ontSdk = getOntSdk();
-            String str = "{\"action\":\"invoke\",\"params\":{\"login\":true,\"url\":\"http://127.0.0.1:80/rawtransaction/txhash\",\"message\":\"will pay 1 ONT in this transaction\",\"invokeConfig\":{\"contractHash\":\"16edbe366d1337eb510c2ff61099424c94aeef02\",\"functions\":[{\"operation\":\"method name\",\"args\":[{\"name\":\"arg0-list\",\"value\":[true,100,\"Long:100000000000\",\"ByteArray:aabb\",\"String:hello\",[true,100],{\"key\":6}]},{\"name\":\"arg1-map\",\"value\":{\"key\":\"String:hello\",\"key1\":\"ByteArray:aabb\",\"key2\":\"Long:100000000000\",\"key3\":true,\"key4\":100,\"key5\":[100],\"key6\":{\"key\":6}}},{\"name\":\"arg2-str\",\"value\":\"String:test\"}]}],\"payer\":\"AUr5QUfeBADq6BMY6Tp5yuMsUNGpsD7nLZ\",\"gasLimit\":20000,\"gasPrice\":500,\"signature\":{\"m\":1,\"signers\":[\"AUr5QUfeBADq6BMY6Tp5yuMsUNGpsD7nLZ\"]}}}}";
-            System.out.println(str);
+            String str = "{\"action\":\"invoke\",\"params\":{\"login\":true,\"url\":\"http://127.0.0.1:80/rawtransaction/txhash\",\"message\":\"will pay 1 ONT in this transaction\",\"invokeConfig\":{\"contractHash\":\"16edbe366d1337eb510c2ff61099424c94aeef02\",\"functions\":[{\"operation\":\"method name\",\"args\":[{\"name\":\"arg0-list\",\"value\":[true,100,\"Long:100000000000\",\"Address:AUr5QUfeBADq6BMY6Tp5yuMsUNGpsD7nLZ\",\"ByteArray:aabb\",\"String:hello\",[true,100],{\"key\":6}]},{\"name\":\"arg1-map\",\"value\":{\"key\":\"String:hello\",\"key1\":\"ByteArray:aabb\",\"key2\":\"Long:100000000000\",\"key3\":true,\"key4\":100,\"key5\":[100],\"key6\":{\"key\":6}}},{\"name\":\"arg2-str\",\"value\":\"String:test\"}]}],\"payer\":\"AUr5QUfeBADq6BMY6Tp5yuMsUNGpsD7nLZ\",\"gasLimit\":20000,\"gasPrice\":500,\"signature\":{\"m\":1,\"signers\":[\"AUr5QUfeBADq6BMY6Tp5yuMsUNGpsD7nLZ\"]}}}}";
             Transaction tx = ontSdk.makeTransactionByJson(str);
-            //System.out.println(tx.json());
+            if(true) {
+                str = "{\n" +
+                        "\t\"action\": \"invoke\",\n" +
+                        "\t\"params\": {\n" +
+                        "\t\t\"login\": true,\n" +
+                        "\t\t\"url\": \"http://127.0.0.1:80/rawtransaction/txhash\",\n" +
+                        "\t\t\"message\": \"will pay 1 ONT in this transaction\",\n" +
+                        "\t\t\"invokeConfig\": {\n" +
+                        "\t\t\t\"contractHash\": \"cd948340ffcf11d4f5494140c93885583110f3e9\",\n" +
+                        "\t\t\t\"functions\": [{\n" +
+                        "\t\t\t\t\"operation\": \"transferNativeAsset\",\n" +
+                        "\t\t\t\t\"args\": [{\n" +
+                        "\t\t\t\t\t\"name\": \"arg0\",\n" +
+                        "\t\t\t\t\t\"value\": \"String:ont\"\n" +
+                        "\t\t\t\t}, {\n" +
+                        "\t\t\t\t\t\"name\": \"arg1\",\n" +
+                        "\t\t\t\t\t\"value\": \"Address:AUr5QUfeBADq6BMY6Tp5yuMsUNGpsD7nLZ\"\n" +
+                        "\t\t\t\t}, {\n" +
+                        "\t\t\t\t\t\"name\": \"arg2\",\n" +
+                        "\t\t\t\t\t\"value\": \"Address:AecaeSEBkt5GcBCxwz1F41TvdjX3dnKBkJ\"\n" +
+                        "\t\t\t\t}, {\n" +
+                        "\t\t\t\t\t\"name\": \"arg3\",\n" +
+                        "\t\t\t\t\t\"value\": 10\n" +
+                        "\n" +
+                        "\t\t\t\t}]\n" +
+                        "\t\t\t}],\n" +
+                        "\t\t\t\"payer\": \"AUr5QUfeBADq6BMY6Tp5yuMsUNGpsD7nLZ\",\n" +
+                        "\t\t\t\"gasLimit\": 20000,\n" +
+                        "\t\t\t\"gasPrice\": 500,\n" +
+                        "\t\t\t\"signature\": {\n" +
+                        "\t\t\t\t\"m\": 1,\n" +
+                        "\t\t\t\t\"signers\": [\"AUr5QUfeBADq6BMY6Tp5yuMsUNGpsD7nLZ\"]\n" +
+                        "\t\t\t}\n" +
+                        "\t\t}\n" +
+                        "\t}\n" +
+                        "}";
+                //System.out.println(str);
+                com.github.ontio.account.Account acct = new com.github.ontio.account.Account(Helper.hexToBytes("274b0b664d9c1e993c1d62a42f78ba84c379e332aa1d050ce9c1840820acee8b"), ontSdk.defaultSignScheme);
+                Transaction tx1 = ontSdk.makeTransactionByJson(str);
+                //System.out.println(tx.json());
+                ontSdk.addSign(tx1, acct);
+                Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx1.toHexString());
+                System.out.println(obj);
+                System.exit(0);
+            }
 
             List paramList = new ArrayList<>();
             paramList.add("method name");
@@ -42,6 +86,7 @@ public class MakeTxWithJsonDemo {
             list.add(true);
             list.add(100);
             list.add(100000000000L);
+            list.add(Address.decodeBase58("AUr5QUfeBADq6BMY6Tp5yuMsUNGpsD7nLZ").toArray());
             list.add(Helper.hexToBytes("aabb"));
             list.add("hello");
             list2.add(true);
@@ -64,7 +109,8 @@ public class MakeTxWithJsonDemo {
     public static OntSdk getOntSdk() throws Exception {
 
         String ip = "http://127.0.0.1";
-//        String ip = "http://54.222.182.88;
+        ip = "http://polaris1.ont.io";
+        ip = "http://139.219.136.147";
 //        String ip = "http://101.132.193.149";
         String restUrl = ip + ":" + "20334";
         String rpcUrl = ip + ":" + "20336";

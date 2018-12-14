@@ -449,7 +449,10 @@ public class OntSdk {
                     }else if(pre.contains("Long")) {
                         String data = ((String) tmp).replace("Long:","");
                         e.setValue(data);
-                    }else {
+                    }else if(pre.contains("Address")) {
+                        String data = ((String) ele).replace("Address:","");
+                        e.setValue(Address.decodeBase58(data).toArray());
+                    } else {
                         throw new Exception(ErrorCode.OtherError("String type data error: "+ e));
                     }
                 }else if(tmp instanceof Map){
@@ -486,6 +489,11 @@ public class OntSdk {
                 }else if(pre.contains("Long")) {
                     String data = ((String) ele).replace("Long:","");
                     args.add(new BigInteger(data).longValue());
+                }else if(pre.contains("Address")) {
+                    String data = ((String) ele).replace("Address:","");
+                    args.add(Address.decodeBase58(data).toArray());
+                }else {
+                    throw new Exception(ErrorCode.OtherError("String type data error: "+ele));
                 }
             } else if(ele instanceof List){
                 List tmp = new ArrayList();

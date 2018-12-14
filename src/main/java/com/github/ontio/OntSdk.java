@@ -450,7 +450,7 @@ public class OntSdk {
                         String data = ((String) tmp).replace("Long:","");
                         e.setValue(data);
                     }else if(pre.contains("Address")) {
-                        String data = ((String) ele).replace("Address:","");
+                        String data = ((String) tmp).replace("Address:","");
                         e.setValue(Address.decodeBase58(data).toArray());
                     } else {
                         throw new Exception(ErrorCode.OtherError("String type data error: "+ e));

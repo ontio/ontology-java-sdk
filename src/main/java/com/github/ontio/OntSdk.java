@@ -442,7 +442,7 @@ public class OntSdk {
                     String pre = ((String) tmp).substring(0,10);
                     if(pre.contains("String")) {
                         String data = ((String) tmp).replace("String:","");
-                        e.setValue(data);
+                        e.setValue(data.getBytes());
                     }else if(pre.contains("ByteArray")) {
                         String data = ((String) tmp).replace("ByteArray:","");
                         e.setValue(Helper.hexToBytes(data));
@@ -482,7 +482,7 @@ public class OntSdk {
                 String pre = ((String) ele).substring(0,10);
                 if(pre.contains("String")) {
                     String data = ((String) ele).replace("String:","");
-                    args.add(data);
+                    args.add(data.getBytes());
                 }else if(pre.contains("ByteArray")) {
                     String data = ((String) ele).replace("ByteArray:","");
                     args.add(Helper.hexToBytes(data));
@@ -516,7 +516,7 @@ public class OntSdk {
             String operation = (String) func.get("operation");
             List args = (List) func.get("args");
             List paramList = new ArrayList<>();
-            paramList.add(operation);
+            paramList.add(operation.getBytes());
             List args2 = new ArrayList();
             for (int i = 0; i < args.size(); i++) {
                 Object ele = ((Map) args.get(i)).get("value");

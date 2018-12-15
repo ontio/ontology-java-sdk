@@ -550,7 +550,6 @@ public class OntSdk {
 
             List[] paramList = buildInvokeFunctionByJson(JSON.toJSONString(config));
             Transaction[] txs = new Transaction[paramList.length];
-            System.out.println(paramList[0]);
             for(int i=0;i< paramList.length;i++) {
                 byte[] params = BuildParams.createCodeParamsScript(paramList[i]);
                 txs[i] = vm().makeInvokeCodeTransaction(Helper.reverse(contractHash), null, params, payer, gasLimit, gasPrice);

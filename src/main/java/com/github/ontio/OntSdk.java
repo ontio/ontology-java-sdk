@@ -509,29 +509,33 @@ public class OntSdk {
         }
     }
 
-    public List buildInvokeFunctionByJson(String configStr) {
+    public List[] buildInvokeFunctionByJson(String configStr) {
         try {
             Map config = (Map) JSON.parseObject(configStr);
-            Map func = (Map)((List)config.get("functions")).get(0);
-            String operation = (String) func.get("operation");
-            List args = (List) func.get("args");
-            List paramList = new ArrayList<>();
-            paramList.add(operation.getBytes());
-            List args2 = new ArrayList();
-            for (int i = 0; i < args.size(); i++) {
-                Object ele = ((Map) args.get(i)).get("value");
-                buildArgs(args2, ele);
+            List functions = ((List)config.get("functions"));
+            List[] paramLists = new List[functions.size()];
+            for(int i =0;i < functions.size();i++) {
+                Map func = (Map)functions.get(i);
+                String operation = (String) func.get("operation");
+                List args = (List) func.get("args");
+                List paramList = new ArrayList<>();
+                paramList.add(operation.getBytes());
+                List args2 = new ArrayList();
+                for (int j = 0; j < args.size(); j++) {
+                    Object ele = ((Map) args.get(j)).get("value");
+                    buildArgs(args2, ele);
+                }
+                paramList.add(args2);
+                paramLists[i] = paramList;
             }
-            paramList.add(args2);
-            return paramList;
+            return paramLists;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public Transaction makeTransactionByJson(String str) {
-        Transaction tx = null;
+    public Transaction[] makeTransactionByJson(String str) {
         Map map = JSON.parseObject(str);
         Map config = null;
         try {
@@ -544,14 +548,18 @@ public class OntSdk {
             long gasPrice = (int) config.get("gasPrice");
             String contractHash = (String) config.get("contractHash");
 
-            List paramList = buildInvokeFunctionByJson(JSON.toJSONString(config));
-            System.out.println(paramList);
-            byte[] params = BuildParams.createCodeParamsScript(paramList);
-            tx = vm().makeInvokeCodeTransaction(Helper.reverse(contractHash), null, params, payer, gasLimit, gasPrice);
+            List[] paramList = buildInvokeFunctionByJson(JSON.toJSONString(config));
+            Transaction[] txs = new Transaction[paramList.length];
+            System.out.println(paramList[0]);
+            for(int i=0;i< paramList.length;i++) {
+                byte[] params = BuildParams.createCodeParamsScript(paramList[i]);
+                txs[i] = vm().makeInvokeCodeTransaction(Helper.reverse(contractHash), null, params, payer, gasLimit, gasPrice);
+            }
+            return txs;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return tx;
+        return null;
     }
 
     public Map parseTransaction(String txhexstr) throws SDKException {

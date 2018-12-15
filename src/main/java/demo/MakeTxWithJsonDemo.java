@@ -18,7 +18,7 @@ public class MakeTxWithJsonDemo {
         try {
             OntSdk ontSdk = getOntSdk();
             String str = "{\"action\":\"invoke\",\"params\":{\"login\":true,\"url\":\"http://127.0.0.1:80/rawtransaction/txhash\",\"message\":\"will pay 1 ONT in this transaction\",\"invokeConfig\":{\"contractHash\":\"16edbe366d1337eb510c2ff61099424c94aeef02\",\"functions\":[{\"operation\":\"method name\",\"args\":[{\"name\":\"arg0-list\",\"value\":[true,100,\"Long:100000000000\",\"Address:AUr5QUfeBADq6BMY6Tp5yuMsUNGpsD7nLZ\",\"ByteArray:aabb\",\"String:hello\",[true,100],{\"key\":6}]},{\"name\":\"arg1-map\",\"value\":{\"key\":\"String:hello\",\"key1\":\"ByteArray:aabb\",\"key2\":\"Long:100000000000\",\"key3\":true,\"key4\":100,\"key5\":[100],\"key6\":{\"key\":6}}},{\"name\":\"arg2-str\",\"value\":\"String:test\"}]}],\"payer\":\"AUr5QUfeBADq6BMY6Tp5yuMsUNGpsD7nLZ\",\"gasLimit\":20000,\"gasPrice\":500,\"signature\":{\"m\":1,\"signers\":[\"AUr5QUfeBADq6BMY6Tp5yuMsUNGpsD7nLZ\"]}}}}";
-            Transaction tx = ontSdk.makeTransactionByJson(str);
+            Transaction[] txs = ontSdk.makeTransactionByJson(str);
             if(true) {
                 str = "{\n" +
                         "\t\"action\": \"invoke\",\n" +
@@ -57,10 +57,10 @@ public class MakeTxWithJsonDemo {
                         "}";
                 //System.out.println(str);
                 com.github.ontio.account.Account acct = new com.github.ontio.account.Account(Helper.hexToBytes("274b0b664d9c1e993c1d62a42f78ba84c379e332aa1d050ce9c1840820acee8b"), ontSdk.defaultSignScheme);
-                Transaction tx1 = ontSdk.makeTransactionByJson(str);
+                Transaction[] txs1 = ontSdk.makeTransactionByJson(str);
                 //System.out.println(tx.json());
-                ontSdk.addSign(tx1, acct);
-                Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx1.toHexString());
+                ontSdk.addSign(txs1[0], acct);
+                Object obj = ontSdk.getConnect().sendRawTransactionPreExec(txs1[0].toHexString());
                 System.out.println(obj);
                 System.exit(0);
             }
@@ -75,7 +75,7 @@ public class MakeTxWithJsonDemo {
             map.put("key2",100000000000L);
             map.put("key3",true);
             map.put("key4",100);
-            map.put("key","hello");
+            map.put("key","hello".getBytes());
             List list0 = new ArrayList();
             list0.add(100);
             map.put("key5",list0);
@@ -88,14 +88,14 @@ public class MakeTxWithJsonDemo {
             list.add(100000000000L);
             list.add(Address.decodeBase58("AUr5QUfeBADq6BMY6Tp5yuMsUNGpsD7nLZ").toArray());
             list.add(Helper.hexToBytes("aabb"));
-            list.add("hello");
+            list.add("hello".getBytes());
             list2.add(true);
             list2.add(100);
             list.add(list2);
             list.add(map2);
             args2.add(list);
             args2.add(map);
-            args2.add("test");
+            args2.add("test".getBytes());
 
             paramList.add(args2);
             System.out.println("########make by self##############");
@@ -119,7 +119,7 @@ public class MakeTxWithJsonDemo {
         OntSdk wm = OntSdk.getInstance();
         wm.setRpc(rpcUrl);
         wm.setRestful(restUrl);
-        wm.setDefaultConnect(wm.getRestful());
+        wm.setDefaultConnect(wm.getRpc());
 
         wm.openWalletFile("wallet2.dat");
 

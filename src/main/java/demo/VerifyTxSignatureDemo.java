@@ -8,7 +8,6 @@ import com.github.ontio.common.Helper;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.Digest;
 import com.github.ontio.sdk.exception.SDKException;
-import com.sun.xml.internal.ws.server.sei.MessageFiller;
 
 /**
  *

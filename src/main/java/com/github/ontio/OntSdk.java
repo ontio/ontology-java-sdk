@@ -40,6 +40,8 @@ import com.github.ontio.smartcontract.NativeVm;
 import com.github.ontio.smartcontract.NeoVm;
 import com.github.ontio.smartcontract.Vm;
 import com.github.ontio.smartcontract.WasmVm;
+import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
+import com.github.ontio.smartcontract.nativevm.abi.Struct;
 import com.github.ontio.smartcontract.neovm.abi.BuildParams;
 
 import java.io.IOException;
@@ -535,12 +537,32 @@ public class OntSdk {
         return null;
     }
 
+    private Transaction makeNativeTransaction(String contractHash, List paramList, String payer, long gasLimit, long gasPrice) {
+        try {
+            String ONT = "0100000000000000000000000000000000000000";
+            String ONG = "0200000000000000000000000000000000000000";
+            if (contractHash.equals(ONT) || contractHash.equals(ONG)) {
+                List list = new ArrayList();
+                Struct struct = new Struct();
+                String method = new String((byte[]) paramList.get(0));
+                struct.list = (List) paramList.get(1);
+                list.add(new Struct().list);
+                byte[] args = NativeBuildParams.createCodeParamsScript(list);
+                return vm().buildNativeParams(new Address(Helper.hexToBytes(Helper.reverse(contractHash))), method, args, payer, gasLimit, gasPrice);
+            }
+        } catch (SDKException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public Transaction[] makeTransactionByJson(String str) {
         Map map = JSON.parseObject(str);
         Map config = null;
         try {
-            if (!((String) map.get("action")).equals("invoke")) {
-                throw new Exception(ErrorCode.OtherError("not found action is invoke"));
+            String action = ((String) map.get("action"));
+            if (!action.equals("invoke") && !action.equals("invokeRead")) {
+                throw new Exception(ErrorCode.OtherError("not found action is invoke or invokeRead"));
             }
             config = (Map) ((Map) map.get("params")).get("invokeConfig");
             String payer = (String) config.get("payer");
@@ -551,8 +573,12 @@ public class OntSdk {
             List[] paramList = buildInvokeFunctionByJson(JSON.toJSONString(config));
             Transaction[] txs = new Transaction[paramList.length];
             for(int i=0;i< paramList.length;i++) {
-                byte[] params = BuildParams.createCodeParamsScript(paramList[i]);
-                txs[i] = vm().makeInvokeCodeTransaction(Helper.reverse(contractHash), null, params, payer, gasLimit, gasPrice);
+                if(contractHash.contains("00000000000000000000000000000000000000")){
+                    txs[i] = makeNativeTransaction(contractHash,paramList[i],payer, gasLimit, gasPrice);
+                } else {
+                    byte[] params = BuildParams.createCodeParamsScript(paramList[i]);
+                    txs[i] = vm().makeInvokeCodeTransaction(Helper.reverse(contractHash), null, params, payer, gasLimit, gasPrice);
+                }
             }
             return txs;
         } catch (Exception e) {

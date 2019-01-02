@@ -240,9 +240,15 @@ public class OntId {
                 Map publicKeyMap = new HashMap();
                 publicKeyMap.put("PubKeyId", ontid + "#keys-" + String.valueOf(br.readInt()));
                 byte[] pubKey = br.readVarBytes();
-                publicKeyMap.put("Type", KeyType.fromLabel(pubKey[0]));
-                publicKeyMap.put("Curve", Curve.fromLabel(pubKey[1]));
-                publicKeyMap.put("Value", Helper.toHexString(pubKey));
+                if(pubKey.length == 33){
+                    publicKeyMap.put("Type", KeyType.ECDSA.name());
+                    publicKeyMap.put("Curve", Curve.P256);
+                    publicKeyMap.put("Value", Helper.toHexString(pubKey));
+                } else {
+                    publicKeyMap.put("Type", KeyType.fromLabel(pubKey[0]));
+                    publicKeyMap.put("Curve", Curve.fromLabel(pubKey[1]));
+                    publicKeyMap.put("Value", Helper.toHexString(pubKey));
+                }
                 pubKeyList.add(publicKeyMap);
             } catch (Exception e) {
                 break;

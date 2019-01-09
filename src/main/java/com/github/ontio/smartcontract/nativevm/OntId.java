@@ -364,7 +364,7 @@ public class OntId {
         if (recovery != null) {
             addr = recovery.replace(Common.didont, "");
         } else {
-            addr = ontid.replace(Common.didont, "");
+            addr = ontid;
         }
         sdk.signTx(tx, addr, password,salt);
         sdk.addSign(tx, payerAcct);

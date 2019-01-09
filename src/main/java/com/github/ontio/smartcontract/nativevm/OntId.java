@@ -463,7 +463,7 @@ public class OntId {
         Transaction tx = makeRemovePubKey(ontid, recovery, password,salt, removePubkey, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         String addr;
         if (recovery == null) {
-            addr = ontid.replace(Common.didont, "");
+            addr = ontid;//.replace(Common.didont, "");
         } else {
             addr = recovery.replace(Common.didont, "");
         }
@@ -708,7 +708,7 @@ public class OntId {
         }
         String addr = ontid.replace(Common.didont, "");
         Transaction tx = makeAddAttributes(ontid, password, salt,attributes, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
-        sdk.signTx(tx, addr, password,salt);
+        sdk.signTx(tx, ontid, password,salt);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
@@ -775,7 +775,7 @@ public class OntId {
         }
         String addr = ontid.replace(Common.didont, "");
         Transaction tx = makeRemoveAttribute(ontid, password, salt,path, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
-        sdk.signTx(tx, addr, password,salt);
+        sdk.signTx(tx, ontid, password,salt);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {

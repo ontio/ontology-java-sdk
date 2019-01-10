@@ -57,66 +57,52 @@ DeployCodeTransaction t = (DeployCodeTransaction) ontSdk.getConnect().getTransac
 ### Invocation of a NEO smart contract
 
 Process overview
-   1. Read the ABI file containing the smart contract
-   2. Construct the function that calls the smart contract
-   3. Construct transaction
-   4. Sign transaction
-   5. Send transaction
+   1. Construct the function parameters that calls the smart contract
+   2. Construct transaction
+   3. Signature transaction
+   4. Send transaction
 
 ##### Example
 
 ```
-//Load the abi file containing the smart contract
-InputStream is = new FileInputStream("C:\\ZX\\NeoContract1.abi.json");
-byte[] bys = new byte[is.available()];
-is.read(bys);
-is.close();
-String abi = new String(bys);
-            
-//Interpret the abi file
-AbiInfo abiinfo = JSON.parseObject(abi, AbiInfo.class);
-System.out.println("codeHash:"+abiinfo.getHash());
-System.out.println("Entrypoint:"+abiinfo.getEntrypoint());
-System.out.println("Functions:"+abiinfo.getFunctions());
-System.out.println("Events"+abiinfo.getEvents());
+List paramList = new ArrayList<>();
+paramList.add("testHello".getBytes());
 
-//Set the codeAddress of the smart contract
-ontSdk.setCodeAddress(abiinfo.getHash());
+List args = new ArrayList();
+args.add(true);
+args.add(100);
+args.add("test".getBytes());
+args.add("test");
+args.add(account.getAddressU160().toArray());
 
-//Obtain the account information
-Identity did = ontSdk.getWalletMgr().getIdentitys().get(0);
-AccountInfo info = ontSdk.getWalletMgr().getAccountInfo(did.ontid,"passwordtest");
+paramList.add(args);
+byte[] params = BuildParams.createCodeParamsScript(paramList);
 
-//Construct the smart contract function
-AbiFunction func = abiinfo.getFunction("AddAttribute");
-System.out.println(func.getParameters());
-func.setParamsValue(did.ontid.getBytes(),"key".getBytes(),"bytes".getBytes(),"values02".getBytes(),Helper.hexToBytes(info.pubkey));
+String result = invokeContract(params, account, 20000, 500,true);
+System.out.println(result);
 
-//Call a smart contract, sendInvokeSmartCodeWithSign method encapsulates a structured transaction, signing a transaction, sending a transaction step
-String hash = ontSdk.vm().sendInvokeSmartCodeWithSign(did.ontid, "passwordtest", func, (byte) VmType.NEOVM.value(),gaslimit,gasprice);
+public static String invokeContract(byte[] params, Account payerAcct, long gaslimit, long gasprice, boolean preExec) throws Exception{
+    if(payerAcct == null){
+        throw new SDKException("params should not be null");
+    }
+    if(gaslimit < 0 || gasprice< 0){
+        throw new SDKException("gaslimit or gasprice should not be less than 0");
+    }
+    Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractAddress),null,params,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
+    ontSdk.addSign(tx, payerAcct);
+    Object result = null;
+    if(preExec) {
+        result = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+    }else {
+        result = ontSdk.getConnect().sendRawTransaction(tx.toHexString());
+        return tx.hash().toString();
+    }
+    return result.toString();
+}
 
 ```
 
-### ABI file structure
 
-```
-public class AbiInfo {
-    public String hash;
-    public String entrypoint;
-    public List<AbiFunction> functions;
-    public List<AbiEvent> events;
-}
-public class AbiFunction {
-    public String name;
-    public String returntype;
-    public List<Parameter> parameters;
-}
-public class Parameter {
-    public String name;
-    public String type;
-    public String value;
-}
-```
 
 ###  Invocation of a WASM smart contract
 

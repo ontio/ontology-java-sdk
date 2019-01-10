@@ -63,68 +63,52 @@ public DeployCode makeDeployCodeTransaction(String codeStr, boolean needStorage,
 
 * 基本流程：
 
- 1. 读取智能合约的abi文件；
- 2. 构造调用智能合约函数；
- 3. 构造交易；
- 4. 交易签名(预执行不需要签名)；
- 5. 发送交易。
+ 1. 构造调用智能合约调用参数；
+ 2. 构造交易；
+ 3. 交易签名(预执行不需要签名)；
+ 4. 发送交易。
 
 * 示例
 
 ```java
-//读取智能合约的abi文件
-InputStream is = new FileInputStream("C:\\ZX\\NeoContract1.abi.json");
-byte[] bys = new byte[is.available()];
-is.read(bys);
-is.close();
-String abi = new String(bys);
 
-//解析abi文件
-AbiInfo abiinfo = JSON.parseObject(abi, AbiInfo.class);
-System.out.println("codeHash:"+abiinfo.getHash());
-System.out.println("Entrypoint:"+abiinfo.getEntrypoint());
-System.out.println("Functions:"+abiinfo.getFunctions());
-System.out.println("Events"+abiinfo.getEvents());
+List paramList = new ArrayList<>();
+paramList.add("testHello".getBytes());
 
-//设置智能合约codeAddress
-ontSdk.setCodeAddress(abiinfo.getHash());
+List args = new ArrayList();
+args.add(true);
+args.add(100);
+args.add("test".getBytes());
+args.add("test");
+args.add(account.getAddressU160().toArray());
 
-//获取账号信息
-Identity did = ontSdk.getWalletMgr().getIdentitys().get(0);
-AccountInfo info = ontSdk.getWalletMgr().getAccountInfo(did.ontid,"passwordtest");
+paramList.add(args);
+byte[] params = BuildParams.createCodeParamsScript(paramList);
 
-//构造智能合约函数
-AbiFunction func = abiinfo.getFunction("AddAttribute");
-System.out.println(func.getParameters());
-func.setParamsValue(did.ontid.getBytes(),"key".getBytes(),"bytes".getBytes(),"values02".getBytes(),Helper.hexToBytes(info.pubkey));
-System.out.println(func);
-//预执行
-Object obj =  ontSdk.neovm().sendTransaction(Helper.reverse("872a56c4583570e46dde1346137b78fdb9fd3ce1"),null,null,0,0,func, true);
-System.out.println(obj);
-//执行
-String hash = ontSdk.neovm().sendTransaction(Helper.reverse("872a56c4583570e46dde1346137b78fdb9fd3ce1"), acct1, acct1, 20060313, 500, func, true);
-```
+String result = invokeContract(params, account, 20000, 500,true);
+System.out.println(result);
 
-* AbiInfo结构(NEO合约调用的时候需要，WASM合约不需要)
-
-```java
-public class AbiInfo {
-    public String hash;
-    public String entrypoint;
-    public List<AbiFunction> functions;
-    public List<AbiEvent> events;
-}
-public class AbiFunction {
-    public String name;
-    public String returntype;
-    public List<Parameter> parameters;
-}
-public class Parameter {
-    public String name;
-    public String type;
-    public String value;
+public static String invokeContract(byte[] params, Account payerAcct, long gaslimit, long gasprice, boolean preExec) throws Exception{
+    if(payerAcct == null){
+        throw new SDKException("params should not be null");
+    }
+    if(gaslimit < 0 || gasprice< 0){
+        throw new SDKException("gaslimit or gasprice should not be less than 0");
+    }
+    Transaction tx = ontSdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractAddress),null,params,payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
+    ontSdk.addSign(tx, payerAcct);
+    Object result = null;
+    if(preExec) {
+        result = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+    }else {
+        result = ontSdk.getConnect().sendRawTransaction(tx.toHexString());
+        return tx.hash().toString();
+    }
+    return result.toString();
 }
 ```
+
+
 
 #### WASM智能合约调用-目前不支持WASM
 

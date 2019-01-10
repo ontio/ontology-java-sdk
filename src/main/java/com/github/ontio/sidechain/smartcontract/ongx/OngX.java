@@ -7,11 +7,11 @@ import com.github.ontio.common.Address;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.asset.State;
-import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.utils;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
+import com.github.ontio.sidechain.core.transaction.Transaction;
 import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
 import com.github.ontio.smartcontract.nativevm.abi.Struct;
 
@@ -34,54 +34,69 @@ public class OngX {
 
 
     public String sendTransfer(Account sendAcct, String recvAddr, long amount, Account payerAcct, long gaslimit, long gasprice) throws Exception {
-        Transaction tx = sdk.nativevm().ong().makeTransfer(sendAcct.getAddressU160().toBase58(),recvAddr,amount,
+        Transaction tx = makeTransfer(sendAcct.getAddressU160().toBase58(),recvAddr,amount,
                 payerAcct.getAddressU160().toBase58(), gaslimit,gasprice);
-        sdk.signTx(tx, new Account[][]{{sendAcct}});
+        sdk.sidechainVm().signTx(tx, new Account[][]{{sendAcct}});
         if(!sendAcct.equals(payerAcct)){
-            sdk.addSign(tx, payerAcct);
+            sdk.sidechainVm().addSign(tx, payerAcct);
         }
         sdk.getSideChainConnectMgr().sendRawTransaction(tx.toHexString());
         return tx.toHexString();
     }
-
     public Transaction makeTransfer(String sendAddr, String recvAddr, long amount, String payer, long gaslimit, long gasprice) throws Exception {
-        return sdk.nativevm().ong().makeTransfer(sendAddr,recvAddr,amount,payer,gaslimit,gasprice);
+        if(sendAddr==null || sendAddr.equals("")|| recvAddr==null||recvAddr.equals("") ||
+                payer==null||payer.equals("")){
+            throw new SDKException(ErrorCode.ParamErr("parameters should not be null"));
+        }
+        if (amount <= 0 || gasprice < 0 || gaslimit < 0) {
+            throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
+        }
+
+
+        List list = new ArrayList();
+        List listStruct = new ArrayList();
+        listStruct.add(new Struct().add(Address.decodeBase58(sendAddr),Address.decodeBase58(recvAddr),amount));
+        list.add(listStruct);
+        byte[] args = NativeBuildParams.createCodeParamsScript(list);
+        Transaction tx = sdk.sidechainVm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)),"transfer",args,payer,gaslimit, gasprice);
+        return tx;
     }
+
     public Transaction makeTransfer(State[] states, String payer, long gaslimit, long gasprice) throws Exception {
-        return sdk.nativevm().ong().makeTransfer(states,payer,gaslimit,gasprice);
+        return makeTransfer(states,payer,gaslimit,gasprice);
     }
 
     public String sendApprove(Account sendAcct, String recvAddr, long amount, Account payerAcct, long gaslimit, long gasprice) throws Exception {
-        Transaction tx = sdk.nativevm().ong().makeApprove(sendAcct.getAddressU160().toBase58(),recvAddr,amount,
+        Transaction tx = makeApprove(sendAcct.getAddressU160().toBase58(),recvAddr,amount,
                 payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
-        sdk.signTx(tx, new Account[][]{{sendAcct}});
+        sdk.sidechainVm().signTx(tx, new Account[][]{{sendAcct}});
         if(!sendAcct.equals(payerAcct)){
-            sdk.addSign(tx, payerAcct);
+            sdk.sidechainVm().addSign(tx, payerAcct);
         }
         sdk.getSideChainConnectMgr().sendRawTransaction(tx.toHexString());
         return tx.hash().toHexString();
     }
     public Transaction makeApprove(String sendAddr,String recvAddr,long amount,String payer,long gaslimit,long gasprice) throws Exception {
-        return sdk.nativevm().ong().makeApprove(sendAddr,recvAddr,amount,payer,gaslimit,gasprice);
+        return makeApprove(sendAddr,recvAddr,amount,payer,gaslimit,gasprice);
     }
 
     public String sendTransferFrom(Account sendAcct, String fromAddr, String toAddr, long amount, Account payerAcct, long gaslimit, long gasprice) throws Exception {
-        Transaction tx = sdk.nativevm().ong().makeTransferFrom(sendAcct.getAddressU160().toBase58(),fromAddr,toAddr,amount,
+        Transaction tx = makeTransferFrom(sendAcct.getAddressU160().toBase58(),fromAddr,toAddr,amount,
                 payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
-        sdk.signTx(tx, new Account[][]{{sendAcct}});
+        sdk.sidechainVm().signTx(tx, new Account[][]{{sendAcct}});
         if(!sendAcct.equals(payerAcct)){
-            sdk.addSign(tx, payerAcct);
+            sdk.sidechainVm().addSign(tx, payerAcct);
         }
         sdk.getSideChainConnectMgr().sendRawTransaction(tx.toHexString());
         return tx.hash().toHexString();
     }
 
     public Transaction makeTransferFrom(String sendAddr, String fromAddr, String toAddr,long amount,String payer,long gaslimit,long gasprice) throws Exception {
-        return sdk.nativevm().ong().makeTransferFrom(sendAddr,fromAddr,toAddr,amount,payer,gaslimit,gasprice);
+        return makeTransferFrom(sendAddr,fromAddr,toAddr,amount,payer,gaslimit,gasprice);
     }
 
     public String queryName() throws Exception {
-        Transaction tx = this.sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)), "name", new byte[]{0}, (String)null, 0L, 0L);
+        Transaction tx = this.sdk.sidechainVm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)), "name", new byte[]{0}, (String)null, 0L, 0L);
         Object obj = sdk.getSideChainConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         return new String(Helper.hexToBytes(res));
@@ -92,7 +107,7 @@ public class OngX {
      * @throws Exception
      */
     public String querySymbol() throws Exception {
-        Transaction tx = this.sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)), "symbol", new byte[]{0}, (String)null, 0L, 0L);
+        Transaction tx = this.sdk.sidechainVm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)), "symbol", new byte[]{0}, (String)null, 0L, 0L);
         Object obj = sdk.getSideChainConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         return new String(Helper.hexToBytes(res));
@@ -103,14 +118,14 @@ public class OngX {
      * @throws Exception
      */
     public long queryDecimals() throws Exception {
-        Transaction tx = this.sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)), "decimals", new byte[]{0}, (String)null, 0L, 0L);
+        Transaction tx = this.sdk.sidechainVm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)), "decimals", new byte[]{0}, (String)null, 0L, 0L);
         Object obj = sdk.getSideChainConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         return "".equals(res) ? 0L : Long.valueOf(Helper.reverse(res), 16);
     }
 
     public long queryTotalSupply() throws Exception {
-        Transaction tx = this.sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)), "totalSupply", new byte[]{0}, (String)null, 0L, 0L);
+        Transaction tx = this.sdk.sidechainVm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)), "totalSupply", new byte[]{0}, (String)null, 0L, 0L);
         Object obj = sdk.getSideChainConnectMgr().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject)obj).getString("Result");
         return res != null && !res.equals("") ? Long.valueOf(Helper.reverse(res), 16) : 0L;
@@ -130,7 +145,7 @@ public class OngX {
             List list = new ArrayList();
             list.add(Address.decodeBase58(address));
             byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-            Transaction tx = this.sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)), "balanceOf", arg, (String)null, 0L, 0L);
+            Transaction tx = this.sdk.sidechainVm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)), "balanceOf", arg, (String)null, 0L, 0L);
             Object obj = sdk.getSideChainConnectMgr().sendRawTransactionPreExec(tx.toHexString());
             String res = ((JSONObject)obj).getString("Result");
             return res != null && !res.equals("") ? Long.valueOf(Helper.reverse(res), 16) : 0L;
@@ -144,7 +159,7 @@ public class OngX {
             List list = new ArrayList();
             list.add((new Struct()).add(new Object[]{Address.decodeBase58(fromAddr), Address.decodeBase58(toAddr)}));
             byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-            Transaction tx = this.sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)), "allowance", arg, (String)null, 0L, 0L);
+            Transaction tx = this.sdk.sidechainVm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)), "allowance", arg, (String)null, 0L, 0L);
             Object obj = sdk.getSideChainConnectMgr().sendRawTransactionPreExec(tx.toHexString());
             String res = ((JSONObject)obj).getString("Result");
             return res != null && !res.equals("") ? Long.valueOf(Helper.reverse(res), 16) : 0L;
@@ -163,10 +178,10 @@ public class OngX {
         struct.add(Address.decodeBase58(address));
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)),"setSyncAddr",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
-        sdk.signTx(tx, new Account[][]{{payer}});
+        Transaction tx = sdk.sidechainVm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)),"setSyncAddr",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
+        sdk.sidechainVm().signTx(tx, new Account[][]{{payer}});
         for(int i=0;i<accounts.length;i++){
-            sdk.addMultiSign(tx, M,allPubkeys, accounts[i]);
+            sdk.sidechainVm().addMultiSign(tx, M,allPubkeys, accounts[i]);
         }
         sdk.getSideChainConnectMgr().sendRawTransaction(tx.toHexString());
         return tx.hash().toHexString();
@@ -181,10 +196,10 @@ public class OngX {
         struct.add(Address.decodeBase58(address));
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)),"setSyncAddr",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
-        sdk.signTx(tx, new Account[][]{{account}});
+        Transaction tx = sdk.sidechainVm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)),"setSyncAddr",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
+        sdk.sidechainVm().signTx(tx, new Account[][]{{account}});
         if(!account.equals(payer)){
-            sdk.addSign(tx, payer);
+            sdk.sidechainVm().addSign(tx, payer);
         }
         sdk.getSideChainConnectMgr().sendRawTransaction(tx.toHexString());
         return tx.hash().toHexString();
@@ -202,8 +217,8 @@ public class OngX {
         }
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)),"ongSwap",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
-        sdk.addSign(tx, account);
+        Transaction tx = sdk.sidechainVm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)),"ongSwap",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
+        sdk.sidechainVm().addSign(tx, account);
         sdk.getSideChainConnectMgr().sendRawTransaction(tx.toHexString());
         return tx.hash().toHexString();
 
@@ -229,8 +244,8 @@ public class OngX {
         struct.add(swap.address, swap.value);
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)),"ongxSwap",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
-        sdk.addSign(tx, account);
+        Transaction tx = sdk.sidechainVm().buildNativeParams(new Address(Helper.hexToBytes(ongXContract)),"ongxSwap",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
+        sdk.sidechainVm().addSign(tx, account);
         sdk.getSideChainConnectMgr().sendRawTransaction(tx.toHexString());
         return tx.hash().toHexString();
     }

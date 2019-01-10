@@ -213,6 +213,17 @@ public class ConnectMgr {
 
     }
 
+    public String getBlockBytes(int height) throws ConnectorException, IOException, SDKException {
+        if (height < 0) {
+            throw new SDKException(ErrorCode.ParamError);
+        }
+        return connector.getBlockBytes(height);
+    }
+
+    public String getBlockBytes(String blockHash) throws ConnectorException, IOException {
+        return connector.getBlockBytes(blockHash);
+    }
+
     public Object getBalance(String address) throws ConnectorException, IOException {
         return connector.getBalance(address);
     }
@@ -280,7 +291,7 @@ public class ConnectMgr {
     public int getNetworkId() throws ConnectorException, IOException {
         return connector.getNetworkId();
     }
-    public String getSideChainData(String sideChianId) throws ConnectorException, IOException {
+    public String getSideChainData(int sideChianId) throws ConnectorException, IOException {
         return connector.getSideChainData(sideChianId);
     }
 

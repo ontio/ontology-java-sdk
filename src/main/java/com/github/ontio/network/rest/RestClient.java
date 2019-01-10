@@ -129,6 +129,25 @@ public class RestClient extends AbstractConnector {
             throw new RestfulException(ErrorCode.BlockDeserializeError, e);
         }
     }
+    @Override
+    public String getBlockBytes(int height) throws ConnectorException, IOException {
+        String rs = api.getBlock(height, "1");
+        Result rr = JSON.parseObject(rs, Result.class);
+        if (rr.Error != 0) {
+            throw new RestfulException(to(rr));
+        }
+        return (String) rr.Result;
+    }
+
+    @Override
+    public String getBlockBytes(String hash) throws ConnectorException, IOException {
+        String rs = api.getBlock(hash, "1");
+        Result rr = JSON.parseObject(rs, Result.class);
+        if (rr.Error != 0) {
+            throw new RestfulException(to(rr));
+        }
+        return (String) rr.Result;
+    }
 
     @Override
     public Object getBalance(String address) throws RestfulException {
@@ -299,7 +318,7 @@ public class RestClient extends AbstractConnector {
     }
 
     @Override
-    public String getSideChainData(String sideChainID) throws ConnectorException, IOException {
+    public String getSideChainData(int sideChainID) throws ConnectorException, IOException {
         return null;
     }
 

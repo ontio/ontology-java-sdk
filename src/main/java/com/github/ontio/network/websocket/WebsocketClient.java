@@ -180,6 +180,31 @@ public class WebsocketClient extends AbstractConnector {
         mWebSocket.send(JSON.toJSONString(map));
         return null;
     }
+
+    @Override
+    public String getBlockBytes(int height) throws ConnectorException, IOException {
+        Map map = new HashMap<>();
+        map.put("Action", "getblockbyheight");
+        map.put("Version", "1.0.0");
+        map.put("Height",height);
+        map.put("Raw","1");
+        map.put("Id", generateReqId());
+        mWebSocket.send(JSON.toJSONString(map));
+        return null;
+    }
+
+    @Override
+    public String getBlockBytes(String hash) throws ConnectorException, IOException {
+        Map map = new HashMap<>();
+        map.put("Action", "getblockbyhash");
+        map.put("Version", "1.0.0");
+        map.put("Hash",hash);
+        map.put("Raw","1");
+        map.put("Id", generateReqId());
+        mWebSocket.send(JSON.toJSONString(map));
+        return null;
+    }
+
     @Override
     public Block getBlockJson(int height) throws ConnectorException, IOException{
         Map map = new HashMap<>();
@@ -342,7 +367,7 @@ public class WebsocketClient extends AbstractConnector {
     }
 
     @Override
-    public String getSideChainData(String sideChainID) throws ConnectorException, IOException {
+    public String getSideChainData(int sideChainID) throws ConnectorException, IOException {
         return null;
     }
 

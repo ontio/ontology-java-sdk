@@ -168,6 +168,18 @@ public class RpcClient extends AbstractConnector {
     }
 
     @Override
+    public String getBlockBytes(int height) throws ConnectorException, IOException {
+        Object result = rpc.call("getblock",height);
+        return (String) result;
+    }
+
+    @Override
+    public String getBlockBytes(String hash) throws ConnectorException, IOException {
+        Object result = rpc.call("getblock",hash);
+        return (String) result;
+    }
+
+    @Override
     public Object getSmartCodeEvent(int height) throws ConnectorException, IOException {
         Object result = rpc.call("getsmartcodeevent", height);
         try {
@@ -273,7 +285,7 @@ public class RpcClient extends AbstractConnector {
     }
 
     @Override
-    public String getSideChainData(String sideChainID) throws ConnectorException, IOException {
+    public String getSideChainData(int sideChainID) throws ConnectorException, IOException {
         Object result = rpc.call("getsidechaindata", sideChainID);
         try {
             return (String) result;

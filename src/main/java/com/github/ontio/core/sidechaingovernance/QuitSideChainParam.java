@@ -4,9 +4,9 @@ package com.github.ontio.core.sidechaingovernance;
 import com.github.ontio.common.Address;
 
 public class QuitSideChainParam {
-    public String sideChainID;
+    public long sideChainID;
     public Address address;
-    public QuitSideChainParam(String sideChainID, Address address){
+    public QuitSideChainParam(long sideChainID, Address address){
         this.sideChainID = sideChainID;
         this.address = address;
     }

@@ -5,11 +5,11 @@ import com.github.ontio.account.Account;
 import com.github.ontio.common.*;
 import com.github.ontio.core.governance.*;
 import com.github.ontio.core.sidechaingovernance.NodeToSideChainParams;
-import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.utils;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
+import com.github.ontio.sidechain.core.transaction.Transaction;
 import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
 import com.github.ontio.smartcontract.nativevm.abi.Struct;
 
@@ -32,16 +32,6 @@ public class Governance {
         this.sdk = sdk;
     }
 
-    public String getSideChainId() throws ConnectorException, IOException, SDKException {
-
-        String res =  sdk.getSideChainConnectMgr().getStorage(Helper.reverse(contractAddress), Helper.toHexString(SIDE_CHAIN_ID.getBytes()));
-        if(res == null || res.equals("")){
-            return null;
-        }
-        ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(res));
-        BinaryReader reader = new BinaryReader(bais);
-        return reader.readVarString();
-    }
 
     public GovernanceView getGovernanceView() throws SDKException, ConnectorException, IOException, SDKException {
         if(sdk.getSideChainConnectMgr() == null){
@@ -131,11 +121,11 @@ public class Governance {
         struct.add(Helper.hexToBytes(sideChainData));
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"commitDpos",
+        Transaction tx = sdk.sidechainVm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"commitDpos",
                 args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
-        sdk.signTx(tx,new Account[][]{{account}});
+        sdk.sidechainVm().signTx(tx,new Account[][]{{account}});
         if(!account.equals(payer)){
-            sdk.addSign(tx,payer);
+            sdk.sidechainVm().addSign(tx,payer);
         }
         sdk.getSideChainConnectMgr().sendRawTransaction(tx.toHexString());
         return tx.hash().toString();
@@ -167,10 +157,10 @@ public class Governance {
         }
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"inputPeerPoolMap",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
-        sdk.signTx(tx,new Account[][]{{account}});
+        Transaction tx = sdk.sidechainVm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"inputPeerPoolMap",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
+        sdk.sidechainVm().signTx(tx,new Account[][]{{account}});
         if(!account.equals(payer)){
-            sdk.addSign(tx,payer);
+            sdk.sidechainVm().addSign(tx,payer);
         }
         sdk.getSideChainConnectMgr().sendRawTransaction(tx.toHexString());
         return tx.hash().toString();
@@ -187,10 +177,10 @@ public class Governance {
         struct.add(configuration.N,configuration.C,configuration.K,configuration.L,configuration.BlockMsgDelay,configuration.HashMsgDelay,configuration.PeerHandshakeTimeout,configuration.MaxBlockChangeView);
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"inputConfig",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
-        sdk.signTx(tx,new Account[][]{{account}});
+        Transaction tx = sdk.sidechainVm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"inputConfig",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
+        sdk.sidechainVm().signTx(tx,new Account[][]{{account}});
         if(!account.equals(payer)){
-            sdk.addSign(tx,payer);
+            sdk.sidechainVm().addSign(tx,payer);
         }
         sdk.getSideChainConnectMgr().sendRawTransaction(tx.toHexString());
         return tx.hash().toString();
@@ -205,10 +195,10 @@ public class Governance {
         struct.add(param.candidateFeeSplitNum, param.A, param.B,param.yita);
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"inputGlobalParam",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
-        sdk.signTx(tx,new Account[][]{{account}});
+        Transaction tx = sdk.sidechainVm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"inputGlobalParam",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
+        sdk.sidechainVm().signTx(tx,new Account[][]{{account}});
         if(!account.equals(payer)){
-            sdk.addSign(tx,payer);
+            sdk.sidechainVm().addSign(tx,payer);
         }
         sdk.getSideChainConnectMgr().sendRawTransaction(tx.toHexString());
         return tx.hash().toString();
@@ -226,10 +216,10 @@ public class Governance {
         }
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"inputSplitCurve",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
-        sdk.signTx(tx,new Account[][]{{account}});
+        Transaction tx = sdk.sidechainVm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"inputSplitCurve",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
+        sdk.sidechainVm().signTx(tx,new Account[][]{{account}});
         if(!account.equals(payer)){
-            sdk.addSign(tx,payer);
+            sdk.sidechainVm().addSign(tx,payer);
         }
         sdk.getSideChainConnectMgr().sendRawTransaction(tx.toHexString());
         return tx.hash().toString();
@@ -243,10 +233,10 @@ public class Governance {
         struct.add(view.view, view.height, view.txhash);
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"inputGovernanceView",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
-        sdk.signTx(tx,new Account[][]{{account}});
+        Transaction tx = sdk.sidechainVm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"inputGovernanceView",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
+        sdk.sidechainVm().signTx(tx,new Account[][]{{account}});
         if(!account.equals(payer)){
-            sdk.addSign(tx,payer);
+            sdk.sidechainVm().addSign(tx,payer);
         }
         sdk.getSideChainConnectMgr().sendRawTransaction(tx.toHexString());
         return tx.hash().toString();

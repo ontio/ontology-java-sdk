@@ -1098,9 +1098,12 @@ public class Governance {
         return curve;
     }
 
-    public InputPeerPoolMapParam getInputPeerPoolMapParam(String sideChainId) throws ConnectorException, IOException, SDKException {
+    public InputPeerPoolMapParam getInputPeerPoolMapParam(int sideChainId) throws ConnectorException, IOException, SDKException {
         Map peerPoolMap = getPeerPoolMap();
-        byte[] sideChainIdBytes = sideChainId.getBytes();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        BinaryWriter bw = new BinaryWriter(baos);
+        bw.writeInt(sideChainId);
+        byte[] sideChainIdBytes = baos.toByteArray();
         byte[] sideChainNodeInfoBytes = SIDE_CHAIN_NODE_INFO.getBytes();
         byte[] key = new byte[sideChainIdBytes.length + sideChainNodeInfoBytes.length];
         System.arraycopy(sideChainNodeInfoBytes,0, key,0,sideChainNodeInfoBytes.length);

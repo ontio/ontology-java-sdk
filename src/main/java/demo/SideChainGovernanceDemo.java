@@ -5,10 +5,12 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
+import com.github.ontio.core.block.Block;
 import com.github.ontio.core.sidechaingovernance.*;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.sdk.wallet.Identity;
+import com.github.ontio.sidechain.smartcontract.ongx.Swap;
 import com.github.ontio.smartcontract.nativevm.SideChainGovernance;
 
 import java.util.Base64;
@@ -17,25 +19,21 @@ public class SideChainGovernanceDemo {
     public static void main(String[] args) throws Exception {
         OntSdk sdk = OntSdk.getInstance();
         sdk.openWalletFile("wallet2.dat");
-        sdk.setRpc("http://139.219.128.220:20336");
+        String menghangOld = "http://139.219.128.220:20336";
+        String menghangNew = "http://138.91.6.125:20336";
+        String menghangSideChain = "http://138.91.6.125:30336";
+        sdk.setRpc(menghangNew);
+        sdk.setSideChainRpc(menghangSideChain);
         SideChainGovernance sideChainGovernance = new SideChainGovernance(sdk);
         String password = "111111";
         Account account = sdk.getWalletMgr().getAccount("AHX1wzvdw9Yipk7E9MuLY4GGX4Ym9tHeDe",password);
-        Identity identity = sdk.getWalletMgr().getWallet().getIdentity("did:ont:Abrc5byDEZm1CnQb3XjAosEt34DD4w5Z1o");
+        Identity identity = sdk.getWalletMgr().getWallet().getIdentity("did:ont:AZRihr5uB1G2N3SQ6aa7ABvi5EZt9rFoQw");
         String sideChainContractAddr = "0000000000000000000000000000000000000008";
-        if(false){
-            System.out.println(sideChainGovernance.getSideChain("123456"));
-//            System.out.println(sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
-            return;
-        }
-        if(true){
-            System.out.println(sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
-            return;
-        }
 
         //梦航
-//        Account adminOntIdAcct = getAccount("cCQnie0Dd8aQPyY+9UBFw2x2cLn2RMogKqhM8OkyjJNrNTvlcVaYGRENfy2ErF7Q","passwordtest","ARiwjLzjzLKZy8V43vm6yUcRG9b56DnZtY","3e1zvaLjtVuPrQ1o7oJsQA==");
-//        String adminPrivateKey =Helper.toHexString(adminOntIdAcct.serializePrivateKey());
+        Account adminOntIdAcct = getAccount("cCQnie0Dd8aQPyY+9UBFw2x2cLn2RMogKqhM8OkyjJNrNTvlcVaYGRENfy2ErF7Q","passwordtest","ARiwjLzjzLKZy8V43vm6yUcRG9b56DnZtY","3e1zvaLjtVuPrQ1o7oJsQA==");
+        String adminPrivateKey =Helper.toHexString(adminOntIdAcct.serializePrivateKey());
+//        sdk.getWalletMgr().createIdentityFromPriKey(password, adminPrivateKey);
         Identity adminIndentity = sdk.getWalletMgr().getWallet().getIdentity("did:ont:ARiwjLzjzLKZy8V43vm6yUcRG9b56DnZtY");
         //梦航
         Account account1 = getAccount("wR9S/JYwMDfCPWFGEy5DEvWfU14k9suZuL4+woGtfhZJf5+KyL9VJqMi/wGTOd1i","passwordtest","AZqk4i7Zhfhc1CRUtZYKrLw4YTSq4Y9khN","ZaIL8DxNaQ91fkMHAdiBjQ==");
@@ -52,106 +50,150 @@ public class SideChainGovernanceDemo {
             pks[i] = accounts[i].serializePublicKey();
         }
 
+        boolean registerSideChain = false;
+        boolean approveSideChain = false;
+        boolean rejectSideChain = false;
+        boolean inflation = false;
+        boolean rejectInflation = false;
+        boolean approveInflation = false;
+        boolean ongSwap = false;
+        boolean ongxSwap = true;
+        boolean setGlobalParams = false;
+        boolean registerNodeToSideChain = false;
+        boolean quitNodeToSideChain = false;
+        boolean assignFuncsToRole = false;
+        boolean assignOntIdsToRole = false;
+        System.out.println("sideChainGovernance:" + sideChainGovernance.getSideChain(3092255979L));
+        if (false) {
+            System.out.println(sdk.nativevm().ont().queryBalanceOf(multiAddress.toBase58()));
+            return;
+        }
+
+        if(false){
+            System.out.println(sdk.getConnect().getBlockBytes(0));
+            return;
+        }
+
 
         if(false){
             sdk.nativevm().ong().sendTransfer(account1,account.getAddressU160().toBase58(),10000*1000000000L,account,20000,0);
-
             return;
         }
         if(false){
+//            Transaction tx = sdk.nativevm().ont().makeTransfer(multiAddress.toBase58(),account.getAddressU160().toBase58(),10000, account.getAddressU160().toBase58(),200000,0);
+            Transaction tx = sdk.nativevm().ong().makeWithdrawOng(multiAddress.toBase58(),account.getAddressU160().toBase58(),35478934750000L,account.getAddressU160().toBase58(),20000,0);
+            for(int i=0;i<5;i++){
+                sdk.addMultiSign(tx, 5, pks, accounts[i]);
+            }
+            sdk.addSign(tx, account);
+            sdk.getConnect().sendRawTransaction(tx.toHexString());
+            System.out.println(tx.hash().toHexString());
+            Thread.sleep(6000);
+            System.out.println(sdk.getConnect().getSmartCodeEvent(tx.hash().toHexString()));
+            return;
+        }
+        if(false){
+
             String txhash1 = sdk.nativevm().ontId().sendRegister(identity,password,account,20000,0);
             String txhash2 = sdk.nativevm().ontId().sendRegister(adminIndentity,password,account,20000,0);
             Thread.sleep(6000);
 
             System.out.println(sdk.getConnect().getSmartCodeEvent(txhash1));
             System.out.println(sdk.getConnect().getSmartCodeEvent(txhash2));
-
-//            Transaction tx = sdk.nativevm().ont().makeTransfer(multiAddress.toBase58(),"AMAx993nE6NEqZjwBssUfopxnnvTdob9ij",10000, account.getAddressU160().toBase58(),200000,0);
-////            Transaction tx = sdk.nativevm().ong().makeWithdrawOng(multiAddress.toBase58(),"AMAx993nE6NEqZjwBssUfopxnnvTdob9ij",35478934750000L,account.getAddressU160().toBase58(),20000,0);
-//            for(int i=0;i<5;i++){
-//                sdk.addMultiSign(tx, 5, pks, accounts[i]);
-//            }
-//            sdk.addSign(tx, account);
-//            sdk.getConnect().sendRawTransaction(tx.toHexString());
-//            System.out.println(tx.hash().toHexString());
-//
-//
-//            Thread.sleep(3000);
-            System.out.println(sdk.nativevm().ong().unboundOng(multiAddress.toBase58()));
-            System.out.println(sdk.getConnect().getBalance(multiAddress.toBase58()));
             System.out.println(sdk.getConnect().getBalance(account.getAddressU160().toBase58()));
             return;
         }
-        if(false){
-            String txhash = sdk.nativevm().auth().assignFuncsToRole(adminIndentity.ontid,password,adminIndentity.controls.get(0).getSalt(),1,"0000000000000000000000000000000000000007","role",new String[]{"registerSideChain"},account,20000,0);
-//            String txhash = sdk.nativevm().auth().assignOntIdsToRole(adminIndentity.ontid,password,adminIndentity.controls.get(0).getSalt(),1,
-//                    sideChainContractAddr,"role",new String[]{identity.ontid},account,20000,0);
+        if(assignFuncsToRole){
+            String txhash = sdk.nativevm().auth().assignFuncsToRole(adminIndentity.ontid,password,adminIndentity.controls.get(0).getSalt(),
+                    1,sideChainContractAddr,"role",new String[]{"registerSideChain"},account,20000,0);
 
             Thread.sleep(3000);
             System.out.println(txhash);
             System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
             return;
         }
-        if(false){
-//            String txhash = sdk.nativevm().auth().assignFuncsToRole(adminIndentity.ontid,password,adminIndentity.controls.get(0).getSalt(),1,sideChainContractAddr,"role",new String[]{"registerSideChain"},account,20000,0);
+        if(assignOntIdsToRole){
             String txhash = sdk.nativevm().auth().assignOntIdsToRole(adminIndentity.ontid,password,adminIndentity.controls.get(0).getSalt(),1,
                     sideChainContractAddr,"role",new String[]{identity.ontid},account,20000,0);
 
-            Thread.sleep(3000);
+            Thread.sleep(6000);
             System.out.println(txhash);
             System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
-            return;
         }
         if(false){
             String res = sdk.nativevm().auth().verifyToken(identity.ontid,password,identity.controls.get(0).getSalt(),1,sideChainContractAddr,
                     "registerSideChain");
-            System.out.println(res);
+            System.out.println("verifyToken: " + res);
             return;
         }
-        if(false){
+        if(registerSideChain){
 //success
-            RegisterSideChainParam param = new RegisterSideChainParam("123456", account.getAddressU160(),1,(long)100*1000000000,(long)100*1000000000,identity.ontid.getBytes(),1);
+            String geneisBlockStr = sdk.getSideChainConnectMgr().getBlockBytes(0);
+            System.out.println("geneisBlockStr:" + geneisBlockStr);
+            RegisterSideChainParam param = new RegisterSideChainParam(3092255979L, account.getAddressU160(),1,(long)100*1000000000,(long)100*1000000000,Helper.hexToBytes(geneisBlockStr),identity.ontid.getBytes(),1);
             String txhash = sideChainGovernance.registerSideChain(account,param, identity,password, account,20000,0);
             System.out.println("txhash: " + txhash);
             Thread.sleep(6000);
             System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
-            System.out.println(sideChainGovernance.getSideChain("123456"));
+            System.out.println(sideChainGovernance.getSideChain(3092255979L));
             return;
         }
-        if(false){
+        if(approveSideChain) {
 //            success
-            System.out.println(sideChainGovernance.getSideChain("12345678"));
+            System.out.println(sideChainGovernance.getSideChain(3092255979L));
 //            String txhash = sideChainGovernance.rejectSideChain(accounts, pks,5,"12345678",account,20000,0);
-            String txhash = sideChainGovernance.approveSideChain(accounts, pks,5,"123456",account,20000,0);
+            String txhash = sideChainGovernance.approveSideChain(accounts, pks,5,3092255979L,account,20000,0);
             System.out.println(txhash);
             Thread.sleep(6000);
             System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
-            System.out.println(sideChainGovernance.getSideChain("12345678"));
+            System.out.println(sideChainGovernance.getSideChain(12345678));
             return;
         }
 
-        if(false){
+        if(rejectSideChain) {
 //            success
-            InflationParam param = new InflationParam("123456",account.getAddressU160(),(long)1000*1000000000,(long)1000*1000000000);
+            System.out.println(sideChainGovernance.getSideChain(12345678));
+            String txhash = sideChainGovernance.rejectSideChain(accounts, pks,5,0,account,20000,0);
+            System.out.println(txhash);
+            Thread.sleep(6000);
+            System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
+            System.out.println(sideChainGovernance.getSideChain(12345678));
+            return;
+        }
+
+        if(inflation){
+//            success
+            InflationParam param = new InflationParam(123456,account.getAddressU160(),(long)1000*1000000000,(long)1000*1000000000);
             String txhash = sideChainGovernance.inflation(account,param,account,20000,0);
             System.out.println(txhash);
             Thread.sleep(6000);
             System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
             return;
         }
-        if(false){
+        if(rejectInflation){
 //            success
-//            String txhash = sideChainGovernance.rejectInflation(accounts,pks,5,"12345678",account,20000,0);
-            String txhash = sideChainGovernance.approveInflation(accounts, pks,5,"12345678",account,20000,0);
+            String txhash = sideChainGovernance.rejectInflation(accounts,pks,5,0,account,20000,0);
+//            String txhash = sideChainGovernance.approveInflation(accounts, pks,5,"12345678",account,20000,0);
             System.out.println(txhash);
             Thread.sleep(6000);
             System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
             return;
         }
 
-        if(true){
+        if(approveInflation){
 //            success
-            SwapParam param = new SwapParam("123456",account.getAddressU160(), 100*1000000000L);
+//            String txhash = sideChainGovernance.rejectInflation(accounts,pks,5,"12345678",account,20000,0);
+            String txhash = sideChainGovernance.approveInflation(accounts, pks,5,0,account,20000,0);
+            System.out.println(txhash);
+            Thread.sleep(6000);
+            System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
+            return;
+        }
+
+        if(ongSwap){
+//            success
+
+            SwapParam param = new SwapParam(3092255979L,account.getAddressU160(), 100*1000000000L);
             String txhash = sideChainGovernance.ongSwap(account,param,account,20000,0);
             System.out.println("txhash:" + txhash);
             Thread.sleep(6000);
@@ -159,7 +201,7 @@ public class SideChainGovernanceDemo {
             System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
             return;
         }
-        if(true){
+        if(setGlobalParams){
 //            success
             String txhash = sideChainGovernance.setGlobalParams(accounts,pks,5,account.getAddressU160(),account,20000,0);
             System.out.println(txhash);
@@ -167,23 +209,34 @@ public class SideChainGovernanceDemo {
             System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
             return;
         }
-        if(false){
+        if(ongxSwap){
 //            success
-            SwapParam param = new SwapParam("12345678",account.getAddressU160(), 1000);
+            SwapParam param = new SwapParam(3092255979L,account.getAddressU160(), 100);
             String txhash = sideChainGovernance.ongxSwap(account,new SwapParam[]{param},account,20000,0);
             System.out.println(txhash);
             Thread.sleep(6000);
             System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
             return;
         }
+        if(true){
+
+        }
+        if(true){
+            System.out.println(sdk.nativevm().ong().queryBalanceOf(account.getAddressU160().toBase58()));
+            Swap swap = new Swap(account.getAddressU160(), 100*100000000);
+            String txhash = sdk.sidechainVm().ongX().ongxSwap(account,swap,account,20000,0);
+            System.out.println(txhash);
+            Thread.sleep(6000);
+            System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
+        }
         String privatekey = Account.getGcmDecodedPrivateKey("gSiSguflRJN5bItiP4Jo0zZJRhj3bbO9Pj1gSAztLKAfnB6bZ5ohqpo6JZuzV70m","passwordtest","AZonXUcUgzWb2KYdSiLapgqCMEfWGCDTw5",Base64.getDecoder().decode("ZAIkGt7qn7drlGAZ20MVQw=="),16384,SignatureScheme.SHA256WITHECDSA);
         Account account8 = new Account(Helper.hexToBytes(privatekey),SignatureScheme.SHA256WITHECDSA);
-        if(false){
+        if(registerNodeToSideChain){
 //            success
             SideChainNodeInfo info = sideChainGovernance.getSideChainNodeInfo("123456");
             System.out.println(JSON.toJSONString(info));
 
-            NodeToSideChainParams params = new NodeToSideChainParams("03acea758e49b87a03b3dbf29e3055857ce7a4673ea864e640ed8f13d43861da41",account1.getAddressU160(),"123456");
+            NodeToSideChainParams params = new NodeToSideChainParams("03acea758e49b87a03b3dbf29e3055857ce7a4673ea864e640ed8f13d43861da41",account1.getAddressU160(),0);
             String txhash = sideChainGovernance.registerNodeToSideChain(account1,params,account1,20000,0);
 //            String txhash = sideChainGovernance.quitNodeToSideChain(account1, params,account,20000,0);
 //            Thread.sleep(6000);
@@ -195,8 +248,25 @@ public class SideChainGovernanceDemo {
             System.out.println(JSON.toJSONString(sideChainGovernance.getSideChainNodeInfo("123456")));
         }
 
+        if(quitNodeToSideChain){
+//            success
+            SideChainNodeInfo info = sideChainGovernance.getSideChainNodeInfo("123456");
+            System.out.println(JSON.toJSONString(info));
+
+            NodeToSideChainParams params = new NodeToSideChainParams("03acea758e49b87a03b3dbf29e3055857ce7a4673ea864e640ed8f13d43861da41",account1.getAddressU160(),0);
+//            String txhash = sideChainGovernance.registerNodeToSideChain(account1,params,account1,20000,0);
+            String txhash = sideChainGovernance.quitNodeToSideChain(account1, params,account,20000,0);
+//            Thread.sleep(6000);
+//            QuitSideChainParam param = new QuitSideChainParam("123456",account8.getAddressU160());
+//            String txhash = sideChainGovernance.approveQuitSideChain(accounts,pks,5,param,account,20000,0);
+            System.out.println("txhash:" + txhash);
+            Thread.sleep(6000);
+            System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
+            System.out.println(JSON.toJSONString(sideChainGovernance.getSideChainNodeInfo("123456")));
+        }
+
         if(true){
-            System.out.println(sideChainGovernance.getSideChain("123456"));
+            System.out.println(sideChainGovernance.getSideChain(123456));
         }
     }
 

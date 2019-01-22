@@ -23,6 +23,7 @@ import com.alibaba.fastjson.JSON;
 import com.github.ontio.OntSdk;
 import com.github.ontio.common.Helper;
 import com.github.ontio.sdk.manager.ECIES;
+import org.bouncycastle.crypto.digests.SHA256Digest;
 
 /**
  *
@@ -38,6 +39,8 @@ public class ECIESDemo {
             System.out.println("PublicKey:"+Helper.toHexString(account.serializePublicKey()));
 //            System.out.println(Helper.toHexString(account.serializePrivateKey()));
 
+            //setDigest
+            ECIES.setDigest(new SHA256Digest());
             byte[] msg = new String("1234567890").getBytes();
             String[] ret = ECIES.Encrypt(Helper.toHexString(account.serializePublicKey()),msg);
             byte[] msg2 = ECIES.Decrypt(Helper.toHexString(account.serializePrivateKey()),ret);

@@ -19,7 +19,6 @@
 
 package com.github.ontio.sdk.manager;
 
-import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
@@ -28,6 +27,7 @@ import com.github.ontio.crypto.SignatureScheme;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.SHA1Digest;
+import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.generators.KDF2BytesGenerator;
 import org.bouncycastle.crypto.kems.ECIESKeyEncapsulation;
 import org.bouncycastle.crypto.params.ECDomainParameters;
@@ -37,7 +37,6 @@ import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.jce.ECNamedCurveTable;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
 import org.bouncycastle.util.encoders.Hex;
 
@@ -46,18 +45,17 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.security.SecureRandom;
-import java.security.Security;
 
 public class ECIES {
     public static KeyType keyType = KeyType.ECDSA;
     public static Object[] curveParaSpec = new Object[]{"P-256"};
     public static SignatureScheme signatureScheme = SignatureScheme.SHA256WITHECDSA;
-    public static Digest digest = new SHA1Digest();
+    public static Digest defaultDigest = new SHA256Digest();
     public ECIES(Digest dig){
-        digest = dig;
+        defaultDigest = dig;
     }
     public static void setDigest(Digest dig){
-        digest = dig;
+        defaultDigest = dig;
     }
     public static String[] Encrypt(String pubkey, byte[] msg) {
         return Encrypt(pubkey, msg, 32);
@@ -74,7 +72,7 @@ public class ECIES {
                     new ECPublicKeyParameters(((BCECPublicKey) account.getPublicKey()).getQ(), ecDomain), null);
 
             byte[] out = new byte[(ecDomain.getCurve().getFieldSize() / 8) * 2 + 1];
-            ECIESKeyEncapsulation kem = new ECIESKeyEncapsulation(new KDF2BytesGenerator(digest), new SecureRandom());
+            ECIESKeyEncapsulation kem = new ECIESKeyEncapsulation(new KDF2BytesGenerator(defaultDigest), new SecureRandom());
             KeyParameter key1;
 
             kem.init(keys.getPublic());
@@ -127,7 +125,8 @@ public class ECIES {
                     new ECPrivateKeyParameters(((BCECPrivateKey) account.getPrivateKey()).getD(), ecDomain));
 
             byte[] out = key_cxt;
-            ECIESKeyEncapsulation kem = new ECIESKeyEncapsulation(new KDF2BytesGenerator(new SHA1Digest()), new SecureRandom());
+            ECIESKeyEncapsulation kem = new ECIESKeyEncapsulation(new KDF2BytesGenerator(defaultDigest), new SecureRandom());
+
             KeyParameter key1;
 
             kem.init(keys.getPrivate());

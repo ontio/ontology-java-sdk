@@ -541,15 +541,28 @@ public class OntSdk {
         try {
             String ONT = "0100000000000000000000000000000000000000";
             String ONG = "0200000000000000000000000000000000000000";
+            String ONTID = "0300000000000000000000000000000000000000";
+            String method = new String((byte[]) paramList.get(0));
+            List list = new ArrayList();
+            Struct struct = new Struct();
+            struct.list = (List) paramList.get(1);
             if (contractHash.equals(ONT) || contractHash.equals(ONG)) {
-                List list = new ArrayList();
-                Struct struct = new Struct();
-                String method = new String((byte[]) paramList.get(0));
-                struct.list = (List) paramList.get(1);
-                list.add(new Struct().list);
-                byte[] args = NativeBuildParams.createCodeParamsScript(list);
-                return vm().buildNativeParams(new Address(Helper.hexToBytes(Helper.reverse(contractHash))), method, args, payer, gasLimit, gasPrice);
+                List listStruct = new ArrayList();
+                listStruct.add(struct);
+                if(method.equals("transfer")) {
+                    list.add(listStruct);
+                }else{
+                    list.add(struct);
+                }
+            }else if(contractHash.equals(ONTID)){
+                if(method.equals("getDDO")){
+                    list.add(struct.list.get(0));
+                }else {
+                    list.add(struct);
+                }
             }
+            byte[] args = NativeBuildParams.createCodeParamsScript(list);
+            return vm().buildNativeParams(new Address(Helper.hexToBytes(Helper.reverse(contractHash))), method, args, payer, gasLimit, gasPrice);
         } catch (SDKException e) {
             e.printStackTrace();
         }

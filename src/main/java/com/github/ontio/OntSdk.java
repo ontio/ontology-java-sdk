@@ -481,19 +481,18 @@ public class OntSdk {
                 buildMap(map,ele);
                 args.add(map);
             } else if(ele instanceof String){
-                String pre = ((String) ele).substring(0,10);
-                if(pre.contains("String")) {
-                    String data = ((String) ele).replace("String:","");
-                    args.add(data.getBytes());
-                }else if(pre.contains("ByteArray")) {
-                    String data = ((String) ele).replace("ByteArray:","");
-                    args.add(Helper.hexToBytes(data));
-                }else if(pre.contains("Long")) {
+                if(((String) ele).substring(0,5).contains("Long:")) {
                     String data = ((String) ele).replace("Long:","");
                     args.add(new BigInteger(data).longValue());
-                }else if(pre.contains("Address")) {
+                }else if(((String) ele).substring(0,7).contains("String:")) {
+                    String data = ((String) ele).replace("String:","");
+                    args.add(data.getBytes());
+                }else if(((String) ele).substring(0,8).contains("Address:")) {
                     String data = ((String) ele).replace("Address:","");
                     args.add(Address.decodeBase58(data).toArray());
+                }else if(((String) ele).substring(0,10).contains("ByteArray:")) {
+                    String data = ((String) ele).replace("ByteArray:","");
+                    args.add(Helper.hexToBytes(data));
                 }else {
                     throw new Exception(ErrorCode.OtherError("String type data error: "+ele));
                 }

@@ -57,12 +57,12 @@ public class ECIES {
     public static void setDigest(Digest dig){
         defaultDigest = dig;
     }
-    public static String[] Encrypt(String pubkey, byte[] msg) {
+    public static String[] Encrypt(String pubkey, byte[] msg) throws Exception{
         return Encrypt(pubkey, msg, 32);
     }
 
     //keylen: 16/24/32
-    public static String[] Encrypt(String pubkey, byte[] msg, int keylen) {
+    public static String[] Encrypt(String pubkey, byte[] msg, int keylen) throws Exception{
         try {
             com.github.ontio.account.Account account = new com.github.ontio.account.Account(false, Helper.hexToBytes(pubkey));
 
@@ -91,9 +91,8 @@ public class ECIES {
             //(IV, out, ciphertext)
             return new String[]{Helper.toHexString(IV), Helper.toHexString(out), Helper.toHexString(ciphertext)};
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new Exception("Encrypt failed initialisation - " + e.toString(), e);
         }
-        return null;
     }
 
     public static byte[] Decrypt(Account account, String[] params) throws Exception {
@@ -110,11 +109,11 @@ public class ECIES {
         return Decrypt(Helper.hexToBytes(prikey), Helper.hexToBytes(params[0]), Helper.hexToBytes(params[1]), Helper.hexToBytes(params[2]), 32);
     }
 
-    public static byte[] Decrypt(byte[] prikey, byte[] IV, byte[] key_cxt, byte[] ciphertext) {
+    public static byte[] Decrypt(byte[] prikey, byte[] IV, byte[] key_cxt, byte[] ciphertext) throws Exception {
         return Decrypt(prikey, IV, key_cxt, ciphertext, 32);
     }
 
-    public static byte[] Decrypt(byte[] prikey, byte[] IV, byte[] key_cxt, byte[] ciphertext, int keylen) {
+    public static byte[] Decrypt(byte[] prikey, byte[] IV, byte[] key_cxt, byte[] ciphertext, int keylen) throws Exception {
         try {
             com.github.ontio.account.Account account = new com.github.ontio.account.Account(prikey, signatureScheme);
 
@@ -143,9 +142,8 @@ public class ECIES {
             }
             return plaintext;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new Exception("AES failed initialisation - " + e.toString(), e);
         }
-        return null;
     }
 
     public static String getRandomString(int length) {

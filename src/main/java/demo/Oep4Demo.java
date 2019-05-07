@@ -37,13 +37,13 @@ public class Oep4Demo {
             com.github.ontio.account.Account acct5 = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey5), ontSdk.defaultSignScheme);
 
             Account acct = new com.github.ontio.account.Account(Helper.hexToBytes(privatekey0), ontSdk.defaultSignScheme);
-//            System.out.println("recv:"+acct.getAddressU160().toBase58());
-//            System.out.println("acct1:"+acct1.getAddressU160().toBase58());
+            System.out.println("recv:"+acct.getAddressU160().toBase58());
+            System.out.println("send:"+account.getAddressU160().toBase58());
 //            System.out.println(Helper.toHexString(acct1.getAddressU160().toArray()));
 //
 //            showBalance(ontSdk,new Account[]{acct1,acct2,acct3});
 //            System.out.println("------------------------------------------------------");
-
+//System.exit(0);
 
             if(false){
                 System.out.println(acct.getAddressU160().toBase58());
@@ -61,19 +61,29 @@ public class Oep4Demo {
             }
             if(true){
 //                System.out.println(Helper.toHexString(account.getAddressU160().toArray()));
-//                System.out.println(ontSdk.neovm().oep4().queryDecimals());
-//                System.out.println(ontSdk.neovm().oep4().queryName());
-//                System.out.println(ontSdk.neovm().oep4().querySymbol());
-//                System.out.println(ontSdk.neovm().oep4().queryTotalSupply());
-                System.out.println(ontSdk.neovm().oep4().queryBalanceOf(account.getAddressU160().toBase58()));
-                return;
+                System.out.println(ontSdk.neovm().oep4().queryDecimals());
+                System.out.println(ontSdk.neovm().oep4().queryName());
+                System.out.println(ontSdk.neovm().oep4().querySymbol());
+                System.out.println(ontSdk.neovm().oep4().queryTotalSupply());
+                System.out.println(acct.getAddressU160().toBase58()+": "+ontSdk.neovm().oep4().queryBalanceOf(acct.getAddressU160().toBase58()));
+                System.out.println(account.getAddressU160().toBase58()+": "+ontSdk.neovm().oep4().queryBalanceOf(account.getAddressU160().toBase58()));
+                //return;
             }
 
-            if(false){
-                showBalance(ontSdk,new Account[]{account,acct});
+            if(false){ //transfer amount is long
+                //showBalance(ontSdk,new Account[]{account,acct});
                 String txhash = ontSdk.neovm().oep4().sendTransfer(account, acct.getAddressU160().toBase58(),1000,account,20000,500);
-                Thread.sleep(6000);
-                showBalance(ontSdk,new Account[]{account,acct});
+                //Thread.sleep(6000);
+                //showBalance(ontSdk,new Account[]{account,acct});
+                return;
+            }
+            if(false){ //transfer amount is BigInteger
+                //showBalance(ontSdk,new Account[]{account,acct});
+                Object txhash = ontSdk.neovm().oep4().sendTransfer(acct, account.getAddressU160().toBase58(),new BigInteger("9999999999999999999999999"),acct,20000,500,false);
+                //Object txhash = ontSdk.neovm().oep4().sendTransfer(account, acct.getAddressU160().toBase58(),new BigInteger("10000000000000000000000000"),acct,20000,500,false);
+                System.out.println(txhash);
+                //Thread.sleep(6000);
+                //showBalance(ontSdk,new Account[]{account,acct});
                 return;
             }
             if(false){
@@ -201,7 +211,7 @@ public class Oep4Demo {
         wm.setRpc(rpcUrl);
         wm.setRestful(restUrl);
         wm.setDefaultConnect(wm.getRestful());
-        wm.neovm().oep4().setContractAddress("0933f577ff7ad57e1eea69591998578b133d9c6f");
+        wm.neovm().oep4().setContractAddress("55e02438c938f6f4eb15a9cb315b26d0169b7fd7");
         wm.openWalletFile("nep5.json");
         return wm;
     }

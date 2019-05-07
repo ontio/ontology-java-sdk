@@ -86,11 +86,49 @@ public class Oep4 {
     public String sendTransfer(Account acct, String recvAddr, long amount,Account payerAcct, long gaslimit,long gasprice) throws Exception {
         return (String)sendTransfer(acct, recvAddr, amount,payerAcct,gaslimit,gasprice, false);
     }
-
+    public String sendTransfer(Account acct, String recvAddr, BigInteger amount,Account payerAcct, long gaslimit,long gasprice) throws Exception {
+        return (String)sendTransfer(acct, recvAddr, amount,payerAcct,gaslimit,gasprice, false);
+    }
     public long sendTransferPreExec(Account acct, String recvAddr, long amount) throws Exception {
         return (long)sendTransfer(acct, recvAddr, amount,acct,0,0, true);
     }
-
+    public Object sendTransfer(Account acct, String recvAddr, BigInteger amount, Account payerAcct, long gaslimit, long gasprice, boolean preExec) throws Exception {
+        if (contractAddress == null) {
+            throw new SDKException(ErrorCode.NullCodeHash);
+        }
+        if(acct == null || payerAcct == null || gaslimit < 0 || gasprice < 0){
+            throw new SDKException(ErrorCode.ParamError);
+        }
+        String sendAddr = acct.getAddressU160().toBase58();
+        List paramList = new ArrayList<>();
+        paramList.add("transfer".getBytes());
+        List args = new ArrayList();
+        args.add(Address.decodeBase58(sendAddr).toArray());
+        args.add( Address.decodeBase58(recvAddr).toArray());
+        args.add(Helper.BigIntToNeoBytes(amount));
+        paramList.add(args);
+        byte[] params = BuildParams.createCodeParamsScript(paramList);
+        if(preExec) {
+            Transaction tx = sdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractAddress), null, params,null,0, 0);
+            sdk.signTx(tx, new Account[][]{{acct}});
+            Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
+            if (Integer.parseInt(((JSONObject) obj).getString("Result")) != 1){
+                throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error: "+ obj));
+            }
+            return ((JSONObject) obj).getLong("Gas");
+        }
+        String payer = payerAcct.getAddressU160().toBase58();
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractAddress), null, params, payer,gaslimit, gasprice);
+        sdk.signTx(tx, new Account[][]{{acct}});
+        if(!acct.getAddressU160().toBase58().equals(payerAcct.getAddressU160().toBase58())){
+            sdk.addSign(tx,payerAcct);
+        }
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
+        if (!b) {
+            throw new SDKException(ErrorCode.SendRawTxError);
+        }
+        return tx.hash().toHexString();
+    }
     private Object sendTransfer(Account acct, String recvAddr, long amount, Account payerAcct, long gaslimit, long gasprice, boolean preExec) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);

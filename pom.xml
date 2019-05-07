@@ -6,7 +6,7 @@
 
     <groupId>com.github.ontio</groupId>
     <artifactId>ontology-sdk-java</artifactId>
-    <version>1.0.10</version>
+    <version>1.0.12</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -61,7 +61,11 @@
     </repositories>
 
     <dependencies>
-
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.5</version>
+        </dependency>
         <dependency>
             <groupId>io.github.novacrypto</groupId>
             <artifactId>BIP32</artifactId>

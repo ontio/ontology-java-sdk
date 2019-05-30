@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2018 The ontology Authors
+ * This file is part of The ontology library.
+ *
+ *  The ontology is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The ontology is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package com.github.ontio.crypto;
 
 import com.github.ontio.account.Account;
@@ -7,7 +26,6 @@ import io.github.novacrypto.bip39.Words;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,21 +76,18 @@ public class HDWalletTest {
     }
 
     @Test
-    public void TestMasterKeyFromMnemonic() throws Exception {
-        String code = "ritual month sign shop champion number mask leave anchor critic boring clinic";
-        HdPrivateKey masterKey = HdPrivateKey.masterKeyFromMnemonic(code);
-        Assert.assertEquals("942a2d2546105da4ab795f89847b6bc1bff3b90180dd811a906bb73a284f1c2e", masterKey.toHexString());
-        Account masterAcct = new Account(masterKey.getPrivateKey(), SignatureScheme.SHA256WITHECDSA);
-        Assert.assertEquals(Helper.toHexString(masterAcct.serializePrivateKey()), masterKey.toHexString());
-        Assert.assertEquals("ANQ6eYZ3Age8iXxTeaAzQR1GLbshaESWgL", masterAcct.getAddressU160().toBase58());
-        acctValidity(masterAcct);
-
+    public void TestRootKey() throws Exception {
+        HdPrivateKey masterKey = HdPrivateKey.base58Decode("xprv9s21ZrQH143K3EkLpHRGt3RZbWijNben2Gh4JCrBPWG6Z9M7d7higox1aCzTm77JCa7FGoAsy8jgtMMyqqDk25DXssjbEBzqR6yr9gqNimh");
         HdPrivateKey rootPriKey = masterKey.derive("m/44'/1024'/0'");
         Assert.assertEquals("66ed0c7f0476d64752ec1d14beaf0693af6641ccce6401ba6f30c41048f5f9de", rootPriKey.toHexString());
         Account rootAcct = new Account(rootPriKey.getPrivateKey(), SignatureScheme.SHA256WITHECDSA);
         Assert.assertEquals("AZN8hReHwhsdaowbBLcDsGHeAnjoTXAyRs", rootAcct.getAddressU160().toBase58());
         Assert.assertEquals(rootPriKey.base58Encode(), HdPrivateKey.base58Decode(rootPriKey.base58Encode()).base58Encode());
+    }
 
+    @Test
+    public void TestChildKey() {
+        HdPrivateKey rootPriKey = HdPrivateKey.base58Decode("xprv9y1wY3ovCV9wWRTw8VJwkyjuaV9vbmLb8kLuaAXyzBGQReZETHBHEab9BUdE9m5iCnfHyxABpomdqa6m4RCGzaC3iBdTQ1MPHxcF3RMXFD4");
         ArrayList<String> childKeyList = new ArrayList<>(
                 Arrays.asList(
                         "130d422b03a9b8f2246e850f2680cb61666b7d7da94a8ae1e754d12f10f9d7fa",
@@ -92,5 +107,16 @@ public class HDWalletTest {
             Assert.assertEquals(childKeyList.get(i), childKey.toHexString());
             Assert.assertEquals(childKey.base58Encode(), HdPrivateKey.base58Decode(childKey.base58Encode()).base58Encode());
         }
+    }
+
+    @Test
+    public void TestMasterKeyFromMnemonic() throws Exception {
+        String code = "ritual month sign shop champion number mask leave anchor critic boring clinic";
+        HdPrivateKey masterKey = HdPrivateKey.masterKeyFromMnemonic(code);
+        Assert.assertEquals("942a2d2546105da4ab795f89847b6bc1bff3b90180dd811a906bb73a284f1c2e", masterKey.toHexString());
+        Account masterAcct = new Account(masterKey.getPrivateKey(), SignatureScheme.SHA256WITHECDSA);
+        Assert.assertEquals(Helper.toHexString(masterAcct.serializePrivateKey()), masterKey.toHexString());
+        Assert.assertEquals("ANQ6eYZ3Age8iXxTeaAzQR1GLbshaESWgL", masterAcct.getAddressU160().toBase58());
+        acctValidity(masterAcct);
     }
 }

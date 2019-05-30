@@ -132,12 +132,10 @@ public final class HdPublicKey implements
             throw new IllegalArgumentException("Path cannot be empty");
         if (length == 1)
             return this;
-        if (derivationPath.charAt(0) == 'm' && derivationPath.charAt(1) != '/')
-            throw new IllegalArgumentException("Path must start with m/");
-        if (derivationPath.charAt(0) != 'm' && depth() == 0) {
-            if (depth() != 0)
-                throw new IllegalArgumentException("Root key must be a master key if the path start with m");
-            derive().derive(derivationPath.subSequence(2, derivationPath.length() - 2));
+        if (derivationPath.charAt(0) == 'm' && depth() == 0) {
+            if (derivationPath.charAt(1) != '/')
+                throw new IllegalArgumentException("Root key must be a master key if the path start with m/");
+            return derive().derive(derivationPath.subSequence(2, derivationPath.length()));
         }
         return derive().derive(derivationPath);
     }

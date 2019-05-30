@@ -28,7 +28,7 @@ import java.util.List;
 public final class NetworkCollection implements Networks {
     private final List<? extends Network> networks;
 
-    public NetworkCollection(Bitcoin mainNet, Bitcoin testNet, final Network... networks) {
+    public NetworkCollection(final Network... networks) {
         this.networks = Arrays.asList(networks);
     }
 

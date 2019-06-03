@@ -1,30 +1,25 @@
 /*
- *  BIP32 library, a Java implementation of BIP32
- *  Copyright (C) 2017 Alan Evans, NovaCrypto
+ * Copyright (C) 2018-2019 The ontology Authors
+ * This file is part of The ontology library.
  *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  The ontology is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
+ *  The ontology is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU Lesser General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  *
- *  Original source: https://github.com/NovaCrypto/BIP32
- *  You can contact the authors via github issues.
  */
 
 package com.github.ontio.crypto.bip32;
 
-import io.github.novacrypto.bip32.Network;
-
-import static com.github.ontio.crypto.bip32.Checksum.checksum;
-import static io.github.novacrypto.hashing.Sha256.sha256Twice;
+import static com.github.ontio.crypto.bip32.HdKey.checksum;
 
 final class Serializer {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The ontology Authors
+ * Copyright (C) 2018-2019 The ontology Authors
  * This file is part of The ontology library.
  *
  *  The ontology is free software: you can redistribute it and/or modify
@@ -34,15 +34,15 @@ public class Digest {
 	static {
 		Security.addProvider(new BouncyCastleProvider());
 	}
-	
+
 	public static byte[] hash160(byte[] value) {
 		return ripemd160(sha256(value));
 	}
-	
+
 	public static byte[] hash256(byte[] value) {
 		return sha256(sha256(value));
 	}
-	
+
 	public static byte[] hash256(byte[] value, int offset, int length) {
 		if (offset != 0 || length != value.length) {
 			byte[] array = new byte[length];
@@ -50,8 +50,8 @@ public class Digest {
 			value = array;
 		}
 		return sha256(sha256(value));
-	}	
-	
+	}
+
 	public static byte[] ripemd160(byte[] value) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("RipeMD160");
@@ -60,7 +60,7 @@ public class Digest {
 			throw new RuntimeException(ex);
 		}
 	}
-	
+
 	public static byte[] sha256(byte[] value) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -69,7 +69,7 @@ public class Digest {
 			throw new RuntimeException(ex);
 		}
 	}
-	
+
 	public static byte[] sha256(byte[] value, int offset, int length) {
 		if (offset != 0 || length != value.length) {
 			byte[] array = new byte[length];

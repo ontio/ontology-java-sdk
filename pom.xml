@@ -68,14 +68,14 @@
         </dependency>
         <dependency>
             <groupId>io.github.novacrypto</groupId>
-            <artifactId>BIP32</artifactId>
-            <version>0.0.9</version>
+            <artifactId>BIP39</artifactId>
+            <version>0.1.9</version>
         </dependency>
 
         <dependency>
             <groupId>io.github.novacrypto</groupId>
-            <artifactId>BIP39</artifactId>
-            <version>0.1.9</version>
+            <artifactId>Base58</artifactId>
+            <version>0.1.2</version>
         </dependency>
 
         <dependency>

@@ -3,7 +3,8 @@ package com.github.ontio.crypto;
 
 import com.github.ontio.account.Account;
 import com.github.ontio.common.ErrorCode;
-import com.github.ontio.crypto.bip32.ExtendedPrivateKey;
+import com.github.ontio.crypto.bip32.HdPrivateKey;
+import com.github.ontio.crypto.bip32.Bitcoin;
 import com.github.ontio.sdk.exception.SDKException;
 
 import java.nio.charset.StandardCharsets;
@@ -15,7 +16,6 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import io.github.novacrypto.bip32.networks.Bitcoin;
 import io.github.novacrypto.bip39.MnemonicGenerator;
 import io.github.novacrypto.bip39.SeedCalculator;
 import io.github.novacrypto.bip39.Words;
@@ -25,8 +25,12 @@ import org.bouncycastle.crypto.generators.SCrypt;
 public class MnemonicCode {
 
     public static String generateMnemonicCodesStr(){
+        return generateMnemonicCodesStr(Words.TWELVE);
+    }
+
+    public static String generateMnemonicCodesStr(Words words){
         final StringBuilder sb = new StringBuilder();
-        byte[] entropy = new byte[Words.TWELVE.byteLength()];
+        byte[] entropy = new byte[words.byteLength()];
         new SecureRandom().nextBytes(entropy);
         new MnemonicGenerator(English.INSTANCE).createMnemonic(entropy, new MnemonicGenerator.Target() {
             @Override
@@ -49,25 +53,14 @@ public class MnemonicCode {
         return seed;
     }
 
-//    public static byte[] getPrikeyFromMnemonicCodesStr(String mnemonicCodesStr){
-//        String[] mnemonicCodesArray = mnemonicCodesStr.split(" ");
-//        byte[] seed = new SeedCalculator()
-//                .withWordsFromWordList(English.INSTANCE)
-//                .calculateSeed(Arrays.asList(mnemonicCodesArray), "");
-//        mnemonicCodesArray = null;
-//        mnemonicCodesStr = null;
-//        byte[] prikey = Arrays.copyOfRange(seed,0,32);
-//        return prikey;
-//    }
-
     public static byte[] getPrikeyFromMnemonicCodesStrBip44(String mnemonicCodesStr) throws Exception{
         if(mnemonicCodesStr == null || mnemonicCodesStr.equals("")){
             throw new SDKException(ErrorCode.ParamErr("mnemonicCodesStr should not be null"));
         }
         byte[] seed = MnemonicCode.getSeedFromMnemonicCodesStr(mnemonicCodesStr);
-        ExtendedPrivateKey key = ExtendedPrivateKey.fromSeed(seed,"Nist256p1 seed".getBytes("UTF-8"), Bitcoin.MAIN_NET);
-        ExtendedPrivateKey child = key.derive("m/44'/1024'/0'/0/0");
-        byte[] p = child.extendedKeyByteArray();
+        HdPrivateKey key = HdPrivateKey.fromSeed(seed,"Nist256p1 seed".getBytes(StandardCharsets.UTF_8), Bitcoin.MAIN_NET);
+        HdPrivateKey child = key.fromPath();
+        byte[] p = child.toByteArray();
         byte[] tmp = new byte[32];
         System.arraycopy(p, 46, tmp, 0, 32);
         return tmp;
@@ -127,7 +120,6 @@ public class MnemonicCode {
         cipher.init(Cipher.DECRYPT_MODE, skeySpec, new IvParameterSpec(iv));
         byte[] rawMns = cipher.doFinal(encryptedkey);
         String mnemonicCodesStr = new String(rawMns);
-        System.out.println(mnemonicCodesStr);
         byte[] rawkey = MnemonicCode.getPrikeyFromMnemonicCodesStrBip44(mnemonicCodesStr);
         String addressNew = new Account(rawkey, SignatureScheme.SHA256WITHECDSA).getAddressU160().toBase58();
         byte[] addressNewHashTemp = Digest.sha256(Digest.sha256(addressNew.getBytes()));

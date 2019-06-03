@@ -1,6 +1,6 @@
 /*
  *  BIP32 library, a Java implementation of BIP32
- *  Copyright (C) 2017 Alan Evans, NovaCrypto
+ *  Copyright (C) 2017-2019 Alan Evans, NovaCrypto
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,22 +19,25 @@
  *  You can contact the authors via github issues.
  */
 
-package com.github.ontio.crypto.bip32;
+package com.github.ontio.crypto.bip32.derivation;
 
+public interface Derive<Key> {
 
-import static io.github.novacrypto.hashing.Sha256.sha256Twice;
+    /**
+     * Derive from a string path such as m/44'/0'/0'/0/1
+     *
+     * @param derivationPath Path
+     * @return Key at the path
+     */
+    Key fromPath(final CharSequence derivationPath);
 
-final class Checksum {
-
-    static void confirmExtendedKeyChecksum(final byte[] extendedKeyData) {
-        final byte[] expected = checksum(extendedKeyData);
-        for (int i = 0; i < 4; i++) {
-            if (extendedKeyData[78 + i] != expected[i])
-                throw new BadKeySerializationException("Checksum error");
-        }
-    }
-
-    static byte[] checksum(final byte[] privateKey) {
-        return sha256Twice(privateKey, 0, 78);
-    }
+    /**
+     * Derive from a generic path using the {@link Derivation} supplied to extract the child indexes
+     *
+     * @param derivationPath Path
+     * @param derivation     The class that extracts the path elements
+     * @param <Path>         The generic type of the path
+     * @return Key at the path
+     */
+    <Path> Key fromPath(final Path derivationPath, final Derivation<Path> derivation);
 }

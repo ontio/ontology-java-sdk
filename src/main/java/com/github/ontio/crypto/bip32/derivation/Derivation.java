@@ -1,6 +1,6 @@
 /*
  *  BIP32 library, a Java implementation of BIP32
- *  Copyright (C) 2017 Alan Evans, NovaCrypto
+ *  Copyright (C) 2017-2019 Alan Evans, NovaCrypto
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,11 +19,20 @@
  *  You can contact the authors via github issues.
  */
 
-package com.github.ontio.crypto.bip32;
+package com.github.ontio.crypto.bip32.derivation;
 
-public final class BadKeySerializationException extends RuntimeException {
+import com.github.ontio.crypto.bip32.HdKey;
 
-    BadKeySerializationException(final String message) {
-        super(message);
-    }
+public interface Derivation<Path> {
+
+    /**
+     * Traverse the nodes from the root key node to find the node referenced by the path.
+     *
+     * @param rootKey     The root of the path
+     * @param path        The path to follow
+     * @param ckdFunction Allows you to follow one link
+     * @param <Key>       The type of node we are visiting
+     * @return The final node found at the end of the path
+     */
+    <Key> Key derive(final Key rootKey,final Path path, final CkdFunction<Key> ckdFunction);
 }

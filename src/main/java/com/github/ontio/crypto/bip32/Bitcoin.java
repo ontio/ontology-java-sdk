@@ -19,13 +19,16 @@
 
 package com.github.ontio.crypto.bip32;
 
-public interface CKDpriv {
+public enum Bitcoin implements Network {
+    MAIN_NET {
+        @Override
+        public int getPrivateVersion() {
+            return 0x488ade4;
+        }
 
-    /**
-     * Calculates the private key of the child at index.
-     *
-     * @param index The child index to calculate.
-     * @return The private key of the child.
-     */
-    HdPrivateKey cKDpriv(final int index);
+        @Override
+        public int getPublicVersion() {
+            return 0x0488b21e;
+        }
+    }
 }

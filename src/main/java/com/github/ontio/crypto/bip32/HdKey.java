@@ -1,33 +1,35 @@
 /*
- *  BIP32 library, a Java implementation of BIP32
- *  Copyright (C) 2017-2018 Alan Evans, NovaCrypto
+ * Copyright (C) 2018-2019 The ontology Authors
+ * This file is part of The ontology library.
  *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
+ *  The ontology is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
+ *  The ontology is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *  GNU Lesser General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  *
- *  Original source: https://github.com/NovaCrypto/BIP32
- *  You can contact the authors via github issues.
  */
 
 package com.github.ontio.crypto.bip32;
 
-import io.github.novacrypto.bip32.Network;
+import com.github.ontio.common.ErrorCode;
+import com.github.ontio.sdk.exception.SDKException;
 
-import static com.github.ontio.crypto.bip32.BigIntegerUtils.parse256;
+import java.math.BigInteger;
+import java.util.Arrays;
+
+import static com.github.ontio.crypto.Digest.hash160;
 import static com.github.ontio.crypto.bip32.Secp256r1SC.pointSerP_gMultiply;
-import static io.github.novacrypto.hashing.Hash160.hash160;
+import static io.github.novacrypto.hashing.Sha256.sha256Twice;
 
-final class HdKey {
+public class HdKey {
 
     private final boolean neutered;
     private final Network network;
@@ -55,6 +57,27 @@ final class HdKey {
                 .build();
     }
 
+    static BigInteger parse256(final byte[] bytes) {
+        return new BigInteger(1, bytes);
+    }
+
+    static void ser256(final byte[] target, final BigInteger integer) {
+        if (integer.bitLength() > target.length * 8)
+            throw new RuntimeException("ser256 failed, cannot fit integer in buffer");
+        final byte[] modArr = integer.toByteArray();
+        Arrays.fill(target, (byte) 0);
+        copyTail(modArr, target);
+        Arrays.fill(modArr, (byte) 0);
+    }
+
+    private static void copyTail(final byte[] src, final byte[] dest) {
+        if (src.length < dest.length) {
+            System.arraycopy(src, 0, dest, dest.length - src.length, src.length);
+        } else {
+            System.arraycopy(src, src.length - dest.length, dest, 0, dest.length);
+        }
+    }
+
     byte[] serialize() {
         return serializer.serialize(key, chainCode);
     }
@@ -65,6 +88,10 @@ final class HdKey {
 
     byte[] getKey() {
         return key;
+    }
+
+    boolean getNeutered() {
+        return neutered;
     }
 
     int getParentFingerprint() {
@@ -80,11 +107,23 @@ final class HdKey {
                 (o[3] & 0xFF);
     }
 
+    static void confirmHdKeyChecksum(final byte[] extendedKeyData) throws SDKException {
+        final byte[] checkSum = checksum(extendedKeyData);
+        for (int i = 0; i < 4; i++) {
+            if (extendedKeyData[78 + i] != checkSum[i])
+                throw new SDKException(ErrorCode.OtherError("Checksum error"));
+        }
+    }
+
+    static byte[] checksum(final byte[] privateKey) {
+        return sha256Twice(privateKey, 0, 78);
+    }
+
     private byte[] getPublicBuffer() {
         return neutered ? key : getPoint();
     }
 
-    int depth() {
+    public int depth() {
         return depth;
     }
 
@@ -158,5 +197,6 @@ final class HdKey {
         HdKey build() {
             return new HdKey(this);
         }
+
     }
 }

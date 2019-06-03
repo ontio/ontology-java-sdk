@@ -97,6 +97,38 @@ public class HdPublicKeyTest {
             Assert.assertEquals(childPrvKeys.get(i), childPrvKey.toHexString());
             Assert.assertEquals(childPubKeys.get(i), childPubKey.toHexString());
             Assert.assertEquals(childPubKey.base58Encode(), HdPublicKey.base58Decode(childPubKey.base58Encode()).base58Encode());
+            Account acct = new Account(childPrvKey.getPrivateKey(), SignatureScheme.SHA256WITHECDSA);
+            Assert.assertEquals(childPubKey.getAddress().toBase58(), acct.getAddressU160().toBase58());
+            Assert.assertEquals(childPrvKey.getAddress().toBase58(), acct.getAddressU160().toBase58());
+        }
+    }
+
+    @Test
+    public void TestChildAddress() throws Exception {
+        ArrayList<String> childAddressList = new ArrayList<>(
+                Arrays.asList(
+                        "AX9gZt82urcv5fHu13QTiU3ZczYDJPBnb1",
+                        "ALhLmVQ4xV3ZSHzcB9p2zwkqqgHuhjQ4nM",
+                        "AGoDL81KzTEAaPxBzWDRwmgyoZNRPJEiSz",
+                        "APSnKt2w2YAruZHmnq3TpYqTEihvrFjAAK",
+                        "AP4nB1yct8D6si1C6T3bdevHqJiKpxrwsu",
+                        "AG3Qq59LUCxNDcyrpSQFBtfnje7oRTPnMV",
+                        "AX5mTNWyeXWpTb6L3y53VpgyuspRYXzgAk",
+                        "AMLZhVzfFecX6tw2r26p8kxwFjx6gUL7X7",
+                        "AeUjHPsbmwCwNg9QK3gFH2nwypgeqDqfox",
+                        "APWuVP5JqsYc8aHKGAwXg9cufmHtxz62EW"
+                )
+        );
+
+        HdPrivateKey rootPriKey = HdPrivateKey.base58Decode("xprv9y1wY3ovCV9wWRTw8VJwkyjuaV9vbmLb8kLuaAXyzBGQReZETHBHEab9BUdE9m5iCnfHyxABpomdqa6m4RCGzaC3iBdTQ1MPHxcF3RMXFD4");
+        HdPublicKey rootPubKey = rootPriKey.getHdPublicKey();
+        for (int i = 0; i < 10; i++) {
+            HdPublicKey childPubKey = rootPubKey.fromPath(String.format("0/%d", i));
+            HdPrivateKey childPrvKey = rootPriKey.fromPath(String.format("0/%d", i));
+            Assert.assertEquals(childPubKey.getAddress().toBase58(), childAddressList.get(i));
+            Account acct = new Account(childPrvKey.getPrivateKey(), SignatureScheme.SHA256WITHECDSA);
+            Assert.assertEquals(childPubKey.getAddress().toBase58(), acct.getAddressU160().toBase58());
+            Assert.assertEquals(childPrvKey.getAddress().toBase58(), acct.getAddressU160().toBase58());
         }
     }
 }

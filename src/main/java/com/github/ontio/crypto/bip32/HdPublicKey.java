@@ -115,7 +115,7 @@ public final class HdPublicKey implements
     }
 
     public Address getAddress() {
-        return Address.addressFromPubKey(toByteArray());
+        return Address.addressFromPubKey(hdKey.getKey());
     }
 
     private Derive<HdPublicKey> derive() {
@@ -140,10 +140,6 @@ public final class HdPublicKey implements
     @Override
     public <Path> HdPublicKey fromPath(final Path derivationPath, final Derivation<Path> derivation) {
         return derive().fromPath(derivationPath, derivation);
-    }
-
-    public HdPublicKey fromPath() {
-        return fromPath("m/44'/1024'/0'");
     }
 
     public byte[] toByteArray() {

@@ -90,7 +90,7 @@ public class HdPrivateKey implements
     }
 
     public Address getAddress() throws Exception {
-        return Address.addressFromPubKey(getHdPublicKey().toByteArray());
+        return getHdPublicKey().getAddress();
     }
 
     public HdPublicKey getHdPublicKey() throws Exception {

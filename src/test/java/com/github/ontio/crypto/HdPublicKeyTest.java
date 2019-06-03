@@ -36,7 +36,47 @@ public class HdPublicKeyTest {
             HdPublicKey childKey = masterPubKey.fromPath(String.format("0/%d", i));
             Assert.assertEquals(childKeysFromMaterKey.get(i), childKey.base58Encode());
         }
-        HdPrivateKey rootKey = masterKey.fromPath();
-        System.out.println(rootKey.base58Encode());
+    }
+
+    @Test
+    public void TestChildKey() throws Exception {
+        ArrayList<String> childPubKeys = new ArrayList<>(
+                Arrays.asList(
+                        "03d36b121866ddb5d18cd73b4f08a0b33d4e78765353122af304c274afa46234f1",
+                        "0294423e98e78befeec802f3bb710d23e07cde2eac693f04b0457f0088987a6c3d",
+                        "024573478ec397c11187a80654eb61632195e10b790abcd3c7a4ebf9bb656d08a2",
+                        "03a4d828a8d10d6af8ae575b8edd751053179b9c20966c5ae3140b524269114b94",
+                        "02547df85c98586055f7f991ee2eb2ae12c6dcfc8f3dc47d07b6416f3118206aa2",
+                        "03b4713e88d3015e91b827c87d8de204f6807e57e4ca4a048c4cff81643b816fd1",
+                        "0366faf9e5c4984bed43afa2cebad2ea957bbce308a3d100e5bd7ee0a7b8a49a89",
+                        "0374eb62dab8294566d804bd7d1e3475bc1c66e08824f1b77dd18b539ba192a6aa",
+                        "0349d87e57ca1bd3d720625ad973d24cba51c94ca33352b462e851ebbb5f12a47d",
+                        "02d34bdd023d4cfe9461a60222cbb6ef34f09a1ec4208d15e30800aa4c20c8be28"
+                )
+        );
+        ArrayList<String> childPrvKeys = new ArrayList<>(
+                Arrays.asList(
+                        "130d422b03a9b8f2246e850f2680cb61666b7d7da94a8ae1e754d12f10f9d7fa",
+                        "8b7bb7a40ef05729fba70eec6b397f69c08d68a511428917f4f8828c5975ff50",
+                        "59afb74c850af049c46359a55cd11edeefe32bd17956d36f0f7b5302c758d23e",
+                        "d38b59946b0a6c359ac860b9d2632edf8ea297b11679a4ab8e06d515cc18c7bc",
+                        "d1dac074d6361b3a0f9454affd67788e2b5cd8cc1564ffd653b36133359d13a2",
+                        "2c700989f69f557c3dab063c62dae5a3c1b295b3044279ff645963e2c3a60877",
+                        "2b4b47e351cb8eb717bba086b6109c312c6e196d93f96f898ae888c001baab97",
+                        "b208e4c0cb6dbf5b17acbf98526d42a1e2c9e0f653e577247dd6722c932fc6f3",
+                        "584540f8e3a5b37d04856c0e48267f7d42be0d3aa5610dbc7433901dc7bfe30a",
+                        "feac85feda73a5cd07ece0eb5990b953ded921952a67642f0d57fca762fa8175"
+                )
+        );
+
+        HdPrivateKey rootPriKey = HdPrivateKey.base58Decode("xprv9y1wY3ovCV9wWRTw8VJwkyjuaV9vbmLb8kLuaAXyzBGQReZETHBHEab9BUdE9m5iCnfHyxABpomdqa6m4RCGzaC3iBdTQ1MPHxcF3RMXFD4");
+        HdPublicKey rootPubKey = rootPriKey.getHdPublicKey();
+        for (int i = 0; i < 10; i++) {
+            HdPublicKey childPubKey = rootPubKey.fromPath(String.format("0/%d", i));
+            HdPrivateKey childPrvKey = rootPriKey.fromPath(String.format("0/%d", i));
+            Assert.assertEquals(childPrvKeys.get(i), childPrvKey.toHexString());
+            Assert.assertEquals(childPubKeys.get(i), childPubKey.toHexString());
+            Assert.assertEquals(childPubKey.base58Encode(), HdPublicKey.base58Decode(childPubKey.base58Encode()).base58Encode());
+        }
     }
 }

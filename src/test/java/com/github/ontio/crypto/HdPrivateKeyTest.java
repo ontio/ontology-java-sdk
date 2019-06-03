@@ -55,9 +55,13 @@ public class HdPrivateKeyTest {
                         "APWuVP5JqsYc8aHKGAwXg9cufmHtxz62EW"
                 )
         );
-        HdPrivateKey rootPriKey = HdPrivateKey.base58Decode("xprv9y1wY3ovCV9wWRTw8VJwkyjuaV9vbmLb8kLuaAXyzBGQReZETHBHEab9BUdE9m5iCnfHyxABpomdqa6m4RCGzaC3iBdTQ1MPHxcF3RMXFD4");
+        HdPrivateKey masterKey = HdPrivateKey.base58Decode("xprv9s21ZrQH143K3EkLpHRGt3RZbWijNben2Gh4JCrBPWG6Z9M7d7higox1aCzTm77JCa7FGoAsy8jgtMMyqqDk25DXssjbEBzqR6yr9gqNimh");
+        HdPrivateKey rootKey = masterKey.fromPath();
+        Assert.assertEquals("xprv9y1wY3ovCV9wWRTw8VJwkyjuaV9vbmLb8kLuaAXyzBGQReZETHBHEab9BUdE9m5iCnfHyxABpomdqa6m4RCGzaC3iBdTQ1MPHxcF3RMXFD4", rootKey.base58Encode());
+        HdPrivateKey actualRootKey = HdPrivateKey.base58Decode(rootKey.base58Encode());
+        Assert.assertEquals("66ed0c7f0476d64752ec1d14beaf0693af6641ccce6401ba6f30c41048f5f9de", actualRootKey.toHexString());
         for (int i = 0; i < 10; i++) {
-            HdPrivateKey childKey = rootPriKey.fromPath(String.format("0/%d", i));
+            HdPrivateKey childKey = rootKey.fromPath(String.format("0/%d", i));
             Account childAcct = new Account(childKey.getPrivateKey(), SignatureScheme.SHA256WITHECDSA);
             Assert.assertEquals(addressList.get(i), childAcct.getAddressU160().toBase58());
             Assert.assertEquals(Helper.toHexString(childAcct.serializePrivateKey()), childKey.toHexString());

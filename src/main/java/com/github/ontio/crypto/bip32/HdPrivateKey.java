@@ -27,7 +27,6 @@ import com.github.ontio.crypto.bip32.derivation.CkdFunction;
 import com.github.ontio.crypto.bip32.derivation.CkdFunctionDerive;
 import com.github.ontio.crypto.bip32.derivation.Derive;
 import com.github.ontio.crypto.bip32.derivation.Derivation;
-import com.github.ontio.crypto.bip32.networks.Bitcoin;
 
 import com.github.ontio.sdk.exception.SDKException;
 import io.github.novacrypto.bip39.SeedCalculator;
@@ -65,8 +64,8 @@ public class HdPrivateKey implements
         return HdPrivateKeyDeserializer.DEFAULT;
     }
 
-    public static Deserializer<HdPrivateKey> deserializer(final Networks networks) {
-        return new HdPrivateKeyDeserializer(networks);
+    public static Deserializer<HdPrivateKey> deserializer(final Network network) {
+        return new HdPrivateKeyDeserializer(network);
     }
 
     private static final CkdFunction<HdPrivateKey> CKD_FUNCTION = new CkdFunction<HdPrivateKey>() {
@@ -157,7 +156,7 @@ public class HdPrivateKey implements
         });
     }
 
-    public static HdPrivateKey base58Decode(String key) {
+    public static HdPrivateKey base58Decode(String key) throws SDKException {
         return HdPrivateKey.deserializer().deserialize(Base58.decode(key));
     }
 

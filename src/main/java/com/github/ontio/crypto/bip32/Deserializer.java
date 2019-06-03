@@ -19,6 +19,8 @@
 
 package com.github.ontio.crypto.bip32;
 
+import com.github.ontio.sdk.exception.SDKException;
+
 public interface Deserializer<T> {
 
     /**
@@ -27,7 +29,7 @@ public interface Deserializer<T> {
      * @param extendedBase58Key Base58 CharSequence containing the serialized extended key.
      * @return The {@link T}
      */
-    T deserialize(CharSequence extendedBase58Key);
+    T deserialize(CharSequence extendedBase58Key) throws SDKException;
 
     /**
      * Deserializes the data into a {@link T}.
@@ -35,5 +37,5 @@ public interface Deserializer<T> {
      * @param extendedKeyData Byte array containing the serialized extended key.
      * @return The {@link T}
      */
-    T deserialize(byte[] extendedKeyData);
+    T deserialize(byte[] extendedKeyData) throws SDKException;
 }

@@ -4,7 +4,7 @@ package com.github.ontio.crypto;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.crypto.bip32.HdPrivateKey;
-import com.github.ontio.crypto.bip32.networks.Bitcoin;
+import com.github.ontio.crypto.bip32.Bitcoin;
 import com.github.ontio.sdk.exception.SDKException;
 
 import java.nio.charset.StandardCharsets;

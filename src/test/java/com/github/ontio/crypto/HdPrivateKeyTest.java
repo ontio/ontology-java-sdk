@@ -23,6 +23,7 @@ import com.github.ontio.account.Account;
 import com.github.ontio.common.Helper;
 import com.github.ontio.crypto.bip32.HdPrivateKey;
 import com.github.ontio.crypto.bip32.HdPublicKey;
+import com.github.ontio.sdk.exception.SDKException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -80,7 +81,7 @@ public class HdPrivateKeyTest {
     }
 
     @Test
-    public void TestChildKey() {
+    public void TestChildKey() throws SDKException {
         HdPrivateKey rootPriKey = HdPrivateKey.base58Decode("xprv9y1wY3ovCV9wWRTw8VJwkyjuaV9vbmLb8kLuaAXyzBGQReZETHBHEab9BUdE9m5iCnfHyxABpomdqa6m4RCGzaC3iBdTQ1MPHxcF3RMXFD4");
         ArrayList<String> childKeyList = new ArrayList<>(
                 Arrays.asList(

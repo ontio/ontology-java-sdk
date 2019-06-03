@@ -19,7 +19,8 @@
 
 package com.github.ontio.crypto.bip32;
 
-import com.github.ontio.crypto.bip32.networks.DefaultNetworks;
+import com.github.ontio.common.ErrorCode;
+import com.github.ontio.sdk.exception.SDKException;
 
 import java.util.Arrays;
 
@@ -28,16 +29,16 @@ import static io.github.novacrypto.base58.Base58.base58Decode;
 
 final class HdPublicKeyDeserializer implements Deserializer<HdPublicKey> {
 
-    static final HdPublicKeyDeserializer DEFAULT = new HdPublicKeyDeserializer(DefaultNetworks.INSTANCE);
+    static final HdPublicKeyDeserializer DEFAULT = new HdPublicKeyDeserializer(Bitcoin.MAIN_NET);
 
-    private final Networks networks;
+    private final Network network;
 
-    HdPublicKeyDeserializer(final Networks networks) {
-        this.networks = networks;
+    HdPublicKeyDeserializer(final Network network) {
+        this.network = network;
     }
 
     @Override
-    public HdPublicKey deserialize(final CharSequence extendedBase58Key) {
+    public HdPublicKey deserialize(final CharSequence extendedBase58Key) throws SDKException {
         final byte[] extendedKeyData = base58Decode(extendedBase58Key);
         try {
             return deserialize(extendedKeyData);
@@ -47,12 +48,16 @@ final class HdPublicKeyDeserializer implements Deserializer<HdPublicKey> {
     }
 
     @Override
-    public HdPublicKey deserialize(final byte[] extendedKeyData) {
+    public HdPublicKey deserialize(final byte[] extendedKeyData) throws SDKException {
         confirmExtendedKeyChecksum(extendedKeyData);
         final ByteArrayReader reader = new ByteArrayReader(extendedKeyData);
+        final int version = reader.readSer32();
+        if (version != Bitcoin.MAIN_NET.getPublicVersion()) {
+            throw new SDKException(ErrorCode.OtherError(String.format("Can't find network that matches private version 0x%x", version)));
+        }
         return new HdPublicKey(new HdKey
                 .Builder()
-                .network(networks.findByPublicVersion(reader.readSer32()))
+                .network(Bitcoin.MAIN_NET)
                 .depth(reader.read())
                 .parentFingerprint(reader.readSer32())
                 .childNumber(reader.readSer32())

@@ -22,8 +22,4 @@
 package com.github.ontio.crypto.bip32;
 
 public interface Networks {
-
-    Network findByPrivateVersion(int privateVersion);
-
-    Network findByPublicVersion(int publicVersion);
 }

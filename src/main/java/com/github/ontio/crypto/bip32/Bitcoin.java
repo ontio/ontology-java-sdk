@@ -17,10 +17,28 @@
  *
  */
 
-package com.github.ontio.crypto.bip32.networks;
+package com.github.ontio.crypto.bip32;
 
-public final class UnknownNetworkException extends RuntimeException {
-    UnknownNetworkException(final String message) {
-        super(message);
+public enum Bitcoin implements Network {
+    MAIN_NET {
+        @Override
+        public int getPrivateVersion() {
+            return 0x488ade4;
+        }
+
+        @Override
+        public int getPublicVersion() {
+            return 0x0488b21e;
+        }
+
+        @Override
+        public byte p2pkhVersion() {
+            return 0;
+        }
+
+        @Override
+        public byte p2shVersion() {
+            return 0x05;
+        }
     }
 }

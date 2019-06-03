@@ -25,6 +25,7 @@ import com.github.ontio.crypto.bip32.derivation.CkdFunction;
 import com.github.ontio.crypto.bip32.derivation.Derivation;
 import com.github.ontio.crypto.bip32.derivation.CkdFunctionDerive;
 import com.github.ontio.crypto.bip32.derivation.Derive;
+import com.github.ontio.sdk.exception.SDKException;
 import org.spongycastle.math.ec.ECPoint;
 
 import java.math.BigInteger;
@@ -47,8 +48,8 @@ public final class HdPublicKey implements
         return HdPublicKeyDeserializer.DEFAULT;
     }
 
-    public static Deserializer<HdPublicKey> deserializer(final Networks networks) {
-        return new HdPublicKeyDeserializer(networks);
+    public static Deserializer<HdPublicKey> deserializer(final Network network) {
+        return new HdPublicKeyDeserializer(network);
     }
 
     private static final CkdFunction<HdPublicKey> CKD_FUNCTION = new CkdFunction<HdPublicKey>() {
@@ -114,7 +115,7 @@ public final class HdPublicKey implements
                 .build());
     }
 
-    public static HdPublicKey base58Decode(String key) {
+    public static HdPublicKey base58Decode(String key) throws SDKException {
         return HdPublicKey.deserializer().deserialize(Base58.decode(key));
     }
 

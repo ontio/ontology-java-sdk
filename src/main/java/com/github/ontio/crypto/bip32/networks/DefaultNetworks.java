@@ -24,7 +24,7 @@ import com.github.ontio.crypto.bip32.Network;
 import com.github.ontio.crypto.bip32.Networks;
 
 public enum DefaultNetworks implements Networks {
-    INSTANCE(new NetworkCollection(Bitcoin.MAIN_NET, Bitcoin.TEST_NET));
+    INSTANCE(new NetworkCollection(Bitcoin.MAIN_NET));
 
     private final Networks networks;
 

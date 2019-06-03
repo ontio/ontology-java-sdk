@@ -19,7 +19,6 @@
 
 package com.github.ontio.crypto.bip32;
 
-
 import com.github.ontio.crypto.bip32.networks.DefaultNetworks;
 
 import java.util.Arrays;

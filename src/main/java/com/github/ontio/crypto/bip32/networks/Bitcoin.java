@@ -42,27 +42,5 @@ public enum Bitcoin implements Network {
         public byte p2shVersion() {
             return 0x05;
         }
-    },
-
-    TEST_NET {
-        @Override
-        public int getPrivateVersion() {
-            return 0x4358394;
-        }
-
-        @Override
-        public int getPublicVersion() {
-            return 0x043587cf;
-        }
-
-        @Override
-        public byte p2pkhVersion() {
-            return 0x6f;
-        }
-
-        @Override
-        public byte p2shVersion() {
-            return (byte) 0xc4;
-        }
     }
 }

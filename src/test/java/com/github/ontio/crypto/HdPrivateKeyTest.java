@@ -51,7 +51,6 @@ public class HdPrivateKeyTest {
     public void TestRootKey() throws Exception {
         HdPrivateKey masterKey = HdPrivateKey.base58Decode("xprv9s21ZrQH143K3EkLpHRGt3RZbWijNben2Gh4JCrBPWG6Z9M7d7higox1aCzTm77JCa7FGoAsy8jgtMMyqqDk25DXssjbEBzqR6yr9gqNimh");
         HdPrivateKey rootKey = masterKey.fromPath();
-        System.out.println(rootKey.getHdPublicKey().base58Encode());
         HdPrivateKey rootPriKey = masterKey.fromPath();
         Assert.assertEquals("66ed0c7f0476d64752ec1d14beaf0693af6641ccce6401ba6f30c41048f5f9de", rootPriKey.toHexString());
         Account rootAcct = new Account(rootPriKey.getPrivateKey(), SignatureScheme.SHA256WITHECDSA);

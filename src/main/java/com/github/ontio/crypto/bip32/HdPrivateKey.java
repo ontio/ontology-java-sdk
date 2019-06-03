@@ -112,7 +112,7 @@ public class HdPrivateKey implements
         }
         return new HdPublicKey(new HdKey.Builder()
                 .network(hdKey.getNetwork())
-                .neutered(hdKey.getNeutered())
+                .neutered(true)
                 .key(Q.getEncoded(true))
                 .parentFingerprint(hdKey.getParentFingerprint())
                 .depth(hdKey.depth())
@@ -126,7 +126,7 @@ public class HdPrivateKey implements
     private HdPrivateKey(final Network network, final byte[] key, final byte[] chainCode) {
         this(new HdKey.Builder()
                 .network(network)
-                .neutered(true)
+                .neutered(false)
                 .key(key)
                 .chainCode(chainCode)
                 .depth(0)

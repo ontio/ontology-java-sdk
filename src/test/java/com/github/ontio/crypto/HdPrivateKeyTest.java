@@ -104,6 +104,7 @@ public class HdPrivateKeyTest {
     public void TestMasterKeyFromMnemonic() throws Exception {
         String code = "ritual month sign shop champion number mask leave anchor critic boring clinic";
         HdPrivateKey masterKey = HdPrivateKey.masterKeyFromMnemonic(code);
+        System.out.println(masterKey.base58Encode());
         HdPublicKey masterPubKey = masterKey.getHdPublicKey();
         Assert.assertEquals("xpub661MyMwAqRbcFipovJxHFBNJ9YZDn4NdPVcf6bFnwqo5RwgGAf1yEcGVRVwNmhBRmcvzforP5aWQefsNveyCxPdJ4L6oydpm9XLZ7PLCBXd", masterPubKey.base58Encode());
         Assert.assertEquals("942a2d2546105da4ab795f89847b6bc1bff3b90180dd811a906bb73a284f1c2e", masterKey.toHexString());

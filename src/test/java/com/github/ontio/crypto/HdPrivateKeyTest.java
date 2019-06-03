@@ -33,11 +33,30 @@ import java.util.Arrays;
 
 
 public class HdPrivateKeyTest {
+    @Test
+    public void TestMasterKeyFromMnemonic() throws Exception {
+        String code = "ritual month sign shop champion number mask leave anchor critic boring clinic";
+        HdPrivateKey masterKey = HdPrivateKey.masterKeyFromMnemonic(code);
+        HdPublicKey masterPubKey = masterKey.getHdPublicKey();
+        Assert.assertEquals("xpub661MyMwAqRbcFipovJxHFBNJ9YZDn4NdPVcf6bFnwqo5RwgGAf1yEcGVRVwNmhBRmcvzforP5aWQefsNveyCxPdJ4L6oydpm9XLZ7PLCBXd", masterPubKey.base58Encode());
+        Assert.assertEquals("942a2d2546105da4ab795f89847b6bc1bff3b90180dd811a906bb73a284f1c2e", masterKey.toHexString());
+        Account masterAcct = new Account(masterKey.getPrivateKey(), SignatureScheme.SHA256WITHECDSA);
+        Assert.assertEquals(Helper.toHexString(masterAcct.serializePrivateKey()), masterKey.toHexString());
+        Assert.assertEquals(Helper.toHexString(masterAcct.serializePublicKey()), masterPubKey.toHexString());
+        Assert.assertEquals("ANQ6eYZ3Age8iXxTeaAzQR1GLbshaESWgL", masterAcct.getAddressU160().toBase58());
+        acctValidity(masterAcct);
+    }
 
-    private void acctValidity(Account acct) throws Exception {
-        byte[] msg = "Attack!".getBytes(StandardCharsets.UTF_8);
-        byte[] signature = acct.generateSignature(msg, acct.getSignatureScheme(), null);
-        Assert.assertTrue(acct.verifySignature(msg, signature));
+    @Test
+    public void TestRootKey() throws Exception {
+        HdPrivateKey masterKey = HdPrivateKey.base58Decode("xprv9s21ZrQH143K3EkLpHRGt3RZbWijNben2Gh4JCrBPWG6Z9M7d7higox1aCzTm77JCa7FGoAsy8jgtMMyqqDk25DXssjbEBzqR6yr9gqNimh");
+        HdPrivateKey rootKey = masterKey.fromPath();
+        System.out.println(rootKey.getHdPublicKey().base58Encode());
+        HdPrivateKey rootPriKey = masterKey.fromPath();
+        Assert.assertEquals("66ed0c7f0476d64752ec1d14beaf0693af6641ccce6401ba6f30c41048f5f9de", rootPriKey.toHexString());
+        Account rootAcct = new Account(rootPriKey.getPrivateKey(), SignatureScheme.SHA256WITHECDSA);
+        Assert.assertEquals("AZN8hReHwhsdaowbBLcDsGHeAnjoTXAyRs", rootAcct.getAddressU160().toBase58());
+        Assert.assertEquals(rootPriKey.base58Encode(), HdPrivateKey.base58Decode(rootPriKey.base58Encode()).base58Encode());
     }
 
     @Test
@@ -71,16 +90,6 @@ public class HdPrivateKeyTest {
     }
 
     @Test
-    public void TestRootKey() throws Exception {
-        HdPrivateKey masterKey = HdPrivateKey.base58Decode("xprv9s21ZrQH143K3EkLpHRGt3RZbWijNben2Gh4JCrBPWG6Z9M7d7higox1aCzTm77JCa7FGoAsy8jgtMMyqqDk25DXssjbEBzqR6yr9gqNimh");
-        HdPrivateKey rootPriKey = masterKey.fromPath();
-        Assert.assertEquals("66ed0c7f0476d64752ec1d14beaf0693af6641ccce6401ba6f30c41048f5f9de", rootPriKey.toHexString());
-        Account rootAcct = new Account(rootPriKey.getPrivateKey(), SignatureScheme.SHA256WITHECDSA);
-        Assert.assertEquals("AZN8hReHwhsdaowbBLcDsGHeAnjoTXAyRs", rootAcct.getAddressU160().toBase58());
-        Assert.assertEquals(rootPriKey.base58Encode(), HdPrivateKey.base58Decode(rootPriKey.base58Encode()).base58Encode());
-    }
-
-    @Test
     public void TestChildKey() throws SDKException {
         HdPrivateKey rootPriKey = HdPrivateKey.base58Decode("xprv9y1wY3ovCV9wWRTw8VJwkyjuaV9vbmLb8kLuaAXyzBGQReZETHBHEab9BUdE9m5iCnfHyxABpomdqa6m4RCGzaC3iBdTQ1MPHxcF3RMXFD4");
         ArrayList<String> childKeyList = new ArrayList<>(
@@ -104,17 +113,10 @@ public class HdPrivateKeyTest {
         }
     }
 
-    @Test
-    public void TestMasterKeyFromMnemonic() throws Exception {
-        String code = "ritual month sign shop champion number mask leave anchor critic boring clinic";
-        HdPrivateKey masterKey = HdPrivateKey.masterKeyFromMnemonic(code);
-        HdPublicKey masterPubKey = masterKey.getHdPublicKey();
-        Assert.assertEquals("xpub661MyMwAqRbcFipovJxHFBNJ9YZDn4NdPVcf6bFnwqo5RwgGAf1yEcGVRVwNmhBRmcvzforP5aWQefsNveyCxPdJ4L6oydpm9XLZ7PLCBXd", masterPubKey.base58Encode());
-        Assert.assertEquals("942a2d2546105da4ab795f89847b6bc1bff3b90180dd811a906bb73a284f1c2e", masterKey.toHexString());
-        Account masterAcct = new Account(masterKey.getPrivateKey(), SignatureScheme.SHA256WITHECDSA);
-        Assert.assertEquals(Helper.toHexString(masterAcct.serializePrivateKey()), masterKey.toHexString());
-        Assert.assertEquals(Helper.toHexString(masterAcct.serializePublicKey()), masterPubKey.toHexString());
-        Assert.assertEquals("ANQ6eYZ3Age8iXxTeaAzQR1GLbshaESWgL", masterAcct.getAddressU160().toBase58());
-        acctValidity(masterAcct);
+    private void acctValidity(Account acct) throws Exception {
+        byte[] msg = "Attack!".getBytes(StandardCharsets.UTF_8);
+        byte[] signature = acct.generateSignature(msg, acct.getSignatureScheme(), null);
+        Assert.assertTrue(acct.verifySignature(msg, signature));
     }
+
 }

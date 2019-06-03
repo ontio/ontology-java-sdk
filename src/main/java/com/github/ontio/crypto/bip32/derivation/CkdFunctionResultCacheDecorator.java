@@ -33,10 +33,6 @@ import java.util.Map;
  */
 public final class CkdFunctionResultCacheDecorator<Key> implements CkdFunction<Key> {
 
-    public static <Key> CkdFunction<Key> newCacheOf(final CkdFunction<Key> decorated) {
-        return new CkdFunctionResultCacheDecorator<>(decorated);
-    }
-
     private final CkdFunction<Key> decoratedCkdFunction;
 
     private final Map<Key, HashMap<Integer, Key>> cache = new HashMap<>();

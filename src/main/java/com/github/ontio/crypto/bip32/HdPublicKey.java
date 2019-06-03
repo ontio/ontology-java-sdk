@@ -19,6 +19,7 @@
 
 package com.github.ontio.crypto.bip32;
 
+import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.crypto.Base58;
 import com.github.ontio.crypto.Digest;
@@ -38,7 +39,6 @@ import static com.github.ontio.crypto.bip32.Secp256r1SC.gMultiplyAndAddPoint;
 import static com.github.ontio.crypto.bip32.Secp256r1SC.n;
 import static com.github.ontio.crypto.bip32.Secp256r1SC.pointSerP;
 import static com.github.ontio.crypto.bip32.derivation.CharSequenceDerivation.isHardened;
-import static com.github.ontio.crypto.bip32.derivation.CkdFunctionResultCacheDecorator.newCacheOf;
 
 public final class HdPublicKey implements
         Derive<HdPublicKey>,
@@ -52,12 +52,7 @@ public final class HdPublicKey implements
         return new HdPublicKeyDeserializer(network);
     }
 
-    private static final CkdFunction<HdPublicKey> CKD_FUNCTION = new CkdFunction<HdPublicKey>() {
-        @Override
-        public HdPublicKey deriveChildKey(final HdPublicKey parent, final int childIndex) {
-            return parent.cKDpub(childIndex);
-        }
-    };
+    private static final CkdFunction<HdPublicKey> CKD_FUNCTION = HdPublicKey::cKDpub;
 
     static HdPublicKey from(final HdKey hdKey) {
         return new HdPublicKey(new HdKey.Builder()
@@ -119,12 +114,12 @@ public final class HdPublicKey implements
         return HdPublicKey.deserializer().deserialize(Base58.decode(key));
     }
 
-    private Derive<HdPublicKey> derive() {
-        return derive(CKD_FUNCTION);
+    public Address getAddress() {
+        return Address.addressFromPubKey(toByteArray());
     }
 
-    public Derive<HdPublicKey> deriveWithCache() {
-        return derive(newCacheOf(CKD_FUNCTION));
+    private Derive<HdPublicKey> derive() {
+        return new CkdFunctionDerive<>(CKD_FUNCTION, this);
     }
 
     @Override
@@ -151,22 +146,8 @@ public final class HdPublicKey implements
         return fromPath("m/44'/1024'/0'");
     }
 
-    private Derive<HdPublicKey> derive(final CkdFunction<HdPublicKey> ckdFunction) {
-        return new CkdFunctionDerive<>(ckdFunction, this);
-    }
-
     public byte[] toByteArray() {
         return hdKey.serialize();
-    }
-
-    public HdPublicKey toNetwork(final Network otherNetwork) {
-        if (otherNetwork == network()) {
-            return this;
-        }
-        return new HdPublicKey(
-                hdKey.toBuilder()
-                        .network(otherNetwork)
-                        .build());
     }
 
     public Network network() {

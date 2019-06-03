@@ -19,6 +19,7 @@
 
 package com.github.ontio.crypto.bip32;
 
+import com.github.ontio.common.Address;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.crypto.Base58;
@@ -47,7 +48,6 @@ import static com.github.ontio.crypto.bip32.HdKey.parse256;
 import static com.github.ontio.crypto.bip32.HdKey.ser256;
 import static com.github.ontio.crypto.bip32.Secp256r1SC.n;
 import static com.github.ontio.crypto.bip32.derivation.CharSequenceDerivation.isHardened;
-import static com.github.ontio.crypto.bip32.derivation.CkdFunctionResultCacheDecorator.newCacheOf;
 
 import static io.github.novacrypto.toruntime.CheckedExceptionToRuntime.toRuntime;
 
@@ -68,12 +68,7 @@ public class HdPrivateKey implements
         return new HdPrivateKeyDeserializer(network);
     }
 
-    private static final CkdFunction<HdPrivateKey> CKD_FUNCTION = new CkdFunction<HdPrivateKey>() {
-        @Override
-        public HdPrivateKey deriveChildKey(final HdPrivateKey parent, final int childIndex) {
-            return parent.cKDpriv(childIndex);
-        }
-    };
+    private static final CkdFunction<HdPrivateKey> CKD_FUNCTION = HdPrivateKey::cKDpriv;
 
     public static HdPrivateKey masterKeyFromMnemonic(String code, String passphrase) {
         byte[] seed = new SeedCalculator()
@@ -92,6 +87,10 @@ public class HdPrivateKey implements
 
     public byte[] getPrivateKey() {
         return hdKey.getKey();
+    }
+
+    public Address getAddress() throws Exception {
+        return Address.addressFromPubKey(getHdPublicKey().toByteArray());
     }
 
     public HdPublicKey getHdPublicKey() throws Exception {
@@ -164,22 +163,22 @@ public class HdPrivateKey implements
     public HdPrivateKey cKDpriv(final int index) {
         final byte[] data = new byte[37];
         final ByteArrayWriter writer = new ByteArrayWriter(data);
-
+        final HdKey parent = this.hdKey;
         if (isHardened(index)) {
             writer.concat((byte) 0);
-            writer.concat(hdKey.getKey(), 32);
+            writer.concat(parent.getKey(), 32);
         } else {
-            writer.concat(hdKey.getPoint());
+            writer.concat(parent.getPoint());
         }
         writer.concatSer32(index);
 
-        final byte[] I = Digest.hmacSha512(hdKey.getChainCode(), data);
+        final byte[] I = Digest.hmacSha512(parent.getChainCode(), data);
         Arrays.fill(data, (byte) 0);
 
         final byte[] Il = head32(I);
         final byte[] Ir = tail32(I);
 
-        final byte[] key = hdKey.getKey();
+        final byte[] key = parent.getKey();
         final BigInteger parse256_Il = parse256(Il);
         final BigInteger ki = parse256_Il.add(parse256(key)).mod(n());
 
@@ -190,13 +189,13 @@ public class HdPrivateKey implements
         ser256(Il, ki);
 
         return new HdPrivateKey(new HdKey.Builder()
-                .network(hdKey.getNetwork())
+                .network(parent.getNetwork())
                 .neutered(false)
                 .key(Il)
                 .chainCode(Ir)
-                .depth(hdKey.depth() + 1)
+                .depth(parent.depth() + 1)
                 .childNumber(index)
-                .parentFingerprint(hdKey.calculateFingerPrint())
+                .parentFingerprint(parent.calculateFingerPrint())
                 .build());
     }
 
@@ -210,11 +209,7 @@ public class HdPrivateKey implements
     }
 
     private Derive<HdPrivateKey> derive() {
-        return derive(CKD_FUNCTION);
-    }
-
-    public Derive<HdPrivateKey> deriveWithCache() {
-        return derive(newCacheOf(CKD_FUNCTION));
+        return new CkdFunctionDerive<>(CKD_FUNCTION, this);
     }
 
     @Override
@@ -241,22 +236,8 @@ public class HdPrivateKey implements
         return derive().fromPath(derivationPath, derivation);
     }
 
-    private Derive<HdPrivateKey> derive(final CkdFunction<HdPrivateKey> ckdFunction) {
-        return new CkdFunctionDerive<>(ckdFunction, this);
-    }
-
-    public byte[] extendedKeyByteArray() {
+    public byte[] toByteArray() {
         return hdKey.serialize();
-    }
-
-    public HdPrivateKey toNetwork(final Network otherNetwork) {
-        if (otherNetwork == network()) {
-            return this;
-        }
-        return new HdPrivateKey(
-                hdKey.toBuilder()
-                        .network(otherNetwork)
-                        .build());
     }
 
     public Network network() {
@@ -272,7 +253,7 @@ public class HdPrivateKey implements
     }
 
     public String base58Encode() {
-        return Base58.encode(extendedKeyByteArray());
+        return Base58.encode(toByteArray());
     }
 
 }

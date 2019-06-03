@@ -59,7 +59,7 @@ public class MnemonicCode {
         byte[] seed = MnemonicCode.getSeedFromMnemonicCodesStr(mnemonicCodesStr);
         HdPrivateKey key = HdPrivateKey.fromSeed(seed,"Nist256p1 seed".getBytes(StandardCharsets.UTF_8), Bitcoin.MAIN_NET);
         HdPrivateKey child = key.fromPath();
-        byte[] p = child.extendedKeyByteArray();
+        byte[] p = child.toByteArray();
         byte[] tmp = new byte[32];
         System.arraycopy(p, 46, tmp, 0, 32);
         return tmp;

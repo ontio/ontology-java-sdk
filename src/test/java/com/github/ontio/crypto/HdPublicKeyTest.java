@@ -19,6 +19,7 @@
 
 package com.github.ontio.crypto;
 
+import com.github.ontio.account.Account;
 import com.github.ontio.crypto.bip32.HdPrivateKey;
 import com.github.ontio.crypto.bip32.HdPublicKey;
 import org.junit.Assert;

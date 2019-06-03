@@ -32,12 +32,12 @@ public final class CkdFunctionDerive<Node> implements Derive<Node> {
     }
 
     @Override
-    public Node derive(final CharSequence derivationPath) {
-        return derive(derivationPath, CharSequenceDerivation.INSTANCE);
+    public Node fromPath(final CharSequence derivationPath) {
+        return fromPath(derivationPath, CharSequenceDerivation.INSTANCE);
     }
 
     @Override
-    public <Path> Node derive(final Path derivationPath, final Derivation<Path> derivation) {
+    public <Path> Node fromPath(final Path derivationPath, final Derivation<Path> derivation) {
         return derivation.derive(rootNode, derivationPath, standardCkdFunction);
     }
 }

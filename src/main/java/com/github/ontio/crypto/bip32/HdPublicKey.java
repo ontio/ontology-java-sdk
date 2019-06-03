@@ -127,7 +127,7 @@ public final class HdPublicKey implements
     }
 
     @Override
-    public HdPublicKey derive(final CharSequence derivationPath) {
+    public HdPublicKey fromPath(final CharSequence derivationPath) {
         final int length = derivationPath.length();
         if (length == 0)
             throw new IllegalArgumentException("Path cannot be empty");
@@ -136,14 +136,18 @@ public final class HdPublicKey implements
         if (derivationPath.charAt(0) == 'm' && depth() == 0) {
             if (derivationPath.charAt(1) != '/')
                 throw new IllegalArgumentException("Root key must be a master key if the path start with m/");
-            return derive().derive(derivationPath.subSequence(2, derivationPath.length()));
+            return derive().fromPath(derivationPath.subSequence(2, derivationPath.length()));
         }
-        return derive().derive(derivationPath);
+        return derive().fromPath(derivationPath);
     }
 
     @Override
-    public <Path> HdPublicKey derive(final Path derivationPath, final Derivation<Path> derivation) {
-        return derive().derive(derivationPath, derivation);
+    public <Path> HdPublicKey fromPath(final Path derivationPath, final Derivation<Path> derivation) {
+        return derive().fromPath(derivationPath, derivation);
+    }
+
+    public HdPublicKey fromPath() {
+        return fromPath("m/44'/1024'/0'");
     }
 
     private Derive<HdPublicKey> derive(final CkdFunction<HdPublicKey> ckdFunction) {

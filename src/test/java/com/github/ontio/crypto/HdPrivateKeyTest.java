@@ -23,7 +23,6 @@ import com.github.ontio.account.Account;
 import com.github.ontio.common.Helper;
 import com.github.ontio.crypto.bip32.HdPrivateKey;
 import com.github.ontio.crypto.bip32.HdPublicKey;
-import io.github.novacrypto.bip39.Words;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -58,7 +57,7 @@ public class HdPrivateKeyTest {
         );
         HdPrivateKey rootPriKey = HdPrivateKey.base58Decode("xprv9y1wY3ovCV9wWRTw8VJwkyjuaV9vbmLb8kLuaAXyzBGQReZETHBHEab9BUdE9m5iCnfHyxABpomdqa6m4RCGzaC3iBdTQ1MPHxcF3RMXFD4");
         for (int i = 0; i < 10; i++) {
-            HdPrivateKey childKey = rootPriKey.derive(String.format("0/%d", i));
+            HdPrivateKey childKey = rootPriKey.fromPath(String.format("0/%d", i));
             Account childAcct = new Account(childKey.getPrivateKey(), SignatureScheme.SHA256WITHECDSA);
             Assert.assertEquals(addressList.get(i), childAcct.getAddressU160().toBase58());
             Assert.assertEquals(Helper.toHexString(childAcct.serializePrivateKey()), childKey.toHexString());
@@ -69,7 +68,7 @@ public class HdPrivateKeyTest {
     @Test
     public void TestRootKey() throws Exception {
         HdPrivateKey masterKey = HdPrivateKey.base58Decode("xprv9s21ZrQH143K3EkLpHRGt3RZbWijNben2Gh4JCrBPWG6Z9M7d7higox1aCzTm77JCa7FGoAsy8jgtMMyqqDk25DXssjbEBzqR6yr9gqNimh");
-        HdPrivateKey rootPriKey = masterKey.derive("m/44'/1024'/0'");
+        HdPrivateKey rootPriKey = masterKey.fromPath();
         Assert.assertEquals("66ed0c7f0476d64752ec1d14beaf0693af6641ccce6401ba6f30c41048f5f9de", rootPriKey.toHexString());
         Account rootAcct = new Account(rootPriKey.getPrivateKey(), SignatureScheme.SHA256WITHECDSA);
         Assert.assertEquals("AZN8hReHwhsdaowbBLcDsGHeAnjoTXAyRs", rootAcct.getAddressU160().toBase58());
@@ -94,7 +93,7 @@ public class HdPrivateKeyTest {
                 )
         );
         for (int i = 0; i < 10; i++) {
-            HdPrivateKey childKey = rootPriKey.derive(String.format("0/%d", i));
+            HdPrivateKey childKey = rootPriKey.fromPath(String.format("0/%d", i));
             Assert.assertEquals(childKeyList.get(i), childKey.toHexString());
             Assert.assertEquals(childKey.base58Encode(), HdPrivateKey.base58Decode(childKey.base58Encode()).base58Encode());
         }
@@ -104,7 +103,6 @@ public class HdPrivateKeyTest {
     public void TestMasterKeyFromMnemonic() throws Exception {
         String code = "ritual month sign shop champion number mask leave anchor critic boring clinic";
         HdPrivateKey masterKey = HdPrivateKey.masterKeyFromMnemonic(code);
-        System.out.println(masterKey.base58Encode());
         HdPublicKey masterPubKey = masterKey.getHdPublicKey();
         Assert.assertEquals("xpub661MyMwAqRbcFipovJxHFBNJ9YZDn4NdPVcf6bFnwqo5RwgGAf1yEcGVRVwNmhBRmcvzforP5aWQefsNveyCxPdJ4L6oydpm9XLZ7PLCBXd", masterPubKey.base58Encode());
         Assert.assertEquals("942a2d2546105da4ab795f89847b6bc1bff3b90180dd811a906bb73a284f1c2e", masterKey.toHexString());

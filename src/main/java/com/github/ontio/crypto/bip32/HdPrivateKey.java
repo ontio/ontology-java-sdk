@@ -34,20 +34,11 @@ import io.github.novacrypto.bip39.SeedCalculator;
 import io.github.novacrypto.bip39.wordlists.English;
 import io.github.novacrypto.toruntime.CheckedExceptionToRuntime;
 import org.bouncycastle.jce.ECNamedCurveTable;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
-import org.bouncycastle.jce.spec.ECNamedCurveSpec;
 import org.bouncycastle.math.ec.ECPoint;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Security;
-import java.security.spec.ECParameterSpec;
-import java.security.spec.ECPrivateKeySpec;
-import java.security.spec.ECPublicKeySpec;
 import java.util.Arrays;
 
 import static com.github.ontio.crypto.bip32.BigIntegerUtils.parse256;
@@ -228,7 +219,7 @@ public class HdPrivateKey implements
     }
 
     @Override
-    public HdPrivateKey derive(final CharSequence derivationPath) {
+    public HdPrivateKey fromPath(final CharSequence derivationPath) {
         final int length = derivationPath.length();
         if (length == 0)
             throw new IllegalArgumentException("Path cannot be empty");
@@ -237,14 +228,18 @@ public class HdPrivateKey implements
         if (derivationPath.charAt(0) == 'm' && depth() == 0) {
             if (derivationPath.charAt(1) != '/')
                 throw new IllegalArgumentException("Root key must be a master key if the path start with m/");
-            return derive().derive(derivationPath.subSequence(2, derivationPath.length()));
+            return derive().fromPath(derivationPath.subSequence(2, derivationPath.length()));
         }
-        return derive().derive(derivationPath);
+        return derive().fromPath(derivationPath);
+    }
+
+    public HdPrivateKey fromPath() {
+        return fromPath("m/44'/1024'/0'");
     }
 
     @Override
-    public <Path> HdPrivateKey derive(Path derivationPath, Derivation<Path> derivation) {
-        return derive().derive(derivationPath, derivation);
+    public <Path> HdPrivateKey fromPath(Path derivationPath, Derivation<Path> derivation) {
+        return derive().fromPath(derivationPath, derivation);
     }
 
     private Derive<HdPrivateKey> derive(final CkdFunction<HdPrivateKey> ckdFunction) {

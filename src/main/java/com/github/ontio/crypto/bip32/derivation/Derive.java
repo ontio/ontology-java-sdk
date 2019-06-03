@@ -29,7 +29,7 @@ public interface Derive<Key> {
      * @param derivationPath Path
      * @return Key at the path
      */
-    Key derive(final CharSequence derivationPath);
+    Key fromPath(final CharSequence derivationPath);
 
     /**
      * Derive from a generic path using the {@link Derivation} supplied to extract the child indexes
@@ -39,5 +39,5 @@ public interface Derive<Key> {
      * @param <Path>         The generic type of the path
      * @return Key at the path
      */
-    <Path> Key derive(final Path derivationPath, final Derivation<Path> derivation);
+    <Path> Key fromPath(final Path derivationPath, final Derivation<Path> derivation);
 }

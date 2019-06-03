@@ -47,9 +47,10 @@ public class MnemonicCode {
             throw new SDKException(ErrorCode.ParamErr("mnemonicCodesStr should not be null"));
         }
         String[] mnemonicCodesArray = mnemonicCodesStr.split(" ");
-        return new SeedCalculator()
+        byte[] seed = new SeedCalculator()
                 .withWordsFromWordList(English.INSTANCE)
                 .calculateSeed(Arrays.asList(mnemonicCodesArray), "");
+        return seed;
     }
 
     public static byte[] getPrikeyFromMnemonicCodesStrBip44(String mnemonicCodesStr) throws Exception{

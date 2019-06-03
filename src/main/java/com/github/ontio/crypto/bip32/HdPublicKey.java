@@ -19,6 +19,7 @@
 
 package com.github.ontio.crypto.bip32;
 
+import com.github.ontio.common.Helper;
 import com.github.ontio.crypto.Base58;
 import com.github.ontio.crypto.bip32.derivation.CkdFunction;
 import com.github.ontio.crypto.bip32.derivation.Derivation;
@@ -173,6 +174,10 @@ public final class HdPublicKey implements
 
     public int childNumber() {
         return hdKey.getChildNumber();
+    }
+
+    public String toHexString() {
+        return Helper.toHexString(hdKey.getKey());
     }
 
     public String base58Encode() {

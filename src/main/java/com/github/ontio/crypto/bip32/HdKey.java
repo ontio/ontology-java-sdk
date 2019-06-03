@@ -63,6 +63,10 @@ public class HdKey {
         return key;
     }
 
+    boolean getNeutered() {
+        return neutered;
+    }
+
     int getParentFingerprint() {
         return parentFingerprint;
     }

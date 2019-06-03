@@ -19,20 +19,35 @@
 
 package com.github.ontio.crypto.bip32;
 
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.crypto.Base58;
+import com.github.ontio.crypto.Curve;
 import com.github.ontio.crypto.bip32.derivation.CkdFunction;
 import com.github.ontio.crypto.bip32.derivation.CkdFunctionDerive;
 import com.github.ontio.crypto.bip32.derivation.Derive;
 import com.github.ontio.crypto.bip32.derivation.Derivation;
 import com.github.ontio.crypto.bip32.networks.Bitcoin;
 
+import com.github.ontio.sdk.exception.SDKException;
 import io.github.novacrypto.bip39.SeedCalculator;
 import io.github.novacrypto.bip39.wordlists.English;
 import io.github.novacrypto.toruntime.CheckedExceptionToRuntime;
+import org.bouncycastle.jce.ECNamedCurveTable;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
+import org.bouncycastle.jce.spec.ECNamedCurveSpec;
+import org.bouncycastle.math.ec.ECPoint;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Security;
+import java.security.spec.ECParameterSpec;
+import java.security.spec.ECPrivateKeySpec;
+import java.security.spec.ECPublicKeySpec;
 import java.util.Arrays;
 
 import static com.github.ontio.crypto.bip32.BigIntegerUtils.parse256;
@@ -89,12 +104,29 @@ public class HdPrivateKey implements
         return hdKey.getKey();
     }
 
+    public HdPublicKey getHdPublicKey() throws Exception {
+        ECNamedCurveParameterSpec spec = ECNamedCurveTable.getParameterSpec((String) new Object[]{Curve.P256.toString()}[0]);
+        ECPoint Q = spec.getG().multiply(new BigInteger(1, getPrivateKey())).normalize();
+        if (Q == null || Q.getAffineXCoord() == null || Q.getAffineYCoord() == null) {
+            throw new SDKException(ErrorCode.OtherError("normalize error"));
+        }
+        return new HdPublicKey(new HdKey.Builder()
+                .network(hdKey.getNetwork())
+                .neutered(hdKey.getNeutered())
+                .key(Q.getEncoded(true))
+                .parentFingerprint(hdKey.getParentFingerprint())
+                .depth(hdKey.depth())
+                .childNumber(hdKey.getChildNumber())
+                .chainCode(hdKey.getChainCode())
+                .build());
+    }
+
     private final HdKey hdKey;
 
     private HdPrivateKey(final Network network, final byte[] key, final byte[] chainCode) {
         this(new HdKey.Builder()
                 .network(network)
-                .neutered(false)
+                .neutered(true)
                 .key(key)
                 .chainCode(chainCode)
                 .depth(0)

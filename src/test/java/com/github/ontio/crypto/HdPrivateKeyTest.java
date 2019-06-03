@@ -22,6 +22,7 @@ package com.github.ontio.crypto;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Helper;
 import com.github.ontio.crypto.bip32.HdPrivateKey;
+import com.github.ontio.crypto.bip32.HdPublicKey;
 import io.github.novacrypto.bip39.Words;
 import org.junit.Assert;
 import org.junit.Test;
@@ -103,9 +104,12 @@ public class HdPrivateKeyTest {
     public void TestMasterKeyFromMnemonic() throws Exception {
         String code = "ritual month sign shop champion number mask leave anchor critic boring clinic";
         HdPrivateKey masterKey = HdPrivateKey.masterKeyFromMnemonic(code);
+        HdPublicKey masterPubKey = masterKey.getHdPublicKey();
+        Assert.assertEquals("xpub661MyMwAqRbcFipovJxHFBNJ9YZDn4NdPVcf6bFnwqo5RwgGAf1yEcGVRVwNmhBRmcvzforP5aWQefsNveyCxPdJ4L6oydpm9XLZ7PLCBXd", masterPubKey.base58Encode());
         Assert.assertEquals("942a2d2546105da4ab795f89847b6bc1bff3b90180dd811a906bb73a284f1c2e", masterKey.toHexString());
         Account masterAcct = new Account(masterKey.getPrivateKey(), SignatureScheme.SHA256WITHECDSA);
         Assert.assertEquals(Helper.toHexString(masterAcct.serializePrivateKey()), masterKey.toHexString());
+        Assert.assertEquals(Helper.toHexString(masterAcct.serializePublicKey()), masterPubKey.toHexString());
         Assert.assertEquals("ANQ6eYZ3Age8iXxTeaAzQR1GLbshaESWgL", masterAcct.getAddressU160().toBase58());
         acctValidity(masterAcct);
     }

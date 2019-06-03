@@ -24,7 +24,7 @@ import com.github.ontio.sdk.exception.SDKException;
 
 import java.util.Arrays;
 
-import static com.github.ontio.crypto.bip32.Checksum.confirmExtendedKeyChecksum;
+import static com.github.ontio.crypto.bip32.HdKey.confirmHdKeyChecksum;
 import static io.github.novacrypto.base58.Base58.base58Decode;
 
 final class HdPrivateKeyDeserializer implements Deserializer<HdPrivateKey> {
@@ -49,7 +49,7 @@ final class HdPrivateKeyDeserializer implements Deserializer<HdPrivateKey> {
 
     @Override
     public HdPrivateKey deserialize(final byte[] extendedKeyData) throws SDKException {
-        confirmExtendedKeyChecksum(extendedKeyData);
+        confirmHdKeyChecksum(extendedKeyData);
         final ByteArrayReader reader = new ByteArrayReader(extendedKeyData);
         final int version = reader.readSer32();
         if (version != Bitcoin.MAIN_NET.getPrivateVersion()) {
@@ -68,9 +68,9 @@ final class HdPrivateKeyDeserializer implements Deserializer<HdPrivateKey> {
         );
     }
 
-    private byte[] getKey(final ByteArrayReader reader) {
+    private byte[] getKey(final ByteArrayReader reader) throws SDKException {
         if (reader.read() != 0) {
-            throw new BadKeySerializationException("Expected 0 padding at position 45");
+            throw new SDKException(ErrorCode.OtherError("Expected 0 padding at position 45"));
         }
         return reader.readRange(32);
     }

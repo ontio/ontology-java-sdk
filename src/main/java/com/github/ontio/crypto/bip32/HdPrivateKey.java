@@ -23,6 +23,7 @@ import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.crypto.Base58;
 import com.github.ontio.crypto.Curve;
+import com.github.ontio.crypto.Digest;
 import com.github.ontio.crypto.bip32.derivation.CkdFunction;
 import com.github.ontio.crypto.bip32.derivation.CkdFunctionDerive;
 import com.github.ontio.crypto.bip32.derivation.Derive;
@@ -40,11 +41,10 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import static com.github.ontio.crypto.bip32.BigIntegerUtils.parse256;
-import static com.github.ontio.crypto.bip32.BigIntegerUtils.ser256;
 import static com.github.ontio.crypto.bip32.ByteArrayWriter.head32;
 import static com.github.ontio.crypto.bip32.ByteArrayWriter.tail32;
-import static com.github.ontio.crypto.bip32.HmacSha512.hmacSha512;
+import static com.github.ontio.crypto.bip32.HdKey.parse256;
+import static com.github.ontio.crypto.bip32.HdKey.ser256;
 import static com.github.ontio.crypto.bip32.Secp256r1SC.n;
 import static com.github.ontio.crypto.bip32.derivation.CharSequenceDerivation.isHardened;
 import static com.github.ontio.crypto.bip32.derivation.CkdFunctionResultCacheDecorator.newCacheOf;
@@ -60,7 +60,7 @@ public class HdPrivateKey implements
 
     private static final byte[] SEED_NAME = "Nist256p1 seed".getBytes(StandardCharsets.UTF_8);
 
-    public static Deserializer<HdPrivateKey> deserializer() {
+    private static Deserializer<HdPrivateKey> deserializer() {
         return HdPrivateKeyDeserializer.DEFAULT;
     }
 
@@ -130,7 +130,7 @@ public class HdPrivateKey implements
     }
 
     public static HdPrivateKey fromSeed(final byte[] seed, final Network network) {
-        final byte[] I = hmacSha512(BITCOIN_SEED, seed);
+        final byte[] I = Digest.hmacSha512(BITCOIN_SEED, seed);
 
         final byte[] Il = head32(I);
         final byte[] Ir = tail32(I);
@@ -139,7 +139,7 @@ public class HdPrivateKey implements
     }
 
     public static HdPrivateKey fromSeed(final byte[] seed, byte[] byteKey, final Network network) {
-        final byte[] I = hmacSha512(byteKey, seed);
+        final byte[] I = Digest.hmacSha512(byteKey, seed);
 
         final byte[] Il = head32(I);
         final byte[] Ir = tail32(I);
@@ -173,7 +173,7 @@ public class HdPrivateKey implements
         }
         writer.concatSer32(index);
 
-        final byte[] I = hmacSha512(hdKey.getChainCode(), data);
+        final byte[] I = Digest.hmacSha512(hdKey.getChainCode(), data);
         Arrays.fill(data, (byte) 0);
 
         final byte[] Il = head32(I);
@@ -209,7 +209,7 @@ public class HdPrivateKey implements
         return HdPublicKey.from(hdKey);
     }
 
-    public Derive<HdPrivateKey> derive() {
+    private Derive<HdPrivateKey> derive() {
         return derive(CKD_FUNCTION);
     }
 

@@ -25,11 +25,8 @@ package com.github.ontio.crypto.bip32;
  * Network represents the network to use.
  */
 public interface Network {
+
     int getPrivateVersion();
 
     int getPublicVersion();
-
-    byte p2pkhVersion();
-
-    byte p2shVersion();
 }

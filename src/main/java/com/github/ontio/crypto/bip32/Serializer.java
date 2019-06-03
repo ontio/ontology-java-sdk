@@ -19,8 +19,7 @@
 
 package com.github.ontio.crypto.bip32;
 
-
-import static com.github.ontio.crypto.bip32.Checksum.checksum;
+import static com.github.ontio.crypto.bip32.HdKey.checksum;
 
 final class Serializer {
 

@@ -19,9 +19,15 @@
 
 package com.github.ontio.crypto.bip32;
 
+import com.github.ontio.common.ErrorCode;
+import com.github.ontio.sdk.exception.SDKException;
+
+import java.math.BigInteger;
+import java.util.Arrays;
+
 import static com.github.ontio.crypto.Digest.hash160;
-import static com.github.ontio.crypto.bip32.BigIntegerUtils.parse256;
 import static com.github.ontio.crypto.bip32.Secp256r1SC.pointSerP_gMultiply;
+import static io.github.novacrypto.hashing.Sha256.sha256Twice;
 
 public class HdKey {
 
@@ -51,6 +57,27 @@ public class HdKey {
                 .build();
     }
 
+    static BigInteger parse256(final byte[] bytes) {
+        return new BigInteger(1, bytes);
+    }
+
+    static void ser256(final byte[] target, final BigInteger integer) {
+        if (integer.bitLength() > target.length * 8)
+            throw new RuntimeException("ser256 failed, cannot fit integer in buffer");
+        final byte[] modArr = integer.toByteArray();
+        Arrays.fill(target, (byte) 0);
+        copyTail(modArr, target);
+        Arrays.fill(modArr, (byte) 0);
+    }
+
+    private static void copyTail(final byte[] src, final byte[] dest) {
+        if (src.length < dest.length) {
+            System.arraycopy(src, 0, dest, dest.length - src.length, src.length);
+        } else {
+            System.arraycopy(src, src.length - dest.length, dest, 0, dest.length);
+        }
+    }
+
     byte[] serialize() {
         return serializer.serialize(key, chainCode);
     }
@@ -78,6 +105,18 @@ public class HdKey {
                 ((o[1] & 0xFF) << 16) |
                 ((o[2] & 0xFF) << 8) |
                 (o[3] & 0xFF);
+    }
+
+    static void confirmHdKeyChecksum(final byte[] extendedKeyData) throws SDKException {
+        final byte[] checkSum = checksum(extendedKeyData);
+        for (int i = 0; i < 4; i++) {
+            if (extendedKeyData[78 + i] != checkSum[i])
+                throw new SDKException(ErrorCode.OtherError("Checksum error"));
+        }
+    }
+
+    static byte[] checksum(final byte[] privateKey) {
+        return sha256Twice(privateKey, 0, 78);
     }
 
     private byte[] getPublicBuffer() {
@@ -158,5 +197,6 @@ public class HdKey {
         HdKey build() {
             return new HdKey(this);
         }
+
     }
 }

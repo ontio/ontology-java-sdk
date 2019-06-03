@@ -24,7 +24,7 @@ import com.github.ontio.sdk.exception.SDKException;
 
 import java.util.Arrays;
 
-import static com.github.ontio.crypto.bip32.Checksum.confirmExtendedKeyChecksum;
+import static com.github.ontio.crypto.bip32.HdKey.confirmHdKeyChecksum;
 import static io.github.novacrypto.base58.Base58.base58Decode;
 
 final class HdPublicKeyDeserializer implements Deserializer<HdPublicKey> {
@@ -49,7 +49,7 @@ final class HdPublicKeyDeserializer implements Deserializer<HdPublicKey> {
 
     @Override
     public HdPublicKey deserialize(final byte[] extendedKeyData) throws SDKException {
-        confirmExtendedKeyChecksum(extendedKeyData);
+        confirmHdKeyChecksum(extendedKeyData);
         final ByteArrayReader reader = new ByteArrayReader(extendedKeyData);
         final int version = reader.readSer32();
         if (version != Bitcoin.MAIN_NET.getPublicVersion()) {

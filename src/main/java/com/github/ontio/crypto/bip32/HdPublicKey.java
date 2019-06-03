@@ -21,6 +21,7 @@ package com.github.ontio.crypto.bip32;
 
 import com.github.ontio.common.Helper;
 import com.github.ontio.crypto.Base58;
+import com.github.ontio.crypto.Digest;
 import com.github.ontio.crypto.bip32.derivation.CkdFunction;
 import com.github.ontio.crypto.bip32.derivation.Derivation;
 import com.github.ontio.crypto.bip32.derivation.CkdFunctionDerive;
@@ -30,10 +31,9 @@ import org.spongycastle.math.ec.ECPoint;
 
 import java.math.BigInteger;
 
-import static com.github.ontio.crypto.bip32.BigIntegerUtils.parse256;
 import static com.github.ontio.crypto.bip32.ByteArrayWriter.head32;
 import static com.github.ontio.crypto.bip32.ByteArrayWriter.tail32;
-import static com.github.ontio.crypto.bip32.HmacSha512.hmacSha512;
+import static com.github.ontio.crypto.bip32.HdKey.parse256;
 import static com.github.ontio.crypto.bip32.Secp256r1SC.gMultiplyAndAddPoint;
 import static com.github.ontio.crypto.bip32.Secp256r1SC.n;
 import static com.github.ontio.crypto.bip32.Secp256r1SC.pointSerP;
@@ -44,7 +44,7 @@ public final class HdPublicKey implements
         Derive<HdPublicKey>,
         CKDpub {
 
-    public static Deserializer<HdPublicKey> deserializer() {
+    private static Deserializer<HdPublicKey> deserializer() {
         return HdPublicKeyDeserializer.DEFAULT;
     }
 
@@ -91,7 +91,7 @@ public final class HdPublicKey implements
         writer.concat(kPar, 33);
         writer.concatSer32(index);
 
-        final byte[] I = hmacSha512(parent.getChainCode(), data);
+        final byte[] I = Digest.hmacSha512(parent.getChainCode(), data);
         final byte[] Il = head32(I);
         final byte[] Ir = tail32(I);
 
@@ -119,7 +119,7 @@ public final class HdPublicKey implements
         return HdPublicKey.deserializer().deserialize(Base58.decode(key));
     }
 
-    public Derive<HdPublicKey> derive() {
+    private Derive<HdPublicKey> derive() {
         return derive(CKD_FUNCTION);
     }
 
@@ -155,7 +155,7 @@ public final class HdPublicKey implements
         return new CkdFunctionDerive<>(ckdFunction, this);
     }
 
-    public byte[] extendedKeyByteArray() {
+    public byte[] toByteArray() {
         return hdKey.serialize();
     }
 
@@ -186,6 +186,6 @@ public final class HdPublicKey implements
     }
 
     public String base58Encode() {
-        return Base58.encode(extendedKeyByteArray());
+        return Base58.encode(toByteArray());
     }
 }

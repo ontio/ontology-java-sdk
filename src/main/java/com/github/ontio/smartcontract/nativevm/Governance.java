@@ -836,7 +836,8 @@ public class Governance {
         System.arraycopy(peerPubkeyBytes,0, key,peerAttributes.length, peerPubkeyBytes.length);
         String res = sdk.getConnect().getStorage(Helper.reverse(contractAddress),Helper.toHexString(key));
         if(res== null || res.equals("")){
-            return null;
+            PeerAttributes peerAttributes1 = new PeerAttributes(peerPubkey);
+            return peerAttributes1.toJson();
         }
         PeerAttributes peerAttributes2 = new PeerAttributes();
         ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(res));
@@ -1182,6 +1183,16 @@ class PeerAttributes implements Serializable{
     public byte[] field2;
     public byte[] field3;
     public byte[] field4;
+
+    PeerAttributes(){}
+
+    PeerAttributes(String peerPubKey) {
+        this.peerPubkey = peerPubKey;
+        this.maxAuthorize = 0;
+        this.t2PeerCost = 100;
+        this.t1PeerCost = 100;
+        this.tPeerCost = 100;
+    }
 
     @Override
     public void deserialize(BinaryReader reader) throws IOException {

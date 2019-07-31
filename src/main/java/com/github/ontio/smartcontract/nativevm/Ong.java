@@ -82,7 +82,26 @@ public class Ong {
         }
         return null;
     }
-
+    public String sendTransferMulti(Account[] accounts, State[] states,Account payerAcct,long gaslimit, long gasprice) throws Exception {
+        if (accounts == null || payerAcct == null ) {
+            throw new SDKException(ErrorCode.ParamErr("parameters should not be null"));
+        }
+        if (gasprice < 0 || gaslimit < 0) {
+            throw new SDKException(ErrorCode.ParamErr("amount or gasprice or gaslimit should not be less than 0"));
+        }
+        Transaction tx = makeTransfer(states, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        sdk.signTx(tx, new Account[][]{{payerAcct}});
+        for(int i =0;i<accounts.length;i++){
+            if(!accounts[i].equals(payerAcct)) {
+                sdk.addSign(tx, accounts[i]);
+            }
+        }
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
+        if (b) {
+            return tx.hash().toString();
+        }
+        return null;
+    }
     /**
      *
      * @param M

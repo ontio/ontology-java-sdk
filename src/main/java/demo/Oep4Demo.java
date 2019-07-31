@@ -119,8 +119,6 @@ public class Oep4Demo {
             String multiAddr = Address.addressFromMultiPubKeys(2,acct.serializePublicKey(),acct2.serializePublicKey()).toBase58();
             System.out.println("multiAddr:"+multiAddr);
             if(false) {
-//                long gasLimit = ontSdk.neovm().nep5().sendTransferPreExec(acct, acct1.getAddressU160().toBase58(), 9000000000L);
-//                System.out.println(gasLimit);
                 ontSdk.neovm().oep4().sendTransfer(acct1, acct2.getAddressU160().toBase58(), 1000000000L, acct, 20000, 0);
                 Thread.sleep(6000);
                 showBalance(ontSdk,new Account[]{acct1,acct2,acct3});
@@ -152,36 +150,18 @@ public class Oep4Demo {
                 return;
             }
 
-            if(false){ // sender is multi sign addr
-                String balance = ontSdk.neovm().nep5().queryBalanceOf(multiAddr);
-                System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(balance))).longValue());
-
-                Transaction tx = ontSdk.neovm().nep5().makeTransfer(multiAddr,acct1.getAddressU160().toBase58(),10000000L,acct,50000,0);
-                ontSdk.addSign(tx,acct);
-                ontSdk.addMultiSign(tx,2,new byte[][]{acct.serializePublicKey(),acct2.serializePublicKey()},acct);
-                ontSdk.addMultiSign(tx,2,new byte[][]{acct.serializePublicKey(),acct2.serializePublicKey()},acct2);
-                Object obj = ontSdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
-                System.out.println(obj);
-                //   ontSdk.getConnect().sendRawTransaction(tx.toHexString());
-                System.out.println(tx.hash().toString());
-                System.exit(0);
-            }
-
 //            String balance = ontSdk.neovm().oep4().queryBalanceOf(acct.getAddressU160().toBase58());
 //            System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(balance))).longValue());
 //            balance = ontSdk.neovm().oep4().queryBalanceOf(multiAddr);
 //            System.out.println(new BigInteger(Helper.reverse(Helper.hexToBytes(balance))).longValue());
 //            System.exit(0);
 
-
-
-//            System.exit(0);
-
-
-            String name = ontSdk.neovm().oep4().queryName();
-            System.out.println(new String(Helper.hexToBytes(name)));
-            String symbol = ontSdk.neovm().oep4().querySymbol();
-            System.out.println(new String(Helper.hexToBytes(symbol)));
+            if(false) {
+                String name = ontSdk.neovm().oep4().queryName();
+                System.out.println(new String(Helper.hexToBytes(name)));
+                String symbol = ontSdk.neovm().oep4().querySymbol();
+                System.out.println(new String(Helper.hexToBytes(symbol)));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -212,7 +192,7 @@ public class Oep4Demo {
         wm.setRestful(restUrl);
         wm.setDefaultConnect(wm.getRestful());
         wm.neovm().oep4().setContractAddress("55e02438c938f6f4eb15a9cb315b26d0169b7fd7");
-        wm.openWalletFile("nep5.json");
+        wm.openWalletFile("oep4.json");
         return wm;
     }
 }

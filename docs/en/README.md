@@ -55,6 +55,19 @@ Download URL：
 $ mvn clean install
 ```
 
+### How to Use
+
+Add maven dependency:
+
+```
+<!-- https://mvnrepository.com/artifact/com.github.ontio/ontology-sdk-java -->
+<dependency>
+    <groupId>com.github.ontio</groupId>
+    <artifactId>ontology-sdk-java</artifactId>
+    <version>1.0.13</version>
+</dependency>
+```
+    
 ### Preparations
 
 Ensure you have access to an Ontology Blockchain (mainnet, testnet or privaenet) and access via RPC ports is available. 

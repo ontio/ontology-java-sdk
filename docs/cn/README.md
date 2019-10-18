@@ -52,6 +52,18 @@ jar包下载地址：
 $ mvn clean install
 ```
 
+### 引入依赖
+
+
+```
+<!-- https://mvnrepository.com/artifact/com.github.ontio/ontology-sdk-java -->
+<dependency>
+    <groupId>com.github.ontio</groupId>
+    <artifactId>ontology-sdk-java</artifactId>
+    <version>1.0.13</version>
+</dependency>
+```
+
 ### 预准备
 
 * 启动[Ontology节点](https://github.com/ontio/ontology/releases)，无论是主网、测试网、私网都可以。确保rpc端口可以访问，并且确保SDK可以连接RPC服务器。

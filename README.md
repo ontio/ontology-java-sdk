@@ -8,8 +8,8 @@ This is a comprehensive Java library for the Ontology blockchain. Currently, it 
 
 ## Getting started
 
-* 进入 [中文版](https://ontio.github.io/documentation/ontology_java_sdk_zh.html) .
-* Enter [English Version](https://ontio.github.io/documentation/ontology_java_sdk_en.html) .
+* 进入 [中文版](docs/cn/README.md) .
+* Enter [English Version](docs/en/README.md) .
 
 ## Installation Environment 
 

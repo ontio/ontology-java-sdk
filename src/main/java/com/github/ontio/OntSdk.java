@@ -71,6 +71,7 @@ public class OntSdk {
     public SignatureScheme defaultSignScheme = SignatureScheme.SHA256WITHECDSA;
     public long DEFAULT_GAS_LIMIT = 20000;
     public long DEFAULT_DEPLOY_GAS_LIMIT = 30000000;
+    public long sideChainId;
     public static synchronized OntSdk getInstance(){
         if(instance == null){
             instance = new OntSdk();
@@ -156,6 +157,9 @@ public class OntSdk {
 
     public void setSideChainRpc(String url) {
         this.sideChainConnectMgr = new ConnectMgr(url, "rpc");
+    }
+    public void setSideChainId(long sideChainId) {
+        this.sideChainId = sideChainId;
     }
     public void setSideChainRest(String url) {
         this.sideChainConnectMgr = new ConnectMgr(url, "restful");

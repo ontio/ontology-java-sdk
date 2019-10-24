@@ -35,6 +35,8 @@ public interface IConnector {
 	int getBlockHeight() throws ConnectorException, IOException;
 	Block getBlock(int height) throws ConnectorException, IOException;
 	Block getBlock(String hash) throws ConnectorException, IOException ;
+	String getBlockBytes(int height) throws ConnectorException, IOException ;
+	String getBlockBytes(String hash) throws ConnectorException, IOException ;
 	Object getBlockJson(int height) throws ConnectorException, IOException;
 	Object getBlockJson(String hash) throws ConnectorException, IOException;
 
@@ -54,5 +56,5 @@ public interface IConnector {
 	String getVersion() throws ConnectorException, IOException;
 	String getGrantOng(String address) throws ConnectorException, IOException;
 	int getNetworkId() throws ConnectorException, IOException;
-	String getSideChainData(String sideChainID) throws ConnectorException, IOException;
+	String getSideChainData(int sideChainID) throws ConnectorException, IOException;
 }

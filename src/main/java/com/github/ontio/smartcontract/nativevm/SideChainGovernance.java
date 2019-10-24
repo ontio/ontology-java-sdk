@@ -8,6 +8,7 @@ import com.github.ontio.common.Helper;
 import com.github.ontio.core.sidechaingovernance.*;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.io.BinaryReader;
+import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.io.utils;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
@@ -16,7 +17,9 @@ import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
 import com.github.ontio.smartcontract.nativevm.abi.Struct;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,9 +35,13 @@ public class SideChainGovernance {
     }
 
 
-    public String getSideChain(String sideChainId) throws ConnectorException, IOException {
+    public String getSideChain(long sideChainId) throws ConnectorException, IOException {
+
         byte[] sideChainBytes = SIDE_CHAIN.getBytes();
-        byte[] sideChainIdBytes = sideChainId.getBytes();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        BinaryWriter bw = new BinaryWriter(baos);
+        bw.writeInt((int)sideChainId);
+        byte[] sideChainIdBytes = baos.toByteArray();
         byte[] key = new byte[sideChainBytes.length + sideChainIdBytes.length];
         System.arraycopy(sideChainBytes,0,key,0,sideChainBytes.length);
         System.arraycopy(sideChainIdBytes,0,key,sideChainBytes.length,sideChainIdBytes.length);
@@ -70,7 +77,7 @@ public class SideChainGovernance {
         }
         List list = new ArrayList();
         Struct struct = new Struct();
-        struct.add(param.sideChainID, param.address,param.ratio, param.deposit, param.ongPool, param.caller, param.keyNo);
+        struct.add(param.sideChainID, param.address,param.ratio, param.deposit, param.ongPool,param.genesisBlock, param.caller, param.keyNo);
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"registerSideChain",args,payer.getAddressU160().toBase58(),gaslimit, gasprice);
@@ -85,8 +92,8 @@ public class SideChainGovernance {
         }
         return null;
     }
-    public String approveSideChain(Account[] accounts,byte[][] allPubkeys,int M, String sideChainID, Account payer, long gaslimit, long gasprice) throws Exception {
-        if(accounts == null || sideChainID == null || payer == null || gaslimit < 0|| gasprice < 0){
+    public String approveSideChain(Account[] accounts,byte[][] allPubkeys,int M, long sideChainID, Account payer, long gaslimit, long gasprice) throws Exception {
+        if(accounts == null || payer == null || gaslimit < 0|| gasprice < 0){
             throw new SDKException(ErrorCode.OtherError("parameter is wrong"));
         }
         List list = new ArrayList();
@@ -105,8 +112,8 @@ public class SideChainGovernance {
         }
         return null;
     }
-    public String rejectSideChain(Account[] accounts, byte[][] allPubkeys, int M, String sideChainID, Account payer, long gaslimit, long gasprice) throws Exception {
-        if(accounts == null || sideChainID == null || payer == null || gaslimit < 0|| gasprice < 0){
+    public String rejectSideChain(Account[] accounts, byte[][] allPubkeys, int M, long sideChainID, Account payer, long gaslimit, long gasprice) throws Exception {
+        if(accounts == null || payer == null || gaslimit < 0|| gasprice < 0){
             throw new SDKException(ErrorCode.OtherError("parameter is wrong"));
         }
         List list = new ArrayList();
@@ -228,8 +235,8 @@ public class SideChainGovernance {
         }
         return null;
     }
-    public String approveInflation(Account[] accounts,byte[][] allPubkeys,int M, String sideChainId, Account payer, long gaslimit, long gasprice) throws Exception {
-        if(accounts == null || sideChainId == null || payer == null || gaslimit < 0|| gasprice < 0){
+    public String approveInflation(Account[] accounts,byte[][] allPubkeys,int M, long sideChainId, Account payer, long gaslimit, long gasprice) throws Exception {
+        if(accounts == null || payer == null || gaslimit < 0|| gasprice < 0){
             throw new SDKException(ErrorCode.OtherError("parameter is wrong"));
         }
         List list = new ArrayList();
@@ -248,8 +255,8 @@ public class SideChainGovernance {
         }
         return null;
     }
-    public String rejectInflation(Account[] accounts, byte[][] allPubkeys, int M, String sideChainId, Account payer, long gaslimit, long gasprice) throws Exception {
-        if(accounts == null || sideChainId == null || payer == null || gaslimit < 0|| gasprice < 0){
+    public String rejectInflation(Account[] accounts, byte[][] allPubkeys, int M, long sideChainId, Account payer, long gaslimit, long gasprice) throws Exception {
+        if(accounts == null || payer == null || gaslimit < 0|| gasprice < 0){
             throw new SDKException(ErrorCode.OtherError("parameter is wrong"));
         }
         List list = new ArrayList();

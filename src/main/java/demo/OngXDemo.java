@@ -17,9 +17,11 @@ public class OngXDemo {
     public static void main(String[] args) throws Exception {
 //        String mainChainUrl = "http://139.219.128.220:20336";
         String sideChainUrl = "http://23.99.137.227:30336";
+        sideChainUrl = "http://139.219.128.220:30336";
+        String menghangSideChain = "http://138.91.6.125:30336";
         OntSdk sdk = OntSdk.getInstance();
         sdk.openWalletFile("ongx.dat");
-        sdk.setSideChainRpc(sideChainUrl);
+        sdk.setSideChainRpc(menghangSideChain);
 //        sdk.setRpc("http://139.219.128.220:20336");
 //        sdk.setRpc("http://127.0.0.1:20336");
 //        sdk.setRpc(sideChainUrl);
@@ -28,12 +30,6 @@ public class OngXDemo {
         Account account = sdk.getWalletMgr().getAccount("AHX1wzvdw9Yipk7E9MuLY4GGX4Ym9tHeDe",password);
         Identity identity = sdk.getWalletMgr().getWallet().getIdentity("did:ont:Abrc5byDEZm1CnQb3XjAosEt34DD4w5Z1o");
         String sideChainContractAddr = "0000000000000000000000000000000000000008";
-//        ongX.setRpcUrl(sideChainUrl, "rpc");
-        if(false){
-            System.out.println(sdk.sidechainVm().ongX().queryBalanceOf(account.getAddressU160().toBase58()));
-            return;
-        }
-
 
         //梦航
 //        Account adminOntIdAcct = getAccount("cCQnie0Dd8aQPyY+9UBFw2x2cLn2RMogKqhM8OkyjJNrNTvlcVaYGRENfy2ErF7Q","passwordtest","ARiwjLzjzLKZy8V43vm6yUcRG9b56DnZtY","3e1zvaLjtVuPrQ1o7oJsQA==");
@@ -55,12 +51,18 @@ public class OngXDemo {
             pks[i] = accounts[i].serializePublicKey();
         }
 
-        if(false){
-//            String txhash = ongX.ongxSetSyncAddr(accounts1,pks,5,account.getAddressU160().toBase58(),account,20000,0);
-            String txhash = sdk.sidechainVm().ongX().ongxSetSyncAddr(account,account.getAddressU160().toBase58(),account,20000,0);
+        sdk.setSideChainId(3092255979L);
+
+        boolean ongxSetSyncAddr = false;
+        boolean ongxSwap = true;
+        boolean ongSwap = false;
+
+        if(ongxSetSyncAddr){
+            String txhash = sdk.sidechainVm().ongX().ongxSetSyncAddr(accounts1,pks,5,account.getAddressU160().toBase58(),account,20000,0);
+//            String txhash = sdk.sidechainVm().ongX().ongxSetSyncAddr(account,account.getAddressU160().toBase58(),account,20000,0);
             System.out.println("txhash: " + txhash);
             Thread.sleep(6000);
-            System.out.println(sdk.getConnect().getSmartCodeEvent(txhash));
+            System.out.println(sdk.getSideChainConnectMgr().getSmartCodeEvent(txhash));
             return;
         }
         if(false){
@@ -78,7 +80,7 @@ public class OngXDemo {
             System.out.println(sdk.sidechainVm().ongX().queryBalanceOf(account.getAddressU160().toBase58()));
             return;
         }
-        if(true){
+        if(ongxSwap){
             Swap swap = new Swap(account.getAddressU160(),100);
             String txhash = sdk.sidechainVm().ongX().ongxSwap(account, swap,account,20000,0);
             System.out.println("txhash: " + txhash);
@@ -87,7 +89,7 @@ public class OngXDemo {
             System.out.println(sdk.sidechainVm().ongX().queryBalanceOf(account.getAddressU160().toBase58()));
             return;
         }
-        if(false){
+        if(ongSwap){
             Swap swap = new Swap(account.getAddressU160(),(long)1000*1000000000);
             String txhash = sdk.sidechainVm().ongX().ongSwap(account,new Swap[]{swap},account,20000,0);
             System.out.println("txhash: " + txhash);

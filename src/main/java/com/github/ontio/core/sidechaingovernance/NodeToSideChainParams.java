@@ -11,9 +11,9 @@ import java.io.IOException;
 public class NodeToSideChainParams implements Serializable {
     public String peerPubkey;
     public Address address;
-    public String sideChainId;
+    public long sideChainId;
     public NodeToSideChainParams(){}
-    public NodeToSideChainParams(String peerPubkey, Address address, String sideChainId){
+    public NodeToSideChainParams(String peerPubkey, Address address, long sideChainId){
         this.peerPubkey = peerPubkey;
         this.address = address;
         this.sideChainId = sideChainId;
@@ -23,7 +23,7 @@ public class NodeToSideChainParams implements Serializable {
     public void deserialize(BinaryReader reader) throws IOException {
         this.peerPubkey = reader.readVarString();
         this.address = utils.readAddress(reader);
-        this.sideChainId = reader.readVarString();
+        this.sideChainId = reader.readLong();
     }
 
     @Override

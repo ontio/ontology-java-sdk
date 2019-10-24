@@ -59,7 +59,7 @@ public class GovernanceDemo2 {
                 sdk.setRpc("http://139.219.128.220:20336");
 //                System.out.println(multiAddress.toBase58());
 //                System.out.println(sdk.getConnect().getBalance(multiAddress.toBase58()));
-                System.out.println(sdk.getConnect().getSideChainData("123456"));
+                System.out.println(sdk.getConnect().getSideChainData(123456));
                 return;
             }
 
@@ -110,7 +110,7 @@ public class GovernanceDemo2 {
 
             if(false){
 //                success
-                InputPeerPoolMapParam param= sdk.nativevm().governance().getInputPeerPoolMapParam("123456");
+                InputPeerPoolMapParam param= sdk.nativevm().governance().getInputPeerPoolMapParam(123456);
                 System.out.println(JSON.toJSONString(param));
                 return;
             }
@@ -155,7 +155,7 @@ public class GovernanceDemo2 {
                 return;
             }
             if(false){
-                InputPeerPoolMapParam param = sdk.nativevm().governance().getInputPeerPoolMapParam("123456");
+                InputPeerPoolMapParam param = sdk.nativevm().governance().getInputPeerPoolMapParam(123456);
                 System.out.println(param);
             }
             if(true){

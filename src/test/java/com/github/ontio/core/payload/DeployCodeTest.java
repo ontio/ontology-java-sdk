@@ -1,16 +1,14 @@
 package com.github.ontio.core.payload;
 
-import com.github.ontio.core.VmType;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class DeployCodeTest {
 

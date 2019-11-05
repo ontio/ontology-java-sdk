@@ -19,82 +19,37 @@
 
 package com.github.ontio.smartcontract;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
+import com.github.ontio.common.Address;
 import com.github.ontio.common.ErrorCode;
-import com.github.ontio.core.transaction.Transaction;
-import com.github.ontio.smartcontract.neovm.abi.AbiFunction;
+import com.github.ontio.core.scripts.WasmScriptBuilder;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.smartcontract.neovm.abi.BuildParams;
+import com.github.ontio.smartcontract.wasmvm.DeployWasmCode;
+import com.github.ontio.smartcontract.wasmvm.InvokeWasmCode;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class WasmVm {
 
     private OntSdk sdk;
-    public WasmVm(OntSdk sdk){
+
+    public WasmVm(OntSdk sdk) {
         this.sdk = sdk;
     }
 
-    public String sendTransaction(String contractAddr,String payer, String password,byte[] salt, long gaslimit, long gas, AbiFunction func, boolean preExec) throws Exception {
-        byte[] params = BuildParams.serializeAbiFunction(func);
-        if (preExec) {
-            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, payer, gaslimit,gas);
-            Object obj = (String) sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
-            String result = ((JSONObject) obj).getString("Result");
-            if (Integer.parseInt(result) == 0) {
-                throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error: "+ obj));
-            }
-            return result;
-        } else {
-            Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddr, null, params, payer, gaslimit,gas);
-            sdk.signTx(tx, payer, password,salt);
-            boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
-            if (!b) {
-                throw new SDKException(ErrorCode.SendRawTxError);
-            }
-            return tx.hash().toString();
+    public DeployWasmCode makeDeployCodeTransaction(String codeStr, String name, String codeVersion, String author,
+                                                    String email, String description, Address payer, long gasLimit,
+                                                    long gasPrice) throws SDKException {
+        if (name == null || name.equals("") || codeVersion == null || codeVersion.equals("") || author == null || author.equals("") || email == null || email.equals("") || description == null || description.equals("")) {
+            throw new SDKException(ErrorCode.InvalidInterfaceParam);
         }
+        return new DeployWasmCode(codeStr, name, codeVersion, author, email, description, payer, gasLimit, gasPrice);
     }
-    public String buildWasmContractJsonParam(Object[] objs) {
-        List params = new ArrayList();
-        for (int i = 0; i < objs.length; i++) {
-            Object val = objs[i];
-            if (val instanceof String) {
-                Map map = new HashMap();
-                map.put("type","string");
-                map.put("value",val);
-                params.add(map);
-            } else if (val instanceof Integer) {
-                Map map = new HashMap();
-                map.put("type","int");
-                map.put("value",String.valueOf(val));
-                params.add(map);
-            } else if (val instanceof Long) {
-                Map map = new HashMap();
-                map.put("type","int64");
-                map.put("value",String.valueOf(val));
-                params.add(map);
-            } else if (val instanceof int[]) {
-                Map map = new HashMap();
-                map.put("type","int_array");
-                map.put("value",val);
-                params.add(map);
-            } else if (val instanceof long[]) {
-                Map map = new HashMap();
-                map.put("type","int_array");
-                map.put("value",val);
-                params.add(map);
-            } else {
-                continue;
-            }
-        }
-        Map result = new HashMap();
-        result.put("Params",params);
-        return JSON.toJSONString(result);
+
+    public InvokeWasmCode makeInvokeCodeTransaction(String contractHash, String method, List<Object> params, Address payer,
+                                            long gasLimit, long gasPrice) {
+        byte[] invokeCode = WasmScriptBuilder.createWasmInvokeCode(contractHash, method, params);
+        return new InvokeWasmCode(invokeCode, payer, gasLimit, gasPrice);
     }
+
 }

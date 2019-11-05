@@ -44,8 +44,18 @@ public abstract class Transaction extends Inventory {
     public Address payer = new Address();
     public Attribute[] attributes;
     public Sig[] sigs = new Sig[0];
+
     protected Transaction(TransactionType type) {
         this.txType = type;
+    }
+
+    protected Transaction(TransactionType type, Address payer, long gasLimit, long gasPrice) {
+        this.txType = type;
+        this.payer = payer;
+        this.attributes = new Attribute[0];
+        this.nonce = new Random().nextInt();
+        this.gasLimit = gasLimit;
+        this.gasPrice = gasPrice;
     }
 
     public static Transaction deserializeFrom(byte[] value) throws IOException {
@@ -81,6 +91,7 @@ public abstract class Transaction extends Inventory {
             throw new IOException(ex);
         }
     }
+
     @Override
     public void deserialize(BinaryReader reader) throws IOException {
         deserializeUnsigned(reader);
@@ -176,11 +187,11 @@ public abstract class Transaction extends Inventory {
         Map json = new HashMap();
         json.put("Hash", hash().toString());
         json.put("Version", (int) version);
-        json.put("Nonce", nonce& 0xFFFFFFFF);
+        json.put("Nonce", nonce & 0xFFFFFFFF);
         json.put("TxType", txType.value() & 0xFF);
-        json.put("GasPrice",gasPrice);
-        json.put("GasLimit",gasLimit);
-        json.put("Payer",payer.toBase58());
+        json.put("GasPrice", gasPrice);
+        json.put("GasLimit", gasLimit);
+        json.put("Payer", payer.toBase58());
         json.put("Attributes", Arrays.stream(attributes).map(p -> p.json()).toArray(Object[]::new));
         json.put("Sigs", Arrays.stream(sigs).map(p -> p.json()).toArray(Object[]::new));
         return json;

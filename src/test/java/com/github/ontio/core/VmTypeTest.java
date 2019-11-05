@@ -19,28 +19,21 @@
 
 package com.github.ontio.core;
 
-/**
- * list vm types
- */
-public enum VmType {
+import org.junit.Assert;
+import org.junit.Test;
 
-    NEOVM(0x01),
-    WASMVM(0x03);
+public class VmTypeTest {
 
-    private byte value;
-    VmType(int v) {
-        value = (byte)v;
-    }
-    public byte value() {
-        return value;
+    @Test
+    public void valueOf() throws IllegalArgumentException {
+        Assert.assertEquals(VmType.NEOVM, VmType.valueOf((byte) 0x01));
+        Assert.assertEquals(VmType.WASMVM, VmType.valueOf((byte) 0x03));
     }
 
-    public static VmType valueOf(byte v) {
-    	for (VmType e : VmType.values()) {
-    		if (e.value == v) {
-    			return e;
-    		}
-    	}
-    	throw new IllegalArgumentException();
+    @Test
+    public void value() {
+        Assert.assertEquals(1, VmType.NEOVM.value());
+        Assert.assertEquals(3, VmType.WASMVM.value());
     }
+
 }

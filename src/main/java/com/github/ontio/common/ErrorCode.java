@@ -139,6 +139,9 @@ public class ErrorCode {
     //WalletManager Error
     public static String GetAccountByAddressErr = getError(58501, "WalletManager Error,getAccountByAddress err");
 
+    //Param Error
+    public static String InvalidInterfaceParam = getError(58601, "Interface Param Error, empty or null param founded");
+
     public static String OtherError(String msg) {
         return getError(59000, "Other Error," + msg);
     }

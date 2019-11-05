@@ -19,26 +19,14 @@
 
 package demo;
 
-import com.alibaba.fastjson.JSON;
 import com.github.ontio.OntSdk;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
-import com.github.ontio.core.VmType;
 import com.github.ontio.core.asset.Contract;
 import com.github.ontio.core.asset.State;
 import com.github.ontio.core.asset.Transfers;
 import com.github.ontio.core.payload.InvokeCode;
 import com.github.ontio.core.transaction.Transaction;
-import com.github.ontio.crypto.KeyType;
-import com.github.ontio.sdk.info.AccountInfo;
-import com.github.ontio.sdk.manager.WalletMgr;
-import com.github.ontio.sdk.wallet.Account;
-import com.github.ontio.sdk.wallet.Identity;
-
-import java.math.BigInteger;
-import java.security.Key;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MakeTxWithoutWalletDemo {
     public static String privatekey1 = "49855b16636e70f100cc5f4f42bc20a6535d7414fb8845e7310f8dd065a97221";

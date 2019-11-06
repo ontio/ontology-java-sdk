@@ -49,15 +49,6 @@ public abstract class Transaction extends Inventory {
         this.txType = type;
     }
 
-    protected Transaction(TransactionType type, Address payer, long gasLimit, long gasPrice) {
-        this.txType = type;
-        this.payer = payer;
-        this.attributes = new Attribute[0];
-        this.nonce = new Random().nextInt();
-        this.gasLimit = gasLimit;
-        this.gasPrice = gasPrice;
-    }
-
     public static Transaction deserializeFrom(byte[] value) throws IOException {
         return deserializeFrom(value, 0);
     }

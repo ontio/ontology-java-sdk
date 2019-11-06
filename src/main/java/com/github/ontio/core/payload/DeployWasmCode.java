@@ -17,7 +17,7 @@
  *
  */
 
-package com.github.ontio.smartcontract.wasmvm;
+package com.github.ontio.core.payload;
 
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;

@@ -1,4 +1,4 @@
-package com.github.ontio.smartcontract.wasmvm;
+package com.github.ontio.core.payload;
 
 import com.github.ontio.common.Address;
 import com.github.ontio.core.transaction.Transaction;
@@ -12,8 +12,8 @@ public class InvokeWasmCode extends Transaction {
 
     public byte[] invokeCode;
 
-    public InvokeWasmCode(byte[] invokeCode, Address payer, long gasLimit, long gasPrice) {
-        super(TransactionType.InvokeWasm, payer, gasLimit, gasPrice);
+    public InvokeWasmCode(byte[] invokeCode) {
+        super(TransactionType.InvokeWasm);
         this.invokeCode = invokeCode;
     }
 

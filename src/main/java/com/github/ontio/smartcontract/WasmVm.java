@@ -23,11 +23,13 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.core.scripts.WasmScriptBuilder;
+import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.smartcontract.wasmvm.DeployWasmCode;
-import com.github.ontio.smartcontract.wasmvm.InvokeWasmCode;
+import com.github.ontio.core.payload.DeployWasmCode;
+import com.github.ontio.core.payload.InvokeWasmCode;
 
 import java.util.List;
+import java.util.Random;
 
 public class WasmVm {
 
@@ -47,9 +49,14 @@ public class WasmVm {
     }
 
     public InvokeWasmCode makeInvokeCodeTransaction(String contractHash, String method, List<Object> params, Address payer,
-                                            long gasLimit, long gasPrice) {
+                                                    long gasLimit, long gasPrice) {
         byte[] invokeCode = WasmScriptBuilder.createWasmInvokeCode(contractHash, method, params);
-        return new InvokeWasmCode(invokeCode, payer, gasLimit, gasPrice);
+        InvokeWasmCode tx = new InvokeWasmCode(invokeCode);
+        tx.payer = payer;
+        tx.gasLimit = gasLimit;
+        tx.gasPrice = gasPrice;
+        tx.nonce = new Random().nextInt();
+        return tx;
     }
 
 }

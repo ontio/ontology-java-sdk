@@ -135,7 +135,7 @@ public class http {
     }
 
     public static String post(String url, Map<String, String> params, Map<String, Object> body) throws Exception {
-        //System.out.println(String.format("POST url=%s,%s,%s", url,JSON.toJSONString(params),JSON.toJSONString(body)));
+        System.out.println(String.format("POST url=%s,%s,%s", url,JSON.toJSONString(params),JSON.toJSONString(body)));
         if(url.startsWith("https")){
             return post(url+cvtParams(params), JSON.toJSONString(body), true);
         }else{
@@ -146,8 +146,8 @@ public class http {
     private static String get(String url  ,boolean https) throws Exception {
     	URL u = new URL(url);
         HttpURLConnection http = (HttpURLConnection) u.openConnection();
-        http.setConnectTimeout(50000);
-        http.setReadTimeout(50000);
+        http.setConnectTimeout(20000);
+        http.setReadTimeout(20000);
         http.setRequestMethod("GET");
         http.setRequestProperty("Content-Type","application/json");
         if(https) {

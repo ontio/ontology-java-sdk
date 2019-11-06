@@ -49,6 +49,7 @@ public class ConnectMgr {
     }
 
     public ConnectMgr(String url, String type) {
+        url = url.replace("://localhost","://127.0.0.1");
         if (type.equals("rpc")) {
             setConnector(new RpcClient(url));
         } else if (type.equals("restful")) {

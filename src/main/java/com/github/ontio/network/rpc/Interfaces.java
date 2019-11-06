@@ -82,6 +82,8 @@ public class Interfaces {
         try {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
+            connection.setConnectTimeout(10000);
+            connection.setReadTimeout(10000);
             connection.setDoOutput(true);
             try (OutputStreamWriter w = new OutputStreamWriter(connection.getOutputStream())) {
                 w.write(JSON.toJSONString(request));

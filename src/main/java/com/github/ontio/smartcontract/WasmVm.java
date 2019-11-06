@@ -23,6 +23,7 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.core.scripts.WasmScriptBuilder;
+import com.github.ontio.core.transaction.Attribute;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.core.payload.DeployWasmCode;
@@ -55,6 +56,7 @@ public class WasmVm {
         tx.payer = payer;
         tx.gasLimit = gasLimit;
         tx.gasPrice = gasPrice;
+        tx.attributes = new Attribute[0];
         tx.nonce = new Random().nextInt();
         return tx;
     }

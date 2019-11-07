@@ -8,13 +8,11 @@ import java.math.BigInteger;
 
 import static com.github.ontio.common.Helper.BigIntFromNeoBytes;
 import static com.github.ontio.common.Helper.BigIntToNeoBytes;
-import static com.github.ontio.common.Helper.parseBalancesArray;
 import static org.junit.Assert.*;
 
 public class HelperTest {
     @Test
-    public void parseBalancesArrayWithNestedArrayAndEmptyBalances()
-    {
+    public void parseBalancesArrayWithNestedArrayAndEmptyBalances() {
         String jsonString = "[[\"6f555344\", \"\"], [\"6f4b4553\", \"\"], [\"6f425344\", \"\"]]";
         JSONArray jsonArray = JSONObject.parseArray(jsonString);
 
@@ -27,14 +25,12 @@ public class HelperTest {
         assertEquals(expected, result);
     }
 
-    private String getHexBalance(String number)
-    {
+    private String getHexBalance(String number) {
         return Helper.toHexString(Helper.BigIntToNeoBytes(new BigInteger(number)));
     }
 
     @Test
-    public void parseBalancesArrayWithNestedArrayAndNonZeroBalances()
-    {
+    public void parseBalancesArrayWithNestedArrayAndNonZeroBalances() {
         String firstBalance = getHexBalance("111");
         String secondBalance = getHexBalance("222");
         String thirdBalance = getHexBalance("333");
@@ -52,14 +48,12 @@ public class HelperTest {
         assertEquals(expected, result);
     }
 
-    private String getHexSymbol(String symbol)
-    {
+    private String getHexSymbol(String symbol) {
         return Helper.toHexString(symbol.getBytes());
     }
 
     @Test
-    public void parseBalancesArrayEmptyBalances()
-    {
+    public void parseBalancesArrayEmptyBalances() {
         String jsonString = "[\"\", \"\", \"\"]";
         JSONArray jsonArray = JSONObject.parseArray(jsonString);
 
@@ -71,6 +65,28 @@ public class HelperTest {
         String expectedJsonString = String.format(expectedJsonStringToFormat, firstIndexHexSymbol, secondIndexHexSymbol,
                                                   thirdIndexHexSymbol);
         JSONArray expected = JSONObject.parseArray(expectedJsonString);
+
+        String resultJsonString = Helper.parseBalancesArray(jsonArray);
+        JSONArray result = JSONObject.parseArray(resultJsonString);
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void parseBalancesArrayEmptyArray() {
+        JSONArray jsonArray = JSONObject.parseArray("[]");
+        JSONArray expected = JSONObject.parseArray("[]");
+
+        String resultJsonString = Helper.parseBalancesArray(jsonArray);
+        JSONArray result = JSONObject.parseArray(resultJsonString);
+
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void parseBalancesArrayWithCorruptedData() {
+        JSONArray jsonArray = JSONObject.parseArray("[1, 2, 3]");
+        JSONArray expected = JSONObject.parseArray("[]");
 
         String resultJsonString = Helper.parseBalancesArray(jsonArray);
         JSONArray result = JSONObject.parseArray(resultJsonString);

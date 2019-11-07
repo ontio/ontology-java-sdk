@@ -117,18 +117,29 @@ public class Helper {
         return sb.toString();
     }
 
-    private static String getBalanceFromHex(String hex)
-    {
+    private static String getBalanceFromHex(String hex) {
         if(!hex.equals("")) {
             return Helper.BigIntFromNeoBytes(Helper.hexToBytes(hex)).toString();
         }
         return BigInteger.ZERO.toString();
     }
 
-    private static String getHexIndexSymbol(int index)
-    {
+    private static String getHexIndexSymbol(int index) {
         String symbol = String.format("%02d", index);
         return Helper.toHexString(symbol.getBytes());
+    }
+
+    private static List<String> parseNestedBalanceArray(Object object) {
+        List<String> balanceArray = new ArrayList<String>();
+
+        JSONArray balanceJsonArray = (JSONArray) object;
+        String hexSymbol = (String) balanceJsonArray.get(0);
+        String hexBalance = (String) balanceJsonArray.get(1);
+
+        balanceArray.add(hexSymbol);
+        balanceArray.add(getBalanceFromHex(hexBalance));
+
+        return balanceArray;
     }
 
     public static String parseBalancesArray(JSONArray jsonArray) {
@@ -139,15 +150,12 @@ public class Helper {
             List<String> balanceArray = new ArrayList<String>();
 
             if (object instanceof JSONArray) {
-                JSONArray balanceJsonArray = (JSONArray) object;
-                String hexSymbol = (String) balanceJsonArray.get(0);
-                String hexBalance = (String) balanceJsonArray.get(1);
-
-                balanceArray.add(hexSymbol);
-                balanceArray.add(getBalanceFromHex(hexBalance));
+                balanceArray = parseNestedBalanceArray(object);
             } else if (object instanceof String){
                 balanceArray.add(getHexIndexSymbol(currentBalanceIndex));
                 balanceArray.add(getBalanceFromHex((String) object));
+            } else {
+                continue;
             }
 
             balancesArray.add(balanceArray);

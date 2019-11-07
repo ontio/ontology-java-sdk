@@ -125,7 +125,7 @@ public class Helper {
         return BigInteger.ZERO.toString();
     }
 
-    public static String parseBalanceArray(JSONArray jsonArray) {
+    public static String parseBalancesArray(JSONArray jsonArray) {
         List balancesArray = new ArrayList();
         int currentBalanceIndex = 0;
 

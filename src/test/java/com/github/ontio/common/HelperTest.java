@@ -8,12 +8,12 @@ import java.math.BigInteger;
 
 import static com.github.ontio.common.Helper.BigIntFromNeoBytes;
 import static com.github.ontio.common.Helper.BigIntToNeoBytes;
-import static com.github.ontio.common.Helper.parseBalanceArray;
+import static com.github.ontio.common.Helper.parseBalancesArray;
 import static org.junit.Assert.*;
 
 public class HelperTest {
     @Test
-    public void parseBalanceArray()
+    public void parseBalancesArrayWithNestedArrayAndEmptyBalances()
     {
         String jsonString = "[[\"6f555344\", \"\"], [\"6f4b4553\", \"\"], [\"6f425344\", \"\"]]";
         JSONArray jsonArray = JSONObject.parseArray(jsonString);
@@ -21,7 +21,7 @@ public class HelperTest {
         String expectedJsonString = "[[\"6f555344\", \"0\"], [\"6f4b4553\", \"0\"], [\"6f425344\", \"0\"]]";
         JSONArray expected = JSONObject.parseArray(expectedJsonString);
 
-        String resultJsonString = Helper.parseBalanceArray(jsonArray);
+        String resultJsonString = Helper.parseBalancesArray(jsonArray);
         JSONArray result = JSONObject.parseArray(resultJsonString);
 
         assertEquals(expected, result);

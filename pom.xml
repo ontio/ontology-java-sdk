@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.ontio</groupId>
-    <artifactId>ontology-sdk-java</artifactId>
-    <version>1.0.14</version>
+    <artifactId>onyx-sdk-java</artifactId>
+    <version>1.0.15</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

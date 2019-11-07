@@ -301,7 +301,7 @@ public class Oep8 {
         }
         paramList.add(tempList);
         byte[] params = BuildParams.createCodeParamsScript(paramList);
-        Transaction tx = sdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractAddress), null, params, payerAcct,gaslimit, gasprice);
+        Transaction tx = sdk.vm().makeInvokeCodeTransaction(Helper.reverse(contractAddress), null, params, payerAcct, gaslimit, gasprice);
         return tx;
     }
 
@@ -372,7 +372,7 @@ public class Oep8 {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        if(addr == null||addr.equals("")){
+        if(addr == null || addr.equals("")){
             throw new SDKException(ErrorCode.ParamError);
         }
         AbiInfo abiinfo = JSON.parseObject(oep8abi, AbiInfo.class);
@@ -432,12 +432,12 @@ public class Oep8 {
         }
         AbiInfo abiinfo = JSON.parseObject(oep8abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("balancesOf");
-        func.setParamsValue(Address.decodeBase58(address).toArray());
-        Object obj =   sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0,0,func, true);
+        func.setParamsValue((Object) Address.decodeBase58(address).toArray());
+        Object obj = sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0, 0,func, true);
         JSONArray res =  ((JSONObject) obj).getJSONArray("Result");
         List resList = new ArrayList();
         for(Object i : res){
-            if(!((String)i).equals("")){
+            if(!i.equals("")){
                 resList.add(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String)i)).toString());
             }else{
                 resList.add(BigInteger.ZERO.toString());

@@ -19,15 +19,12 @@
 
 package com.github.ontio.common;
 
-import com.github.ontio.crypto.Digest;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Byte Handle Helper
@@ -118,6 +115,39 @@ public class Helper {
             sb.append(Integer.toHexString(v & 0x0f));
         }
         return sb.toString();
+    }
+
+    private static String getBalanceFromHex(String hex)
+    {
+        if(!hex.equals("")) {
+            return Helper.BigIntFromNeoBytes(Helper.hexToBytes(hex)).toString();
+        }
+        return BigInteger.ZERO.toString();
+    }
+
+    public static String parseBalanceArray(JSONArray jsonArray) {
+        List balancesArray = new ArrayList();
+        int currentBalanceIndex = 0;
+
+        for (Object object : jsonArray) {
+            List balanceArray = new ArrayList();
+
+            if (object instanceof JSONArray) {
+                JSONArray balanceJsonArray = (JSONArray) object;
+                String hexSymbol = (String) balanceJsonArray.get(0);
+                String hexBalance = (String) balanceJsonArray.get(1);
+
+                balanceArray.add(hexSymbol);
+                balanceArray.add(getBalanceFromHex(hexBalance));
+            } else if (object instanceof String){
+                balanceArray.add(getBalanceFromHex((String) object));
+            }
+
+            balancesArray.add(balanceArray);
+            currentBalanceIndex++;
+        }
+
+        return JSON.toJSONString(balancesArray);
     }
 
     public static String reverse(String value) {

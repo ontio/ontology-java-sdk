@@ -1,14 +1,31 @@
 package com.github.ontio.common;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.junit.Test;
 
 import java.math.BigInteger;
 
 import static com.github.ontio.common.Helper.BigIntFromNeoBytes;
 import static com.github.ontio.common.Helper.BigIntToNeoBytes;
+import static com.github.ontio.common.Helper.parseBalanceArray;
 import static org.junit.Assert.*;
 
 public class HelperTest {
+    @Test
+    public void parseBalanceArray()
+    {
+        String jsonString = "[[\"6f555344\", \"\"], [\"6f4b4553\", \"\"], [\"6f425344\", \"\"]]";
+        JSONArray jsonArray = JSONObject.parseArray(jsonString);
+
+        String expectedJsonString = "[[\"6f555344\", \"0\"], [\"6f4b4553\", \"0\"], [\"6f425344\", \"0\"]]";
+        JSONArray expected = JSONObject.parseArray(expectedJsonString);
+
+        String resultJsonString = Helper.parseBalanceArray(jsonArray);
+        JSONArray result = JSONObject.parseArray(resultJsonString);
+
+        assertEquals(expected, result);
+    }
 
     @Test
     public void bigInt2Bytes() {

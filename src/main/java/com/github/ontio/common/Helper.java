@@ -126,11 +126,11 @@ public class Helper {
     }
 
     public static String parseBalancesArray(JSONArray jsonArray) {
-        List balancesArray = new ArrayList();
+        List<List<String>> balancesArray = new ArrayList<List<String>>();
         int currentBalanceIndex = 0;
 
         for (Object object : jsonArray) {
-            List balanceArray = new ArrayList();
+            List<String> balanceArray = new ArrayList<String>();
 
             if (object instanceof JSONArray) {
                 JSONArray balanceJsonArray = (JSONArray) object;

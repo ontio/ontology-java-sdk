@@ -27,6 +27,31 @@ public class HelperTest {
         assertEquals(expected, result);
     }
 
+    private String getHexBalance(String number)
+    {
+        return Helper.toHexString(Helper.BigIntToNeoBytes(new BigInteger(number)));
+    }
+
+    @Test
+    public void parseBalancesArrayWithNestedArrayAndNonZeroBalances()
+    {
+        String firstBalance = getHexBalance("111");
+        String secondBalance = getHexBalance("222");
+        String thirdBalance = getHexBalance("333");
+
+        String jsonStringToFormat = "[[\"6f555344\", \"%s\"], [\"6f4b4553\", \"%s\"], [\"6f425344\", \"%s\"]]";
+        String jsonString = String.format(jsonStringToFormat, firstBalance, secondBalance, thirdBalance);
+        JSONArray jsonArray = JSONObject.parseArray(jsonString);
+
+        String expectedJsonString = "[[\"6f555344\", \"111\"], [\"6f4b4553\", \"222\"], [\"6f425344\", \"333\"]]";
+        JSONArray expected = JSONObject.parseArray(expectedJsonString);
+
+        String resultJsonString = Helper.parseBalancesArray(jsonArray);
+        JSONArray result = JSONObject.parseArray(resultJsonString);
+
+        assertEquals(expected, result);
+    }
+
     @Test
     public void bigInt2Bytes() {
         assertArrayEquals(new byte[] {-85, -86, -86, -86, -86, -86, -85, -128}, BigIntToNeoBytes(new BigInteger("-9175052165852779861")));

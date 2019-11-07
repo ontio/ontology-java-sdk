@@ -430,20 +430,14 @@ public class Oep8 {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
+
         AbiInfo abiinfo = JSON.parseObject(oep8abi, AbiInfo.class);
         AbiFunction func = abiinfo.getFunction("balancesOf");
         func.setParamsValue((Object) Address.decodeBase58(address).toArray());
         Object obj = sdk.neovm().sendTransaction(Helper.reverse(contractAddress),null,null,0, 0,func, true);
-        JSONArray res =  ((JSONObject) obj).getJSONArray("Result");
-        List resList = new ArrayList();
-        for(Object i : res){
-            if(!i.equals("")){
-                resList.add(Helper.BigIntFromNeoBytes(Helper.hexToBytes((String)i)).toString());
-            }else{
-                resList.add(BigInteger.ZERO.toString());
-            }
-        }
-        return JSON.toJSONString(resList);
+
+        JSONArray result =  ((JSONObject) obj).getJSONArray("Result");
+        return Helper.parseBalancesArray(result);
     }
     public String totalBalanceOf(String address) throws Exception {
         if (contractAddress == null) {

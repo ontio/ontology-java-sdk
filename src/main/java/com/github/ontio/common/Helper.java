@@ -125,6 +125,12 @@ public class Helper {
         return BigInteger.ZERO.toString();
     }
 
+    private static String getHexIndexSymbol(int index)
+    {
+        String symbol = String.format("%02d", index);
+        return Helper.toHexString(symbol.getBytes());
+    }
+
     public static String parseBalancesArray(JSONArray jsonArray) {
         List<List<String>> balancesArray = new ArrayList<List<String>>();
         int currentBalanceIndex = 0;
@@ -140,6 +146,7 @@ public class Helper {
                 balanceArray.add(hexSymbol);
                 balanceArray.add(getBalanceFromHex(hexBalance));
             } else if (object instanceof String){
+                balanceArray.add(getHexIndexSymbol(currentBalanceIndex));
                 balanceArray.add(getBalanceFromHex((String) object));
             }
 

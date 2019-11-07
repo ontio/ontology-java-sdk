@@ -52,6 +52,32 @@ public class HelperTest {
         assertEquals(expected, result);
     }
 
+    private String getHexSymbol(String symbol)
+    {
+        return Helper.toHexString(symbol.getBytes());
+    }
+
+    @Test
+    public void parseBalancesArrayEmptyBalances()
+    {
+        String jsonString = "[\"\", \"\", \"\"]";
+        JSONArray jsonArray = JSONObject.parseArray(jsonString);
+
+        String firstIndexHexSymbol = getHexSymbol("00");
+        String secondIndexHexSymbol = getHexSymbol("01");
+        String thirdIndexHexSymbol = getHexSymbol("02");
+
+        String expectedJsonStringToFormat = "[[\"%s\", \"0\"], [\"%s\", \"0\"], [\"%s\", \"0\"]]";
+        String expectedJsonString = String.format(expectedJsonStringToFormat, firstIndexHexSymbol, secondIndexHexSymbol,
+                                                  thirdIndexHexSymbol);
+        JSONArray expected = JSONObject.parseArray(expectedJsonString);
+
+        String resultJsonString = Helper.parseBalancesArray(jsonArray);
+        JSONArray result = JSONObject.parseArray(resultJsonString);
+
+        assertEquals(expected, result);
+    }
+
     @Test
     public void bigInt2Bytes() {
         assertArrayEquals(new byte[] {-85, -86, -86, -86, -86, -86, -85, -128}, BigIntToNeoBytes(new BigInteger("-9175052165852779861")));

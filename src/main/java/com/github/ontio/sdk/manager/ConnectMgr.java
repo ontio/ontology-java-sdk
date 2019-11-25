@@ -265,6 +265,9 @@ public class ConnectMgr {
     public int getNetworkId() throws ConnectorException, IOException {
         return connector.getNetworkId();
     }
+    public Object getNodeSyncStatus() throws ConnectorException, IOException {
+        return connector.getNodeSyncStatus();
+    }
     public String getSideChainData(String sideChianId) throws ConnectorException, IOException {
         return connector.getSideChainData(sideChianId);
     }

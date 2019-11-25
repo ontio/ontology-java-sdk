@@ -297,6 +297,15 @@ public class RestClient extends AbstractConnector {
         }
         throw new RestfulException(to(rr));
     }
+    @Override
+    public Object getNodeSyncStatus() throws ConnectorException, IOException {
+        String rs = api.getNodeSyncStatus();
+        Result rr = JSON.parseObject(rs, Result.class);
+        if (rr.Error == 0) {
+            return rr.Result;
+        }
+        throw new RestfulException(to(rr));
+    }
 
     @Override
     public String getSideChainData(String sideChainID) throws ConnectorException, IOException {

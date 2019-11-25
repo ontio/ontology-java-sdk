@@ -340,7 +340,15 @@ public class WebsocketClient extends AbstractConnector {
         mWebSocket.send(JSON.toJSONString(map));
         return 0;
     }
-
+    @Override
+    public Object getNodeSyncStatus() throws ConnectorException, IOException {
+        Map map = new HashMap<>();
+        map.put("Action", "getsyncstatus");
+        map.put("Version", "1.0.0");
+        map.put("Id", generateReqId());
+        mWebSocket.send(JSON.toJSONString(map));
+        return 0;
+    }
     @Override
     public String getSideChainData(String sideChainID) throws ConnectorException, IOException {
         return null;

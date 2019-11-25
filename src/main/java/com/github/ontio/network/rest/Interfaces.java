@@ -257,4 +257,13 @@ class Interfaces {
             throw new RestfulException(ErrorCode.ConnectUrlErr + url, e);
         }
     }
+    public String getNodeSyncStatus() throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            return http.get(url + UrlConsts.Url_get_syncstatus, params);
+        } catch (Exception e) {
+            throw new RestfulException(ErrorCode.ConnectUrlErr + url, e);
+        }
+    }
+
 }

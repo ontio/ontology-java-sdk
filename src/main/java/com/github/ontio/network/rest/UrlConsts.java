@@ -44,4 +44,5 @@ public class UrlConsts {
 	public static String Url_get_version = "/api/v1/version";
 	public static String Url_get_grant_ong = "/api/v1/grantong";
 	public static String Url_get_networkid = "/api/v1/networkid";
+	public static String Url_get_syncstatus = "/api/v1/node/syncstatus";
 }

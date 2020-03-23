@@ -64,7 +64,7 @@ Add maven dependency:
 <dependency>
     <groupId>com.github.ontio</groupId>
     <artifactId>ontology-sdk-java</artifactId>
-    <version>1.0.13</version>
+    <version>1.0.16</version>
 </dependency>
 ```
     

@@ -2,6 +2,7 @@ package com.github.ontio.core.scripts;
 
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
+import com.github.ontio.common.UInt256;
 import com.github.ontio.sdk.exception.SDKRuntimeException;
 
 import java.io.ByteArrayOutputStream;
@@ -68,6 +69,8 @@ public class WasmScriptBuilder implements AutoCloseable{
             push((Integer) val);
         } else if (val instanceof Long) {
             push((Long) val);
+        } else if (val instanceof UInt256) {
+            push(((UInt256) val));
         } else if (val instanceof List) {
             List listVal = (List) val;
             pushVarUInt((long) listVal.size());
@@ -117,6 +120,11 @@ public class WasmScriptBuilder implements AutoCloseable{
     }
 
     void push(Address val) {
+        byte[] byteVal = val.toArray();
+        ms.write(byteVal, 0, byteVal.length);
+    }
+
+    void push(UInt256 val) {
         byte[] byteVal = val.toArray();
         ms.write(byteVal, 0, byteVal.length);
     }

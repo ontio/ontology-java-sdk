@@ -6,6 +6,7 @@ import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.io.Serializable;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 
@@ -30,17 +31,20 @@ public class Group implements Serializable {
 
     @Override
     public void serialize(BinaryWriter writer) throws IOException {
-        BigInteger th = BigInteger.valueOf(this.members.length);
-        writer.writeVarBytes(Helper.BigIntToNeoBytes(th));
+        BigInteger l = BigInteger.valueOf(this.members.length);
+        writer.writeVarBytes(Helper.BigIntToNeoBytes(l));
         for (Object obj : this.members) {
             if (obj instanceof byte[]) {
                 writer.writeVarBytes((byte[])obj);
             } else if (obj instanceof Group) {
-                BinaryWriter writer = new BinaryWriter();
-                ((Group) obj).serialize(writer);
-                writer.writeVarBytes(writer);
+                ByteArrayOutputStream ms = new ByteArrayOutputStream();
+                BinaryWriter writer2 = new BinaryWriter(ms);
+                ((Group) obj).serialize(writer2);
+                writer.writeVarBytes(ms.toByteArray());
             }
         }
+        BigInteger th = BigInteger.valueOf(this.threshold);
+        writer.writeVarBytes(Helper.BigIntToNeoBytes(th));
     }
 }
 

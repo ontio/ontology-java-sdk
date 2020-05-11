@@ -59,12 +59,12 @@ public class SideChainGovernanceDemo {
             return;
         }
         if(false){
-            String txhash1 = sdk.nativevm().ontId().sendRegister(identity,password,account,20000,0);
-            String txhash2 = sdk.nativevm().ontId().sendRegister(adminIndentity,password,account,20000,0);
-            Thread.sleep(6000);
-
-            System.out.println(sdk.getConnect().getSmartCodeEvent(txhash1));
-            System.out.println(sdk.getConnect().getSmartCodeEvent(txhash2));
+//            String txhash1 = sdk.nativevm().ontId().sendRegister(identity,password,account,20000,0);
+//            String txhash2 = sdk.nativevm().ontId().sendRegister(adminIndentity,password,account,20000,0);
+//            Thread.sleep(6000);
+//
+//            System.out.println(sdk.getConnect().getSmartCodeEvent(txhash1));
+//            System.out.println(sdk.getConnect().getSmartCodeEvent(txhash2));
 
 //            Transaction tx = sdk.nativevm().ont().makeTransfer(multiAddress.toBase58(),"AMAx993nE6NEqZjwBssUfopxnnvTdob9ij",10000, account.getAddressU160().toBase58(),200000,0);
 ////            Transaction tx = sdk.nativevm().ong().makeWithdrawOng(multiAddress.toBase58(),"AMAx993nE6NEqZjwBssUfopxnnvTdob9ij",35478934750000L,account.getAddressU160().toBase58(),20000,0);

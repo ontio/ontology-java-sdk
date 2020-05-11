@@ -41,13 +41,13 @@ public class AuthDemo {
                // Identity identity1 = ontSdk.getWalletMgr().importIdentity("",password,"".getBytes(),acct0.getAddressU160().toBase58());
                 identity = ontSdk.getWalletMgr().createIdentityFromPriKey(password,privatekey0);
 
-                ontSdk.nativevm().ontId().sendRegister(identity,password,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
-              //  ontSdk.nativevm().ontId().sendRegister(identity1,password,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
-                identity2 = ontSdk.getWalletMgr().createIdentity(password);
-                ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
-
-                identity3 = ontSdk.getWalletMgr().createIdentity(password);
-                ontSdk.nativevm().ontId().sendRegister(identity3,password,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
+//                ontSdk.nativevm().ontId().sendRegister(identity,password,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
+//              //  ontSdk.nativevm().ontId().sendRegister(identity1,password,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
+//                identity2 = ontSdk.getWalletMgr().createIdentity(password);
+//                ontSdk.nativevm().ontId().sendRegister(identity2,password,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
+//
+//                identity3 = ontSdk.getWalletMgr().createIdentity(password);
+//                ontSdk.nativevm().ontId().sendRegister(identity3,password,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
 
                 ontSdk.getWalletMgr().writeWallet();
 
@@ -73,9 +73,9 @@ public class AuthDemo {
             String contractAddr = "b93f1d81a00f95d09228f1f8934a71dd0e89999f";
 
             if(false){
-                 identity = ontSdk.getWalletMgr().createIdentityFromPriKey(password,privatekey1);
-                ontSdk.nativevm().ontId().sendRegister(identity,password,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
-                System.out.println(Helper.toHexString(identity.ontid.getBytes()));
+//                 identity = ontSdk.getWalletMgr().createIdentityFromPriKey(password,privatekey1);
+//                ontSdk.nativevm().ontId().sendRegister(identity,password,payerAcct,ontSdk.DEFAULT_GAS_LIMIT,0);
+//                System.out.println(Helper.toHexString(identity.ontid.getBytes()));
 
             }
             //Identity identity = ontSdk.getWalletMgr().createIdentityFromPriKey(password,privatekey1);

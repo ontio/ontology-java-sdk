@@ -70,18 +70,18 @@ public class AuthTest {
 
     @Test
     public void test() throws Exception {
-        sdk.nativevm().ontId().sendRegister(adminIdentity,password,account,sdk.DEFAULT_GAS_LIMIT,0);
-        sdk.nativevm().ontId().sendRegister(identity,password,account,sdk.DEFAULT_GAS_LIMIT,0);
-        sdk.nativevm().ontId().sendRegister(identity2,password,account,sdk.DEFAULT_GAS_LIMIT,0);
-        Transaction tx = sdk.vm().makeDeployCodeTransaction(codeHex, true, "name",
-                "v1.0", "author", "email", "desp", account.getAddressU160().toBase58(),20000000,0);
-        sdk.vm().setCodeAddress(codeAddress);
-        sdk.signTx(tx, new Account[][]{{account}});
-        String txHex = Helper.toHexString(tx.toArray());
-        Object result = sdk.getConnect().sendRawTransaction(txHex);
-        Thread.sleep(6000);
-        DeployCode t = (DeployCode) sdk.getConnect().getTransaction(tx.hash().toHexString());
-        assertNotNull(t);
+//        sdk.nativevm().ontId().sendRegister(adminIdentity,password,account,sdk.DEFAULT_GAS_LIMIT,0);
+//        sdk.nativevm().ontId().sendRegister(identity,password,account,sdk.DEFAULT_GAS_LIMIT,0);
+//        sdk.nativevm().ontId().sendRegister(identity2,password,account,sdk.DEFAULT_GAS_LIMIT,0);
+//        Transaction tx = sdk.vm().makeDeployCodeTransaction(codeHex, true, "name",
+//                "v1.0", "author", "email", "desp", account.getAddressU160().toBase58(),20000000,0);
+//        sdk.vm().setCodeAddress(codeAddress);
+//        sdk.signTx(tx, new Account[][]{{account}});
+//        String txHex = Helper.toHexString(tx.toArray());
+//        Object result = sdk.getConnect().sendRawTransaction(txHex);
+//        Thread.sleep(6000);
+//        DeployCode t = (DeployCode) sdk.getConnect().getTransaction(tx.hash().toHexString());
+//        assertNotNull(t);
     }
 
     @Test

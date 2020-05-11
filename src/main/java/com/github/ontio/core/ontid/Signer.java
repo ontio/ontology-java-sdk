@@ -12,6 +12,12 @@ public class Signer implements Serializable {
     public byte[] id;
     public int index;
 
+
+    public Signer(byte[] id, int index) {
+        this.index = index;
+        this.id = id;
+    }
+
     @Override
     public void deserialize(BinaryReader reader) throws IOException {
 

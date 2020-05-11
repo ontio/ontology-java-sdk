@@ -76,13 +76,13 @@ public class GovernanceDemo {
 
             if(sdk.getWalletMgr().getWallet().getIdentities().size() < 2){
                 Identity identity = sdk.getWalletMgr().createIdentity(password);
-                String txhash = sdk.nativevm().ontId().sendRegister(identity,password,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+//                String txhash = sdk.nativevm().ontId().sendRegister(identity,password,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
 
                 Identity identity2 = sdk.getWalletMgr().createIdentity(password);
-                String txhash2 = sdk.nativevm().ontId().sendRegister(identity2,password,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+//                String txhash2 = sdk.nativevm().ontId().sendRegister(identity2,password,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
                 Thread.sleep(6000);
-                Object obj = sdk.getConnect().getSmartCodeEvent(txhash);
-                System.out.println(obj);
+//                Object obj = sdk.getConnect().getSmartCodeEvent(txhash);
+//                System.out.println(obj);
                 sdk.getWalletMgr().writeWallet();
             }
 //            System.out.println("account:" + account.getAddressU160().toBase58());
@@ -97,12 +97,12 @@ public class GovernanceDemo {
 
             if(false){
                 Identity identity = sdk.getWalletMgr().getWallet().getIdentity(Common.didont+adminOntIdAcct.getAddressU160().toBase58());
-                String txhash = sdk.nativevm().ontId().sendRegister(identity,password,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
-                Thread.sleep(6000);
-                Object obj = sdk.getConnect().getSmartCodeEvent(txhash);
-                System.out.println(obj);
-
-                System.out.println(sdk.nativevm().ontId().sendGetDDO(Common.didont+adminOntIdAcct.getAddressU160().toBase58()));
+//                String txhash = sdk.nativevm().ontId().sendRegister(identity,password,payerAcct,sdk.DEFAULT_GAS_LIMIT,0);
+//                Thread.sleep(6000);
+//                Object obj = sdk.getConnect().getSmartCodeEvent(txhash);
+//                System.out.println(obj);
+//
+//                System.out.println(sdk.nativevm().ontId().sendGetDDO(Common.didont+adminOntIdAcct.getAddressU160().toBase58()));
 
                 return;
             }

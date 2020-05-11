@@ -31,7 +31,7 @@ public class CreateManyTx {
                 for (int i = 0; i < 3; i++) {
                     com.github.ontio.account.Account account = new com.github.ontio.account.Account(SignatureScheme.SHA256WITHECDSA);
                     String ontid = Common.didont + account.getAddressU160().toBase58();
-                    Transaction tx = ontSdk.nativevm().ontId().makeRegister(ontid, Helper.toHexString(account.serializePublicKey()), payerAcct.getAddressU160().toBase58(), 20000, 500);
+                    Transaction tx = ontSdk.nativevm().ontId().makeRegister(ontid, account.serializePublicKey(),"",null, payerAcct.getAddressU160().toBase58(), 20000, 500);
                     ontSdk.addSign(tx, account);
                     ontSdk.addSign(tx, payerAcct);
                     System.out.println("PrivateKey:"+Helper.toHexString(account.serializePrivateKey())+",txhash:"+tx.hash().toString());

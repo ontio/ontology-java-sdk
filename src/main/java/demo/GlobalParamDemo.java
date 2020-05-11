@@ -41,10 +41,10 @@ public class GlobalParamDemo {
         Address multiAddress2 = Address.addressFromMultiPubKeys(2,account1s.serializePublicKey(),account2s.serializePublicKey(),account3s.serializePublicKey());
         if(ontSdk.getWalletMgr().getWallet().getIdentities().size() < 1) {
             Identity identity = ontSdk.getWalletMgr().createIdentityFromPriKey(password,privateKey2);
-            String txhash = ontSdk.nativevm().ontId().sendRegister(identity,password,account,ontSdk.DEFAULT_GAS_LIMIT,0);
-            Thread.sleep(6000);
-            System.out.println(ontSdk.getConnect().getSmartCodeEvent(txhash));
-            System.out.println(privateKey);
+//            String txhash = ontSdk.nativevm().ontId().sendRegister(identity,password,account,ontSdk.DEFAULT_GAS_LIMIT,0);
+//            Thread.sleep(6000);
+//            System.out.println(ontSdk.getConnect().getSmartCodeEvent(txhash));
+//            System.out.println(privateKey);
         }
 
         if(false){

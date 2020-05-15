@@ -573,7 +573,6 @@ public class OntId {
 
     /**
      * @param ontid
-     * @param newpubkey
      * @param payer
      * @param gaslimit
      * @param gasprice
@@ -865,7 +864,7 @@ public class OntId {
         List list = new ArrayList();
         list.add(new Struct().add(ontid,pubKeyIndex,serializeSigners(signers),proof));
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"addKeyByRecovery",arg,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"removeKeyByRecovery",arg,payer,gaslimit,gasprice);
         return tx;
     }
 

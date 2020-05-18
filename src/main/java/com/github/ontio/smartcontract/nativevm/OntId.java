@@ -26,7 +26,6 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.*;
 import com.github.ontio.core.DataSignature;
-import com.github.ontio.core.asset.Sig;
 import com.github.ontio.core.block.Block;
 import com.github.ontio.core.ontid.Attribute;
 import com.github.ontio.core.ontid.Group;
@@ -37,12 +36,8 @@ import com.github.ontio.crypto.KeyType;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 import com.github.ontio.merkle.MerkleVerifier;
-import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.claim.Claim;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.sdk.info.AccountInfo;
-import com.github.ontio.sdk.info.IdentityInfo;
-import com.github.ontio.sdk.wallet.Identity;
 import com.github.ontio.smartcontract.nativevm.abi.NativeBuildParams;
 import com.github.ontio.smartcontract.nativevm.abi.Struct;
 
@@ -74,7 +69,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    private String sendRegister(String ontId, String access, byte[] proof,Account pk, Account payerAcct, long gaslimit, long gasprice, boolean isPreExec) throws Exception {
+    private String sendRegister(String ontId, String access, Account pk, Account payerAcct, long gaslimit, long gasprice, boolean isPreExec) throws Exception {
         if (ontId == null || ontId.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -85,14 +80,14 @@ public class OntId {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
 
-        Transaction tx = makeRegister(ontId,pk.serializePublicKey(),access,proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeRegister(ontId, pk.serializePublicKey(), access, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, pk);
         sdk.addSign(tx, payerAcct);
         if (isPreExec) {
             Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
             String result = ((JSONObject) obj).getString("Result");
             if (Integer.parseInt(result) == 0) {
-                throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error: "+ obj));
+                throw new SDKException(ErrorCode.OtherError("sendRawTransaction PreExec error: " + obj));
             }
         } else {
             boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -103,12 +98,12 @@ public class OntId {
         return tx.hash().toHexString();
     }
 
-    public String sendRegisterPreExec(String ontId,String access, byte[] proof,Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
-        return sendRegister(ontId,access, proof, pk,payerAcct, gaslimit, gasprice, true);
+    public String sendRegisterPreExec(String ontId, String access, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+        return sendRegister(ontId, access, pk, payerAcct, gaslimit, gasprice, true);
     }
 
-    public String sendRegister(String ontId,String access, byte[] proof, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
-        return sendRegister(ontId,access, proof,pk, payerAcct, gaslimit, gasprice, false);
+    public String sendRegister(String ontId, String access, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+        return sendRegister(ontId, access, pk, payerAcct, gaslimit, gasprice, false);
     }
 
 
@@ -119,7 +114,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeRegister(String ontid,byte[] pubKey,String access,byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeRegister(String ontid, byte[] pubKey, String access, String payer, long gaslimit, long gasprice) throws Exception {
         if (payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -130,24 +125,20 @@ public class OntId {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         List list = new ArrayList();
-        if (access.equals("") || proof == null) {
-            list.add(new Struct().add(ontid, pubKey));
-        } else {
-            list.add(new Struct().add(ontid, pubKey, access, proof));
-        }
+        list.add(new Struct().add(ontid, pubKey, access));
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"regIDWithPublicKey",args,payer,gaslimit, gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "regIDWithPublicKey", args, payer, gaslimit, gasprice);
         return tx;
     }
 
-    public String sendRegisterIdWithSingleController(String ontId,String controller,int index,byte[] proof,Account controllerSigner, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendRegisterIdWithSingleController(String ontId, String controller, int index, Account controllerSigner, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontId == null || ontId.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
         if (gasprice < 0 || gaslimit < 0) {
             throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
-        Transaction tx = makeRegisterIdWithSingleController(ontId, controller, index, proof, payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
+        Transaction tx = makeRegisterIdWithSingleController(ontId, controller, index, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, controllerSigner);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -157,7 +148,7 @@ public class OntId {
         return tx.hash().toHexString();
     }
 
-    public Transaction makeRegisterIdWithSingleController(String ontId, String controller,int index,byte[] proof, String payer, long gaslimit, long gasprice) throws SDKException {
+    public Transaction makeRegisterIdWithSingleController(String ontId, String controller, int index, String payer, long gaslimit, long gasprice) throws SDKException {
         if (payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -168,20 +159,20 @@ public class OntId {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         List list = new ArrayList();
-        list.add(new Struct().add(ontId, controller.getBytes(), index, proof));
+        list.add(new Struct().add(ontId, controller.getBytes(), index));
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"regIDWithController",args,payer,gaslimit, gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "regIDWithController", args, payer, gaslimit, gasprice);
         return tx;
     }
 
-    public String sendRegisterIdWithMultiController(String ontId,Account[] controllerSigners, Group controller, byte[] proof, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendRegisterIdWithMultiController(String ontId, Account[] controllerSigners, Group controller, Signer[] signers, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontId == null || controllerSigners == null || ontId.equals("") || controller == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
         if (gasprice < 0 || gaslimit < 0) {
             throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
-        Transaction tx = makeRegisterIdWithMultiController(ontId, controller, proof, payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
+        Transaction tx = makeRegisterIdWithMultiController(ontId, controller, signers, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, payerAcct);
         for (Account con : controllerSigners) {
             sdk.addSign(tx, con);
@@ -193,7 +184,7 @@ public class OntId {
         return tx.hash().toHexString();
     }
 
-    public Transaction makeRegisterIdWithMultiController(String ontId, Group controller,byte[] proof, String payer, long gaslimit, long gasprice) throws SDKException, IOException {
+    public Transaction makeRegisterIdWithMultiController(String ontId, Group controller, Signer[] signers, String payer, long gaslimit, long gasprice) throws SDKException, IOException {
         if (payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -207,20 +198,20 @@ public class OntId {
         ByteArrayOutputStream ms = new ByteArrayOutputStream();
         BinaryWriter writer = new BinaryWriter(ms);
         controller.serialize(writer);
-        list.add(new Struct().add(ontId, ms.toByteArray(), proof));
+        list.add(new Struct().add(ontId, ms.toByteArray(), serializeSigners(signers)));
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"regIDWithController",args,payer,gaslimit, gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "regIDWithController", args, payer, gaslimit, gasprice);
         return tx;
     }
 
-    public String sendRevokeId(String ontId,int index, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendRevokeId(String ontId, int index, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontId == null || ontId.equals("") || pk == null || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
         if (gasprice < 0 || gaslimit < 0) {
             throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
-        Transaction tx = makeRevokeId(ontId, index, payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
+        Transaction tx = makeRevokeId(ontId, index, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, payerAcct);
         sdk.addSign(tx, pk);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -243,20 +234,19 @@ public class OntId {
         List list = new ArrayList();
         list.add(new Struct().add(ontId, index));
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"revokeID",args,payer,gaslimit, gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "revokeID", args, payer, gaslimit, gasprice);
         return tx;
     }
 
 
-
-    public String sendRevokeIdBySingleController(String ontId,int index, Account controller, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendRevokeIdBySingleController(String ontId, int index, Account controller, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontId == null || ontId.equals("") || controller == null || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
         if (gasprice < 0 || gaslimit < 0) {
             throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
-        Transaction tx = makeRevokeId(ontId, index, payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
+        Transaction tx = makeRevokeId(ontId, index, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, payerAcct);
         sdk.addSign(tx, controller);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -279,10 +269,9 @@ public class OntId {
         List list = new ArrayList();
         list.add(new Struct().add(ontId, index));
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"revokeIDByController",args,payer,gaslimit, gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "revokeIDByController", args, payer, gaslimit, gasprice);
         return tx;
     }
-
 
 
     public String sendRevokeIdByMultiController(String ontId, Signer[] signers, Account[] controllerSigners, Account payerAcct, long gaslimit, long gasprice) throws Exception {
@@ -292,7 +281,7 @@ public class OntId {
         if (gasprice < 0 || gaslimit < 0) {
             throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
-        Transaction tx = makeRevokeIdByMultiController(ontId, signers, payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
+        Transaction tx = makeRevokeIdByMultiController(ontId, signers, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, payerAcct);
         for (Account con : controllerSigners) {
             sdk.addSign(tx, con);
@@ -317,9 +306,10 @@ public class OntId {
         List list = new ArrayList();
         list.add(new Struct().add(ontId, serializeSigners(signers)));
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"revokeIDByController",args,payer,gaslimit, gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "revokeIDByController", args, payer, gaslimit, gasprice);
         return tx;
     }
+
     byte[] serializeSigners(Signer[] signers) throws IOException {
         ByteArrayOutputStream ms = new ByteArrayOutputStream();
         BinaryWriter writer = new BinaryWriter(ms);
@@ -339,7 +329,7 @@ public class OntId {
         if (gasprice < 0 || gaslimit < 0) {
             throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
-        Transaction tx = makeRemoveController(ontId, index, proof, payerAcct.getAddressU160().toBase58(),gaslimit,gasprice);
+        Transaction tx = makeRemoveController(ontId, index, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, payerAcct);
         sdk.addSign(tx, pk);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -362,7 +352,7 @@ public class OntId {
         List list = new ArrayList();
         list.add(new Struct().add(ontId, index, proof));
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"removeController",args,payer,gaslimit, gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "removeController", args, payer, gaslimit, gasprice);
         return tx;
     }
 
@@ -375,7 +365,7 @@ public class OntId {
      * @throws Exception
      */
 
-    public String sendRegisterWithAttrs(String ontId, Attribute[] attributes,String access, byte[] proof,Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendRegisterWithAttrs(String ontId, Attribute[] attributes, String access, byte[] proof, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontId == null || ontId.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -385,7 +375,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeRegisterWithAttrs(ontId, pk.serializePublicKey(), attributes,access, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeRegisterWithAttrs(ontId, pk.serializePublicKey(), attributes, access, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, pk);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -401,7 +391,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeRegisterWithAttrs(String ontid, byte[] publickey, Attribute[] attributes,String access, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeRegisterWithAttrs(String ontid, byte[] publickey, Attribute[] attributes, String access, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -421,7 +411,7 @@ public class OntId {
         struct.add(access, proof);
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"regIDWithAttributes",args,payer,gaslimit, gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "regIDWithAttributes", args, payer, gaslimit, gasprice);
         return tx;
     }
 
@@ -448,36 +438,14 @@ public class OntId {
         List list = new ArrayList();
         list.add(ontid.getBytes());
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"getPublicKeys",arg,null,0,0);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "getPublicKeys", arg, null, 0, 0);
 
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
         if (res.equals("")) {
             return res;
         }
-        ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(res));
-        BinaryReader br = new BinaryReader(bais);
-        List pubKeyList = new ArrayList();
-        while (true) {
-            try {
-                Map publicKeyMap = new HashMap();
-                publicKeyMap.put("PubKeyId", ontid + "#keys-" + String.valueOf(br.readInt()));
-                byte[] pubKey = br.readVarBytes();
-                if(pubKey.length == 33){
-                    publicKeyMap.put("Type", KeyType.ECDSA.name());
-                    publicKeyMap.put("Curve", Curve.P256);
-                    publicKeyMap.put("Value", Helper.toHexString(pubKey));
-                } else {
-                    publicKeyMap.put("Type", KeyType.fromLabel(pubKey[0]));
-                    publicKeyMap.put("Curve", Curve.fromLabel(pubKey[1]));
-                    publicKeyMap.put("Value", Helper.toHexString(pubKey));
-                }
-                pubKeyList.add(publicKeyMap);
-            } catch (Exception e) {
-                break;
-            }
-        }
-        return JSON.toJSONString(pubKeyList);
+        return new String(Helper.hexToBytes(res));
     }
 
     /**
@@ -493,9 +461,9 @@ public class OntId {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         List list = new ArrayList();
-        list.add(new Struct().add(ontid.getBytes(),index));
+        list.add(new Struct().add(ontid.getBytes(), index));
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"getKeyState",arg,null,0,0);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "getKeyState", arg, null, 0, 0);
 
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
@@ -517,7 +485,7 @@ public class OntId {
         List list = new ArrayList();
         list.add(ontid.getBytes());
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"getAttributes",arg,null,0,0);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "getAttributes", arg, null, 0, 0);
 
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
@@ -551,7 +519,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public String sendAddPubKey(String ontid,Account pk, byte[] newPubKey,String controller,String access,byte[] proof, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendAddPubKey(String ontid, Account pk, byte[] newPubKey, String controller, String access, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -561,7 +529,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeAddPubKey(ontid,newPubKey,pk.serializePublicKey(),controller,access,proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeAddPubKey(ontid, newPubKey, pk.serializePublicKey(), controller, access, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, pk);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -579,7 +547,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeAddPubKey(String ontid,byte[] newPubKey,byte[] pubKey,String controller, String access, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeAddPubKey(String ontid, byte[] newPubKey, byte[] pubKey, String controller, String access, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("") || newPubKey == null || newPubKey.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -587,15 +555,14 @@ public class OntId {
             throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         List list = new ArrayList();
-        list.add(new Struct().add(ontid.getBytes(),newPubKey,pubKey));
+        list.add(new Struct().add(ontid.getBytes(), newPubKey, pubKey, controller.getBytes(), access));
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"addKey",arg,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "addKey", arg, payer, gaslimit, gasprice);
         return tx;
     }
 
 
-
-    public String sendAddKeyBySingleController(String ontid, byte[] pubkey,int index,String controller,String access,byte[] proof,Account controllerSigner, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendAddKeyByIndex(String ontid, Account pk, byte[] newPubKey, int index, String controller, String access, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -605,7 +572,50 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeAddKeyBySingleController(ontid, pubkey,index,controller,access,proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeAddKeyByIndex(ontid, newPubKey, index, controller, access, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        sdk.addSign(tx, pk);
+        sdk.addSign(tx, payerAcct);
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
+        if (b) {
+            return tx.hash().toString();
+        }
+        return null;
+    }
+
+    /**
+     * @param ontid
+     * @param payer
+     * @param gaslimit
+     * @param gasprice
+     * @return
+     * @throws Exception
+     */
+    public Transaction makeAddKeyByIndex(String ontid, byte[] newPubKey, int index, String controller, String access, String payer, long gaslimit, long gasprice) throws Exception {
+        if (ontid == null || ontid.equals("") || payer == null || payer.equals("") || newPubKey == null || newPubKey.equals("")) {
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if (gasprice < 0 || gaslimit < 0) {
+            throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
+        }
+        List list = new ArrayList();
+        list.add(new Struct().add(ontid.getBytes(), newPubKey, index, controller, access));
+        byte[] arg = NativeBuildParams.createCodeParamsScript(list);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "addKeyByIndex", arg, payer, gaslimit, gasprice);
+        return tx;
+    }
+
+
+    public String sendAddKeyBySingleController(String ontid, byte[] pubkey, int index, String controller, String access, byte[] proof, Account controllerSigner, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+        if (ontid == null || ontid.equals("") || payerAcct == null) {
+            throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
+        }
+        if (gasprice < 0 || gaslimit < 0) {
+            throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
+        }
+        if (contractAddress == null) {
+            throw new SDKException(ErrorCode.NullCodeHash);
+        }
+        Transaction tx = makeAddKeyBySingleController(ontid, pubkey, index, controller, access, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, controllerSigner);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -623,7 +633,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeAddKeyBySingleController(String ontid, byte[] pubKey,int index,String controller, String access, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeAddKeyBySingleController(String ontid, byte[] pubKey, int index, String controller, String access, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -632,14 +642,14 @@ public class OntId {
         }
         byte[] arg;
         List list = new ArrayList();
-        list.add(new Struct().add(ontid,pubKey,index,controller.getBytes(),access,proof));
+        list.add(new Struct().add(ontid, pubKey, index, controller.getBytes(), access, proof));
         arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"addKey",arg,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "addKey", arg, payer, gaslimit, gasprice);
         return tx;
     }
 
 
-    public String sendAddKeyByMultiController(String ontid, byte[] pubkey,Signer[] signers,String controller,String access,byte[] proof,Account[] controllerSigner, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendAddKeyByMultiController(String ontid, byte[] pubkey, Signer[] signers, String controller, String access, byte[] proof, Account[] controllerSigner, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -649,8 +659,8 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeAddKeyByMultiController(ontid, pubkey,signers,controller,access,proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
-        for(Account acc:controllerSigner) {
+        Transaction tx = makeAddKeyByMultiController(ontid, pubkey, signers, controller, access, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        for (Account acc : controllerSigner) {
             sdk.addSign(tx, acc);
         }
         sdk.addSign(tx, payerAcct);
@@ -669,7 +679,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeAddKeyByMultiController(String ontid, byte[] pubKey,Signer[] signers,String controller, String access, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeAddKeyByMultiController(String ontid, byte[] pubKey, Signer[] signers, String controller, String access, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -677,15 +687,14 @@ public class OntId {
             throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         List list = new ArrayList();
-        list.add(new Struct().add(ontid,pubKey,serializeSigners(signers),controller.getBytes(),access,proof));
+        list.add(new Struct().add(ontid, pubKey, serializeSigners(signers), controller.getBytes(), access, proof));
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"addKeyByController",arg,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "addKeyByController", arg, payer, gaslimit, gasprice);
         return tx;
     }
 
 
-
-    public String sendRemoveKeyBySingleController(String ontid,int pubkeyIndex,int controllerIndex,byte[] proof,Account controllerSigner, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendRemoveKeyBySingleController(String ontid, int pubkeyIndex, int controllerIndex, byte[] proof, Account controllerSigner, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -695,7 +704,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeRemoveKeyBySingleController(ontid, pubkeyIndex,controllerIndex,proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeRemoveKeyBySingleController(ontid, pubkeyIndex, controllerIndex, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, controllerSigner);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -713,7 +722,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeRemoveKeyBySingleController(String ontid, int pubkeyIndex,int controllerIndex,byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeRemoveKeyBySingleController(String ontid, int pubkeyIndex, int controllerIndex, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -722,14 +731,14 @@ public class OntId {
         }
         byte[] arg;
         List list = new ArrayList();
-        list.add(new Struct().add(ontid,pubkeyIndex,controllerIndex,proof));
+        list.add(new Struct().add(ontid, pubkeyIndex, controllerIndex, proof));
         arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"removeKeyByController",arg,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "removeKeyByController", arg, payer, gaslimit, gasprice);
         return tx;
     }
 
 
-    public String sendRemoveKeyByMultiController(String ontid, byte[] pubkeyIndex,Signer[] signers,byte[] proof,Account[] controllerSigner, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendRemoveKeyByMultiController(String ontid, byte[] pubkeyIndex, Signer[] signers, byte[] proof, Account[] controllerSigner, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -739,8 +748,8 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeRemoveKeyByMultiController(ontid, pubkeyIndex,signers,proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
-        for(Account acc:controllerSigner) {
+        Transaction tx = makeRemoveKeyByMultiController(ontid, pubkeyIndex, signers, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        for (Account acc : controllerSigner) {
             sdk.addSign(tx, acc);
         }
         sdk.addSign(tx, payerAcct);
@@ -759,7 +768,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeRemoveKeyByMultiController(String ontid, byte[] pubKeyIndex,Signer[] signers, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeRemoveKeyByMultiController(String ontid, byte[] pubKeyIndex, Signer[] signers, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -767,15 +776,14 @@ public class OntId {
             throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         List list = new ArrayList();
-        list.add(new Struct().add(ontid,pubKeyIndex,serializeSigners(signers),proof));
+        list.add(new Struct().add(ontid, pubKeyIndex, serializeSigners(signers), proof));
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"removeKeyByController",arg,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "removeKeyByController", arg, payer, gaslimit, gasprice);
         return tx;
     }
 
 
-
-    public String sendAddKeyByRecovery(String ontid, byte[] pubkey,Signer[] signers,byte[] proof,Account[] recoverySigners, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendAddKeyByRecovery(String ontid, byte[] pubkey, Signer[] signers, byte[] proof, Account[] recoverySigners, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -788,8 +796,8 @@ public class OntId {
         if (proof == null) {
             proof = new byte[]{};
         }
-        Transaction tx = makeAddKeyByRecovery(ontid, pubkey,signers,proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
-        for(Account acc:recoverySigners) {
+        Transaction tx = makeAddKeyByRecovery(ontid, pubkey, signers, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        for (Account acc : recoverySigners) {
             sdk.addSign(tx, acc);
         }
         sdk.addSign(tx, payerAcct);
@@ -808,7 +816,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeAddKeyByRecovery(String ontid, byte[] pubKey,Signer[] signers, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeAddKeyByRecovery(String ontid, byte[] pubKey, Signer[] signers, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -816,15 +824,14 @@ public class OntId {
             throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         List list = new ArrayList();
-        list.add(new Struct().add(ontid,pubKey,serializeSigners(signers),proof));
+        list.add(new Struct().add(ontid, pubKey, serializeSigners(signers), proof));
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"addKeyByRecovery",arg,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "addKeyByRecovery", arg, payer, gaslimit, gasprice);
         return tx;
     }
 
 
-
-    public String sendRemoveKeyByRecovery(String ontid,int pubkeyIndex,Signer[] signers,byte[] proof,Account[] recoverySigners, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendRemoveKeyByRecovery(String ontid, int pubkeyIndex, Signer[] signers, byte[] proof, Account[] recoverySigners, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -834,8 +841,8 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeRemoveKeyByRecovery(ontid, pubkeyIndex,signers,proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
-        for(Account acc:recoverySigners) {
+        Transaction tx = makeRemoveKeyByRecovery(ontid, pubkeyIndex, signers, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        for (Account acc : recoverySigners) {
             sdk.addSign(tx, acc);
         }
         sdk.addSign(tx, payerAcct);
@@ -854,17 +861,20 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeRemoveKeyByRecovery(String ontid, int pubKeyIndex,Signer[] signers, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeRemoveKeyByRecovery(String ontid, int pubKeyIndex, Signer[] signers, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
         if (gasprice < 0 || gaslimit < 0) {
             throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
+        if (proof == null) {
+            proof = new byte[]{};
+        }
         List list = new ArrayList();
-        list.add(new Struct().add(ontid,pubKeyIndex,serializeSigners(signers),proof));
+        list.add(new Struct().add(ontid, pubKeyIndex, serializeSigners(signers), proof));
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"removeKeyByRecovery",arg,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "removeKeyByRecovery", arg, payer, gaslimit, gasprice);
         return tx;
     }
 
@@ -877,7 +887,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public String sendRemovePubKey(String ontid,String removePubkey,byte[] proof, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendRemovePubKey(String ontid, byte[] removePubkey, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -887,7 +897,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeRemovePubKey(ontid, removePubkey,proof, pk.serializePublicKey(), payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeRemovePubKey(ontid, removePubkey, pk.serializePublicKey(), payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, pk);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -906,7 +916,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeRemovePubKey(String ontid, String removePubkey,byte[] proof, byte[] pubKey, String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeRemovePubKey(String ontid, byte[] removePubkey, byte[] pubKey, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("") || removePubkey == null || removePubkey.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -917,15 +927,15 @@ public class OntId {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         List list = new ArrayList();
-        list.add(new Struct().add(ontid.getBytes(),Helper.hexToBytes(removePubkey),pubKey, proof));
+        list.add(new Struct().add(ontid.getBytes(), removePubkey, pubKey));
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"removeKey",arg,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "removeKey", arg, payer, gaslimit, gasprice);
         return tx;
     }
 
 
-    public String sendSetRecovery(String ontid, Group recovery,int index,byte[] proof,Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
-        if (ontid == null || ontid.equals("") ||  payerAcct == null) {
+    public String sendSetRecovery(String ontid, Group recovery, int index, byte[] proof, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+        if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
         if (gasprice < 0 || gaslimit < 0) {
@@ -934,7 +944,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeSetRecovery(ontid, recovery, index,proof,payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeSetRecovery(ontid, recovery, index, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, pk);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -951,7 +961,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeSetRecovery(String ontid,Group recovery,int index, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeSetRecovery(String ontid, Group recovery, int index, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("") || recovery == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -962,15 +972,15 @@ public class OntId {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         List list = new ArrayList();
-        list.add(new Struct().add(ontid,recovery.toArray(), index, proof));
+        list.add(new Struct().add(ontid, recovery.toArray(), index, proof));
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"setRecovery",arg,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "setRecovery", arg, payer, gaslimit, gasprice);
         return tx;
     }
 
 
-    public String sendUpdateRecovery(String ontid, Group newRecovery,Signer[] signers,byte[] proof,Account[] recoverySigners, Account payerAcct, long gaslimit, long gasprice) throws Exception {
-        if (ontid == null || ontid.equals("") ||  payerAcct == null) {
+    public String sendUpdateRecovery(String ontid, Group newRecovery, Signer[] signers, byte[] proof, Account[] recoverySigners, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+        if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
         if (gasprice < 0 || gaslimit < 0) {
@@ -979,7 +989,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeUpdateRecovery(ontid,newRecovery, signers,proof,payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeUpdateRecovery(ontid, newRecovery, signers, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         for (Account r : recoverySigners) {
             sdk.addSign(tx, r);
         }
@@ -998,7 +1008,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeUpdateRecovery(String ontid,Group newRecovery, Signer[] signers,byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeUpdateRecovery(String ontid, Group newRecovery, Signer[] signers, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("") || signers == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1009,9 +1019,12 @@ public class OntId {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         List list = new ArrayList();
-        list.add(new Struct().add(ontid,newRecovery.toArray(), serializeSigners(signers), proof));
+        if (proof == null) {
+            proof = new byte[]{};
+        }
+        list.add(new Struct().add(ontid, newRecovery.toArray(), serializeSigners(signers), proof));
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"updateRecovery",arg,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "updateRecovery", arg, payer, gaslimit, gasprice);
         return tx;
     }
 
@@ -1023,7 +1036,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery, String password,byte[] salt,Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery, String password, byte[] salt, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || password == null || password.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1033,9 +1046,9 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeChangeRecovery(ontid, newRecovery, oldRecovery, password,payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
-        sdk.signTx(tx, oldRecovery, password,salt);
-        sdk.addSign(tx,payerAcct);
+        Transaction tx = makeChangeRecovery(ontid, newRecovery, oldRecovery, password, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        sdk.signTx(tx, oldRecovery, password, salt);
+        sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
         if (b) {
             return tx.hash().toString();
@@ -1052,8 +1065,8 @@ public class OntId {
      * @return
      * @throws SDKException
      */
-    public Transaction makeChangeRecovery(String ontid, String newRecovery, String oldRecovery, String password,String payer,  long gaslimit, long gasprice) throws SDKException {
-        if (ontid == null || ontid.equals("") || password == null || password.equals("") || newRecovery == null || oldRecovery == null ) {
+    public Transaction makeChangeRecovery(String ontid, String newRecovery, String oldRecovery, String password, String payer, long gaslimit, long gasprice) throws SDKException {
+        if (ontid == null || ontid.equals("") || password == null || password.equals("") || newRecovery == null || oldRecovery == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
         if (gasprice < 0 || gaslimit < 0) {
@@ -1062,18 +1075,17 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Address newAddr = Address.decodeBase58(newRecovery.replace(Common.didont,""));
-        Address oldAddr = Address.decodeBase58(oldRecovery.replace(Common.didont,""));
+        Address newAddr = Address.decodeBase58(newRecovery.replace(Common.didont, ""));
+        Address oldAddr = Address.decodeBase58(oldRecovery.replace(Common.didont, ""));
 
         List list = new ArrayList();
-        list.add(new Struct().add(ontid,newAddr, oldAddr));
+        list.add(new Struct().add(ontid, newAddr, oldAddr));
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"changeRecovery",arg,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "changeRecovery", arg, payer, gaslimit, gasprice);
         return tx;
     }
 
     /**
-     *
      * @param ontid
      * @param newRecovery
      * @param oldRecovery
@@ -1084,8 +1096,8 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    private String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery, Account[] accounts, Account payerAcct,long gaslimit, long gasprice) throws Exception {
-        if (ontid == null || ontid.equals("") || accounts == null || accounts.length == 0 || newRecovery == null  || oldRecovery == null  ) {
+    private String sendChangeRecovery(String ontid, String newRecovery, String oldRecovery, Account[] accounts, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+        if (ontid == null || ontid.equals("") || accounts == null || accounts.length == 0 || newRecovery == null || oldRecovery == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
         if (gasprice < 0 || gaslimit < 0) {
@@ -1094,9 +1106,9 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Address newAddr = Address.decodeBase58(newRecovery.replace(Common.didont,""));
-        Address oldAddr = Address.decodeBase58(oldRecovery.replace(Common.didont,""));
-        byte[] parabytes = NativeBuildParams.buildParams(ontid.getBytes(),newAddr.toArray(),oldAddr.toArray());
+        Address newAddr = Address.decodeBase58(newRecovery.replace(Common.didont, ""));
+        Address oldAddr = Address.decodeBase58(oldRecovery.replace(Common.didont, ""));
+        byte[] parabytes = NativeBuildParams.buildParams(ontid.getBytes(), newAddr.toArray(), oldAddr.toArray());
         Transaction tx = sdk.vm().makeInvokeCodeTransaction(contractAddress, "changeRecovery", parabytes, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.signTx(tx, new com.github.ontio.account.Account[][]{accounts});
         sdk.addSign(tx, payerAcct);
@@ -1116,7 +1128,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public String sendAddAttributes(String ontid, Attribute[] attributes,byte[] proof,Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendAddAttributes(String ontid, Attribute[] attributes,Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || attributes == null || attributes.length == 0 || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1126,10 +1138,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        if (proof == null) {
-            proof = new byte[]{};
-        }
-        Transaction tx = makeAddAttributes(ontid, attributes,proof, pk.serializePublicKey(), payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeAddAttributes(ontid, attributes, pk.serializePublicKey(), payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, pk);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -1147,7 +1156,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeAddAttributes(String ontid, Attribute[] attributes,byte[] proof,byte[] pk, String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeAddAttributes(String ontid, Attribute[] attributes, byte[] pk, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || attributes == null || attributes.length == 0 || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1163,11 +1172,11 @@ public class OntId {
         for (int i = 0; i < attributes.length; i++) {
             struct.add(attributes[i].key, attributes[i].valueType, attributes[i].value);
         }
-        struct.add(pk, proof);
+        struct.add(pk);
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
 
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"addAttributes",args,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "addAttributes", args, payer, gaslimit, gasprice);
         return tx;
     }
 
@@ -1179,7 +1188,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public String sendRemoveAttribute(String ontid, byte[] removeKey,Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendRemoveAttribute(String ontid, byte[] removeKey, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1189,7 +1198,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeRemoveAttribute(ontid,removeKey,pk.serializePublicKey(), payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeRemoveAttribute(ontid, removeKey, pk.serializePublicKey(), payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, pk);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -1218,12 +1227,11 @@ public class OntId {
         }
 
         List list = new ArrayList();
-        list.add(new Struct().add(ontid.getBytes(),removeKey, pk));
+        list.add(new Struct().add(ontid.getBytes(), removeKey, pk));
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"removeAttribute",arg,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "removeAttribute", arg, payer, gaslimit, gasprice);
         return tx;
     }
-
 
 
     /**
@@ -1235,7 +1243,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public String sendAddAttributesBySingleController(String ontid, Attribute[] attributes,int index, byte[] proof,Account controllerSigner, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendAddAttributesBySingleController(String ontid, Attribute[] attributes, int index, Account controllerSigner, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || attributes == null || attributes.length == 0 || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1245,7 +1253,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeAddAttributesBySingleController(ontid, attributes,index,proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeAddAttributesBySingleController(ontid, attributes, index, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, controllerSigner);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -1263,7 +1271,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeAddAttributesBySingleController(String ontid, Attribute[] attributes,int index, byte[] proof,String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeAddAttributesBySingleController(String ontid, Attribute[] attributes, int index, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || attributes == null || attributes.length == 0 || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1279,14 +1287,14 @@ public class OntId {
         for (int i = 0; i < attributes.length; i++) {
             struct.add(attributes[i].key, attributes[i].valueType, attributes[i].value);
         }
-        struct.add(index, proof);
+        struct.add(index);
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"addAttributesByController",args,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "addAttributesByController", args, payer, gaslimit, gasprice);
         return tx;
     }
 
-    public String sendAddAttributesByMultiController(String ontid, Attribute[] attributes,Signer[] signers, byte[] proof,Account[] controllerSigners, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendAddAttributesByMultiController(String ontid, Attribute[] attributes, Signer[] signers, Account[] controllerSigners, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || attributes == null || attributes.length == 0 || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1296,8 +1304,8 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeAddAttributesByMultiController(ontid, attributes,signers, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
-        for (Account acc:controllerSigners) {
+        Transaction tx = makeAddAttributesByMultiController(ontid, attributes, signers, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        for (Account acc : controllerSigners) {
             sdk.addSign(tx, acc);
         }
         sdk.addSign(tx, payerAcct);
@@ -1316,7 +1324,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeAddAttributesByMultiController(String ontid, Attribute[] attributes,Signer[] signers, byte[] proof,String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeAddAttributesByMultiController(String ontid, Attribute[] attributes, Signer[] signers, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || attributes == null || attributes.length == 0 || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1332,15 +1340,15 @@ public class OntId {
         for (int i = 0; i < attributes.length; i++) {
             struct.add(attributes[i].key, attributes[i].valueType, attributes[i].value);
         }
-        struct.add(serializeSigners(signers), proof);
+        struct.add(serializeSigners(signers));
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"addAttributesByController",args,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "addAttributesByController", args, payer, gaslimit, gasprice);
         return tx;
     }
 
 
-    public String sendRemoveAttributesBySingleController(String ontid, byte[] key,int index, byte[] proof,Account controllerSigner, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendRemoveAttributesBySingleController(String ontid, byte[] key, int index, byte[] proof, Account controllerSigner, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1350,7 +1358,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeRemoveAttributesBySingleController(ontid,key,index,proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeRemoveAttributesBySingleController(ontid, key, index, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, controllerSigner);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -1367,7 +1375,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeRemoveAttributesBySingleController(String ontid, byte[] key,int index, byte[] proof,String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeRemoveAttributesBySingleController(String ontid, byte[] key, int index, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1381,11 +1389,11 @@ public class OntId {
         Struct struct = new Struct().add(ontid, key, index, proof);
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"removeAttributesByController",args,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "removeAttributesByController", args, payer, gaslimit, gasprice);
         return tx;
     }
 
-    public String sendRemoveAttributesByMultiController(String ontid, byte[] key,Signer[] signers, byte[] proof,Account[] controllerSigners, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendRemoveAttributesByMultiController(String ontid, byte[] key, Signer[] signers, byte[] proof, Account[] controllerSigners, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1395,7 +1403,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeRemoveAttributesByMultiController(ontid,key,signers,proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeRemoveAttributesByMultiController(ontid, key, signers, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, payerAcct);
         for (Account acc : controllerSigners) {
             sdk.addSign(tx, acc);
@@ -1414,7 +1422,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeRemoveAttributesByMultiController(String ontid, byte[] key,Signer[] signers, byte[] proof,String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeRemoveAttributesByMultiController(String ontid, byte[] key, Signer[] signers, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1428,16 +1436,13 @@ public class OntId {
         Struct struct = new Struct().add(ontid, key, serializeSigners(signers), proof);
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"removeAttributesByController",args,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "removeAttributesByController", args, payer, gaslimit, gasprice);
         return tx;
     }
 
 
     /**
-     *
      * @param ontid
-     * @param ifNewPublicKey
-     * @param index
      * @param pubKey
      * @param controller
      * @param signIndex
@@ -1449,7 +1454,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public String sendAddAuthKey(String ontid, boolean ifNewPublicKey,int index, byte[] pubKey,String controller,int signIndex, byte[] proof,Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendAddNewAuthKey(String ontid, byte[] pubKey, String controller, int signIndex, byte[] proof, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1462,7 +1467,7 @@ public class OntId {
         if (proof == null) {
             proof = new byte[]{};
         }
-        Transaction tx = makeAddAuthKey(ontid,ifNewPublicKey,index,pubKey,controller,signIndex,proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeAddNewAuthKey(ontid, pubKey, controller, signIndex, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, pk);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -1479,7 +1484,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeAddAuthKey(String ontid, boolean ifNewPublicKey,int index, byte[] pubKey,String controller,int signIndex, byte[] proof,String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeAddNewAuthKey(String ontid, byte[] pubKey, String controller, int signIndex, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1488,18 +1493,21 @@ public class OntId {
         }
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
+        }
+        if (proof == null) {
+            proof = new byte[]{};
         }
         List list = new ArrayList();
         Struct struct1 = new Struct().add(pubKey, controller.getBytes());
-        Struct struct = new Struct().add(ontid, ifNewPublicKey, index,struct1,signIndex, proof);
+        Struct struct = new Struct().add(ontid, struct1, signIndex, proof);
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"addAuthKey",args,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "addNewAuthKey", args, payer, gaslimit, gasprice);
         return tx;
     }
 
 
-    public String sendRemoveAuthKey(String ontid,int index,int signedIndex,byte[] proof,Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendRemoveAuthKey(String ontid, int index, int signedIndex, byte[] proof, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1509,7 +1517,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeRemoveAuthKey(ontid,index,signedIndex,proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeRemoveAuthKey(ontid, index, signedIndex, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, pk);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -1526,7 +1534,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeRemoveAuthKey(String ontid,int index,int signIndex, byte[] proof,String payer,long gaslimit, long gasprice) throws Exception {
+    public Transaction makeRemoveAuthKey(String ontid, int index, int signIndex, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1536,17 +1544,19 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
+        if (proof == null) {
+            proof = new byte[]{};
+        }
         List list = new ArrayList();
-        Struct struct = new Struct().add(ontid, index,signIndex, proof);
+        Struct struct = new Struct().add(ontid, index, signIndex, proof);
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"removeAuthKey",args,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "removeAuthKey", args, payer, gaslimit, gasprice);
         return tx;
     }
 
 
-
-    public String sendAddService(String ontid,byte[] serviceId,byte[] type_,byte[] serviceEndpint,int index, byte[] proof,Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendAddService(String ontid, byte[] serviceId, byte[] type, byte[] serviceEndpint, int index, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1556,7 +1566,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeAddService(ontid,serviceId,type_,serviceEndpint,index,proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeAddService(ontid, serviceId, type, serviceEndpint, index, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, pk);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -1573,7 +1583,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeAddService(String ontid,byte[] serviceId,byte[] type_,byte[] serviceEndpint,int index,byte[] proof,String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeAddService(String ontid, byte[] serviceId, byte[] type, byte[] serviceEndpint, int index, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1584,15 +1594,15 @@ public class OntId {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         List list = new ArrayList();
-        Struct struct = new Struct().add(ontid, serviceId,type_,serviceEndpint, index,proof);
+        Struct struct = new Struct().add(ontid, serviceId, type, serviceEndpint, index);
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"addService",args,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "addService", args, payer, gaslimit, gasprice);
         return tx;
     }
 
 
-    public String sendUpdateService(String ontid,byte[] serviceId,byte[] type_,byte[] serviceEndpint,int index, byte[] proof,Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendUpdateService(String ontid, byte[] serviceId, byte[] type_, byte[] serviceEndpint, int index, byte[] proof, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1602,7 +1612,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeUpdateService(ontid,serviceId,type_,serviceEndpint,index,proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeUpdateService(ontid, serviceId, type_, serviceEndpint, index, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, pk);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -1619,7 +1629,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeUpdateService(String ontid,byte[] serviceId,byte[] type_,byte[] serviceEndpint,int index,byte[] proof,String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeUpdateService(String ontid, byte[] serviceId, byte[] type_, byte[] serviceEndpint, int index, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1630,14 +1640,14 @@ public class OntId {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         List list = new ArrayList();
-        Struct struct = new Struct().add(ontid, serviceId,type_,serviceEndpint, index,proof);
+        Struct struct = new Struct().add(ontid, serviceId, type_, serviceEndpint, index, proof);
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"updateService",args,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "updateService", args, payer, gaslimit, gasprice);
         return tx;
     }
 
-    public String sendRemoveService(String ontid,byte[] serviceId,int index, byte[] proof,Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendRemoveService(String ontid, byte[] serviceId, int index, byte[] proof, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1647,7 +1657,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeRemoveService(ontid,serviceId,index,proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeRemoveService(ontid, serviceId, index, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, pk);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -1664,7 +1674,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeRemoveService(String ontid,byte[] serviceId,int index,byte[] proof,String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeRemoveService(String ontid, byte[] serviceId, int index, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1675,15 +1685,15 @@ public class OntId {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         List list = new ArrayList();
-        Struct struct = new Struct().add(ontid,serviceId,index,proof);
+        Struct struct = new Struct().add(ontid, serviceId, index, proof);
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"removeService",args,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "removeService", args, payer, gaslimit, gasprice);
         return tx;
     }
 
 
-    public String sendAddContext(String ontid,byte[][] contexts,int index, byte[] proof,Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendAddContext(String ontid, byte[][] contexts, int index, byte[] proof, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1693,7 +1703,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeAddContext(ontid,contexts,index,proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeAddContext(ontid, contexts, index, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, pk);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -1710,7 +1720,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeAddContext(String ontid,byte[][] contexts,int index,byte[] proof,String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeAddContext(String ontid, byte[][] contexts, int index, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1721,15 +1731,15 @@ public class OntId {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         List list = new ArrayList();
-        Struct struct = new Struct().add(ontid,contexts,index,proof);
+        Struct struct = new Struct().add(ontid, contexts, index, proof);
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"addContext",args,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "addContext", args, payer, gaslimit, gasprice);
         return tx;
     }
 
 
-    public String sendRemoveContext(String ontid,byte[][] contexts,int index, byte[] proof,Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendRemoveContext(String ontid, byte[][] contexts, int index, byte[] proof, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1739,7 +1749,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeRemoveContext(ontid,contexts,index,proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeRemoveContext(ontid, contexts, index, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, pk);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -1756,7 +1766,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeRemoveContext(String ontid,byte[][] contexts,int index,byte[] proof,String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeRemoveContext(String ontid, byte[][] contexts, int index, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1767,17 +1777,15 @@ public class OntId {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         List list = new ArrayList();
-        Struct struct = new Struct().add(ontid.getBytes(),contexts,index,proof);
+        Struct struct = new Struct().add(ontid.getBytes(), contexts, index, proof);
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"removeContext",args,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "removeContext", args, payer, gaslimit, gasprice);
         return tx;
     }
 
 
-
-
-    public String sendSetKeyAccess(String ontid,int setIndex,String access,int signIndex, byte[] proof,Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendSetKeyAccess(String ontid, int setIndex, String access, int signIndex, byte[] proof, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1787,7 +1795,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeSetKeyAccess(ontid,setIndex,access,signIndex,proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeSetKeyAccess(ontid, setIndex, access, signIndex, proof, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.addSign(tx, pk);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -1804,7 +1812,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeSetKeyAccess(String ontid,int setIndex,String access,int signIndex, byte[] proof,String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeSetKeyAccess(String ontid, int setIndex, String access, int signIndex, byte[] proof, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1815,10 +1823,10 @@ public class OntId {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
         List list = new ArrayList();
-        Struct struct = new Struct().add(ontid.getBytes(),setIndex,access,signIndex,proof);
+        Struct struct = new Struct().add(ontid.getBytes(), setIndex, access, signIndex, proof);
         list.add(struct);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"setKeyAccess",args,payer,gaslimit,gasprice);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "setKeyAccess", args, payer, gaslimit, gasprice);
         return tx;
     }
 
@@ -1836,7 +1844,7 @@ public class OntId {
         list.add(ontid);
         list.add(keyIndex);
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"verifySignature",arg,null,0,0);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "verifySignature", arg, null, 0, 0);
 
         sdk.addSign(tx, acc);
 
@@ -1847,6 +1855,7 @@ public class OntId {
         }
         return res;
     }
+
     //TODO
     public String sendVerifySingleController(String ontid, int keyIndex, Account acc) throws Exception {
         if (ontid == null || ontid.equals("")) {
@@ -1860,7 +1869,7 @@ public class OntId {
         list.add(ontid);
         list.add(keyIndex);
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"verifyController",arg,null,0,0);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "verifyController", arg, null, 0, 0);
 
         sdk.addSign(tx, acc);
 
@@ -1874,7 +1883,7 @@ public class OntId {
 
 
     //TODO
-    public String sendVerifyMultiController(String ontid,Signer[] signers, Account[] accounts) throws Exception {
+    public String sendVerifyMultiController(String ontid, Signer[] signers, Account[] accounts) throws Exception {
         if (ontid == null || ontid.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("ontid should not be null"));
         }
@@ -1886,9 +1895,9 @@ public class OntId {
         list.add(ontid);
         list.add(serializeSigners(signers));
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"verifyController",arg,null,0,0);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "verifyController", arg, null, 0, 0);
 
-        for (Account acc : accounts){
+        for (Account acc : accounts) {
             sdk.addSign(tx, acc);
         }
 
@@ -1902,7 +1911,7 @@ public class OntId {
 
 
     //TODO parse result
-    public String sendGetService(String ontid,byte[] serviceId) throws Exception {
+    public String sendGetService(String ontid, byte[] serviceId) throws Exception {
         if (ontid == null || ontid.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("ontid should not be null"));
         }
@@ -1914,7 +1923,7 @@ public class OntId {
         list.add(ontid);
         list.add(serviceId);
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"getService",arg,null,0,0);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "getService", arg, null, 0, 0);
 
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
@@ -1937,14 +1946,14 @@ public class OntId {
         List list = new ArrayList();
         list.add(ontid);
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"getController",arg,null,0,0);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "getControllerJson", arg, null, 0, 0);
 
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
         if (res.equals("")) {
             return res;
         }
-        return res;
+        return new String(Helper.hexToBytes(res));
     }
 
 
@@ -1960,14 +1969,14 @@ public class OntId {
         List list = new ArrayList();
         list.add(ontid);
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"getDocument",arg,null,0,0);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "getDocument", arg, null, 0, 0);
 
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
         if (res.equals("")) {
             return res;
         }
-        return res;
+        return new String(Helper.hexToBytes(res));
     }
 
 
@@ -2052,7 +2061,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public String createOntIdClaim(String signerOntid, String password,byte[] salt, String context, Map<String, Object> claimMap, Map metaData, Map clmRevMap, long expire) throws Exception {
+    public String createOntIdClaim(String signerOntid, String password, byte[] salt, String context, Map<String, Object> claimMap, Map metaData, Map clmRevMap, long expire) throws Exception {
         if (signerOntid == null || signerOntid.equals("") || password == null || password.equals("") || context == null || context.equals("") || claimMap == null || metaData == null || clmRevMap == null || expire <= 0) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -2072,7 +2081,7 @@ public class OntId {
                 throw new SDKException(ErrorCode.NotExistCliamIssuer);
             }
             String pubkeyId = null;
-            com.github.ontio.account.Account acct = sdk.getWalletMgr().getAccount(signerOntid, password,salt);
+            com.github.ontio.account.Account acct = sdk.getWalletMgr().getAccount(signerOntid, password, salt);
             String pk = Helper.toHexString(acct.serializePublicKey());
             for (int i = 0; i < owners.size(); i++) {
                 JSONObject obj = owners.getJSONObject(i);
@@ -2143,6 +2152,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
+    //TODO should remove this method
     public String sendGetDDO(String ontid) throws Exception {
         if (ontid == null) {
             throw new SDKException(ErrorCode.ParamErr("ontid should not be null"));
@@ -2155,7 +2165,7 @@ public class OntId {
         list.add(ontid.getBytes());
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
 
-        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)),"getDDO",arg,null,0,0);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "getDDO", arg, null, 0, 0);
         Object obj = sdk.getConnect().sendRawTransactionPreExec(tx.toHexString());
         String res = ((JSONObject) obj).getString("Result");
         if (res.equals("")) {
@@ -2201,7 +2211,7 @@ public class OntId {
                     Map publicKeyMap = new HashMap();
                     publicKeyMap.put("PubKeyId", ontid + "#keys-" + String.valueOf(br1.readInt()));
                     byte[] pubKey = br1.readVarBytes();
-                    if(pubKey.length == 33){
+                    if (pubKey.length == 33) {
                         publicKeyMap.put("Type", KeyType.ECDSA.name());
                         publicKeyMap.put("Curve", Curve.P256);
                         publicKeyMap.put("Value", Helper.toHexString(pubKey));

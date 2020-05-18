@@ -35,6 +35,17 @@ public class NewOntIdDemo {
             Thread.sleep(6000);
         }
         if (false) {
+            System.out.println("before sendAddKeyByIndex, pubkeys: " + ontSdk.nativevm().ontId().sendGetPublicKeys(identity.ontid));
+            String txhash = ontSdk.nativevm().ontId().sendAddKeyByIndex(identity.ontid, acc, acc2.serializePublicKey(), 1, identity2.ontid, "", payer, 2000000, 0);
+            showEvent(ontSdk, "sendAddKeyByIndex", txhash);
+            System.out.println("after sendAddKeyByIndex, pubkeys: " + ontSdk.nativevm().ontId().sendGetPublicKeys(identity.ontid));
+
+            ontSdk.nativevm().ontId().sendRemoveKeyByIndex(identity.ontid, acc, acc2.serializePublicKey(), 1, payer, 2000000, 0);
+            showEvent(ontSdk, "sendRemoveKeyByIndex", txhash);
+            System.out.println("after sendRemoveKeyByIndex, pubkeys: " + ontSdk.nativevm().ontId().sendGetPublicKeys(identity.ontid));
+            return;
+        }
+        if (false) {
             Identity identityTemp = ontSdk.getWalletMgr().createIdentity(pwd);
             String txhash = ontSdk.nativevm().ontId().sendRegisterIdWithSingleController(identityTemp.ontid, identity.ontid, 1, acc, payer, 200000, 0);
             showEvent(ontSdk, "sendRegisterIdWithSingleController", txhash);
@@ -72,32 +83,45 @@ public class NewOntIdDemo {
             System.out.println("single attributes: " + ontSdk.nativevm().ontId().sendGetAttributes(identityTemp.ontid));
             return;
         }
-        if (true) {
+        if (false) {
             byte[] serviceId = "serviceId".getBytes();
-            String txhash = ontSdk.nativevm().ontId().sendAddService(identity.ontid,serviceId,"type".getBytes(),"serviceEndpoint".getBytes(),1,acc,payer,2000000,0);
+            byte[] type = "type".getBytes();
+            String txhash = ontSdk.nativevm().ontId().sendAddService(identity.ontid, serviceId, type, "serviceEndpoint".getBytes(), 1, acc, payer, 2000000, 0);
             showEvent(ontSdk, "sendAddService", txhash);
 
-            System.out.println("serviceId: " + ontSdk.nativevm().ontId().sendGetService(identity.ontid,serviceId));;
+            System.out.println("serviceId: " + ontSdk.nativevm().ontId().sendGetService(identity.ontid, serviceId));
+
+            txhash = ontSdk.nativevm().ontId().sendUpdateService(identity.ontid, serviceId, type, "serviceEndpoint".getBytes(), 1, acc, payer, 2000000, 0);
+            showEvent(ontSdk, "sendUpdateService", txhash);
+
+            System.out.println("serviceId: " + ontSdk.nativevm().ontId().sendGetService(identity.ontid, serviceId));
+
+            txhash = ontSdk.nativevm().ontId().sendRemoveService(identity.ontid, serviceId, 1, acc, payer, 2000000, 0);
+            showEvent(ontSdk, "sendUpdateService", txhash);
+
+            System.out.println("serviceId: " + ontSdk.nativevm().ontId().sendGetService(identity.ontid, serviceId));
             return;
         }
-        if (false) {
+
+        if (true) {
+            System.out.println("before add attributes: " + ontSdk.nativevm().ontId().sendGetAttributes(identity.ontid));
             Attribute[] attributes = new Attribute[]{
                     new Attribute("key".getBytes(), "valueType".getBytes(), "value".getBytes()),
             };
             String txhash = ontSdk.nativevm().ontId().sendAddAttributes(identity.ontid, attributes, acc, payer, 20000, 0);
             showEvent(ontSdk, "sendAddAttributes", txhash);
+            System.out.println("after add attributes: " + ontSdk.nativevm().ontId().sendGetAttributes(identity.ontid));
 
+            txhash = ontSdk.nativevm().ontId().sendRemoveAttribute(identity.ontid, "key".getBytes(), acc, payer, 20000000, 0);
+            showEvent(ontSdk, "sendRemoveAttribute", txhash);
+            System.out.println("after remove attributes: " + ontSdk.nativevm().ontId().sendGetAttributes(identity.ontid));
 
-            txhash = ontSdk.nativevm().ontId().sendAddAttributesBySingleController(identity2.ontid, attributes, 1, acc2, payer, 2000000, 0);
-            showEvent(ontSdk, "sendAddAttributesBySingleController", txhash);
-
-            Group group = new Group(new Object[]{identity.ontid.getBytes()}, 1);
-            Signer signer = new Signer(identity.ontid.getBytes(), 1);
-            Signer[] signers = new Signer[]{signer};
-            txhash = ontSdk.nativevm().ontId().sendAddAttributesByMultiController(identity2.ontid, attributes, signers, new Account[]{acc}, payer, 2000000, 0);
-            showEvent(ontSdk, "sendAddAttributesBySingleController", txhash);
+            txhash = ontSdk.nativevm().ontId().sendAddAttributesByIndex(identity2.ontid, attributes, 1, acc2, payer, 200000, 0);
+            showEvent(ontSdk, "sendAddAttributesByIndex", txhash);
+            System.out.println("after sendAddAttributesByIndex attributes: " + ontSdk.nativevm().ontId().sendGetAttributes(identity.ontid));
             return;
         }
+
         if (false) {
             System.out.println("before sendAddPubKey, pubkeys: " + ontSdk.nativevm().ontId().sendGetPublicKeys(identity.ontid));
             String txhash = ontSdk.nativevm().ontId().sendAddPubKey(identity.ontid, acc, acc2.serializePublicKey(), identity2.ontid, "", payer, 20000, 0);

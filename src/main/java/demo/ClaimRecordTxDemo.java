@@ -36,11 +36,11 @@ public class ClaimRecordTxDemo {
             if (ontSdk.getWalletMgr().getWallet().getIdentities().size() < 2) {
                 Identity identity = ontSdk.getWalletMgr().createIdentity(password);
 
-                ontSdk.nativevm().ontId().sendRegister(identity.ontid,"",null,payerAcc,payerAcc,ontSdk.DEFAULT_GAS_LIMIT,0);
+                ontSdk.nativevm().ontId().sendRegister(identity.ontid,"",payerAcc,payerAcc,ontSdk.DEFAULT_GAS_LIMIT,0);
 
                 Identity identity2 = ontSdk.getWalletMgr().createIdentity(password);
 
-                ontSdk.nativevm().ontId().sendRegister(identity2.ontid,"",null,payerAcc,payerAcc,ontSdk.DEFAULT_GAS_LIMIT,0);
+                ontSdk.nativevm().ontId().sendRegister(identity2.ontid,"",payerAcc,payerAcc,ontSdk.DEFAULT_GAS_LIMIT,0);
 
                 ontSdk.getWalletMgr().writeWallet();
 

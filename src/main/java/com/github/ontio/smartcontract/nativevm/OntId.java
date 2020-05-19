@@ -414,14 +414,7 @@ public class OntId {
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "regIDWithAttributes", args, payer, gaslimit, gasprice);
         return tx;
     }
-
-    private byte[] serializeAttributes(Attribute[] attributes) throws Exception {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        BinaryWriter bw = new BinaryWriter(baos);
-        bw.writeSerializableArray(attributes);
-        return baos.toByteArray();
-    }
-
+    
     /**
      * @param ontid
      * @return

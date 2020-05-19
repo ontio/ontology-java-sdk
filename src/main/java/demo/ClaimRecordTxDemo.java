@@ -37,10 +37,10 @@ public class ClaimRecordTxDemo {
             String pwd = "111111";
             Identity issuerIdentity = ontSdk.getWalletMgr().createIdentity(pwd);
             Identity subjectIdentity = ontSdk.getWalletMgr().createIdentity(pwd);
-            String txhash = ontSdk.nativevm().ontId().sendRegister(issuerIdentity.ontid,"", issuerAcc,payer,20000000,0);
+            String txhash = ontSdk.nativevm().ontId().sendRegister(issuerIdentity.ontid,issuerAcc,payer,20000000,0);
             showEvent(ontSdk, "sendRegister", txhash);
 
-            txhash = ontSdk.nativevm().ontId().sendRegister(subjectIdentity.ontid,"", subjectAcc,payer,20000000,0);
+            txhash = ontSdk.nativevm().ontId().sendRegister(subjectIdentity.ontid, subjectAcc,payer,20000000,0);
             showEvent(ontSdk, "sendRegister", txhash);
 
             Map<String, Object> map = new HashMap<String, Object>();

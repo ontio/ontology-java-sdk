@@ -39,7 +39,6 @@ public class NewOntIdDemo {
             System.out.println(res);
 
             System.out.println("doc:" + ontSdk.nativevm().ontId().sendGetDocument(identity.ontid));
-//            ontSdk.nativevm().ontId().createOntIdClaim()
             return;
         }
         if (false) {

@@ -691,7 +691,7 @@ public class OntId {
     }
 
 
-    public String sendAddKeyByMultiController(String ontid, byte[] pubkey, Signer[] signers, String controller, String access,Account[] controllerSigner, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendAddKeyByMultiController(String ontid, byte[] pubkey, Signer[] signers, String controller, String access, Account[] controllerSigner, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -721,7 +721,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeAddKeyByMultiController(String ontid, byte[] pubKey, Signer[] signers, String controller, String access,String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeAddKeyByMultiController(String ontid, byte[] pubKey, Signer[] signers, String controller, String access, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -880,7 +880,7 @@ public class OntId {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeRemoveKeyByRecovery(ontid, pubkeyIndex, signers,payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        Transaction tx = makeRemoveKeyByRecovery(ontid, pubkeyIndex, signers, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         for (Account acc : recoverySigners) {
             sdk.addSign(tx, acc);
         }
@@ -1414,7 +1414,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeRemoveAttributesBySingleController(String ontid, byte[] key, int index,String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeRemoveAttributesBySingleController(String ontid, byte[] key, int index, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1461,7 +1461,7 @@ public class OntId {
      * @return
      * @throws Exception
      */
-    public Transaction makeRemoveAttributesByMultiController(String ontid, byte[] key, Signer[] signers,String payer, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeRemoveAttributesByMultiController(String ontid, byte[] key, Signer[] signers, String payer, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payer == null || payer.equals("")) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1772,7 +1772,7 @@ public class OntId {
         List list = new ArrayList();
         Struct struct = new Struct().add(ontid.getBytes());
         struct.add(contexts.length);
-        for (int i=0;i<contexts.length;i++){
+        for (int i = 0; i < contexts.length; i++) {
             struct.add(contexts[i]);
         }
         struct.add(index);
@@ -1789,14 +1789,14 @@ public class OntId {
         BinaryWriter writer = new BinaryWriter(stream);
         System.out.println(context.length);
         writer.writeVarInt(context.length);
-        for (int i=0;i<context.length;i++) {
+        for (int i = 0; i < context.length; i++) {
             writer.writeVarBytes(context[i]);
         }
         return stream.toByteArray();
     }
 
 
-    public String sendRemoveContext(String ontid, byte[][] contexts, int index,Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+    public String sendRemoveContext(String ontid, byte[][] contexts, int index, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
         }
@@ -1836,7 +1836,7 @@ public class OntId {
         List list = new ArrayList();
         Struct struct = new Struct().add(ontid.getBytes());
         struct.add(contexts.length);
-        for (int i=0;i<contexts.length;i++) {
+        for (int i = 0; i < contexts.length; i++) {
             struct.add(contexts[i]);
         }
         struct.add(index);
@@ -2085,8 +2085,8 @@ public class OntId {
             if (sendDid == null || receiverDid == null) {
                 throw new SDKException(ErrorCode.DidNull);
             }
-            String issuerDdo = sendGetDDO(sendDid);
-            JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("Owners");
+            String issuerDdo = sendGetDocument(sendDid);
+            JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("publicKey");
             if (owners == null) {
                 throw new SDKException(ErrorCode.NotExistCliamIssuer);
             }
@@ -2094,8 +2094,8 @@ public class OntId {
             String pk = Helper.toHexString(pkAcc.serializePublicKey());
             for (int i = 0; i < owners.size(); i++) {
                 JSONObject obj = owners.getJSONObject(i);
-                if (obj.getString("Value").equals(pk)) {
-                    pubkeyId = obj.getString("PubKeyId");
+                if (obj.getString("publicKeyHex").equals(pk)) {
+                    pubkeyId = obj.getString("id");
                     break;
                 }
             }
@@ -2136,8 +2136,8 @@ public class OntId {
             if (str.length != 3) {
                 throw new SDKException(ErrorCode.DidError);
             }
-            String issuerDdo = sendGetDDO(issuerDid);
-            JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("Owners");
+            String issuerDdo = sendGetDocument(issuerDid);
+            JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("publicKey");
             if (owners == null) {
                 throw new SDKException(ErrorCode.NotExistCliamIssuer);
             }
@@ -2146,7 +2146,7 @@ public class OntId {
             JSONObject header = JSON.parseObject(new String(headerBytes));
             String kid = header.getString("kid");
             String id = kid.split("#keys-")[1];
-            String pubkeyStr = owners.getJSONObject(Integer.parseInt(id) - 1).getString("Value");
+            String pubkeyStr = owners.getJSONObject(Integer.parseInt(id) - 1).getString("publicKeyHex");
             sign = new DataSignature();
             byte[] data = (obj[0] + "." + obj[1]).getBytes();
             return sign.verifySignature(new Account(false, Helper.hexToBytes(pubkeyStr)), data, signatureBytes);

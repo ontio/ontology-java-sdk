@@ -1777,24 +1777,10 @@ public class OntId {
         }
         struct.add(index);
         list.add(struct);
-        System.out.println(ontid);
         byte[] args = NativeBuildParams.createCodeParamsScript(list);
-        System.out.println(Helper.toHexString(args));
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "addContext", args, payer, gaslimit, gasprice);
         return tx;
     }
-
-    private byte[] serializeConext(byte[][] context) throws IOException {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        BinaryWriter writer = new BinaryWriter(stream);
-        System.out.println(context.length);
-        writer.writeVarInt(context.length);
-        for (int i = 0; i < context.length; i++) {
-            writer.writeVarBytes(context[i]);
-        }
-        return stream.toByteArray();
-    }
-
 
     public String sendRemoveContext(String ontid, byte[][] contexts, int index, Account pk, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
@@ -1857,7 +1843,6 @@ public class OntId {
         List list = new ArrayList();
         list.add(new Struct().add(ontid, keyIndex));
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
-        System.out.println("args:" + Helper.toHexString(arg));
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "verifySignature", arg, null, 0, 0);
 
         sdk.addSign(tx, acc);

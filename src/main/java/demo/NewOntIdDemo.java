@@ -34,12 +34,13 @@ public class NewOntIdDemo {
             txhash = ontSdk.nativevm().ontId().sendRegister(identity2.ontid, "", acc2, payer, 20000, 0);
             txhash = ontSdk.nativevm().ontId().sendRegister(identity3.ontid, "", acc3, payer, 20000, 0);
             Thread.sleep(6000);
+        }
+        if (false) {
             System.out.println("ontid:" + identity.ontid);
             String res = ontSdk.nativevm().ontId().sendVerifySignature(identity.ontid,1,acc);
             System.out.println(res);
 
             System.out.println("doc:" + ontSdk.nativevm().ontId().sendGetDocument(identity.ontid));
-            return;
         }
         if (false) {
             byte[][] contexts = new byte[][]{new byte[]{1, 2}};
@@ -96,7 +97,7 @@ public class NewOntIdDemo {
             return;
         }
 
-        if (false) {
+        if (true) {
             Identity identityTemp = ontSdk.getWalletMgr().createIdentity(pwd);
             String txhash = ontSdk.nativevm().ontId().sendRegisterIdWithSingleController(identityTemp.ontid, identity.ontid, 1, acc, payer, 200000, 0);
             showEvent(ontSdk, "sendRegisterIdWithSingleController", txhash);

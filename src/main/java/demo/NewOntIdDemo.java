@@ -35,12 +35,14 @@ public class NewOntIdDemo {
             txhash = ontSdk.nativevm().ontId().sendRegister(identity3.ontid, acc3, payer, 20000, 0);
             Thread.sleep(6000);
         }
-        if (false) {
+        if (true) {
             System.out.println("ontid:" + identity.ontid);
             String res = ontSdk.nativevm().ontId().sendVerifySignature(identity.ontid, 1, acc);
             System.out.println(res);
 
+            System.out.println(Helper.toHexString(acc.serializePrivateKey()));
             System.out.println("doc:" + ontSdk.nativevm().ontId().sendGetDocument(identity.ontid));
+            return;
         }
         if (false) {
             byte[][] contexts = new byte[][]{new byte[]{1, 2}};
@@ -70,11 +72,23 @@ public class NewOntIdDemo {
             System.out.println("after sendRemoveKeyByIndex, pubkeys: " + ontSdk.nativevm().ontId().sendGetPublicKeys(identity.ontid));
             return;
         }
-        if (false) {
+        if (true) {
             Identity identityTemp = ontSdk.getWalletMgr().createIdentity(pwd);
             System.out.println("identity.ontid:" + Helper.toHexString(identity.ontid.getBytes()));
             String txhash = ontSdk.nativevm().ontId().sendRegisterIdWithSingleController(identityTemp.ontid, identity.ontid, 1, acc, payer, 200000, 0);
             showEvent(ontSdk, "sendRegisterIdWithSingleController", txhash);
+
+
+            System.out.println(identityTemp.ontid);
+            System.out.println(Helper.toHexString(acc.serializePrivateKey()));
+
+
+            String res = ontSdk.nativevm().ontId().sendVerifySingleController(identityTemp.ontid,1,acc);
+            System.out.println("res: " + res);
+            if (true){
+                return;
+            }
+
 
             String tmp = ontSdk.nativevm().ontId().sendVerifySingleController(identityTemp.ontid, 1, acc);
             System.out.println("tmp:" + tmp);
@@ -124,7 +138,7 @@ public class NewOntIdDemo {
             return;
         }
 
-        if (true) {
+        if (false) {
             Identity identityTemp = ontSdk.getWalletMgr().createIdentity(pwd);
             Group group = new Group(new Object[]{identity.ontid.getBytes()}, 1);
             Signer signer = new Signer(identity.ontid.getBytes(), 1);
@@ -246,6 +260,9 @@ public class NewOntIdDemo {
             Signer signer = new Signer(identity2.ontid.getBytes(), 1);
             Signer[] signers = new Signer[]{signer};
 
+            System.out.println("ontid:" + identity.ontid);
+            System.out.println("pubkey:" + Helper.toHexString(acc3.serializePublicKey()));
+            System.out.println("controller:" + Helper.toHexString(identity3.ontid.getBytes()));
             txhash = ontSdk.nativevm().ontId().sendAddNewAuthKeyByRecovery(identity.ontid, acc3.serializePublicKey(), identity3.ontid, signers, acc2, payer, 2000000, 0);
             showEvent(ontSdk, "sendAddNewAuthKeyByRecovery", txhash);
             System.out.println("after add authkey: " + ontSdk.nativevm().ontId().sendGetDocument(identity.ontid));

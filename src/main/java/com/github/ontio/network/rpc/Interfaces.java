@@ -86,7 +86,7 @@ public class Interfaces {
             connection.setConnectTimeout(10000);
             connection.setReadTimeout(10000);
             connection.setDoOutput(true);
-            connection.setRequestProperty("Content-Type", "application/json;charset=utf-8");//设置参数类型是json格式
+            connection.setRequestProperty("Content-Type", "application/json;charset=utf-8");//set parameter type to JSON format
             try (OutputStreamWriter w = new OutputStreamWriter(connection.getOutputStream())) {
                 w.write(JSON.toJSONString(request));
             }

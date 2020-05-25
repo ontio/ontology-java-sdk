@@ -481,7 +481,11 @@ public class OntId {
             throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         List list = new ArrayList();
-        list.add(new Struct().add(ontid.getBytes(), newPubKey, pubKey, controller.getBytes()));
+        if (controller != "") {
+            list.add(new Struct().add(ontid.getBytes(), newPubKey, pubKey, controller.getBytes()));
+        } else {
+            list.add(new Struct().add(ontid.getBytes(), newPubKey, pubKey));
+        }
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "addKey", arg, payer, gaslimit, gasprice);
         return tx;
@@ -1498,11 +1502,10 @@ public class OntId {
 
 
     /**
-     *
      * @param ontid
      * @param index
      * @param signers
-     * @param pk
+     * @param pk        recovery account
      * @param payerAcct
      * @param gaslimit
      * @param gasprice

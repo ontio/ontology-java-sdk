@@ -40,7 +40,6 @@ public class Interfaces {
     private final URL url;
 
 
-
     public Interfaces(String url) throws MalformedURLException {
         this.url = new URL(url);
     }
@@ -52,14 +51,16 @@ public class Interfaces {
         } while (("" + d).indexOf("E") != -1);
         return d;
     }
+
     public String getHost() {
         return url.getHost() + " " + url.getPort();
     }
+
     public Object call(String method, Object... params) throws RpcException, IOException {
         Map req = makeRequest(method, params);
         Map response = (Map) send(req);
         if (response == null) {
-            throw new RpcException(0,ErrorCode.ConnectUrlErr(  url + "response is null. maybe is connect error"));
+            throw new RpcException(0, ErrorCode.ConnectUrlErr(url + "response is null. maybe is connect error"));
         } else if ((int) response.get("error") == 0) {
             return response.get("result");
         } else {
@@ -85,6 +86,7 @@ public class Interfaces {
             connection.setConnectTimeout(10000);
             connection.setReadTimeout(10000);
             connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type", "application/json;charset=utf-8");//设置参数类型是json格式
             try (OutputStreamWriter w = new OutputStreamWriter(connection.getOutputStream())) {
                 w.write(JSON.toJSONString(request));
             }

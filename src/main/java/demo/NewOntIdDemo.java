@@ -35,6 +35,32 @@ public class NewOntIdDemo {
             txhash = ontSdk.nativevm().ontId().sendRegister(identity3.ontid, acc3, payer, 20000, 0);
             Thread.sleep(6000);
         }
+        if (true) {
+            System.out.println("multi controller:" + ontSdk.nativevm().ontId().sendGetController(identity.ontid));
+            String txhash = ontSdk.nativevm().ontId().sendAddPubKey(identity.ontid, acc, acc2.serializePublicKey(), "", payer, 200000, 0);
+            showEvent(ontSdk, "sendAddPubKey", txhash);
+            System.out.println("multi controller:" + ontSdk.nativevm().ontId().sendGetController(identity.ontid));
+            return;
+        }
+        if (false) {
+            Identity identityTemp = ontSdk.getWalletMgr().createIdentity(pwd);
+            Group group = new Group(new Object[]{identity.ontid.getBytes()}, 1);
+            Signer signer = new Signer(identity.ontid.getBytes(), 1);
+            Signer[] signers = new Signer[]{signer};
+
+            String txhash = ontSdk.nativevm().ontId().sendRegisterIdWithController(identityTemp.ontid, new Account[]{acc}, group, signers, payer, 200000, 0);
+            showEvent(ontSdk, "sendRegisterIdWithController", txhash);
+            System.out.println("multi controller:" + ontSdk.nativevm().ontId().sendGetController(identityTemp.ontid));
+
+            txhash = ontSdk.nativevm().ontId().sendAddNewAuthKeyByController(identityTemp.ontid, acc2.serializePublicKey(), identity2.ontid, signers, acc, payer, 2000000, 0);
+            showEvent(ontSdk, "sendAddNewAuthKeyByController", txhash);
+
+            txhash = ontSdk.nativevm().ontId().sendRemoveController(identityTemp.ontid, 1, acc2, payer, 200000, 0);
+            showEvent(ontSdk, "sendRemoveController", txhash);
+            System.out.println("multi controller:" + ontSdk.nativevm().ontId().sendGetController(identityTemp.ontid));
+            return;
+        }
+
         if (false) {
             System.out.println("ontid:" + identity.ontid);
             String res = ontSdk.nativevm().ontId().sendVerifySignature(identity.ontid, 1, acc);
@@ -210,7 +236,7 @@ public class NewOntIdDemo {
             return;
         }
         //recovery test
-        if (true) {
+        if (false) {
             System.out.println("********recovery test**************");
             Group group = new Group(new Object[]{identity2.ontid.getBytes()}, 1);
             String txhash = ontSdk.nativevm().ontId().sendSetRecovery(identity.ontid, group, 1, acc, payer, 20000, 0);
@@ -231,7 +257,7 @@ public class NewOntIdDemo {
             System.out.println("after remove authkey: " + ontSdk.nativevm().ontId().sendGetDocument(identity.ontid));
 
 
-            txhash = ontSdk.nativevm().ontId().sendSetAuthKeyByRecovery(identity.ontid, 1,signers,acc2,payer,20000000,0);
+            txhash = ontSdk.nativevm().ontId().sendSetAuthKeyByRecovery(identity.ontid, 1, signers, acc2, payer, 20000000, 0);
             showEvent(ontSdk, "sendSetAuthKeyByRecovery", txhash);
             System.out.println("after set authkey: " + ontSdk.nativevm().ontId().sendGetDocument(identity.ontid));
 

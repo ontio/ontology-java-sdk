@@ -481,17 +481,25 @@ public class OntId {
             throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         List list = new ArrayList();
-        if (controller != "") {
-            list.add(new Struct().add(ontid.getBytes(), newPubKey, pubKey, controller.getBytes()));
-        } else {
-            list.add(new Struct().add(ontid.getBytes(), newPubKey, pubKey));
-        }
+        list.add(new Struct().add(ontid.getBytes(), newPubKey, pubKey, controller.getBytes()));
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "addKey", arg, payer, gaslimit, gasprice);
         return tx;
     }
 
 
+    /**
+     * @param ontid
+     * @param pk
+     * @param newPubKey
+     * @param index
+     * @param controller
+     * @param payerAcct
+     * @param gaslimit
+     * @param gasprice
+     * @return
+     * @throws Exception
+     */
     public String sendAddKeyByIndex(String ontid, Account pk, byte[] newPubKey, int index, String controller, Account payerAcct, long gaslimit, long gasprice) throws Exception {
         if (ontid == null || ontid.equals("") || payerAcct == null) {
             throw new SDKException(ErrorCode.ParamErr("parameter should not be null"));
@@ -528,7 +536,11 @@ public class OntId {
             throw new SDKException(ErrorCode.ParamErr("gas or gaslimit should not be less than 0"));
         }
         List list = new ArrayList();
-        list.add(new Struct().add(ontid.getBytes(), newPubKey, index, controller));
+        if (controller != "") {
+            list.add(new Struct().add(ontid.getBytes(), newPubKey, index, controller));
+        } else {
+            list.add(new Struct().add(ontid.getBytes(), newPubKey, index));
+        }
         byte[] arg = NativeBuildParams.createCodeParamsScript(list);
         Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "addKeyByIndex", arg, payer, gaslimit, gasprice);
         return tx;

@@ -12,8 +12,12 @@ public class InvokeWasmCode extends Transaction {
 
     public byte[] invokeCode;
 
+    public InvokeWasmCode() {
+        super(TransactionType.InvokeWasmCode);
+    }
+
     public InvokeWasmCode(byte[] invokeCode) {
-        super(TransactionType.InvokeWasm);
+        super(TransactionType.InvokeWasmCode);
         this.invokeCode = invokeCode;
     }
 

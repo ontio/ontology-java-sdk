@@ -1,5 +1,6 @@
 package com.github.ontio.core.payload;
 
+
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.core.transaction.TransactionType;
 import com.github.ontio.io.BinaryReader;

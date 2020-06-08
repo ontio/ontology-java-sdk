@@ -24,7 +24,6 @@ import com.github.ontio.common.Address;
 import com.github.ontio.common.ErrorCode;
 import com.github.ontio.core.scripts.WasmScriptBuilder;
 import com.github.ontio.core.transaction.Attribute;
-import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.core.payload.DeployWasmCode;
 import com.github.ontio.core.payload.InvokeWasmCode;

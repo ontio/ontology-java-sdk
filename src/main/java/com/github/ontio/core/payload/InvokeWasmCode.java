@@ -1,6 +1,6 @@
 package com.github.ontio.core.payload;
 
-import com.github.ontio.common.Address;
+
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.core.transaction.TransactionType;
 import com.github.ontio.io.BinaryReader;
@@ -12,8 +12,12 @@ public class InvokeWasmCode extends Transaction {
 
     public byte[] invokeCode;
 
+    public InvokeWasmCode() {
+        super(TransactionType.InvokeWasmCode);
+    }
+
     public InvokeWasmCode(byte[] invokeCode) {
-        super(TransactionType.InvokeWasm);
+        super(TransactionType.InvokeWasmCode);
         this.invokeCode = invokeCode;
     }
 

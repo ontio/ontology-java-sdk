@@ -12,3 +12,6 @@ test-output
 .externalToolBuilders
 coverage-error.log
 NeoVmTest.json
+.gradle
+build
+wallet.json

@@ -2144,9 +2144,10 @@ public class OntId {
      * @param claim
      * @return
      * @throws Exception
+     * @deprecated
      */
     public boolean verifyOntIdClaim(String claim) throws Exception {
-        if (claim == null) {
+        if ("".equals(claim)) {
             throw new SDKException(ErrorCode.ParamErr("claim should not be null"));
         }
         DataSignature sign = null;
@@ -2182,6 +2183,91 @@ public class OntId {
         }
     }
 
+    public boolean verifyClaimOntIdCredible(String claim, String[] credibleIds) throws Exception {
+        if ("".equals(claim)) {
+            throw new SDKException(ErrorCode.ParamErr("claim should not be null"));
+        }
+        String[] obj = claim.split("\\.");
+        if (obj.length != 3) {
+            throw new SDKException(ErrorCode.ParamError);
+        }
+        byte[] payloadBytes = Base64.getDecoder().decode(obj[1].getBytes());
+        JSONObject payloadObj = JSON.parseObject(new String(payloadBytes));
+        String issuerDid = payloadObj.getString("iss");
+        for (String credibleId :
+                credibleIds) {
+            if (credibleId.equals(issuerDid)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean verifyClaimNotExpired(String claim) throws Exception {
+        if ("".equals(claim)) {
+            throw new SDKException(ErrorCode.ParamErr("claim should not be null"));
+        }
+        String[] obj = claim.split("\\.");
+        if (obj.length != 3) {
+            throw new SDKException(ErrorCode.ParamError);
+        }
+        byte[] payloadBytes = Base64.getDecoder().decode(obj[1].getBytes());
+        JSONObject payloadObj = JSON.parseObject(new String(payloadBytes));
+        int expiration = payloadObj.getInteger("exp");
+        long currentTime = System.currentTimeMillis() / 1000;
+        return currentTime <= (long) expiration;
+    }
+
+    public boolean verifyClaimSignature(String claim) throws Exception {
+        if ("".equals(claim)) {
+            throw new SDKException(ErrorCode.ParamErr("claim should not be null"));
+        }
+        DataSignature sign = null;
+        try {
+
+            String[] obj = claim.split("\\.");
+            if (obj.length != 3) {
+                throw new SDKException(ErrorCode.ParamError);
+            }
+            byte[] payloadBytes = Base64.getDecoder().decode(obj[1].getBytes());
+            JSONObject payloadObj = JSON.parseObject(new String(payloadBytes));
+            String issuerDid = payloadObj.getString("iss");
+            String[] str = issuerDid.split(":");
+            if (str.length != 3) {
+                throw new SDKException(ErrorCode.DidError);
+            }
+            String issuerDdo = sendGetDocument(issuerDid);
+            JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("publicKey");
+            if (owners == null) {
+                throw new SDKException(ErrorCode.NotExistCliamIssuer);
+            }
+            byte[] signatureBytes = Base64.getDecoder().decode(obj[2]);
+            byte[] headerBytes = Base64.getDecoder().decode(obj[0].getBytes());
+            JSONObject header = JSON.parseObject(new String(headerBytes));
+            String kid = header.getString("kid");
+            String id = kid.split("#keys-")[1];
+            String pubkeyStr = owners.getJSONObject(Integer.parseInt(id) - 1).getString("publicKeyHex");
+            sign = new DataSignature();
+            byte[] data = (obj[0] + "." + obj[1]).getBytes();
+            return sign.verifySignature(new Account(false, Helper.hexToBytes(pubkeyStr)), data, signatureBytes);
+        } catch (Exception e) {
+            throw new SDKException(ErrorCode.VerifyOntIdClaimErr);
+        }
+    }
+
+    public boolean verifyClaimNotRevoked(String claim) throws Exception {
+        if ("".equals(claim)) {
+            throw new SDKException(ErrorCode.ParamErr("claim should not be null"));
+        }
+        String[] obj = claim.split("\\.");
+        if (obj.length != 3) {
+            throw new SDKException(ErrorCode.ParamError);
+        }
+        byte[] payloadBytes = Base64.getDecoder().decode(obj[1].getBytes());
+        JSONObject payloadObj = JSON.parseObject(new String(payloadBytes));
+        String claimId = payloadObj.getString("jti");
+        return sdk.neovm().claimRecord().sendGetStatus2(claimId);
+    }
 
     /**
      * @param ontid

@@ -89,7 +89,7 @@ public class OntSdk {
         return signServer;
     }
 
-    public NativeVm nativevm() throws SDKException {
+    public NativeVm nativevm() {
         if (nativevm == null) {
             vm();
             nativevm = new NativeVm(getInstance());

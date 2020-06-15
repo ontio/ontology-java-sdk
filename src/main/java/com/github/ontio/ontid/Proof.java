@@ -3,6 +3,7 @@ package com.github.ontio.ontid;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Helper;
 import com.github.ontio.crypto.Digest;
+import com.github.ontio.sdk.exception.SDKException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -29,5 +30,20 @@ public class Proof {
         byte[] sig = account.generateSignature(Digest.hash256(needSignData.getBytes()), account.getSignatureScheme(),
                 null);
         signature = Helper.toHexString(sig);
+    }
+
+    public int getPubKeyIndex() throws Exception {
+        if (this.verificationMethod == null || "".equals(this.verificationMethod)) {
+            return 0;
+        }
+        String[] keyInfo = this.verificationMethod.split("#keys-");
+        if (keyInfo.length != 2) {
+            throw new SDKException(String.format("invalid proof verificationMethod %s", this.verificationMethod));
+        }
+        return Integer.parseInt(keyInfo[1]);
+    }
+
+    public byte[] getSignature() {
+        return Helper.hexToBytes(signature);
     }
 }

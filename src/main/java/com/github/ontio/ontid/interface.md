@@ -9,7 +9,7 @@ return: Request
 
 comment: issuer create claim and commit claimId to blockchain
 
-params: contexts []string, types []string, credentialSubject interface{}, issuerId string,
+params: contexts []string, types []string, credentialSubject interface{}, issuerId string, ownerOntId string,
  expirationDateTimestamp int64, signer *Account
  
 return: VerifiableCredential
@@ -42,7 +42,7 @@ return: boolean
 
 comment: use ontId to sign presentation, should query signer public key index of signer.
 
-params: VerifiableCredential[] claim, string[] context, string[] type, String signerOntId, Account signer
+params: VerifiableCredential[] claim, string[] context, string[] type, String signerOntId, Account[] signers
 return: VerifiablePresentation
 
 ## Verify Presentation

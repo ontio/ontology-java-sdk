@@ -57,7 +57,7 @@ public class OntSdk {
     private ConnectMgr connRestful;
     private ConnectMgr connWebSocket;
     private ConnectMgr connDefault;
-    private  ConnectMgr sideChainConnectMgr;
+    private ConnectMgr sideChainConnectMgr;
     private SidechainVm sidechainVm;
 
     private Vm vm = null;
@@ -71,36 +71,42 @@ public class OntSdk {
     public SignatureScheme defaultSignScheme = SignatureScheme.SHA256WITHECDSA;
     public long DEFAULT_GAS_LIMIT = 20000;
     public long DEFAULT_DEPLOY_GAS_LIMIT = 30000000;
-    public static synchronized OntSdk getInstance(){
-        if(instance == null){
+
+    public static synchronized OntSdk getInstance() {
+        if (instance == null) {
             instance = new OntSdk();
         }
         return instance;
     }
-    private OntSdk(){
+
+    private OntSdk() {
     }
-    public SignServer getSignServer() throws SDKException{
-        if(signServer == null){
+
+    public SignServer getSignServer() throws SDKException {
+        if (signServer == null) {
             throw new SDKException(ErrorCode.OtherError("signServer null"));
         }
         return signServer;
     }
-    public NativeVm nativevm() throws SDKException{
-        if(nativevm == null){
+
+    public NativeVm nativevm() throws SDKException {
+        if (nativevm == null) {
             vm();
             nativevm = new NativeVm(getInstance());
         }
         return nativevm;
     }
+
     public NeoVm neovm() {
-        if(neovm == null){
+        if (neovm == null) {
             vm();
             neovm = new NeoVm(getInstance());
         }
         return neovm;
     }
+
     public WasmVm wasmvm() {
-        if(wasmvm == null){
+        if (wasmvm == null) {
             vm();
             wasmvm = new WasmVm(getInstance());
         }
@@ -116,36 +122,38 @@ public class OntSdk {
     }
 
     public Vm vm() {
-        if(vm == null){
+        if (vm == null) {
             vm = new Vm(getInstance());
         }
         return vm;
     }
-    public ConnectMgr getRpc() throws SDKException{
-        if(connRpc == null){
+
+    public ConnectMgr getRpc() throws SDKException {
+        if (connRpc == null) {
             throw new SDKException(ErrorCode.ConnRestfulNotInit);
         }
         return connRpc;
     }
 
-    public ConnectMgr getRestful() throws SDKException{
-        if(connRestful == null){
+    public ConnectMgr getRestful() throws SDKException {
+        if (connRestful == null) {
             throw new SDKException(ErrorCode.ConnRestfulNotInit);
         }
         return connRestful;
     }
-    public ConnectMgr getConnect(){
-        if(connDefault != null){
+
+    public ConnectMgr getConnect() {
+        if (connDefault != null) {
             return connDefault;
         }
-        if(connRpc != null){
-            return  connRpc;
+        if (connRpc != null) {
+            return connRpc;
         }
-        if(connRestful != null){
-            return  connRestful;
+        if (connRestful != null) {
+            return connRestful;
         }
-        if(connWebSocket != null){
-            return  connWebSocket;
+        if (connWebSocket != null) {
+            return connWebSocket;
         }
         return null;
     }
@@ -157,16 +165,20 @@ public class OntSdk {
     public void setSideChainRpc(String url) {
         this.sideChainConnectMgr = new ConnectMgr(url, "rpc");
     }
+
     public void setSideChainRest(String url) {
         this.sideChainConnectMgr = new ConnectMgr(url, "restful");
     }
-    public void setSideChainWebsocket(String url,Object lock) {
+
+    public void setSideChainWebsocket(String url, Object lock) {
         this.sideChainConnectMgr = new ConnectMgr(url, "websocket", lock);
     }
-    public void setDefaultConnect(ConnectMgr conn){
+
+    public void setDefaultConnect(ConnectMgr conn) {
         connDefault = conn;
     }
-    public void setConnectTestNet(){
+
+    public void setConnectTestNet() {
         try {
             String rpcUrl = "http://polaris1.ont.io:20336";
             getInstance().setRpc(rpcUrl);
@@ -175,7 +187,8 @@ public class OntSdk {
             e.printStackTrace();
         }
     }
-    public void setConnectMainNet(){
+
+    public void setConnectMainNet() {
         try {
             String rpcUrl = "http://dappnode1.ont.io:20336";
             getInstance().setRpc(rpcUrl);
@@ -184,8 +197,9 @@ public class OntSdk {
             e.printStackTrace();
         }
     }
-    public ConnectMgr getWebSocket() throws SDKException{
-        if(connWebSocket == null){
+
+    public ConnectMgr getWebSocket() throws SDKException {
+        if (connWebSocket == null) {
             throw new SDKException(ErrorCode.WebsocketNotInit);
         }
         return connWebSocket;
@@ -194,6 +208,7 @@ public class OntSdk {
 
     /**
      * get Wallet Mgr
+     *
      * @return
      */
     public WalletMgr getWalletMgr() {
@@ -202,7 +217,6 @@ public class OntSdk {
 
 
     /**
-     *
      * @param scheme
      */
     public void setSignatureScheme(SignatureScheme scheme) {
@@ -210,28 +224,29 @@ public class OntSdk {
         walletMgr.setSignatureScheme(scheme);
     }
 
-    public void setSignServer(String url) throws Exception{
+    public void setSignServer(String url) throws Exception {
         this.signServer = new SignServer(url);
     }
+
     public void setRpc(String url) {
         this.connRpc = new ConnectMgr(url, "rpc");
     }
 
     public void setRestful(String url) {
-        this.connRestful = new ConnectMgr(url,"restful");
+        this.connRestful = new ConnectMgr(url, "restful");
     }
 
-    public void setWesocket(String url,Object lock) {
-        connWebSocket = new ConnectMgr(url,"websocket",lock);
+    public void setWesocket(String url, Object lock) {
+        connWebSocket = new ConnectMgr(url, "websocket", lock);
     }
+
     /**
-     *
      * @param path
      */
     public void openWalletFile(String path) {
 
         try {
-            this.walletMgr = new WalletMgr(path,defaultSignScheme);
+            this.walletMgr = new WalletMgr(path, defaultSignScheme);
             setSignatureScheme(defaultSignScheme);
         } catch (Exception e) {
             e.printStackTrace();
@@ -239,18 +254,18 @@ public class OntSdk {
     }
 
     /**
-     *
      * @param tx
      * @param addr
      * @param password
      * @return
      * @throws Exception
      */
-    public Transaction addSign(Transaction tx,String addr,String password,byte[] salt) throws Exception {
-        return addSign(tx,getWalletMgr().getAccount(addr,password,salt));
+    public Transaction addSign(Transaction tx, String addr, String password, byte[] salt) throws Exception {
+        return addSign(tx, getWalletMgr().getAccount(addr, password, salt));
     }
-    public Transaction addSign(Transaction tx,Account acct) throws Exception {
-        if(tx.sigs == null){
+
+    public Transaction addSign(Transaction tx, Account acct) throws Exception {
+        if (tx.sigs == null) {
             tx.sigs = new Sig[0];
         } else {
             if (tx.sigs.length >= Common.TX_MAX_SIG_SIZE) {
@@ -258,7 +273,7 @@ public class OntSdk {
             }
         }
         Sig[] sigs = new Sig[tx.sigs.length + 1];
-        for(int i= 0; i< tx.sigs.length; i++){
+        for (int i = 0; i < tx.sigs.length; i++) {
             sigs[i] = tx.sigs[i];
         }
         sigs[tx.sigs.length] = new Sig();
@@ -266,13 +281,12 @@ public class OntSdk {
         sigs[tx.sigs.length].pubKeys = new byte[1][];
         sigs[tx.sigs.length].sigData = new byte[1][];
         sigs[tx.sigs.length].pubKeys[0] = acct.serializePublicKey();
-        sigs[tx.sigs.length].sigData[0] = tx.sign(acct,acct.getSignatureScheme());
+        sigs[tx.sigs.length].sigData[0] = tx.sign(acct, acct.getSignatureScheme());
         tx.sigs = sigs;
         return tx;
     }
 
     /**
-     *
      * @param tx
      * @param M
      * @param pubKeys
@@ -280,28 +294,29 @@ public class OntSdk {
      * @return
      * @throws Exception
      */
-    public Transaction addMultiSign(Transaction tx,int M,byte[][] pubKeys, Account acct) throws Exception {
-        addMultiSign(tx,M,pubKeys,tx.sign(acct, acct.getSignatureScheme()));
+    public Transaction addMultiSign(Transaction tx, int M, byte[][] pubKeys, Account acct) throws Exception {
+        addMultiSign(tx, M, pubKeys, tx.sign(acct, acct.getSignatureScheme()));
         return tx;
     }
-    public Transaction addMultiSign(Transaction tx,int M,byte[][] pubKeys, byte[] signatureData) throws Exception {
+
+    public Transaction addMultiSign(Transaction tx, int M, byte[][] pubKeys, byte[] signatureData) throws Exception {
         pubKeys = Program.sortPublicKeys(pubKeys);
         if (tx.sigs == null) {
             tx.sigs = new Sig[0];
         } else {
-            if (tx.sigs.length  > Common.TX_MAX_SIG_SIZE || M > pubKeys.length || M <= 0 || signatureData == null || pubKeys == null) {
+            if (tx.sigs.length > Common.TX_MAX_SIG_SIZE || M > pubKeys.length || M <= 0 || signatureData == null || pubKeys == null) {
                 throw new SDKException(ErrorCode.ParamError);
             }
             for (int i = 0; i < tx.sigs.length; i++) {
-                if(Arrays.deepEquals(tx.sigs[i].pubKeys,pubKeys)){
+                if (Arrays.deepEquals(tx.sigs[i].pubKeys, pubKeys)) {
                     if (tx.sigs[i].sigData.length + 1 > pubKeys.length) {
                         throw new SDKException(ErrorCode.ParamErr("too more sigData"));
                     }
-                    if(tx.sigs[i].M != M){
+                    if (tx.sigs[i].M != M) {
                         throw new SDKException(ErrorCode.ParamErr("M error"));
                     }
                     int len = tx.sigs[i].sigData.length;
-                    byte[][] sigData = new byte[len+1][];
+                    byte[][] sigData = new byte[len + 1][];
                     for (int j = 0; j < tx.sigs[i].sigData.length; j++) {
                         sigData[j] = tx.sigs[i].sigData[j];
                     }
@@ -324,17 +339,20 @@ public class OntSdk {
         tx.sigs = sigs;
         return tx;
     }
-    public Transaction signTx(Transaction tx, String addressOrOntId, String password,byte[] salt) throws Exception{
-        signTx(tx, new Account[][]{{getWalletMgr().getAccount(addressOrOntId, password,salt)}});
+
+    public Transaction signTx(Transaction tx, String addressOrOntId, String password, byte[] salt) throws Exception {
+        signTx(tx, new Account[][]{{getWalletMgr().getAccount(addressOrOntId, password, salt)}});
         return tx;
     }
+
     /**
      * sign tx
+     *
      * @param tx
      * @param accounts
      * @return
      */
-    public Transaction signTx(Transaction tx, Account[][] accounts) throws Exception{
+    public Transaction signTx(Transaction tx, Account[][] accounts) throws Exception {
         if (accounts.length > Common.TX_MAX_SIG_SIZE) {
             throw new SDKException(ErrorCode.ParamErr("the number of transaction signatures should not be over 16"));
         }
@@ -355,7 +373,8 @@ public class OntSdk {
     }
 
     /**
-     *  signTx
+     * signTx
+     *
      * @param tx
      * @param accounts
      * @param M
@@ -369,7 +388,7 @@ public class OntSdk {
         if (M.length != accounts.length) {
             throw new SDKException(ErrorCode.ParamError);
         }
-        tx = signTx(tx,accounts);
+        tx = signTx(tx, accounts);
         for (int i = 0; i < tx.sigs.length; i++) {
             if (M[i] > tx.sigs[i].pubKeys.length || M[i] < 0) {
                 throw new SDKException(ErrorCode.ParamError);
@@ -400,6 +419,7 @@ public class OntSdk {
             throw new SDKException(e);
         }
     }
+
     public boolean verifyTransaction(Transaction tx) {
         try {
             boolean result = true;
@@ -436,73 +456,75 @@ public class OntSdk {
         }
         return false;
     }
-    private void buildMap(Map map,Object ele){
+
+    private void buildMap(Map map, Object ele) {
         try {
-            for(Map.Entry<String, Object> e:((Map<String,Object>) ele).entrySet()) {
+            for (Map.Entry<String, Object> e : ((Map<String, Object>) ele).entrySet()) {
                 Object tmp = e.getValue();
-                if(tmp instanceof String){
-                    String pre = ((String) tmp).substring(0,10);
-                    if(pre.contains("String")) {
-                        String data = ((String) tmp).replace("String:","");
+                if (tmp instanceof String) {
+                    String pre = ((String) tmp).substring(0, 10);
+                    if (pre.contains("String")) {
+                        String data = ((String) tmp).replace("String:", "");
                         e.setValue(data.getBytes());
-                    }else if(pre.contains("ByteArray")) {
-                        String data = ((String) tmp).replace("ByteArray:","");
+                    } else if (pre.contains("ByteArray")) {
+                        String data = ((String) tmp).replace("ByteArray:", "");
                         e.setValue(Helper.hexToBytes(data));
-                    }else if(pre.contains("Long")) {
-                        String data = ((String) tmp).replace("Long:","");
+                    } else if (pre.contains("Long")) {
+                        String data = ((String) tmp).replace("Long:", "");
                         e.setValue(data);
-                    }else if(pre.contains("Address")) {
-                        String data = ((String) tmp).replace("Address:","");
+                    } else if (pre.contains("Address")) {
+                        String data = ((String) tmp).replace("Address:", "");
                         e.setValue(Address.decodeBase58(data).toArray());
                     } else {
-                        throw new Exception(ErrorCode.OtherError("String type data error: "+ e));
+                        throw new Exception(ErrorCode.OtherError("String type data error: " + e));
                     }
-                }else if(tmp instanceof Map){
+                } else if (tmp instanceof Map) {
                     Map data = new HashMap();
                     buildMap(data, tmp);
                     e.setValue(data);
                 }
-                map.put(e.getKey(),e.getValue());
+                map.put(e.getKey(), e.getValue());
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    private void buildArgs(List args,Object ele){
+
+    private void buildArgs(List args, Object ele) {
         try {
-            if(ele instanceof Boolean){
+            if (ele instanceof Boolean) {
                 args.add(ele);
-            }else if(ele instanceof Long){
+            } else if (ele instanceof Long) {
                 args.add(ele);
-            } else if(ele instanceof Integer){
+            } else if (ele instanceof Integer) {
                 args.add(ele);
-            } else if(ele instanceof Map){
+            } else if (ele instanceof Map) {
                 Map map = new HashMap();
-                buildMap(map,ele);
+                buildMap(map, ele);
                 args.add(map);
-            } else if(ele instanceof String){
-                if(((String) ele).substring(0,5).contains("Long:")) {
-                    String data = ((String) ele).replace("Long:","");
+            } else if (ele instanceof String) {
+                if (((String) ele).substring(0, 5).contains("Long:")) {
+                    String data = ((String) ele).replace("Long:", "");
                     args.add(new BigInteger(data).longValue());
-                }else if(((String) ele).substring(0,7).contains("String:")) {
-                    String data = ((String) ele).replace("String:","");
+                } else if (((String) ele).substring(0, 7).contains("String:")) {
+                    String data = ((String) ele).replace("String:", "");
                     args.add(data.getBytes());
-                }else if(((String) ele).substring(0,8).contains("Address:")) {
-                    String data = ((String) ele).replace("Address:","");
+                } else if (((String) ele).substring(0, 8).contains("Address:")) {
+                    String data = ((String) ele).replace("Address:", "");
                     args.add(Address.decodeBase58(data).toArray());
-                }else if(((String) ele).substring(0,10).contains("ByteArray:")) {
-                    String data = ((String) ele).replace("ByteArray:","");
+                } else if (((String) ele).substring(0, 10).contains("ByteArray:")) {
+                    String data = ((String) ele).replace("ByteArray:", "");
                     args.add(Helper.hexToBytes(data));
-                }else {
-                    throw new Exception(ErrorCode.OtherError("String type data error: "+ele));
+                } else {
+                    throw new Exception(ErrorCode.OtherError("String type data error: " + ele));
                 }
-            } else if(ele instanceof List){
+            } else if (ele instanceof List) {
                 List tmp = new ArrayList();
-                for (int i = 0; i < ((List)ele).size(); i++) {
+                for (int i = 0; i < ((List) ele).size(); i++) {
                     buildArgs(tmp, ((List) ele).get(i));
                 }
                 args.add(tmp);
-            } else{
+            } else {
                 throw new Exception(ErrorCode.OtherError("type not found"));
             }
         } catch (Exception e) {
@@ -513,10 +535,10 @@ public class OntSdk {
     public List[] buildInvokeFunctionByJson(String configStr) {
         try {
             Map config = (Map) JSON.parseObject(configStr);
-            List functions = ((List)config.get("functions"));
+            List functions = ((List) config.get("functions"));
             List[] paramLists = new List[functions.size()];
-            for(int i =0;i < functions.size();i++) {
-                Map func = (Map)functions.get(i);
+            for (int i = 0; i < functions.size(); i++) {
+                Map func = (Map) functions.get(i);
                 String operation = (String) func.get("operation");
                 List args = (List) func.get("args");
                 List paramList = new ArrayList<>();
@@ -548,15 +570,15 @@ public class OntSdk {
             if (contractHash.equals(ONT) || contractHash.equals(ONG)) {
                 List listStruct = new ArrayList();
                 listStruct.add(struct);
-                if(method.equals("transfer")) {
+                if (method.equals("transfer")) {
                     list.add(listStruct);
-                }else{
+                } else {
                     list.add(struct);
                 }
-            }else if(contractHash.equals(ONTID)){
-                if(method.equals("getDDO")){
+            } else if (contractHash.equals(ONTID)) {
+                if (method.equals("getDDO")) {
                     list.add(struct.list.get(0));
-                }else {
+                } else {
                     list.add(struct);
                 }
             }
@@ -584,9 +606,9 @@ public class OntSdk {
 
             List[] paramList = buildInvokeFunctionByJson(JSON.toJSONString(config));
             Transaction[] txs = new Transaction[paramList.length];
-            for(int i=0;i< paramList.length;i++) {
-                if(contractHash.contains("00000000000000000000000000000000000000")){
-                    txs[i] = makeNativeTransaction(contractHash,paramList[i],payer, gasLimit, gasPrice);
+            for (int i = 0; i < paramList.length; i++) {
+                if (contractHash.contains("00000000000000000000000000000000000000")) {
+                    txs[i] = makeNativeTransaction(contractHash, paramList[i], payer, gasLimit, gasPrice);
                 } else {
                     byte[] params = BuildParams.createCodeParamsScript(paramList[i]);
                     txs[i] = vm().makeInvokeCodeTransaction(Helper.reverse(contractHash), null, params, payer, gasLimit, gasPrice);

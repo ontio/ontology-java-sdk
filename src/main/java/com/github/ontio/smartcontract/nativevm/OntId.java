@@ -2266,7 +2266,7 @@ public class OntId {
         byte[] payloadBytes = Base64.getDecoder().decode(obj[1].getBytes());
         JSONObject payloadObj = JSON.parseObject(new String(payloadBytes));
         String claimId = payloadObj.getString("jti");
-        return sdk.neovm().claimRecord().sendGetStatus2(claimId);
+        return "01".equals(sdk.neovm().claimRecord().sendGetStatus2(claimId));
     }
 
     /**

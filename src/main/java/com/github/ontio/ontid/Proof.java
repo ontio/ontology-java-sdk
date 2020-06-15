@@ -11,9 +11,9 @@ public class Proof {
     public static final String PROOF_TYPE_ECDSA = "ECDSASignature2019";
 
     public String type;
-    public String created;
-    public String proofPurpose;
-    public String verificationMethod;
+    public String created; // time stamp
+    public String proofPurpose; // fixed as "assertionMethod"
+    public String verificationMethod; // pubkey uri
     public String signature;
 
     public Proof(String publicKeyURI) {
@@ -25,7 +25,7 @@ public class Proof {
         this.verificationMethod = publicKeyURI;
     }
 
-    public void genJWS(Account account, String needSignData) throws Exception {
+    public void fillSignature(Account account, String needSignData) throws Exception {
         byte[] sig = account.generateSignature(Digest.hash256(needSignData.getBytes()), account.getSignatureScheme(),
                 null);
         signature = Helper.toHexString(sig);

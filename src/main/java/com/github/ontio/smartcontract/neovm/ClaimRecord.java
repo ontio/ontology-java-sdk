@@ -297,7 +297,7 @@ public class ClaimRecord {
         return new String(claimTx.claimId) + "." + Helper.toHexString(claimTx.status) + "." + new String(claimTx.issuerOntId) + "." + new String(claimTx.subjectOntId);
     }
 
-    public boolean sendGetStatus2(String claimId) throws Exception {
+    public String sendGetStatus2(String claimId) throws Exception {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
@@ -310,8 +310,7 @@ public class ClaimRecord {
         func.name = name;
         func.setParamsValue(claimId.getBytes());
         Object obj = sdk.neovm().sendTransaction(Helper.reverse(contractAddress), null, null, 0, 0, func, true);
-        String res = ((JSONObject) obj).getString("Result");
-        return "01".equals(res);
+        return ((JSONObject) obj).getString("Result");
     }
 }
 

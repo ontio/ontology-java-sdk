@@ -88,7 +88,7 @@ public class ClaimRecordTxDemo {
             boolean notRevoked = ontSdk.nativevm().ontId().verifyClaimNotRevoked(claim);
             System.out.println("claim notRevoked: " + notRevoked);
 
-            boolean res = ontSdk.neovm().claimRecord().sendGetStatus2(claimId);
+            String res = ontSdk.neovm().claimRecord().sendGetStatus2(claimId);
             System.out.println("before revoke: " + res);
             Thread.sleep(6000);
             String revokeHash = ontSdk.neovm().claimRecord().sendRevoke2(subjectIdentity.ontid, password,
@@ -97,7 +97,7 @@ public class ClaimRecordTxDemo {
             System.out.println("revokeRes: " + revokeHash);
             Thread.sleep(6000);
             System.out.println(ontSdk.getConnect().getSmartCodeEvent(revokeHash));
-            boolean revoked = ontSdk.neovm().claimRecord().sendGetStatus2(claimId);
+            String revoked = ontSdk.neovm().claimRecord().sendGetStatus2(claimId);
             System.out.println("after revoke: " + revoked);
 
             String removeHash = ontSdk.neovm().claimRecord().sendRemove2(subjectIdentity.ontid, password,
@@ -106,7 +106,7 @@ public class ClaimRecordTxDemo {
             System.out.println("removeRes: " + removeHash);
             Thread.sleep(6000);
             System.out.println(ontSdk.getConnect().getSmartCodeEvent(removeHash));
-            boolean removed = ontSdk.neovm().claimRecord().sendGetStatus2(claimId);
+            String removed = ontSdk.neovm().claimRecord().sendGetStatus2(claimId);
             System.out.println("after remove: " + removed);
         } catch (Exception e) {
             e.printStackTrace();

@@ -172,6 +172,7 @@ public class OntId2 {
     }
 
     public boolean verifyClaimNotRevoked(VerifiableCredential claim) throws Exception {
+        this.claimRecord.setContractAddress(claim.credentialStatus.id);
         return CLAIM_COMMITTED.equals(this.claimRecord.sendGetStatus2(claim.id));
     }
 

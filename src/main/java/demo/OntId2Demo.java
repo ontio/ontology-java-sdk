@@ -95,11 +95,11 @@ public class OntId2Demo {
                     "https://www.w3.org/2018/credentials/examples/v1"};
             String[] presentationType = new String[]{"VerifiablePresentation", "CredentialManagerPresentation"};
             // you can use any ontId as otherSigner if you want
-            OntIdSigner otherSigner = new OntIdSigner(ownerIdentity.ontid,
-                    ownerIdentity.ontid + "#keys-2", ownerSigner);
-            VerifiablePresentation presentation = issuer.createPresentation(
+            OntIdSigner otherSigner = new OntIdSigner(issuerIdentity.ontid,
+                    issuerIdentity.ontid + "#keys-2", issuerSigner);
+            VerifiablePresentation presentation = owner.createPresentation(
                     new VerifiableCredential[]{verifiableCredential, otherVerifiableCredential},
-                    presentationContext, presentationType, new OntIdSigner[]{otherSigner});
+                    presentationContext, presentationType, new OntIdSigner[]{otherSigner}, ownerIdentity.ontid);
             System.out.println("presentation: " + JSON.toJSONString(presentation));
             // verify presentation
             boolean presentationVerified = verifier.verifyPresentation(presentation, credibleOntIds);

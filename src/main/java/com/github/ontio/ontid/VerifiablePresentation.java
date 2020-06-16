@@ -8,6 +8,7 @@ public class VerifiablePresentation {
     public String id;
     public String[] type;
     public VerifiableCredential[] verifiableCredential;
+    public String holder; // holder may not use
     public Proof[] proof;
 
     public byte[] genNeedSignData() {

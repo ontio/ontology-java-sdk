@@ -1,6 +1,7 @@
 package com.github.ontio.ontid;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Helper;
@@ -93,7 +94,15 @@ public class OntId2 {
     public VerifiableCredential createClaim(String[] context, String[] type, Object credentialSubject,
                                             Date expiration) throws Exception {
         VerifiableCredential credential = new VerifiableCredential();
-        credential.context = context;
+        String[] wholeContext = new String[2 + context.length];
+        wholeContext[0] = "https://www.w3.org/2018/credentials/v1";
+        wholeContext[1] = "https://ontid.ont.io/credentials/v1";
+        int index = 2;
+        for (String c : context) {
+            wholeContext[index] = c;
+            index++;
+        }
+        credential.context = wholeContext;
         credential.type = type;
         credential.credentialSubject = credentialSubject;
         credential.issuer = signer.ontId;
@@ -112,7 +121,7 @@ public class OntId2 {
         proof.fillSignature(signer.signer, needSignData);
         credential.proof = proof;
         // generate id
-        String wholeStr = JSON.toJSONString(credential);
+        String wholeStr = JSON.toJSONString(credential, true);
         credential.id = Helper.toHexString(Digest.hash256(wholeStr.getBytes()));
         return credential;
     }
@@ -179,7 +188,15 @@ public class OntId2 {
     public VerifiablePresentation createPresentation(VerifiableCredential[] claims, String[] context, String[] type,
                                                      OntIdSigner[] otherSigners, String holderOntId) throws Exception {
         VerifiablePresentation presentation = new VerifiablePresentation();
-        presentation.context = context;
+        String[] wholeContext = new String[2 + context.length];
+        wholeContext[0] = "https://www.w3.org/2018/credentials/v1";
+        wholeContext[1] = "https://ontid.ont.io/credentials/v1";
+        int index = 2;
+        for (String c : context) {
+            wholeContext[index] = c;
+            index++;
+        }
+        presentation.context = wholeContext;
         presentation.type = type;
         presentation.verifiableCredential = claims;
         presentation.holder = holderOntId;
@@ -188,7 +205,7 @@ public class OntId2 {
         Proof proof = new Proof(signer.pubKeyId);
         proof.fillSignature(signer.signer, needSignData);
         proofs[0] = proof;
-        int index = 0;
+        index = 0;
         for (OntIdSigner signer :
                 otherSigners) {
             Proof p = new Proof(signer.pubKeyId);

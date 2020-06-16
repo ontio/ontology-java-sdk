@@ -46,12 +46,14 @@ public class OntId2Demo {
             credential.context = new String[]{"https://www.w3.org/2018/credentials/v1",
                     "https://www.w3.org/2018/credentials/examples/v1"};
             credential.type = new String[]{"VerifiableCredential", "RelationshipCredential"};
-            ExampleCredentialSubject credentialSubject = new ExampleCredentialSubject("did:ont:111111",
-                    "Bob", "Alice");
-            credential.credentialSubject = new ExampleCredentialSubject[]{credentialSubject};
             Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
             credential.expirationDate = formatter.format(expiration);
+            String noSubjectClaim = JSON.toJSONString(credential);
+            System.out.println("noSubjectClaim: " + noSubjectClaim);
+            ExampleCredentialSubject credentialSubject = new ExampleCredentialSubject("did:ont:111111",
+                    "Bob", "Alice");
+            credential.credentialSubject = new ExampleCredentialSubject[]{credentialSubject};
             String claim = JSON.toJSONString(credential);
             // generate a sign request
             SignRequest req = owner.genSignReq(claim);

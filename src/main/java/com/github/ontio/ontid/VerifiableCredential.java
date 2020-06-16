@@ -8,7 +8,7 @@ public class VerifiableCredential {
     public String[] context;
     public String id; // hash
     public String[] type;
-    public String issuer;
+    public String issuer; // issuer ontId
     public String issuanceDate;
     public String expirationDate;
     public Object credentialSubject;

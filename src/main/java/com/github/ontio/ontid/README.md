@@ -1,54 +1,174 @@
-## GenSignReq
+# ONTID 2.0 Java SDK
 
-comment: use ontId to sign claim
+## Role
 
-params: String claim, String ontId, Account signer
-return: Request
+owner: claim owner, who hold some claims and create presentation;
+issuer: claim issuer, who issue claim;
+verifier: claim verifier, who verify claim and presentation.
 
-## CreateClaim
+## Class Specification
 
-comment: issuer create claim and commit claimId to blockchain
+Refer: https://www.w3.org/TR/vc-data-model/#basic-concepts
 
-params: contexts []string, types []string, credentialSubject interface{}, issuerId string, ownerOntId string,
- expirationDateTimestamp int64, signer *Account
- 
-return: VerifiableCredential
- 
-## VerifyClaim
+### CredentialStatus
 
-comment: must verify 4 aspects
+[code](./VerifiableCredential.java#L30)
 
-### verify credible ontId;
+Refer: https://www.w3.org/TR/vc-data-model/#status
 
-params: String[] credibleOntIds, VerifiableCredential claim
-return: boolean
+CredentialStatus.id: claim contract address;
+CredentialStatus.type: constant value, "Claim Contract".
 
-### verify not expired
+### VerifiableCredential
 
-params: VerifiableCredential claim
-return: boolean
+[code](./VerifiableCredential.java)
 
-### verify issuer signature
+Refer: https://www.w3.org/TR/vc-data-model/#basic-concepts
 
-params: VerifiableCredential claim
-return: boolean
+VerifiableCredential.issuer: issuer ontId.
 
-### verify status
+### Proof
 
-params: VerifiableCredential claim
-return: boolean
+[code](./Proof.java)
 
-## CreatePresentation
+Refer: https://www.w3.org/TR/vc-data-model/#proofs-signatures
 
-comment: use ontId to sign presentation, should query signer public key index of signer.
+Proof.type: only use "EcdsaSecp256r1Signature2019" at currently;
+Proof.proofPurpose: only use "assertionMethod" at currently;
+Proof.verificationMethod: pubkey uri, like:"did:ont:AVe4zVZzteo6HoLpdBwpKNtDXLjJBzB9fv#keys-2";
+Proof.signature: hex-encoded ontology signature.
 
-params: VerifiableCredential[] claim, string[] context, string[] type, String signerOntId, Account[] signers
-return: VerifiablePresentation
+### VerifiablePresentation
 
-## Verify Presentation
+[code](./VerifiablePresentation.java)
 
-params: VerifiablePresentation presentation, String[] credibleOntIds
-return: boolean
+Refer: https://www.w3.org/TR/vc-data-model/#presentations-0
 
-1. verify each claim;
-2. verify presentation proof;
+VerifiablePresentation.holder: holder ontId.
+
+### SignRequest
+
+[code](./SignRequest.java)
+
+Claim owner send `SignRequest` to issuer to create claim.
+
+### OntIdPubKey
+
+[code](./OntIdPubKey.java)
+
+It's a utility class, represent one public key of ontId.
+
+### OntIdSigner
+
+[code](./OntIdSigner.java)
+
+It's a utility class, represent ontId signer.
+
+
+### OntId2
+
+[code](./OntId2.java)
+
+It's ONTID2 SDK class, all ontId 2.0 function should entry from here.
+
+OntId2.ClaimRecord: claim contract;
+OntId2.OntId: ontId contract;
+
+## Interface
+
+### Constructor
+
+1. public OntId2(String ontId, Account signer, ClaimRecord claimRecord, OntId ontIdContract)
+
+    Generate OntId2 object.
+
+    If `ontId` not empty and `signer` not null, there will query `OntIdPubKey` from ontology chain and use it as self signer.
+    So owner and issuer should set `ontId` and `signer` while create OntId2 object, and verifier may not set those.
+
+2. public void updateOntIdAndSigner(String ontId, Account signer)
+
+    Update `ontId` and `signer` account.
+
+### GenSignRequest and VerifySignRequest
+
+1. public SignRequest genSignReq(String claim)
+
+    * calculate claim hash256 bytes;
+    * use self `signer` to sign hash;
+    * return SignRequest object.
+
+2. public boolean verifySignReq(SignRequest req)
+
+    * use `req.ontId` to verify `req.signature` of `req.claim`.
+
+### Create Claim
+
+Issuer create claim and commit claim hash to ontology chain.
+
+1. public VerifiableCredential createClaim(String[] context, String[] type, Object credentialSubject, Date expiration)
+
+    * create VerifiableCredential object;
+    * check `expiration`;
+    * generate `Proof`;
+    * calculate `VerifiableCredential.id`.
+
+2. public String commitClaim(VerifiableCredential claim, String ownerOntId, Account payer, long gasLimit, long gasPrice, OntSdk sdk)
+
+    * create commit claim tx;
+    * use self.signer and `payer` to sign tx;
+    * send tx to ontology chain.
+
+### Verify Claim
+
+Verifier could verify claim.
+
+The process consists of 4 aspects.
+
+1. public boolean verifyClaimOntIdCredible(String[] credibleOntIds, VerifiableCredential claim)
+
+    * check `claim.proof.verificationMethod` is `claim.issuer`;
+    * check `claim.proof.verificationMethod` is existed in `credibleOntIds`.
+
+2. public boolean verifyClaimNotExpired(VerifiableCredential claim)
+
+    * check claim not expired.
+
+3. public boolean verifyClaimSignature(VerifiableCredential claim)
+
+    * check `claim.proof.verificationMethod` is `claim.issuer`;
+    * use `claim.proof.verificationMethod` as public key to verify `claim.proof`.
+
+4. public boolean verifyClaimNotRevoked(VerifiableCredential claim)
+
+    * query status of claim;
+    * check status equals `01`.
+
+### Create Presentation
+
+Refer: https://www.w3.org/TR/vc-data-model/#presentations-0.
+
+Owner could create presentation by using one or multi `VerifiableCredential`.
+
+public VerifiablePresentation createPresentation(VerifiableCredential[] claims, String[] context, String[] type, OntIdSigner[] otherSigners, String holderOntId)
+
+    * Create `VerifiablePresentation` object;
+    * use self signer to generate first proof;
+    * use `otherSigners` to generate other proofs;
+    * calculate id.
+
+### Verify Presentation
+
+Verifier could verify presentation.
+
+public boolean verifyPresentation(VerifiablePresentation presentation, String[] credibleOntIds)
+
+    * verify each claim of `presentation`;
+    * check each proof of `presentation`;
+    * check that at least one proof is generated by the `presentation.holder`.
+
+
+## Demo
+
+There are some code to illustrate how to use ONTID 2.0 sdk.
+
+[code](../../../../demo/OntId2Demo.java)

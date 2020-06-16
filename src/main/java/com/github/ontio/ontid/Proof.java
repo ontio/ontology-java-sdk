@@ -1,5 +1,6 @@
 package com.github.ontio.ontid;
 
+import com.alibaba.fastjson.annotation.JSONType;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Helper;
 import com.github.ontio.sdk.exception.SDKException;
@@ -7,6 +8,7 @@ import com.github.ontio.sdk.exception.SDKException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+@JSONType(orders = {"type", "created", "proofPurpose", "verificationMethod", "signature"})
 public class Proof {
     public static final String PROOF_TYPE_ECDSA = "EcdsaSecp256r1Signature2019";
 

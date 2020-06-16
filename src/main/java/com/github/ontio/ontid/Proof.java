@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Proof {
-    public static final String PROOF_TYPE_ECDSA = "ECDSASignature2019";
+    public static final String PROOF_TYPE_ECDSA = "EcdsaSecp256r1Signature2019";
 
     public String type;
     public String created; // time stamp

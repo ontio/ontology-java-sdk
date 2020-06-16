@@ -1,7 +1,7 @@
 package com.github.ontio.ontid;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.github.ontio.crypto.Digest;
 
 // Verifiable credential also called claim
 public class VerifiableCredential {
@@ -11,11 +11,11 @@ public class VerifiableCredential {
     public String issuer;
     public String issuanceDate;
     public String expirationDate;
-    public JSONObject credentialSubject;
+    public Object credentialSubject;
     public Proof proof;
     public CredentialStatus credentialStatus;
 
-    public String genNeedSignData() {
+    public byte[] genNeedSignData() {
         String id = this.id;
         Proof proof = this.proof;
         this.id = "";
@@ -23,7 +23,7 @@ public class VerifiableCredential {
         String jsonStr = JSON.toJSONString(this);
         this.id = id;
         this.proof = proof;
-        return jsonStr;
+        return Digest.hash256(jsonStr.getBytes());
     }
 }
 

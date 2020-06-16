@@ -12,8 +12,8 @@ public class VerifiableCredential {
     public String issuanceDate;
     public String expirationDate;
     public Object credentialSubject;
-    public Proof proof;
     public CredentialStatus credentialStatus;
+    public Proof proof;
 
     public byte[] genNeedSignData() {
         String id = this.id;
@@ -29,7 +29,7 @@ public class VerifiableCredential {
 
 class CredentialStatus {
     public String id; // should be claim contract address
-    public String type = "Claim Contract";
+    public String type = "ClaimContract";
 
     public CredentialStatus(String scriptHash) {
         id = scriptHash;

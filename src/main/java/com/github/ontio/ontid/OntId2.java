@@ -1,7 +1,6 @@
 package com.github.ontio.ontid;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Helper;
@@ -73,7 +72,8 @@ public class OntId2 {
         String signerPubKey = hexPubKey.toLowerCase();
         for (OntIdPubKey pubKey :
                 allPubKeys) {
-            if (signerPubKey.equals(pubKey.publicKeyHex.toLowerCase())) {
+            String lowerCasePubKey = pubKey.publicKeyHex.toLowerCase();
+            if (signerPubKey.equals(lowerCasePubKey)) {
                 return pubKey;
             }
         }
@@ -83,10 +83,14 @@ public class OntId2 {
     public SignRequest genSignReq(String claim) throws Exception {
         byte[] signature = signer.signer.generateSignature(Digest.hash256(claim.getBytes()),
                 signer.signer.getSignatureScheme(), null);
-        return new SignRequest(claim, signer.ontId, Helper.getbyteStr(signature));
+        return new SignRequest(claim, signer.ontId, Helper.toHexString(signature));
     }
 
-    public VerifiableCredential createClaim(String[] context, String[] type, JSONObject credentialSubject,
+    public boolean verifySignReq(SignRequest req) throws Exception {
+        return verifyOntIdSignature(req.ontId, Digest.hash256(req.claim.getBytes()), Helper.hexToBytes(req.signature));
+    }
+
+    public VerifiableCredential createClaim(String[] context, String[] type, Object credentialSubject,
                                             Date expiration) throws Exception {
         VerifiableCredential credential = new VerifiableCredential();
         credential.context = context;
@@ -97,12 +101,12 @@ public class OntId2 {
         if (expiration.before(current)) {
             throw new SDKException("claim expired");
         }
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ssZ");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         credential.expirationDate = formatter.format(expiration);
         credential.issuanceDate = formatter.format(current);
         // generate proof
         Proof proof = new Proof(signer.pubKeyId);
-        String needSignData = credential.genNeedSignData();
+        byte[] needSignData = credential.genNeedSignData();
         proof.fillSignature(signer.signer, needSignData);
         credential.proof = proof;
         // generate id
@@ -147,14 +151,14 @@ public class OntId2 {
     }
 
     public boolean verifyClaimNotExpired(VerifiableCredential credential) throws Exception {
-        DateFormat formatter = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ssZ");
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         Date expiration = formatter.parse(credential.expirationDate);
         return expiration.after(new Date());
     }
 
     public boolean verifyClaimSignature(VerifiableCredential claim) throws Exception {
-        return verifyOntIdSignature(claim.proof.verificationMethod,
-                claim.genNeedSignData().getBytes(), claim.proof.getSignature());
+        return verifyPubKeyIdSignature(claim.proof.verificationMethod, claim.genNeedSignData(),
+                claim.proof.getSignature());
     }
 
     public boolean verifyClaimNotRevoked(VerifiableCredential credential) throws Exception {
@@ -168,7 +172,7 @@ public class OntId2 {
         presentation.type = type;
         presentation.verifiableCredential = claims;
         Proof[] proofs = new Proof[otherSigners.length + 1];
-        String needSignData = JSON.toJSONString(presentation);
+        byte[] needSignData = presentation.genNeedSignData();
         Proof proof = new Proof(signer.pubKeyId);
         proof.fillSignature(signer.signer, needSignData);
         proofs[0] = proof;
@@ -195,16 +199,16 @@ public class OntId2 {
             }
         }
         // verify presentation
-        byte[] needSignData = presentation.genNeedSignData().getBytes();
+        byte[] needSignData = presentation.genNeedSignData();
         for (Proof proof : presentation.proof) {
-            if (!verifyOntIdSignature(proof.verificationMethod, needSignData, proof.getSignature())) {
+            if (!verifyPubKeyIdSignature(proof.verificationMethod, needSignData, proof.getSignature())) {
                 return false;
             }
         }
         return true;
     }
 
-    private boolean verifyOntIdSignature(String pubKeyId, byte[] needSignData, byte[] signature) throws Exception {
+    private boolean verifyPubKeyIdSignature(String pubKeyId, byte[] needSignData, byte[] signature) throws Exception {
         String[] keyInfo = pubKeyId.split("#keys-");
         if (keyInfo.length != 2) {
             throw new SDKException(String.format("invalid pubKeyId %s", pubKeyId));
@@ -217,6 +221,19 @@ public class OntId2 {
             if (pubKey.id.equals(pubKeyId)) {
                 Account account = new Account(false, Helper.hexToBytes(pubKey.publicKeyHex));
                 return account.verifySignature(needSignData, signature);
+            }
+        }
+        return false;
+    }
+
+    private boolean verifyOntIdSignature(String ontId, byte[] needSignData, byte[] signature) throws Exception {
+        String allPubKeysJson = ontIdContract.sendGetPublicKeys(ontId);
+        ArrayList<OntIdPubKey> allPubKeys = new ArrayList<>(JSON.parseArray(allPubKeysJson, OntIdPubKey.class));
+        for (OntIdPubKey pubKey :
+                allPubKeys) {
+            Account account = new Account(false, Helper.hexToBytes(pubKey.publicKeyHex));
+            if (account.verifySignature(needSignData, signature)) {
+                return true;
             }
         }
         return false;

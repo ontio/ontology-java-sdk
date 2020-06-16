@@ -1,6 +1,7 @@
 package com.github.ontio.ontid;
 
 import com.alibaba.fastjson.JSON;
+import com.github.ontio.crypto.Digest;
 
 public class VerifiablePresentation {
     public String[] context;
@@ -9,7 +10,7 @@ public class VerifiablePresentation {
     public VerifiableCredential[] verifiableCredential;
     public Proof[] proof;
 
-    public String genNeedSignData() {
+    public byte[] genNeedSignData() {
         String id = this.id;
         Proof[] proofs = this.proof;
         this.id = "";
@@ -17,6 +18,6 @@ public class VerifiablePresentation {
         String jsonStr = JSON.toJSONString(this);
         this.id = id;
         this.proof = proofs;
-        return jsonStr;
+        return Digest.hash256(jsonStr.getBytes());
     }
 }

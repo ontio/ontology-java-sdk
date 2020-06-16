@@ -14,7 +14,6 @@ public class Proof {
     public String created; // time stamp
     public String proofPurpose; // fixed as "assertionMethod"
     public String verificationMethod; // pubkey uri
-    public String holder; // holder may not use
     public String signature;
 
     public Proof(String publicKeyURI) {
@@ -31,7 +30,7 @@ public class Proof {
         signature = Helper.toHexString(sig);
     }
 
-    public int getPubKeyIndex() throws Exception {
+    public int parsePubKeyIndex() throws Exception {
         if (this.verificationMethod == null || "".equals(this.verificationMethod)) {
             return 0;
         }
@@ -42,7 +41,7 @@ public class Proof {
         return Integer.parseInt(keyInfo[1]);
     }
 
-    public byte[] getSignature() {
+    public byte[] parseSignature() {
         return Helper.hexToBytes(signature);
     }
 }

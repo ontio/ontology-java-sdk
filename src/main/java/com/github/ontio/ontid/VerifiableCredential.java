@@ -32,12 +32,3 @@ public class VerifiableCredential {
     }
 }
 
-@JSONType(orders = {"id", "type"})
-class CredentialStatus {
-    public String id; // should be claim contract address
-    public String type = "ClaimContract";
-
-    public CredentialStatus(String scriptHash) {
-        id = scriptHash;
-    }
-}

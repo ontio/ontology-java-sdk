@@ -206,7 +206,7 @@ public class ClaimRecord {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeRevoke2(ownerId, claimId, payerAcct.getAddressU160().toBase58(), pubkeyIndex, gaslimit, gasprice);
+        Transaction tx = makeRevoke2(ownerId, claimId, pubkeyIndex, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.signTx(tx, ownerId, password, salt);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -227,7 +227,7 @@ public class ClaimRecord {
         return tx;
     }
 
-    public Transaction makeRevoke2(String ownerId, String claimId, String payer, int pubkeyIndex, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeRevoke2(String ownerId, String claimId, int pubkeyIndex, String payer, long gaslimit, long gasprice) throws Exception {
         String name = "Revoke";
         Parameter claimIdParam = new Parameter("claimId", Parameter.Type.String, claimId);
         Parameter ownerIdParam = new Parameter("ontId", Parameter.Type.String, ownerId);

@@ -5,25 +5,22 @@ import com.github.ontio.account.Account;
 import com.github.ontio.common.Helper;
 import com.github.ontio.sdk.exception.SDKException;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 @JSONType(orders = {"type", "created", "proofPurpose", "verificationMethod", "signature"})
 public class Proof {
-    public static final String PROOF_TYPE_ECDSA = "EcdsaSecp256r1Signature2019";
+    public enum ProofType {EcdsaSecp256r1Signature2019}
 
-    public String type;
+    public enum ProofPurpose {assertionMethod}
+
+    public ProofType type;
     public String created; // time stamp
-    public String proofPurpose; // fixed as "assertionMethod"
+    public ProofPurpose proofPurpose;
     public String verificationMethod; // pubkey uri
     public String signature;
 
-    public Proof(String publicKeyURI) {
-        this.type = PROOF_TYPE_ECDSA;
-        Date currentTime = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        this.created = format.format(currentTime);
-        this.proofPurpose = "assertionMethod";
+    public Proof(String publicKeyURI, String created, ProofType type, ProofPurpose proofPurpose) {
+        this.type = type;
+        this.created = created;
+        this.proofPurpose = proofPurpose;
         this.verificationMethod = publicKeyURI;
     }
 

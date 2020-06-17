@@ -45,7 +45,7 @@ public class OntId2Demo {
             VerifiableCredential credential = new VerifiableCredential();
             credential.context = new String[]{"https://www.w3.org/2018/credentials/v1",
                     "https://www.w3.org/2018/credentials/examples/v1"};
-            credential.type = new String[]{"VerifiableCredential", "RelationshipCredential"};
+            credential.type = new String[]{"RelationshipCredential"};
             Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
             credential.expirationDate = formatter.format(expiration);
@@ -56,7 +56,7 @@ public class OntId2Demo {
             credential.credentialSubject = new ExampleCredentialSubject[]{credentialSubject};
             String claim = JSON.toJSONString(credential);
             // generate a sign request
-            SignRequest req = owner.genSignReq(claim);
+            SignRequest req = owner.genSignReq(claim, true);
             // issuer verify sign request
             if (!issuer.verifySignReq(req)) {
                 System.out.println("sign request not verified");
@@ -74,6 +74,7 @@ public class OntId2Demo {
                     gasPrice, ontSdk);
             System.out.println("commit claim: " + verifiableCredential.id + ", txHash: " + commitClaimHash);
             Thread.sleep(6000);
+            ClaimRecordTxDemo.showEvent(ontSdk, "Commit", commitClaimHash);
             // verify claim
             // user should own self credible ontIds, not only use issuerIdentity.ontid and ownerIdentity.ontid
             String[] credibleOntIds = new String[]{issuerIdentity.ontid, ownerIdentity.ontid};
@@ -92,10 +93,11 @@ public class OntId2Demo {
                     gasLimit, gasPrice, ontSdk);
             System.out.println("commit claim: " + otherVerifiableCredential.id + ", txHash: " + otherCommitClaimHash);
             Thread.sleep(6000);
+            ClaimRecordTxDemo.showEvent(ontSdk, "Commit", otherCommitClaimHash);
             // create presentation
             String[] presentationContext = new String[]{"https://www.w3.org/2018/credentials/v1",
                     "https://www.w3.org/2018/credentials/examples/v1"};
-            String[] presentationType = new String[]{"VerifiablePresentation", "CredentialManagerPresentation"};
+            String[] presentationType = new String[]{"CredentialManagerPresentation"};
             // you can use any ontId as otherSigner if you want
             OntIdSigner otherSigner = new OntIdSigner(issuerIdentity.ontid,
                     issuerIdentity.ontid + "#keys-2", issuerSigner);
@@ -104,8 +106,26 @@ public class OntId2Demo {
                     presentationContext, presentationType, new OntIdSigner[]{otherSigner}, ownerIdentity.ontid);
             System.out.println("presentation: " + JSON.toJSONString(presentation));
             // verify presentation
-            boolean presentationVerified = verifier.verifyPresentation(presentation, credibleOntIds);
-            System.out.println("presentation verify: " + presentationVerified);
+            // verify each claim firstly
+            for (VerifiableCredential credential1 : presentation.verifiableCredential) {
+                boolean v = issuer.verifyClaim(credibleOntIds, credential1);
+                System.out.println("presentation verify: " + v);
+            }
+            // verify each proof
+            for (int i = 0; i < presentation.proof.length; i++) {
+                boolean proofVerified = verifier.verifyPresentationProof(presentation, i);
+                System.out.println(String.format("%d proof verify: %s", i, proofVerified));
+            }
+            // issuer revoke claim
+            String issuerRevokeHash = issuer.revokeClaim(verifiableCredential, payer, gasLimit, gasPrice, ontSdk);
+            System.out.println("issuerRevokeHash: " + issuerRevokeHash);
+            Thread.sleep(6000);
+            ClaimRecordTxDemo.showEvent(ontSdk, "Revoke", issuerRevokeHash);
+            // owner revoke claim
+            String ownerRevokeHash = owner.revokeClaim(otherVerifiableCredential.id, payer, gasLimit, gasPrice, ontSdk);
+            System.out.println("ownerRevokeHash: " + ownerRevokeHash);
+            Thread.sleep(6000);
+            ClaimRecordTxDemo.showEvent(ontSdk, "Revoke", ownerRevokeHash);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -12,6 +12,7 @@ import com.github.ontio.sdk.exception.SDKException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 // Verifiable credential also called claim
 @JSONType(orders = {"@context", "id", "type", "issuer", "issuanceDate", "expirationDate",
@@ -28,13 +29,14 @@ public class VerifiableCredential {
     public CredentialStatus credentialStatus;
     public Proof proof;
 
+    public VerifiableCredential() {
+        this.id = UUID.randomUUID().toString();
+    }
+
     public byte[] genNeedSignData() {
-        String id = this.id;
         Proof proof = this.proof;
-        this.id = "";
         this.proof = null;
         String jsonStr = JSON.toJSONString(this);
-        this.id = id;
         this.proof = proof;
         return Digest.hash256(jsonStr.getBytes());
     }
@@ -62,6 +64,7 @@ public class VerifiableCredential {
         Proof proof = new Proof(claim.header.kid, credential.issuanceDate,
                 ALG.getProofTypeFromAlg(claim.header.alg), proofPurpose);
         proof.jws = claim.jws;
+        credential.proof = proof;
         if (claim.payload.vc.credentialSubject == null) {
             return credential;
         }

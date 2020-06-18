@@ -10,8 +10,11 @@ public class CredentialStatus {
     public String id; // should be claim contract address
     public CredentialStatusType type;
 
+    public CredentialStatus() {
+    }
+
     public CredentialStatus(String scriptHash, CredentialStatusType type) {
-        id = scriptHash;
+        this.id = scriptHash;
         this.type = type;
     }
 }

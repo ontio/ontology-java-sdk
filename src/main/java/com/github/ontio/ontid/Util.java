@@ -34,7 +34,7 @@ public class Util {
             for (int i = 0; i < jsonArray.size(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String id = jsonObject.getString("id");
-                if (id != null && !id.equals("")) {
+                if (id != null) {
                     subIdSet.add(id);
                 }
             }

@@ -11,6 +11,9 @@ public class JWTHeader {
     public String kid; // VerifiableCredential issuer
     public String typ = "JWT";
 
+    public JWTHeader() {
+    }
+
     public JWTHeader(String alg, String kid) {
         this.alg = alg;
         this.kid = kid;

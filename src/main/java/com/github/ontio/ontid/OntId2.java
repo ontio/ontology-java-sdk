@@ -119,9 +119,6 @@ public class OntId2 {
         byte[] needSignData = credential.genNeedSignData();
         proof.fillSignature(signer.signer, needSignData);
         credential.proof = proof;
-        // generate id
-        String wholeStr = JSON.toJSONString(credential);
-        credential.id = Helper.toHexString(Digest.hash256(wholeStr.getBytes()));
         return credential;
     }
 
@@ -217,19 +214,29 @@ public class OntId2 {
     }
 
     public boolean verifyClaim(String[] credibleOntIds, VerifiableCredential claim) throws Exception {
-        boolean ontIdCredible = verifyClaimOntIdCredible(credibleOntIds, claim);
-        boolean claimNotExpired = verifyClaimNotExpired(claim);
-        boolean verifiedSig = verifyClaimSignature(claim);
-        boolean notRevoked = verifyClaimNotRevoked(claim);
-        return ontIdCredible && claimNotExpired && verifiedSig && notRevoked;
+        if (!verifyClaimOntIdCredible(credibleOntIds, claim)) {
+            return false;
+        }
+        if (!verifyClaimNotExpired(claim)) {
+            return false;
+        }
+        if (!verifyClaimSignature(claim)) {
+            return false;
+        }
+        return verifyClaimNotRevoked(claim);
     }
 
     public boolean verifyJWTClaim(String[] credibleOntIds, String claim) throws Exception {
-        boolean ontIdCredible = verifyJWTClaimOntIdCredible(credibleOntIds, claim);
-        boolean claimNotExpired = verifyJWTClaimNotExpired(claim);
-        boolean verifiedSig = verifyJWTClaimSignature(claim);
-        boolean notRevoked = verifyJWTClaimNotRevoked(claim);
-        return ontIdCredible && claimNotExpired && verifiedSig && notRevoked;
+        if (!verifyJWTClaimOntIdCredible(credibleOntIds, claim)) {
+            return false;
+        }
+        if (!verifyJWTClaimNotExpired(claim)) {
+            return false;
+        }
+        if (!verifyJWTClaimSignature(claim)) {
+            return false;
+        }
+        return verifyJWTClaimNotRevoked(claim);
     }
 
     public boolean verifyClaimOntIdCredible(String[] credibleOntIds, VerifiableCredential claim) {
@@ -329,8 +336,6 @@ public class OntId2 {
             proofs[index] = p;
         }
         presentation.proof = proofs;
-        String serializedStr = JSON.toJSONString(presentation);
-        presentation.id = Helper.toHexString(Digest.hash256(serializedStr.getBytes()));
         return presentation;
     }
 
@@ -448,9 +453,9 @@ public class OntId2 {
     // owner revoke JWT claim
     // When multi-threaded calls are made, they need to be locked externally.
     // The function itself does not provide asynchronous locks.
-    public String revokeJWTClaimBy(String claim, Account payer, long gasLimit, long gasPrice,
-                                   OntSdk sdk) throws Exception {
-        JWTClaim jwtClaim= JWTClaim.deserializeToJWTClaim(claim);
+    public String revokeJWTClaim(String claim, Account payer, long gasLimit, long gasPrice,
+                                 OntSdk sdk) throws Exception {
+        JWTClaim jwtClaim = JWTClaim.deserializeToJWTClaim(claim);
         Transaction tx = this.claimRecord.makeRevoke2(signer.ontId, jwtClaim.payload.jti,
                 Util.getIndexFromPubKeyURI(signer.pubKeyId), payer.getAddressU160().toBase58(), gasLimit, gasPrice);
         sdk.addSign(tx, signer.signer);

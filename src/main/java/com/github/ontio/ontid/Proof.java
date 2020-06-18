@@ -3,11 +3,24 @@ package com.github.ontio.ontid;
 import com.alibaba.fastjson.annotation.JSONType;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Helper;
-import com.github.ontio.sdk.exception.SDKException;
+import com.github.ontio.ontid.jwt.ALG;
 
-@JSONType(orders = {"type", "created", "proofPurpose", "verificationMethod", "signature"})
+@JSONType(orders = {"type", "created", "proofPurpose", "verificationMethod", "hex", "jws"})
 public class Proof {
-    public enum ProofType {EcdsaSecp256r1Signature2019}
+
+    public enum ProofType {
+        EcdsaSecp256r1Signature2019(ALG.ALG_ES256);
+
+        private String alg;
+
+        private ProofType(String alg) {
+            this.alg = alg;
+        }
+
+        public String getAlg() {
+            return alg;
+        }
+    }
 
     public enum ProofPurpose {assertionMethod}
 
@@ -15,7 +28,8 @@ public class Proof {
     public String created; // time stamp
     public ProofPurpose proofPurpose;
     public String verificationMethod; // pubkey uri
-    public String signature;
+    public String hex;
+    public String jws;
 
     public Proof(String publicKeyURI, String created, ProofType type, ProofPurpose proofPurpose) {
         this.type = type;
@@ -26,21 +40,10 @@ public class Proof {
 
     public void fillSignature(Account account, byte[] needSignData) throws Exception {
         byte[] sig = account.generateSignature(needSignData, account.getSignatureScheme(), null);
-        signature = Helper.toHexString(sig);
-    }
-
-    public int parsePubKeyIndex() throws Exception {
-        if (this.verificationMethod == null || "".equals(this.verificationMethod)) {
-            return 0;
-        }
-        String[] keyInfo = this.verificationMethod.split("#keys-");
-        if (keyInfo.length != 2) {
-            throw new SDKException(String.format("invalid proof verificationMethod %s", this.verificationMethod));
-        }
-        return Integer.parseInt(keyInfo[1]);
+        hex = Helper.toHexString(sig);
     }
 
     public byte[] parseSignature() {
-        return Helper.hexToBytes(signature);
+        return Helper.hexToBytes(hex);
     }
 }

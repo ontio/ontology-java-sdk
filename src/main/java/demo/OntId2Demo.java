@@ -122,7 +122,7 @@ public class OntId2Demo {
             Thread.sleep(6000);
             ClaimRecordTxDemo.showEvent(ontSdk, "Revoke", issuerRevokeHash);
             // owner revoke claim
-            String ownerRevokeHash = owner.revokeClaim(otherVerifiableCredential.id, payer, gasLimit, gasPrice, ontSdk);
+            String ownerRevokeHash = owner.revokeClaimById(otherVerifiableCredential.id, payer, gasLimit, gasPrice, ontSdk);
             System.out.println("ownerRevokeHash: " + ownerRevokeHash);
             Thread.sleep(6000);
             ClaimRecordTxDemo.showEvent(ontSdk, "Revoke", ownerRevokeHash);

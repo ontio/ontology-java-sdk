@@ -1,6 +1,7 @@
 package com.github.ontio.ontid.jwt;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONType;
 import com.github.ontio.account.Account;
 import com.github.ontio.crypto.Digest;
 import com.github.ontio.ontid.VerifiableCredential;
@@ -9,6 +10,7 @@ import com.github.ontio.sdk.exception.SDKException;
 
 import java.util.Base64;
 
+@JSONType(orders = {"header", "payload", "jws"})
 public class JWTClaim {
     public String jws;
     public JWTHeader header;

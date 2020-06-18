@@ -16,6 +16,9 @@ public class JWTVC {
     public Object credentialSubject;
     public CredentialStatus credentialStatus;
 
+    public JWTVC() {
+    }
+
     public JWTVC(VerifiableCredential credential) {
         this.context = credential.context;
         this.type = credential.type;

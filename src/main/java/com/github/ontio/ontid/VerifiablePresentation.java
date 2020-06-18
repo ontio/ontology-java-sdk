@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @JSONType(orders = {"@context", "id", "type", "verifiableCredential", "holder", "proof"})
 public class VerifiablePresentation {
@@ -23,13 +24,14 @@ public class VerifiablePresentation {
     public String holder; // holder may not use
     public Proof[] proof;
 
+    public VerifiablePresentation() {
+        this.id = UUID.randomUUID().toString();
+    }
+
     public byte[] genNeedSignData() {
-        String id = this.id;
         Proof[] proofs = this.proof;
-        this.id = "";
         this.proof = null;
         String jsonStr = JSON.toJSONString(this);
-        this.id = id;
         this.proof = proofs;
         return Digest.hash256(jsonStr.getBytes());
     }

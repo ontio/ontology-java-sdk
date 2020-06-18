@@ -14,27 +14,32 @@ public class JWTClaim {
     public JWTHeader header;
     public JWTPayload payload;
 
+    public JWTClaim() {
+    }
+
     // payload.jti need to be recalculated
     // jti should be uuid, not json-ld hash
     public JWTClaim(JWTHeader header, JWTPayload payload, Account signer) throws Exception {
         this.header = header;
         this.payload = payload;
-        Base64.Encoder encoder = Base64.getEncoder();
         byte[] needSignData = this.genNeedSignData();
         byte[] sig = signer.generateSignature(needSignData, signer.getSignatureScheme(), null);
-        jws = encoder.encodeToString(sig);
+        jws = Base64.getEncoder().encodeToString(sig);
     }
 
     public JWTClaim(String header, String payload, String jws) {
         this.jws = jws;
-        this.header = JSON.parseObject(header, JWTHeader.class);
-        this.payload = JSON.parseObject(payload, JWTPayload.class);
+        Base64.Decoder decoder = Base64.getDecoder();
+        byte[] decodedHeader = decoder.decode(header);
+        byte[] decodedPayload = decoder.decode(payload);
+        this.header = JSON.parseObject(decodedHeader, JWTHeader.class);
+        this.payload = JSON.parseObject(decodedPayload, JWTPayload.class);
     }
 
     // the proof signature should be jws
     public JWTClaim(VerifiableCredential credential) throws Exception {
         if (credential.proof.jws == null || credential.proof.jws.isEmpty()) {
-            throw new SDKException("credential has not jws");
+            throw new SDKException("credential has no jws");
         }
         this.header = new JWTHeader(credential);
         this.payload = new JWTPayload(credential);

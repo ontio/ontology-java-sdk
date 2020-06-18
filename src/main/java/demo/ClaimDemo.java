@@ -21,6 +21,7 @@ package demo;
 
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
+import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
 import com.github.ontio.common.UInt256;
 import com.github.ontio.merkle.MerkleVerifier;
@@ -28,6 +29,7 @@ import com.github.ontio.network.rpc.*;
 import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.wallet.Identity;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,9 +49,9 @@ public class ClaimDemo {
             List<Identity> dids = ontSdk.getWalletMgr().getWallet().getIdentities();
             if (dids.size() < 2) {
                 Identity identity = ontSdk.getWalletMgr().createIdentity("passwordtest");
-                ontSdk.nativevm().ontId().sendRegister(identity.ontid,acct0,acct0,0,0);
+                ontSdk.nativevm().ontId().sendRegister(identity.ontid, acct0, acct0, 0, 0);
                 identity = ontSdk.getWalletMgr().createIdentity("passwordtest");
-                ontSdk.nativevm().ontId().sendRegister(identity.ontid,acct0,acct0,0,0);
+                ontSdk.nativevm().ontId().sendRegister(identity.ontid, acct0, acct0, 0, 0);
                 dids = ontSdk.getWalletMgr().getWallet().getIdentities();
                 Thread.sleep(6000);
             }
@@ -59,7 +61,7 @@ public class ClaimDemo {
             map.put("Subject", dids.get(1).ontid);
 
 
-            String claim = ontSdk.nativevm().ontId().createOntIdClaim(dids.get(0).ontid,acct0,"claim:context", map, map,map,0);
+            String claim = ontSdk.nativevm().ontId().createOntIdClaim(dids.get(0).ontid, acct0, "claim:context", map, map, map, 0);
             System.out.println(claim);
             boolean b = ontSdk.nativevm().ontId().verifyOntIdClaim(claim);
             System.out.println(b);

@@ -26,34 +26,21 @@ public class Util {
         return keyInfo[0];
     }
 
-    public static String fetchId(Object credentialSubject) throws Exception {
-        String jsonStr = JSON.toJSONString(credentialSubject);
-        if (jsonStr.startsWith("[")) {
-            JSONArray jsonArray = JSON.parseArray(jsonStr);
-            Set<String> subIdSet = new TreeSet<>();
-            for (int i = 0; i < jsonArray.size(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                String id = jsonObject.getString("id");
-                if (id != null) {
-                    subIdSet.add(id);
-                }
-            }
-            // credential subject doesn't contain id field
-            if (subIdSet.size() == 0) {
-                return "";
-            }
-            if (subIdSet.size() == 1) {
-                return (String) subIdSet.toArray()[0];
-            }
-            // more than one subjectId
-            throw new SDKException("credential cannot unify subject id");
-        } else {
-            JSONObject jsonObject = JSON.parseObject(jsonStr);
-            String id = jsonObject.getString("id");
-            if (id == null) {
-                return "";
-            }
-            return id;
+    // fetch "id" field of object
+    // if object doesn't contain "id" field, return ""
+    // if object is array, return ""
+    public static String fetchId(Object object) {
+        if (object instanceof String) {
+            return (String) object;
         }
+        if (object.getClass().isArray()) {
+            return "";
+        }
+        JSONObject jsonObject = (JSONObject) JSONObject.toJSON(object);
+        String id = jsonObject.getString("id");
+        if (id == null) {
+            return "";
+        }
+        return id;
     }
 }

@@ -6,7 +6,6 @@ import com.github.ontio.ontid.VerifiablePresentation;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
 
 // TODO: set nonce
 
@@ -29,23 +28,21 @@ public class JWTPayload {
     public JWTPayload() {
     }
 
-    public JWTPayload(VerifiableCredential credential, String audience) throws Exception {
-        this(credential);
-        this.aud = audience;
-    }
+//    public JWTPayload(VerifiableCredential credential, String audience) throws Exception {
+//        this(credential);
+//        this.aud = audience;
+//    }
 
     public JWTPayload(VerifiableCredential credential) throws Exception {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        Date exp = formatter.parse(credential.expirationDate);
-        this.exp = String.valueOf(exp.getTime() / 1000);
-        this.iss = credential.issuer;
+        if (credential.expirationDate != null && !credential.expirationDate.isEmpty()) {
+            Date exp = formatter.parse(credential.expirationDate);
+            this.exp = String.valueOf(exp.getTime() / 1000);
+        }
+        this.iss = credential.fetchIssuerOntId();
         Date nbf = formatter.parse(credential.issuanceDate);
         this.nbf = String.valueOf(nbf.getTime() / 1000);
-        if (credential.id == null || credential.id.isEmpty()) {
-            this.jti = UUID.randomUUID().toString();
-        } else {
-            this.jti = credential.id;
-        }
+        this.jti = credential.id;
         String credentialSubjectId = credential.findSubjectId();
         if (!"".equals(credentialSubjectId)) {
             this.sub = credentialSubjectId;
@@ -54,25 +51,15 @@ public class JWTPayload {
         this.vc = new JWTVC(credential);
     }
 
-    public JWTPayload(VerifiablePresentation presentation, String audience) throws Exception {
-        this(presentation);
-        this.aud = audience;
-    }
+//    public JWTPayload(VerifiablePresentation presentation, String audience) throws Exception {
+//        this(presentation);
+//        this.aud = audience;
+//    }
 
     public JWTPayload(VerifiablePresentation presentation) throws Exception {
-        this.exp = String.valueOf(presentation.findExpiration().getTime() / 1000);
-        this.iss = presentation.holder;
-        this.nbf = String.valueOf(presentation.findIssuanceDate().getTime() / 1000);
-        if (presentation.id == null || presentation.id.isEmpty()) {
-            this.jti = UUID.randomUUID().toString();
-        } else {
-            this.jti = presentation.id;
-        }
-        String credentialSubjectId = presentation.findSubjectId();
-        if (!"".equals(credentialSubjectId)) {
-            this.sub = credentialSubjectId;
-        }
-        this.iat = this.nbf;
+        this.iss = presentation.fetchHolderOntId();
+        this.jti = presentation.id;
+        this.sub = presentation.findSubjectId();
         this.vp = new JWTVP(presentation);
     }
 }

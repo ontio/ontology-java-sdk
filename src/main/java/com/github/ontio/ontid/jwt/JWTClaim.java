@@ -55,6 +55,16 @@ public class JWTClaim {
         this.payload = new JWTPayload(presentation);
     }
 
+    public Object parseToJSONLDObject() throws Exception {
+        if (this.payload.vc != null) {
+            return VerifiableCredential.deserializeFromJWT(this, null);
+        }
+        if (this.payload.vp != null) {
+            return VerifiablePresentation.deserializeFromJWT(this, null);
+        }
+        throw new SDKException("cannot find vp or vc attribute in payload");
+    }
+
     public static JWTClaim deserializeToJWTClaim(String jwt) throws Exception {
         String[] parts = jwt.split("\\.");
         if (parts.length != 3) {
@@ -63,14 +73,11 @@ public class JWTClaim {
         return new JWTClaim(parts[0], parts[1], parts[2]);
     }
 
-    public byte[] genNeedSignData() {
-        String id = this.payload.jti;
-        this.payload.jti = "";
+    public byte[] genNeedSignData() throws Exception {
         String header = Base64.getEncoder().encodeToString(JSON.toJSONString(this.header).getBytes());
         String payload = Base64.getEncoder().encodeToString(JSON.toJSONString(this.payload).getBytes());
         String needSignData = header + "." + payload;
-        this.payload.jti = id;
-        return Digest.hash256(needSignData.getBytes());
+        return this.header.alg.hash(needSignData.getBytes());
     }
 
     public byte[] parseSignature() {

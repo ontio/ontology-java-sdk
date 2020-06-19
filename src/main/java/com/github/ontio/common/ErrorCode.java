@@ -18,6 +18,7 @@
  */
 
 package com.github.ontio.common;
+
 import com.alibaba.fastjson.JSON;
 
 import java.util.HashMap;
@@ -63,6 +64,7 @@ public class ErrorCode {
     public static String UnsupportedSignatureScheme = getError(52010, "Signature Error,unsupported signature scheme:");
     public static String DataSignatureErr = getError(52011, "Signature Error,Data signature error.");
     public static String UnSupportOperation = getError(52012, "Address Error, UnsupportedOperationException");
+    public static String SignatureSchemeMismatch = getError(52013, "Signature Error, signature scheme mismatch");
 
 
     //Core Error
@@ -107,7 +109,12 @@ public class ErrorCode {
     public static String SendRawTransactionPreExec = getError(58016, "OntIdTx Error, sendRawTransaction PreExec error");
     public static String SenderAmtNotEqPasswordAmt = getError(58017, "OntIdTx Error, senders amount is not equal password amount");
     public static String ExpireErr = getError(58017, "OntIdTx Error, expire is wrong");
-    public static String GetStatusErr(String msg){return getError(58017, "GetStatus Error," + msg);} ;
+
+    public static String GetStatusErr(String msg) {
+        return getError(58017, "GetStatus Error," + msg);
+    }
+
+    ;
 
 
     //OntAsset Error

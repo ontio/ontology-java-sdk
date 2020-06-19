@@ -40,7 +40,7 @@ public class Claim {
     private Map<String, Object> claim = new HashMap<String, Object>();
     String ClaimStr = "";
 
-    public Claim(SignatureScheme scheme, Account acct, String ctx, Map claimMap, Map metadata,String publicKeyId) {
+    public Claim(SignatureScheme scheme, Account acct, String ctx, Map claimMap, Map metadata, String publicKeyId) {
         context = ctx;
         claim.put("Context", context);
         if (claimMap != null) {
@@ -52,13 +52,12 @@ public class Claim {
         claim.put("Version", "v1.0");
         DataSignature sign = new DataSignature(scheme, acct, getClaim());
         byte[] signature = sign.signature();
-        SignatureInfo info = new SignatureInfo("", "",publicKeyId, signature);
+        SignatureInfo info = new SignatureInfo("", "", publicKeyId, signature);
         claim.put("Signature", info.getJson());
 
     }
 
     /**
-     *
      * @param scheme
      * @param acct
      * @param ctx
@@ -68,18 +67,18 @@ public class Claim {
      * @param expireTime
      * @throws Exception
      */
-    public Claim(SignatureScheme scheme, Account acct, String ctx, Map clmMap, Map<String,String> metadata,Map clmRevMap,String publicKeyId,long expireTime) throws Exception {
+    public Claim(SignatureScheme scheme, Account acct, String ctx, Map clmMap, Map<String, String> metadata, Map clmRevMap, String publicKeyId, long expireTime) throws Exception {
         String iss = metadata.get("Issuer");
         String sub = metadata.get("Subject");
-        Header header = new Header("","",publicKeyId);
-        Payload payload = new Payload("v1.0",iss,sub,System.currentTimeMillis()/1000,expireTime,ctx,clmMap,clmRevMap);
+        Header header = new Header("", "", publicKeyId);
+        Payload payload = new Payload("v1.0", iss, sub, System.currentTimeMillis() / 1000, expireTime, ctx, clmMap, clmRevMap);
         String headerStr = JSONObject.toJSONString(header.getJson());
         String payloadStr = JSONObject.toJSONString(payload.getJson());
         byte[] headerBytes = Base64.getEncoder().encode(headerStr.getBytes());
         byte[] payloadBytes = Base64.getEncoder().encode(payloadStr.getBytes());
         DataSignature sign = new DataSignature(scheme, acct, new String(headerBytes) + "." + new String(payloadBytes));
         byte[] signature = sign.signature();
-        ClaimStr += new String(headerBytes) + "." + new String(payloadBytes) + "." + new String(Base64.getEncoder().encode(signature));
+        ClaimStr += new String(headerBytes, "UTF-8") + "." + new String(payloadBytes, "UTF-8") + "." + new String(Base64.getEncoder().encode(signature), "UTF-8");
     }
 
 
@@ -90,6 +89,7 @@ public class Claim {
         }
         return JSONObject.toJSONString(tmp);
     }
+
     public String getClaimStr() {
         return ClaimStr;
     }
@@ -99,11 +99,13 @@ class Header {
     public String Alg = "ONT-ES256";
     public String Typ = "JWT-X";
     public String Kid;
-    public Header(String alg,String typ, String kid) {
+
+    public Header(String alg, String typ, String kid) {
 //        Alg = alg;
 //        Typ = typ;
         Kid = kid;
     }
+
     public Object getJson() {
         Map<String, Object> header = new HashMap<String, Object>();
         header.put("alg", Alg);
@@ -112,6 +114,7 @@ class Header {
         return header;
     }
 }
+
 class Payload {
     public String Ver;
     public String Iss;
@@ -124,7 +127,7 @@ class Payload {
     public Map<String, Object> ClmMap = new HashMap<String, Object>();
     public Map<String, Object> ClmRevMap = new HashMap<String, Object>();
 
-    public Payload(String ver,String iss,String sub,long iat,long exp,String ctx,Map clmMap,Map clmRevMap) {
+    public Payload(String ver, String iss, String sub, long iat, long exp, String ctx, Map clmMap, Map clmRevMap) {
         Ver = ver;
         Iss = iss;
         Sub = sub;
@@ -145,11 +148,12 @@ class Payload {
         payload.put("exp", Exp);
         payload.put("jti", Jti);
         payload.put("@context", Context);
-        payload.put("clm",ClmMap);
-        payload.put("clm-rev",ClmRevMap);
+        payload.put("clm", ClmMap);
+        payload.put("clm-rev", ClmRevMap);
         return payload;
     }
 }
+
 class SignatureInfo {
 
     private String Format = "pgp";
@@ -157,7 +161,7 @@ class SignatureInfo {
     private byte[] Value;
     private String PublicKeyId;
 
-    public SignatureInfo(String format, String alg ,String publicKeyId,byte[] val) {
+    public SignatureInfo(String format, String alg, String publicKeyId, byte[] val) {
         Value = val;
         PublicKeyId = publicKeyId;
     }

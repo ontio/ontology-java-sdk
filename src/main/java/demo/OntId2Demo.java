@@ -17,10 +17,10 @@ public class OntId2Demo {
 
     public static void main(String[] args) {
         try {
-//            OntSdk ontSdk = ClaimRecordTxDemo.getOntSdk();
-//            // set claim contract address
-//            ontSdk.neovm().claimRecord().setContractAddress("52df370680de17bc5d4262c446f102a0ee0d6312");
-//            testClaim(ontSdk);
+            OntSdk ontSdk = ClaimRecordTxDemo.getOntSdk();
+            // set claim contract address
+            ontSdk.neovm().claimRecord().setContractAddress("52df370680de17bc5d4262c446f102a0ee0d6312");
+            testClaim(ontSdk);
             testDeserialize();
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,8 +65,7 @@ public class OntId2Demo {
         credential.credentialSubject = new ExampleCredentialSubject[]{credentialSubject};
         String claim = JSON.toJSONString(credential);
         // generate a sign request
-        SignRequest req = owner.genSignReq(claim, Proof.ProofType.EcdsaSecp256r1Signature2019,
-                Proof.ProofPurpose.assertionMethod, true);
+        SignRequest req = owner.genSignReq(claim, ProofPurpose.assertionMethod, true);
         // issuer verify sign request
         if (!issuer.verifySignReq(req)) {
             System.out.println("sign request not verified");
@@ -76,12 +75,13 @@ public class OntId2Demo {
         // the parameters that used to create claim should be unmarshal from signRequest.claim
         // for convenient, using those field at here
         VerifiableCredential verifiableCredential = issuer.createClaim(credential.context, credential.type,
+                issuerIdentity.ontid,
                 credential.credentialSubject, expiration,
-                CredentialStatus.CredentialStatusType.ClaimContract,
-                Proof.ProofType.EcdsaSecp256r1Signature2019,
-                Proof.ProofPurpose.assertionMethod);
-        String jwt1 = issuer.createJWTClaim(credential.context, credential.type, credentialSubject, expiration,
-                CredentialStatus.CredentialStatusType.ClaimContract, Proof.ProofType.EcdsaSecp256r1Signature2019);
+                CredentialStatusType.AttestContract,
+                ProofPurpose.assertionMethod);
+        String jwt1 = issuer.createJWTClaim(credential.context, credential.type, issuerIdentity.ontid,
+                credentialSubject, expiration, CredentialStatusType.AttestContract,
+                PubKeyType.EcdsaSecp256r1Signature2019);
         // for debug, print verifiableCredential
         System.out.println("verifiableCredential: " + JSON.toJSONString(verifiableCredential));
         System.out.println("jwt1: " + jwt1);
@@ -109,17 +109,17 @@ public class OntId2Demo {
             return;
         }
         // create other VerifiableCredential to create presentation
+        ExampleIssuer exampleIssuer = new ExampleIssuer(issuerIdentity.ontid, "issuer");
         ExampleCredentialSubject otherCredentialSubject = new ExampleCredentialSubject("did:ont:111111",
                 "he", "she");
         VerifiableCredential otherVerifiableCredential = issuer.createClaim(credential.context, credential.type,
-                new ExampleCredentialSubject[]{otherCredentialSubject}, expiration,
-                CredentialStatus.CredentialStatusType.ClaimContract,
-                Proof.ProofType.EcdsaSecp256r1Signature2019,
-                Proof.ProofPurpose.assertionMethod);
+                new ExampleCredentialSubject[]{otherCredentialSubject}, exampleIssuer, expiration,
+                CredentialStatusType.AttestContract,
+                ProofPurpose.assertionMethod);
         String jwt2 = issuer.createJWTClaim(credential.context, credential.type,
-                new ExampleCredentialSubject[]{otherCredentialSubject}, expiration,
-                CredentialStatus.CredentialStatusType.ClaimContract,
-                Proof.ProofType.EcdsaSecp256r1Signature2019);
+                new ExampleCredentialSubject[]{otherCredentialSubject}, exampleIssuer, expiration,
+                CredentialStatusType.AttestContract,
+                PubKeyType.EcdsaSecp256r1Signature2019);
         System.out.println("otherVerifiableCredential: " + JSON.toJSONString(otherVerifiableCredential));
         System.out.println("jwt2: " + jwt2);
         String otherCommitClaimHash = issuer.commitClaim(otherVerifiableCredential, ownerIdentity.ontid, payer,
@@ -136,23 +136,20 @@ public class OntId2Demo {
         String[] presentationContext = new String[]{};
         String[] presentationType = new String[]{"CredentialManagerPresentation"};
         // you can use any ontId as otherSigner if you want
-        OntIdSigner otherSigner = new OntIdSigner(issuerIdentity.ontid,
-                issuerIdentity.ontid + "#keys-2", issuerSigner);
         VerifiablePresentation presentation = owner.createPresentation(
                 new VerifiableCredential[]{verifiableCredential, otherVerifiableCredential},
-                presentationContext, presentationType, ownerIdentity.ontid, new OntIdSigner[]{otherSigner},
-                Proof.ProofType.EcdsaSecp256r1Signature2019,
-                Proof.ProofPurpose.assertionMethod);
+                presentationContext, presentationType, ownerIdentity.ontid, new OntIdSigner[]{},
+                ProofPurpose.assertionMethod);
         System.out.println("presentation: " + JSON.toJSONString(presentation));
         // the 2 credential has no jws
 //        String jwtPresentation1 = owner.createJWTPresentation(
 //                new VerifiableCredential[]{verifiableCredential, otherVerifiableCredential},
 //                presentationContext, presentationType, ownerIdentity.ontid,
-//                Proof.ProofType.EcdsaSecp256r1Signature2019);
+//                ProofType.EcdsaSecp256r1Signature2019);
 //        System.out.println("jwtPresentation1: " + jwtPresentation1);
         String jwtPresentation2 = owner.createJWTPresentation(new String[]{jwt1, jwt2},
                 presentationContext, presentationType, ownerIdentity.ontid,
-                Proof.ProofType.EcdsaSecp256r1Signature2019, Proof.ProofPurpose.assertionMethod);
+                PubKeyType.EcdsaSecp256r1Signature2019, ProofPurpose.assertionMethod);
         System.out.println("jwtPresentation2: " + jwtPresentation2);
         // verify presentation
         // verify each claim firstly
@@ -235,13 +232,11 @@ public class OntId2Demo {
                 "rW+z9exSnOlXwlVFw6JO0drwFrON6iJ1PqqjFW1hXduZUb6U3L4iDc=";
         JWTClaim jwtClaim1 = JWTClaim.deserializeToJWTClaim(jwtCredential);
         System.out.println(JSON.toJSONString(jwtClaim1));
-        VerifiableCredential credential = VerifiableCredential.deserializeFromJWT(jwtCredential,
-                Proof.ProofPurpose.assertionMethod);
+        VerifiableCredential credential = VerifiableCredential.deserializeFromJWT(jwtClaim1, null);
         System.out.println(JSON.toJSONString(credential));
         JWTClaim jwtClaim2 = JWTClaim.deserializeToJWTClaim(jwtPresentation);
         System.out.println(JSON.toJSONString(jwtClaim2));
-        VerifiablePresentation presentation = VerifiablePresentation.deserializeFromJWT(jwtPresentation,
-                Proof.ProofPurpose.assertionMethod);
+        VerifiablePresentation presentation = VerifiablePresentation.deserializeFromJWT(jwtClaim2, null);
         System.out.println(JSON.toJSONString(presentation));
     }
 }
@@ -255,5 +250,15 @@ class ExampleCredentialSubject {
         this.id = id;
         this.name = name;
         this.spouse = spouse;
+    }
+}
+
+class ExampleIssuer {
+    public String id;
+    public String name;
+
+    public ExampleIssuer(String id, String name) {
+        this.id = id;
+        this.name = name;
     }
 }

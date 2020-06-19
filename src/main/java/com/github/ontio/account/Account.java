@@ -172,9 +172,11 @@ public class Account {
         Arrays.fill(data, (byte) 0);
         return privateKey;
     }
-    public SignatureScheme getSignatureScheme(){
+
+    public SignatureScheme getSignatureScheme() {
         return signatureScheme;
     }
+
     public KeyType getKeyType() {
         return keyType;
     }
@@ -185,7 +187,7 @@ public class Account {
 
     /**
      * @param encryptedPriKey encryptedPriKey
-     * @param passphrase passphrase
+     * @param passphrase      passphrase
      * @return
      * @throws Exception
      */
@@ -265,7 +267,9 @@ public class Account {
         if (this.privateKey == null) {
             throw new Exception(ErrorCode.WithoutPrivate);
         }
-
+        if (scheme != signatureScheme) {
+            throw new Exception(ErrorCode.SignatureSchemeMismatch);
+        }
         SignatureHandler ctx = new SignatureHandler(keyType, signatureScheme);
         AlgorithmParameterSpec paramSpec = null;
         if (signatureScheme == SignatureScheme.SM3WITHSM2) {
@@ -332,16 +336,16 @@ public class Account {
         if (data.length < 2) {
             throw new Exception(ErrorCode.InvalidData);
         }
-        if(data.length == 33){
+        if (data.length == 33) {
             this.keyType = KeyType.ECDSA;
-        } else if(data.length == 35) {
+        } else if (data.length == 35) {
             this.keyType = KeyType.fromLabel(data[0]);
         }
         this.privateKey = null;
         this.publicKey = null;
         switch (this.keyType) {
             case ECDSA:
-			    this.keyType = KeyType.ECDSA;
+                this.keyType = KeyType.ECDSA;
                 this.curveParams = new Object[]{Curve.P256.toString()};
                 ECNamedCurveParameterSpec spec0 = ECNamedCurveTable.getParameterSpec(Curve.P256.toString());
                 ECParameterSpec param0 = new ECNamedCurveSpec(spec0.getName(), spec0.getCurve(), spec0.getG(), spec0.getN());
@@ -381,7 +385,7 @@ public class Account {
                 byte[] d = new byte[32];
                 if (pri.getD().toByteArray().length == 33) {
                     System.arraycopy(pri.getD().toByteArray(), 1, d, 0, 32);
-                } else if (pri.getD().toByteArray().length == 31){
+                } else if (pri.getD().toByteArray().length == 31) {
                     d[0] = 0;
                     System.arraycopy(pri.getD().toByteArray(), 0, d, 1, 31);
                 } else {
@@ -483,7 +487,7 @@ public class Account {
         }
     }
 
-    public String exportGcmEncryptedPrikey(String passphrase,byte[] salt, int n) throws Exception {
+    public String exportGcmEncryptedPrikey(String passphrase, byte[] salt, int n) throws Exception {
         int N = n;
         int r = 8;
         int p = 8;
@@ -500,7 +504,7 @@ public class Account {
         try {
             SecretKeySpec skeySpec = new SecretKeySpec(derivedhalf2, "AES");
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-            cipher.init(Cipher.ENCRYPT_MODE, skeySpec, new GCMParameterSpec(128,iv));
+            cipher.init(Cipher.ENCRYPT_MODE, skeySpec, new GCMParameterSpec(128, iv));
             cipher.updateAAD(getAddressU160().toBase58().getBytes());
             byte[] encryptedkey = cipher.doFinal(serializePrivateKey());
             return new String(Base64.getEncoder().encode(encryptedkey));
@@ -513,8 +517,9 @@ public class Account {
     public static String getCtrDecodedPrivateKey(String encryptedPriKey, String passphrase, String address, int n, SignatureScheme scheme) throws Exception {
         byte[] addresshashTmp = Digest.hash256(address.getBytes());
         byte[] addresshash = Arrays.copyOfRange(addresshashTmp, 0, 4);
-        return getCtrDecodedPrivateKey(encryptedPriKey,passphrase,addresshash,n,scheme);
+        return getCtrDecodedPrivateKey(encryptedPriKey, passphrase, addresshash, n, scheme);
     }
+
     public static String getCtrDecodedPrivateKey(String encryptedPriKey, String passphrase, byte[] salt, int n, SignatureScheme scheme) throws Exception {
         if (encryptedPriKey == null) {
             throw new SDKException(ErrorCode.EncryptedPriKeyError);
@@ -543,13 +548,13 @@ public class Account {
         String address = new Account(rawkey, scheme).getAddressU160().toBase58();
         byte[] addresshashTmp = Digest.hash256(address.getBytes());
         byte[] addresshash = Arrays.copyOfRange(addresshashTmp, 0, 4);
-        if (!Arrays.equals(addresshash,salt)) {
+        if (!Arrays.equals(addresshash, salt)) {
             throw new SDKException(ErrorCode.encryptedPriKeyAddressPasswordErr);
         }
         return Helper.toHexString(rawkey);
     }
 
-    public static String getGcmDecodedPrivateKey(String encryptedPriKey, String passphrase,String address, byte[] salt, int n, SignatureScheme scheme) throws Exception {
+    public static String getGcmDecodedPrivateKey(String encryptedPriKey, String passphrase, String address, byte[] salt, int n, SignatureScheme scheme) throws Exception {
         if (encryptedPriKey == null) {
             throw new SDKException(ErrorCode.EncryptedPriKeyError);
         }
@@ -557,9 +562,9 @@ public class Account {
             throw new SDKException(ErrorCode.ParamError);
         }
         byte[] encryptedkey = new byte[]{};
-        try{
+        try {
             encryptedkey = Base64.getDecoder().decode(encryptedPriKey);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new SDKException(ErrorCode.ParamErr("encryptedPriKey is wrong"));
         }
 
@@ -579,7 +584,7 @@ public class Account {
         try {
             SecretKeySpec skeySpec = new SecretKeySpec(derivedhalf2, "AES");
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-            cipher.init(Cipher.DECRYPT_MODE, skeySpec, new GCMParameterSpec(128,iv));
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec, new GCMParameterSpec(128, iv));
             cipher.updateAAD(address.getBytes());
             rawkey = cipher.doFinal(encryptedkey);
         } catch (Exception e) {
@@ -591,6 +596,7 @@ public class Account {
         }
         return Helper.toHexString(rawkey);
     }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

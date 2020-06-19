@@ -1,7 +1,5 @@
 package com.github.ontio.ontid.jwt;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
@@ -15,6 +13,7 @@ public class JWTVC {
     public String[] type;
     public Object credentialSubject;
     public CredentialStatus credentialStatus;
+    public Object issuer;
 
     public JWTVC() {
     }
@@ -23,20 +22,22 @@ public class JWTVC {
         this.context = credential.context;
         this.type = credential.type;
         this.credentialStatus = credential.credentialStatus;
-        String jsonCredentialSubject = JSON.toJSONString(credential.credentialSubject);
-        // remove id attribute
-        if (jsonCredentialSubject.startsWith("[")) {
-            // credential subject is array
-            JSONArray credentialSubject = JSON.parseArray(jsonCredentialSubject);
-            for (int i = 0; i < credentialSubject.size(); i++) {
-                JSONObject object = credentialSubject.getJSONObject(i);
-                object.remove("id");
+        if (!(credential.issuer instanceof String)
+                && !credential.issuer.getClass().isPrimitive()
+                && !credential.issuer.getClass().isArray()) {
+            JSONObject issuer = (JSONObject) JSONObject.toJSON(credential.issuer);
+            issuer.remove("id");
+            if (issuer.size() > 0) {
+                this.issuer = issuer;
             }
-            this.credentialSubject = credentialSubject;
-        } else {
-            JSONObject credentialSubject = JSON.parseObject(jsonCredentialSubject);
+        }
+        // remove id attribute
+        if (credential.credentialSubject != null && !credential.credentialSubject.getClass().isArray()) {
+            JSONObject credentialSubject = (JSONObject) JSONObject.toJSON(credential.credentialSubject);
             credentialSubject.remove("id");
             this.credentialSubject = credentialSubject;
+        } else {
+            this.credentialSubject = credential.credentialSubject;
         }
     }
 }

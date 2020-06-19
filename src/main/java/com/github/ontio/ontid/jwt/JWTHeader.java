@@ -1,26 +1,27 @@
 package com.github.ontio.ontid.jwt;
 
 import com.alibaba.fastjson.annotation.JSONType;
-import com.github.ontio.ontid.Proof;
+import com.github.ontio.ontid.ALG;
+import com.github.ontio.ontid.PubKeyType;
 import com.github.ontio.ontid.VerifiableCredential;
 import com.github.ontio.ontid.VerifiablePresentation;
 
 @JSONType(orders = {"alg", "kid", "typ"})
 public class JWTHeader {
-    public String alg;
+    public ALG alg;
     public String kid; // VerifiableCredential issuer
     public String typ = "JWT";
 
     public JWTHeader() {
     }
 
-    public JWTHeader(String alg, String kid) {
+    public JWTHeader(ALG alg, String kid) {
         this.alg = alg;
         this.kid = kid;
     }
 
-    public JWTHeader(Proof.ProofType proofType, String kid) {
-        this.alg = proofType.getAlg();
+    public JWTHeader(PubKeyType pubKeyType, String kid) {
+        this.alg = pubKeyType.getAlg();
         this.kid = kid;
     }
 

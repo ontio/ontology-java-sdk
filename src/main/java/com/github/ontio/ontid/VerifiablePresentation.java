@@ -4,14 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
 import com.github.ontio.crypto.Digest;
-import com.github.ontio.ontid.jwt.ALG;
 import com.github.ontio.ontid.jwt.JWTClaim;
 import com.github.ontio.sdk.exception.SDKException;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @JSONType(orders = {"@context", "id", "type", "verifiableCredential", "holder", "proof"})
@@ -21,11 +19,11 @@ public class VerifiablePresentation {
     public String id;
     public String[] type;
     public VerifiableCredential[] verifiableCredential;
-    public String holder; // holder may not use
+    public Object holder; // holder may not use
     public Proof[] proof;
 
     public VerifiablePresentation() {
-        this.id = UUID.randomUUID().toString();
+        this.id = "urn:uuid:" + UUID.randomUUID().toString();
     }
 
     public byte[] genNeedSignData() {
@@ -33,57 +31,24 @@ public class VerifiablePresentation {
         this.proof = null;
         String jsonStr = JSON.toJSONString(this);
         this.proof = proofs;
-        return Digest.hash256(jsonStr.getBytes());
+        return Digest.sha256(jsonStr.getBytes());
     }
 
-    public Date findExpiration() throws Exception {
-        Date minExpiration = null;
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        for (VerifiableCredential credential : this.verifiableCredential) {
-            Date exp = formatter.parse(credential.expirationDate);
-            if (minExpiration == null || minExpiration.after(exp)) {
-                minExpiration = exp;
-            }
-        }
-        if (minExpiration == null) {
-            throw new SDKException("presentation has no credential");
-        }
-        return minExpiration;
+    public String fetchHolderOntId() {
+        return Util.fetchId(holder);
     }
 
-    public Date findIssuanceDate() throws Exception {
-        Date minIssuanceDate = null;
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        for (VerifiableCredential credential : this.verifiableCredential) {
-            Date issuance = formatter.parse(credential.issuanceDate);
-            if (minIssuanceDate == null || minIssuanceDate.after(issuance)) {
-                minIssuanceDate = issuance;
-            }
+    public String findSubjectId() {
+        if (this.verifiableCredential.length != 1) {
+            return this.verifiableCredential[0].findSubjectId();
         }
-        if (minIssuanceDate == null) {
-            throw new SDKException("presentation has no credential");
-        }
-        return minIssuanceDate;
+        return "";
     }
 
-    public String findSubjectId() throws Exception {
-        Set<String> subjectIds = new HashSet<>();
-        for (VerifiableCredential credential : this.verifiableCredential) {
-            subjectIds.add(credential.findSubjectId());
-        }
-        if (subjectIds.size() == 0) {
-            return "";
-        }
-        if (subjectIds.size() == 1) {
-            return (String) subjectIds.toArray()[0];
-        }
-        throw new SDKException("presentation cannot unify credential subject id");
-    }
-
-    public Proof.ProofType fetchProofType() throws Exception {
+    public PubKeyType fetchProofType() throws Exception {
         if (this.proof == null || this.proof.length != 1) {
             int len = this.proof == null ? 0 : this.proof.length;
-            throw new SDKException(String.format("the num of presentation: %d mismatch", len));
+            throw new SDKException(String.format("the num of presentation proofs: %d mismatch", len));
         }
         return this.proof[0].type;
     }
@@ -91,7 +56,7 @@ public class VerifiablePresentation {
     public String findVerificationMethod() throws Exception {
         if (this.proof == null || this.proof.length != 1) {
             int len = this.proof == null ? 0 : this.proof.length;
-            throw new SDKException(String.format("the num of presentation: %d mismatch", len));
+            throw new SDKException(String.format("the num of presentation proofs: %d mismatch", len));
         }
         return this.proof[0].verificationMethod;
     }
@@ -99,17 +64,13 @@ public class VerifiablePresentation {
     public String findJWS() throws Exception {
         if (this.proof == null || this.proof.length != 1) {
             int len = this.proof == null ? 0 : this.proof.length;
-            throw new SDKException(String.format("the num of presentation: %d mismatch", len));
+            throw new SDKException(String.format("the num of presentation proofs: %d mismatch", len));
         }
         return this.proof[0].jws;
     }
 
-    public static VerifiablePresentation deserializeFromJWT(String jwtPresentation, Proof.ProofPurpose purpose)
+    public static VerifiablePresentation deserializeFromJWT(JWTClaim claim, ProofPurpose purpose)
             throws Exception {
-        JWTClaim claim = JWTClaim.deserializeToJWTClaim(jwtPresentation);
-        if (claim.payload.vp == null) {
-            throw new SDKException("illegal jwt");
-        }
         VerifiablePresentation presentation = new VerifiablePresentation();
         presentation.context = claim.payload.vp.context;
         presentation.id = claim.payload.jti;
@@ -122,13 +83,15 @@ public class VerifiablePresentation {
         } else {
             created = formatter.format(new Date(Long.parseLong(claim.payload.iat) * 1000));
         }
-        Proof proof = new Proof(claim.header.kid, created, ALG.getProofTypeFromAlg(claim.header.alg), purpose);
+        Proof proof = new Proof(claim.header.kid, created, claim.header.alg.proofType(), purpose);
         proof.jws = claim.jws;
+        presentation.proof = new Proof[]{proof};
         int vcLength = claim.payload.vp.verifiableCredential.length;
         VerifiableCredential[] credentials = new VerifiableCredential[vcLength];
         for (int i = 0; i < vcLength; i++) {
             String vc = claim.payload.vp.verifiableCredential[i];
-            VerifiableCredential credential = VerifiableCredential.deserializeFromJWT(vc, purpose);
+            JWTClaim vcJWT = JWTClaim.deserializeToJWTClaim(vc);
+            VerifiableCredential credential = VerifiableCredential.deserializeFromJWT(vcJWT, purpose);
             credentials[i] = credential;
         }
         presentation.verifiableCredential = credentials;

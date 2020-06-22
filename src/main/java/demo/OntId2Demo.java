@@ -1,6 +1,7 @@
 package demo;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONType;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.ontid.*;
@@ -22,6 +23,7 @@ public class OntId2Demo {
             ontSdk.neovm().claimRecord().setContractAddress("52df370680de17bc5d4262c446f102a0ee0d6312");
             testClaim(ontSdk);
             testDeserialize();
+//            testVerifyClaimSignature(ontSdk);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -112,38 +114,47 @@ public class OntId2Demo {
         ExampleIssuer exampleIssuer = new ExampleIssuer(issuerIdentity.ontid, "issuer");
         ExampleCredentialSubject otherCredentialSubject = new ExampleCredentialSubject("did:ont:111111",
                 "he", "she");
-        VerifiableCredential otherVerifiableCredential = issuer.createClaim(credential.context, credential.type,
-                new ExampleCredentialSubject[]{otherCredentialSubject}, exampleIssuer, expiration,
+        VerifiableCredential verifiableCredential2 = issuer.createClaim(credential.context, credential.type,
+                exampleIssuer, new ExampleCredentialSubject[]{otherCredentialSubject}, expiration,
                 CredentialStatusType.AttestContract,
                 ProofPurpose.assertionMethod);
         String jwt2 = issuer.createJWTClaim(credential.context, credential.type,
-                new ExampleCredentialSubject[]{otherCredentialSubject}, exampleIssuer, expiration,
+                exampleIssuer, new ExampleCredentialSubject[]{otherCredentialSubject}, expiration,
                 CredentialStatusType.AttestContract,
                 PubKeyType.EcdsaSecp256r1Signature2019);
-        System.out.println("otherVerifiableCredential: " + JSON.toJSONString(otherVerifiableCredential));
+        System.out.println("verifiableCredential2: " + JSON.toJSONString(verifiableCredential2));
         System.out.println("jwt2: " + jwt2);
-        String otherCommitClaimHash = issuer.commitClaim(otherVerifiableCredential, ownerIdentity.ontid, payer,
+        String otherCommitClaimHash = issuer.commitClaim(verifiableCredential2, ownerIdentity.ontid, payer,
                 gasLimit, gasPrice, ontSdk);
-        System.out.println("commit claim: " + otherVerifiableCredential.id + ", txHash: " + otherCommitClaimHash);
-        Thread.sleep(6000);
-        String otherJWTCommitClaimHash = issuer.commitClaim(jwt2, ownerIdentity.ontid, payer,
+        System.out.println("commit claim: " + verifiableCredential2.id + ", txHash: " + otherCommitClaimHash);
+        String jwt2CommitClaimHash = issuer.commitClaim(jwt2, ownerIdentity.ontid, payer,
                 gasLimit, gasPrice, ontSdk);
-        System.out.println("commit other jwt claim, txHash: " + otherJWTCommitClaimHash);
+        System.out.println("commit other jwt claim, txHash: " + jwt2CommitClaimHash);
         Thread.sleep(6000);
         ClaimRecordTxDemo.showEvent(ontSdk, "Commit", otherCommitClaimHash);
-        ClaimRecordTxDemo.showEvent(ontSdk, "Commit", otherJWTCommitClaimHash);
+        ClaimRecordTxDemo.showEvent(ontSdk, "Commit", jwt2CommitClaimHash);
+        boolean verifiableCredential2Verified = verifier.verifyClaim(credibleOntIds, verifiableCredential2);
+        if (!verifiableCredential2Verified) {
+            System.out.println("verifiableCredential2Verified: " + verifiableCredential2Verified);
+            return;
+        }
+        boolean jwt2Verified = verifier.verifyJWTClaim(credibleOntIds, jwt2);
+        if (!jwt2Verified) {
+            System.out.println("jwt2Verified: " + jwt2Verified);
+            return;
+        }
         // create presentation
         String[] presentationContext = new String[]{};
         String[] presentationType = new String[]{"CredentialManagerPresentation"};
         // you can use any ontId as otherSigner if you want
         VerifiablePresentation presentation = owner.createPresentation(
-                new VerifiableCredential[]{verifiableCredential, otherVerifiableCredential},
+                new VerifiableCredential[]{verifiableCredential, verifiableCredential2},
                 presentationContext, presentationType, ownerIdentity.ontid, new OntIdSigner[]{},
                 ProofPurpose.assertionMethod);
         System.out.println("presentation: " + JSON.toJSONString(presentation));
         // the 2 credential has no jws
 //        String jwtPresentation1 = owner.createJWTPresentation(
-//                new VerifiableCredential[]{verifiableCredential, otherVerifiableCredential},
+//                new VerifiableCredential[]{verifiableCredential, verifiableCredential2},
 //                presentationContext, presentationType, ownerIdentity.ontid,
 //                ProofType.EcdsaSecp256r1Signature2019);
 //        System.out.println("jwtPresentation1: " + jwtPresentation1);
@@ -172,7 +183,7 @@ public class OntId2Demo {
         Thread.sleep(6000);
         ClaimRecordTxDemo.showEvent(ontSdk, "Revoke", issuerRevokeHash);
         // owner revoke claim
-        String ownerRevokeHash = owner.revokeClaimById(otherVerifiableCredential.id, payer, gasLimit, gasPrice, ontSdk);
+        String ownerRevokeHash = owner.revokeClaimById(verifiableCredential2.id, payer, gasLimit, gasPrice, ontSdk);
         System.out.println("ownerRevokeHash: " + ownerRevokeHash);
         Thread.sleep(6000);
         ClaimRecordTxDemo.showEvent(ontSdk, "Revoke", ownerRevokeHash);
@@ -187,49 +198,48 @@ public class OntId2Demo {
     }
 
     public static void testDeserialize() throws Exception {
-        String jwtCredential = "eyJhbGciOiJFUzI1NiIsImtpZCI6ImRpZDpvbnQ6QUo0QzlhVFl4VEdVaEVwYVpkUGpGU3FDcXpNQ3FKR" +
-                "FJVZCNrZXlzLTIiLCJ0eXAiOiJKV1QifQ==.eyJzdWIiOiJkaWQ6b250OjExMTExMSIsImp0aSI6IjUyNzM1NTgxLTM" +
-                "wMGItNDc5OS1hNDAwLTUxNmJhYjJkOWRmMSIsImlzcyI6ImRpZDpvbnQ6QUo0QzlhVFl4VEdVaEVwYVpkUGpGU3FDcX" +
-                "pNQ3FKRFJVZCIsIm5iZiI6IjE1OTI0NzM2MTEiLCJpYXQiOiIxNTkyNDczNjExIiwiZXhwIjoiMTU5MjU2MDAxMSIsI" +
-                "nZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly9v" +
-                "bnRpZC5vbnQuaW8vY3JlZGVudGlhbHMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlJlbGF0aW9" +
-                "uc2hpcENyZWRlbnRpYWwiXSwiY3JlZGVudGlhbFN1YmplY3QiOnsibmFtZSI6IkJvYiIsInNwb3VzZSI6IkFsaWNlIn" +
-                "0sImNyZWRlbnRpYWxTdGF0dXMiOnsiaWQiOiI1MmRmMzcwNjgwZGUxN2JjNWQ0MjYyYzQ0NmYxMDJhMGVlMGQ2MzEyI" +
-                "iwidHlwZSI6IkNsYWltQ29udHJhY3QifX19.AcxAzQqY5ZnSCzNuPJuYyTdStw4Otjffm0eqUfAQdRUKbqRV243VVNK" +
-                "kPhoDdFSpOUneL3qto5nqsz2Zqq9ta/Q=";
-        String jwtPresentation = "eyJhbGciOiJFUzI1NiIsImtpZCI6ImRpZDpvbnQ6QVZlNHpWWnp0ZW82SG9McGRCd3BLTnREWE" +
-                "xqSkJ6QjlmdiNrZXlzLTIiLCJ0eXAiOiJKV1QifQ==.eyJzdWIiOiJkaWQ6b250OjExMTExMSIsImp0aSI6ImUzYjZl" +
-                "NjY1LTA4M2QtNDM1Ni1hMTMyLTdhZGZiYjE3MDA1YSIsImlzcyI6ImRpZDpvbnQ6QVZlNHpWWnp0ZW82SG9McGRCd3B" +
-                "LTnREWExqSkJ6QjlmdiIsIm5iZiI6IjE1OTI0NzM2MTEiLCJpYXQiOiIxNTkyNDczNjExIiwiZXhwIjoiMTU5MjU2MD" +
-                "AxMSIsInZwIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0c" +
-                "HM6Ly9vbnRpZC5vbnQuaW8vY3JlZGVudGlhbHMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlUHJlc2VudGF0aW9uIiwi" +
-                "Q3JlZGVudGlhbE1hbmFnZXJQcmVzZW50YXRpb24iXSwidmVyaWZpYWJsZUNyZWRlbnRpYWwiOlsiZXlKaGJHY2lPaUp" +
-                "GVXpJMU5pSXNJbXRwWkNJNkltUnBaRHB2Ym5RNlFVbzBRemxoVkZsNFZFZFZhRVZ3WVZwa1VHcEdVM0ZEY1hwTlEzRk" +
-                "tSRkpWWkNOclpYbHpMVElpTENKMGVYQWlPaUpLVjFRaWZRPT0uZXlKemRXSWlPaUprYVdRNmIyNTBPakV4TVRFeE1TS" +
-                "XNJbXAwYVNJNklqVXlOek0xTlRneExUTXdNR0l0TkRjNU9TMWhOREF3TFRVeE5tSmhZakprT1dSbU1TSXNJbWx6Y3lJ" +
-                "NkltUnBaRHB2Ym5RNlFVbzBRemxoVkZsNFZFZFZhRVZ3WVZwa1VHcEdVM0ZEY1hwTlEzRktSRkpWWkNJc0ltNWlaaUk" +
-                "2SWpFMU9USTBOek0yTVRFaUxDSnBZWFFpT2lJeE5Ua3lORGN6TmpFeElpd2laWGh3SWpvaU1UVTVNalUyTURBeE1TSX" +
-                "NJblpqSWpwN0lrQmpiMjUwWlhoMElqcGJJbWgwZEhCek9pOHZkM2QzTG5jekxtOXlaeTh5TURFNEwyTnlaV1JsYm5Sc" +
-                "FlXeHpMM1l4SWl3aWFIUjBjSE02THk5dmJuUnBaQzV2Ym5RdWFXOHZZM0psWkdWdWRHbGhiSE12ZGpFaVhTd2lkSGx3" +
-                "WlNJNld5SldaWEpwWm1saFlteGxRM0psWkdWdWRHbGhiQ0lzSWxKbGJHRjBhVzl1YzJocGNFTnlaV1JsYm5ScFlXd2l" +
-                "YU3dpWTNKbFpHVnVkR2xoYkZOMVltcGxZM1FpT25zaWJtRnRaU0k2SWtKdllpSXNJbk53YjNWelpTSTZJa0ZzYVdObE" +
-                "luMHNJbU55WldSbGJuUnBZV3hUZEdGMGRYTWlPbnNpYVdRaU9pSTFNbVJtTXpjd05qZ3daR1V4TjJKak5XUTBNall5W" +
-                "XpRME5tWXhNREpoTUdWbE1HUTJNekV5SWl3aWRIbHdaU0k2SWtOc1lXbHRRMjl1ZEhKaFkzUWlmWDE5LkFjeEF6UXFZ" +
-                "NVpuU0N6TnVQSnVZeVRkU3R3NE90amZmbTBlcVVmQVFkUlVLYnFSVjI0M1ZWTktrUGhvRGRGU3BPVW5lTDNxdG81bnF" +
-                "zejJacXE5dGEvUT0iLCJleUpoYkdjaU9pSkZVekkxTmlJc0ltdHBaQ0k2SW1ScFpEcHZiblE2UVVvMFF6bGhWRmw0Vk" +
-                "VkVmFFVndZVnBrVUdwR1UzRkRjWHBOUTNGS1JGSlZaQ05yWlhsekxUSWlMQ0owZVhBaU9pSktWMVFpZlE9PS5leUp6Z" +
-                "FdJaU9pSmthV1E2YjI1ME9qRXhNVEV4TVNJc0ltcDBhU0k2SW1VM1ltTmtaVGRqTFdRMU56SXROR0UxTlMwNE5HWmxM" +
-                "V1JoTkdJNVkyVmhOREF4T1NJc0ltbHpjeUk2SW1ScFpEcHZiblE2UVVvMFF6bGhWRmw0VkVkVmFFVndZVnBrVUdwR1U" +
-                "zRkRjWHBOUTNGS1JGSlZaQ0lzSW01aVppSTZJakUxT1RJME56TTJNekFpTENKcFlYUWlPaUl4TlRreU5EY3pOak13SW" +
-                "l3aVpYaHdJam9pTVRVNU1qVTJNREF4TVNJc0luWmpJanA3SWtCamIyNTBaWGgwSWpwYkltaDBkSEJ6T2k4dmQzZDNMb" +
-                "mN6TG05eVp5OHlNREU0TDJOeVpXUmxiblJwWVd4ekwzWXhJaXdpYUhSMGNITTZMeTl2Ym5ScFpDNXZiblF1YVc4dlkz" +
-                "SmxaR1Z1ZEdsaGJITXZkakVpWFN3aWRIbHdaU0k2V3lKV1pYSnBabWxoWW14bFEzSmxaR1Z1ZEdsaGJDSXNJbEpsYkd" +
-                "GMGFXOXVjMmhwY0VOeVpXUmxiblJwWVd3aVhTd2lZM0psWkdWdWRHbGhiRk4xWW1wbFkzUWlPbHQ3SW01aGJXVWlPaU" +
-                "pvWlNJc0luTndiM1Z6WlNJNkluTm9aU0o5WFN3aVkzSmxaR1Z1ZEdsaGJGTjBZWFIxY3lJNmV5SnBaQ0k2SWpVeVpHW" +
-                "XpOekEyT0RCa1pURTNZbU0xWkRReU5qSmpORFEyWmpFd01tRXdaV1V3WkRZek1USWlMQ0owZVhCbElqb2lRMnhoYVcx" +
-                "RGIyNTBjbUZqZENKOWZYMD0uQVhJVzR2dThvYnNzQjVxdjZMaEo5dDN2OUcwZXZ5TTVCM3d3SW9TaTFocU85NENmc28" +
-                "1MG44WkNvcnVmd3A4MUVFMVR6MTUybkorQTZzN1Mzc2NtMTMwPSJdfX0=.AaXTFqjgIof01n+fft33yM+Th391vMIAY" +
-                "rW+z9exSnOlXwlVFw6JO0drwFrON6iJ1PqqjFW1hXduZUb6U3L4iDc=";
+        String jwtCredential = "eyJhbGciOiJFUzI1NiIsImtpZCI6ImRpZDpvbnQ6QUo0QzlhVFl4VEdVaEVwYVpkUGpGU3FDcXpNQ3F" +
+                "KRFJVZCNrZXlzLTIiLCJ0eXAiOiJKV1QifQ==.eyJqdGkiOiJ1cm46dXVpZDpiMGFhM2NiYS0zODU5LTQ2MDMtOGY1Yy0z" +
+                "ZTE1MmM2MmE3NmUiLCJpc3MiOiJkaWQ6b250OkFKNEM5YVRZeFRHVWhFcGFaZFBqRlNxQ3F6TUNxSkRSVWQiLCJuYmYiOi" +
+                "IxNTkyNzkzMzQwIiwiaWF0IjoiMTU5Mjc5MzM0MCIsImV4cCI6IjE1OTI4Nzk3MjEiLCJ2YyI6eyJAY29udGV4dCI6WyJo" +
+                "dHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi8vb250aWQub250LmlvL2NyZWRlbnRpYW" +
+                "xzL3YxIl0sInR5cGUiOlsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCJSZWxhdGlvbnNoaXBDcmVkZW50aWFsIl0sImNyZWRl" +
+                "bnRpYWxTdWJqZWN0IjpbeyJpZCI6ImRpZDpvbnQ6MTExMTExIiwibmFtZSI6ImhlIiwic3BvdXNlIjoic2hlIn1dLCJjcm" +
+                "VkZW50aWFsU3RhdHVzIjp7ImlkIjoiNTJkZjM3MDY4MGRlMTdiYzVkNDI2MmM0NDZmMTAyYTBlZTBkNjMxMiIsInR5cGUi" +
+                "OiJBdHRlc3RDb250cmFjdCJ9LCJpc3N1ZXIiOnsibmFtZSI6Imlzc3VlciJ9fX0=.ASGQOoD3qpWPBQFb81izUx2UxqjMC" +
+                "zrESYmA/b62fCcjT0++OC1AnwwnoIetQmNGW80sSSaj42KEnUtB1Gy+5WY=";
+        String jwtPresentation = "eyJhbGciOiJFUzI1NiIsImtpZCI6ImRpZDpvbnQ6QVZlNHpWWnp0ZW82SG9McGRCd3BLTnREWExqS" +
+                "kJ6QjlmdiNrZXlzLTIiLCJ0eXAiOiJKV1QifQ==.eyJzdWIiOiIiLCJqdGkiOiJ1cm46dXVpZDo2MzZlNzdkOS01ZGY4LT" +
+                "Q3NTQtYTM1My02ZDUyMWFmYjUzNzkiLCJpc3MiOiJkaWQ6b250OkFWZTR6Vlp6dGVvNkhvTHBkQndwS050RFhMakpCekI5" +
+                "ZnYiLCJ2cCI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi" +
+                "8vb250aWQub250LmlvL2NyZWRlbnRpYWxzL3YxIl0sInR5cGUiOlsiVmVyaWZpYWJsZVByZXNlbnRhdGlvbiIsIkNyZWRl" +
+                "bnRpYWxNYW5hZ2VyUHJlc2VudGF0aW9uIl0sInZlcmlmaWFibGVDcmVkZW50aWFsIjpbImV5SmhiR2NpT2lKRlV6STFOaU" +
+                "lzSW10cFpDSTZJbVJwWkRwdmJuUTZRVW8wUXpsaFZGbDRWRWRWYUVWd1lWcGtVR3BHVTNGRGNYcE5RM0ZLUkZKVlpDTnJa" +
+                "WGx6TFRJaUxDSjBlWEFpT2lKS1YxUWlmUT09LmV5SnpkV0lpT2lKa2FXUTZiMjUwT2pFeE1URXhNU0lzSW1wMGFTSTZJbl" +
+                "Z5YmpwMWRXbGtPbU13T1dOaU56VTRMV1UwTVdJdE5HSTVNUzA1T0dFd0xXWXhPRGd4WkRVME5EZGxPU0lzSW1semN5STZJ" +
+                "bVJwWkRwdmJuUTZRVW8wUXpsaFZGbDRWRWRWYUVWd1lWcGtVR3BHVTNGRGNYcE5RM0ZLUkZKVlpDSXNJbTVpWmlJNklqRT" +
+                "FPVEkzT1RNek1qRWlMQ0pwWVhRaU9pSXhOVGt5Tnprek16SXhJaXdpWlhod0lqb2lNVFU1TWpnM09UY3lNU0lzSW5aaklq" +
+                "cDdJa0JqYjI1MFpYaDBJanBiSW1oMGRIQnpPaTh2ZDNkM0xuY3pMbTl5Wnk4eU1ERTRMMk55WldSbGJuUnBZV3h6TDNZeE" +
+                "lpd2lhSFIwY0hNNkx5OXZiblJwWkM1dmJuUXVhVzh2WTNKbFpHVnVkR2xoYkhNdmRqRWlYU3dpZEhsd1pTSTZXeUpXWlhK" +
+                "cFptbGhZbXhsUTNKbFpHVnVkR2xoYkNJc0lsSmxiR0YwYVc5dWMyaHBjRU55WldSbGJuUnBZV3dpWFN3aVkzSmxaR1Z1ZE" +
+                "dsaGJGTjFZbXBsWTNRaU9uc2libUZ0WlNJNklrSnZZaUlzSW5Od2IzVnpaU0k2SWtGc2FXTmxJbjBzSW1OeVpXUmxiblJw" +
+                "WVd4VGRHRjBkWE1pT25zaWFXUWlPaUkxTW1SbU16Y3dOamd3WkdVeE4ySmpOV1EwTWpZeVl6UTBObVl4TURKaE1HVmxNR1" +
+                "EyTXpFeUlpd2lkSGx3WlNJNklrRjBkR1Z6ZEVOdmJuUnlZV04wSW4xOWZRPT0uQWZHODRTcUtuOFFFZUNKWWc3bzRabkpt" +
+                "NXBma0RWeVVGa1RSTmlxM2krS2ZkTW94dGdDaFh5aHVDbUlXd05UY0NHblVJT3dHTzNPVGZ0NUZVOFBRWUpJPSIsImV5Sm" +
+                "hiR2NpT2lKRlV6STFOaUlzSW10cFpDSTZJbVJwWkRwdmJuUTZRVW8wUXpsaFZGbDRWRWRWYUVWd1lWcGtVR3BHVTNGRGNY" +
+                "cE5RM0ZLUkZKVlpDTnJaWGx6TFRJaUxDSjBlWEFpT2lKS1YxUWlmUT09LmV5SnFkR2tpT2lKMWNtNDZkWFZwWkRwaU1HRm" +
+                "hNMk5pWVMwek9EVTVMVFEyTURNdE9HWTFZeTB6WlRFMU1tTTJNbUUzTm1VaUxDSnBjM01pT2lKa2FXUTZiMjUwT2tGS05F" +
+                "TTVZVlJaZUZSSFZXaEZjR0ZhWkZCcVJsTnhRM0Y2VFVOeFNrUlNWV1FpTENKdVltWWlPaUl4TlRreU56a3pNelF3SWl3aW" +
+                "FXRjBJam9pTVRVNU1qYzVNek0wTUNJc0ltVjRjQ0k2SWpFMU9USTROemszTWpFaUxDSjJZeUk2ZXlKQVkyOXVkR1Y0ZENJ" +
+                "Nld5Sm9kSFJ3Y3pvdkwzZDNkeTUzTXk1dmNtY3ZNakF4T0M5amNtVmtaVzUwYVdGc2N5OTJNU0lzSW1oMGRIQnpPaTh2Yj" +
+                "I1MGFXUXViMjUwTG1sdkwyTnlaV1JsYm5ScFlXeHpMM1l4SWwwc0luUjVjR1VpT2xzaVZtVnlhV1pwWVdKc1pVTnlaV1Js" +
+                "Ym5ScFlXd2lMQ0pTWld4aGRHbHZibk5vYVhCRGNtVmtaVzUwYVdGc0lsMHNJbU55WldSbGJuUnBZV3hUZFdKcVpXTjBJan" +
+                "BiZXlKdVlXMWxJam9pYUdVaUxDSnBaQ0k2SW1ScFpEcHZiblE2TVRFeE1URXhJaXdpYzNCdmRYTmxJam9pYzJobEluMWRM" +
+                "Q0pqY21Wa1pXNTBhV0ZzVTNSaGRIVnpJanA3SW1sa0lqb2lOVEprWmpNM01EWTRNR1JsTVRkaVl6VmtOREkyTW1NME5EWm" +
+                "1NVEF5WVRCbFpUQmtOak14TWlJc0luUjVjR1VpT2lKQmRIUmxjM1JEYjI1MGNtRmpkQ0o5TENKcGMzTjFaWElpT25zaWJt" +
+                "RnRaU0k2SW1semMzVmxjaUo5ZlgwPS5BU0dRT29EM3FwV1BCUUZiODFpelV4MlV4cWpNQ3pyRVNZbUEvYjYyZkNjalQwKy" +
+                "tPQzFBbnd3bm9JZXRRbU5HVzgwc1NTYWo0MktFblV0QjFHeSs1V1k9Il19fQ==.AZfjHNlf1CoBwCfUoegDYgYNjfm3dJO" +
+                "g/8zWXGT1/HJzi70FzYNHPT5FESwqBcMYKpZKOZusVR3kJ54/ORYuKxI=";
         JWTClaim jwtClaim1 = JWTClaim.deserializeToJWTClaim(jwtCredential);
         System.out.println(JSON.toJSONString(jwtClaim1));
         VerifiableCredential credential = VerifiableCredential.deserializeFromJWT(jwtClaim1, null);
@@ -239,8 +249,15 @@ public class OntId2Demo {
         VerifiablePresentation presentation = VerifiablePresentation.deserializeFromJWT(jwtClaim2, null);
         System.out.println(JSON.toJSONString(presentation));
     }
+
+    public static void testVerifyClaimSignature(OntSdk ontSdk) throws Exception {
+        String jwtClaim = "eyJhbGciOiJFUzI1NiIsImtpZCI6ImRpZDpvbnQ6QUo0QzlhVFl4VEdVaEVwYVpkUGpGU3FDcXpNQ3FKRFJVZCNrZXlzLTIiLCJ0eXAiOiJKV1QifQ==.eyJqdGkiOiJ1cm46dXVpZDozZWI0M2JkYy1jNWNjLTQ3NmYtOGRmYi03YzFhNzNlOGQ3NmEiLCJpc3MiOiJkaWQ6b250OkFKNEM5YVRZeFRHVWhFcGFaZFBqRlNxQ3F6TUNxSkRSVWQiLCJuYmYiOiIxNTkyNzk1NjEwIiwiaWF0IjoiMTU5Mjc5NTYxMCIsImV4cCI6IjE1OTI4ODE5OTEiLCJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi8vb250aWQub250LmlvL2NyZWRlbnRpYWxzL3YxIl0sInR5cGUiOlsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCJSZWxhdGlvbnNoaXBDcmVkZW50aWFsIl0sImlzc3VlciI6eyJuYW1lIjoiaXNzdWVyIn0sImNyZWRlbnRpYWxTdWJqZWN0IjpbeyJpZCI6ImRpZDpvbnQ6MTExMTExIiwibmFtZSI6ImhlIiwic3BvdXNlIjoic2hlIn1dLCJjcmVkZW50aWFsU3RhdHVzIjp7ImlkIjoiNTJkZjM3MDY4MGRlMTdiYzVkNDI2MmM0NDZmMTAyYTBlZTBkNjMxMiIsInR5cGUiOiJBdHRlc3RDb250cmFjdCJ9fX0=.AUHdTiMxaS1voZDB1B3Hthh4DPi7qXBzfvccbOuVY2CsSVo8vonn2dUwVwqAQlFaeoxyektAfXL3Zb5Bw/5Xvko=";
+        OntId2 verifier = new OntId2("", null, ontSdk.neovm().claimRecord(), ontSdk.nativevm().ontId());
+        System.out.println(verifier.verifyJWTClaimSignature(jwtClaim));
+    }
 }
 
+@JSONType(orders = {"id", "name", "spouse"})
 class ExampleCredentialSubject {
     public String id;
     public String name;

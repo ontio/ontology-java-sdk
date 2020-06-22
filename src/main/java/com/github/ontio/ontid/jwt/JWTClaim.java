@@ -2,8 +2,8 @@ package com.github.ontio.ontid.jwt;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONType;
+import com.alibaba.fastjson.parser.Feature;
 import com.github.ontio.account.Account;
-import com.github.ontio.crypto.Digest;
 import com.github.ontio.ontid.VerifiableCredential;
 import com.github.ontio.ontid.VerifiablePresentation;
 import com.github.ontio.sdk.exception.SDKException;
@@ -35,7 +35,8 @@ public class JWTClaim {
         byte[] decodedHeader = decoder.decode(header);
         byte[] decodedPayload = decoder.decode(payload);
         this.header = JSON.parseObject(decodedHeader, JWTHeader.class);
-        this.payload = JSON.parseObject(decodedPayload, JWTPayload.class);
+        // should parse iss and credentialSubject by field order
+        this.payload = JSON.parseObject(decodedPayload, JWTPayload.class, Feature.OrderedField);
     }
 
     // the proof signature should be jws

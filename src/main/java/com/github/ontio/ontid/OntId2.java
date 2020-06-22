@@ -323,6 +323,7 @@ public class OntId2 {
     }
 
     private boolean verifyJWTClaimSignature(JWTClaim jwtClaim) throws Exception {
+        System.out.println(jwtClaim.toString());
         byte[] needSignData = jwtClaim.genNeedSignData();
         byte[] signature = jwtClaim.parseSignature();
         return verifyPubKeyIdSignature(jwtClaim.payload.iss, jwtClaim.header.kid, needSignData, signature);

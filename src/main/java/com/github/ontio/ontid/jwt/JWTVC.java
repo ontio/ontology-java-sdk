@@ -1,19 +1,20 @@
 package com.github.ontio.ontid.jwt;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
 import com.github.ontio.ontid.CredentialStatus;
 import com.github.ontio.ontid.VerifiableCredential;
 
-@JSONType(orders = {"@context", "type", "credentialSubject", "credentialStatus"})
+@JSONType(orders = {"@context", "type", "issuer", "credentialSubject", "credentialStatus"})
 public class JWTVC {
     @JSONField(name = "@context")
     public String[] context;
     public String[] type;
+    public Object issuer;
     public Object credentialSubject;
     public CredentialStatus credentialStatus;
-    public Object issuer;
 
     public JWTVC() {
     }
@@ -32,7 +33,8 @@ public class JWTVC {
             }
         }
         // remove id attribute
-        if (credential.credentialSubject != null && !credential.credentialSubject.getClass().isArray()) {
+        if (credential.credentialSubject != null && !credential.credentialSubject.getClass().isArray()
+                && !(credential.credentialSubject instanceof JSONArray)) {
             JSONObject credentialSubject = (JSONObject) JSONObject.toJSON(credential.credentialSubject);
             credentialSubject.remove("id");
             this.credentialSubject = credentialSubject;

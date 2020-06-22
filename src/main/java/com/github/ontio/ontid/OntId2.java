@@ -5,7 +5,6 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.transaction.Transaction;
-import com.github.ontio.crypto.Digest;
 import com.github.ontio.ontid.jwt.JWTClaim;
 import com.github.ontio.ontid.jwt.JWTHeader;
 import com.github.ontio.ontid.jwt.JWTPayload;
@@ -212,7 +211,7 @@ public class OntId2 {
         if (!verifyClaimOntIdCredible(credibleOntIds, claim)) {
             return false;
         }
-        if (!verifyClaimNotExpired(claim)) {
+        if (!verifyClaimDate(claim)) {
             return false;
         }
         if (claim.proof == null) {
@@ -272,7 +271,7 @@ public class OntId2 {
         return false;
     }
 
-    public boolean verifyClaimNotExpired(VerifiableCredential claim) throws Exception {
+    public boolean verifyClaimDate(VerifiableCredential claim) throws Exception {
         if (claim.expirationDate == null || claim.expirationDate.isEmpty()) {
             return true;
         }
@@ -359,10 +358,10 @@ public class OntId2 {
 
     public VerifiablePresentation createPresentation(VerifiableCredential[] claims, String[] context,
                                                      String[] type, List<String> challenge,
-                                                     List<Object> domain, Object holderOntId,
+                                                     List<Object> domain, Object holder,
                                                      OntIdSigner[] otherSigners, ProofPurpose proofPurpose)
             throws Exception {
-        VerifiablePresentation presentation = genPresentationWithoutProof(claims, context, type, holderOntId);
+        VerifiablePresentation presentation = genPresentationWithoutProof(claims, context, type, holder);
         Date current = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         String currentTimeStamp = formatter.format(current);
@@ -387,7 +386,7 @@ public class OntId2 {
     }
 
     public String createJWTPresentation(VerifiableCredential[] claims, String[] context, String[] type,
-                                        Object holder, String challenge, Object domain, String nonce,
+                                        String challenge, Object domain, Object holder, String nonce,
                                         ProofPurpose proofPurpose) throws Exception {
         JWTHeader header = new JWTHeader(signer.pubKey.type.getAlg(), this.signer.pubKey.id);
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -419,7 +418,7 @@ public class OntId2 {
         return claim.toString();
     }
 
-    public VerifiablePresentation genPresentationWithoutProof(VerifiableCredential[] claims, String[] context,
+    private VerifiablePresentation genPresentationWithoutProof(VerifiableCredential[] claims, String[] context,
                                                               String[] type, Object holder) {
         VerifiablePresentation presentation = new VerifiablePresentation();
         ArrayList<String> wholeContext = new ArrayList<>();

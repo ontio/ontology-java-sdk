@@ -31,6 +31,7 @@ public class JWTVC {
             this.proof = credential.proof.genNeedSignProof();
             this.proof.hex = credential.proof.hex;
             this.proof.verificationMethod = null;
+            this.proof.type = null;
         }
         if (credential.issuer.getClass().isPrimitive() || credential.issuer.getClass().isArray() ||
                 credential.issuer instanceof JSONArray) {

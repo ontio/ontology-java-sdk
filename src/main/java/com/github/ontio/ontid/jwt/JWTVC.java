@@ -7,6 +7,7 @@ import com.alibaba.fastjson.annotation.JSONType;
 import com.github.ontio.ontid.CredentialStatus;
 import com.github.ontio.ontid.Proof;
 import com.github.ontio.ontid.VerifiableCredential;
+import com.github.ontio.sdk.exception.SDKException;
 
 @JSONType(orders = {"@context", "type", "issuer", "credentialSubject", "credentialStatus", "proof"})
 public class JWTVC {
@@ -21,21 +22,25 @@ public class JWTVC {
     public JWTVC() {
     }
 
-    public JWTVC(VerifiableCredential credential) {
+    public JWTVC(VerifiableCredential credential) throws Exception {
         this.context = credential.context;
         this.type = credential.type;
         this.credentialStatus = credential.credentialStatus;
         if (credential.proof != null) {
-            // should not contain signature
+            // should not contain jws signature and verificationMethod
             this.proof = credential.proof.genNeedSignProof();
+            this.proof.hex = credential.proof.hex;
+            this.proof.verificationMethod = null;
         }
-        if (!(credential.issuer instanceof String)
-                && !credential.issuer.getClass().isPrimitive()
-                && !credential.issuer.getClass().isArray()) {
-            JSONObject issuer = (JSONObject) JSONObject.toJSON(credential.issuer);
-            issuer.remove("id");
-            if (issuer.size() > 0) {
-                this.issuer = issuer;
+        if (credential.issuer.getClass().isPrimitive() || credential.issuer.getClass().isArray() ||
+                credential.issuer instanceof JSONArray) {
+            throw new SDKException("illegal credential issuer");
+        }
+        if (!(credential.issuer instanceof String)) {
+            JSONObject jsonObject = (JSONObject) JSONObject.toJSON(credential.issuer);
+            jsonObject.remove("id");
+            if (jsonObject.size() > 0) {
+                this.issuer = jsonObject;
             }
         }
         // remove id attribute
@@ -43,7 +48,9 @@ public class JWTVC {
                 && !(credential.credentialSubject instanceof JSONArray)) {
             JSONObject credentialSubject = (JSONObject) JSONObject.toJSON(credential.credentialSubject);
             credentialSubject.remove("id");
-            this.credentialSubject = credentialSubject;
+            if (credentialSubject.size() > 0) {
+                this.credentialSubject = credentialSubject;
+            }
         } else {
             this.credentialSubject = credential.credentialSubject;
         }

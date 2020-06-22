@@ -30,7 +30,7 @@ public class JWTClaim {
         jws = Base64.getEncoder().encodeToString(sig);
     }
 
-    public JWTClaim(String header, String payload, String jws) {
+    private JWTClaim(String header, String payload, String jws) {
         this.jws = jws;
         Base64.Decoder decoder = Base64.getDecoder();
         byte[] decodedHeader = decoder.decode(header);
@@ -42,6 +42,9 @@ public class JWTClaim {
 
     // the proof signature should be jws
     public JWTClaim(VerifiableCredential credential) throws Exception {
+        if (credential.proof == null) {
+            throw new SDKException("proof is null");
+        }
         if (credential.proof.jws == null || credential.proof.jws.isEmpty()) {
             throw new SDKException("credential has no jws");
         }
@@ -51,10 +54,16 @@ public class JWTClaim {
     }
 
     // the proof signature should be jws
-    public JWTClaim(VerifiablePresentation presentation, Proof proof) throws Exception {
-        this.jws = presentation.findJWS();
-        this.header = new JWTHeader(presentation);
-        this.payload = new JWTPayload(presentation, proof, "");
+    public JWTClaim(VerifiablePresentation presentation, Proof proof, String nonce) throws Exception {
+        if (proof == null) {
+            throw new SDKException("proof is null");
+        }
+        if (proof.jws == null || proof.jws.isEmpty()) {
+            throw new SDKException("credential has no jws");
+        }
+        this.jws = proof.jws;
+        this.header = new JWTHeader(proof);
+        this.payload = new JWTPayload(presentation, proof, nonce);
     }
 
     public static JWTClaim deserializeToJWTClaim(String jwt) throws Exception {

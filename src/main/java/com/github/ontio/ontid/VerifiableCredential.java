@@ -46,21 +46,20 @@ public class VerifiableCredential {
         return Util.fetchId(credentialSubject);
     }
 
-    public static VerifiableCredential deserializeFromJWT(JWTClaim claim, ProofPurpose proofPurpose)
-            throws Exception {
+    public static VerifiableCredential deserializeFromJWT(JWTClaim claim) {
         VerifiableCredential credential = new VerifiableCredential();
         credential.context = claim.payload.vc.context;
         credential.id = claim.payload.jti;
         credential.type = claim.payload.vc.type;
-        credential.issuer = claim.payload.iss;
+        // set date
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        if (claim.payload.iat != null && !claim.payload.iat.isEmpty()) {
-            credential.issuanceDate = formatter.format(new Date(Long.parseLong(claim.payload.iat) * 1000));
-        } else {
-            credential.issuanceDate = formatter.format(new Date(Long.parseLong(claim.payload.nbf) * 1000));
+        if (claim.payload.iat > 0) {
+            credential.issuanceDate = formatter.format(new Date(claim.payload.iat * 1000));
+        } else if (claim.payload.nbf > 0) {
+            credential.issuanceDate = formatter.format(new Date(claim.payload.nbf * 1000));
         }
-        if (claim.payload.exp != null && !claim.payload.exp.isEmpty()) {
-            credential.expirationDate = formatter.format(new Date(Long.parseLong(claim.payload.exp) * 1000));
+        if (claim.payload.exp > 0) {
+            credential.expirationDate = formatter.format(new Date(claim.payload.exp * 1000));
         }
         credential.credentialStatus = claim.payload.vc.credentialStatus;
         // assign issuer
@@ -72,10 +71,10 @@ public class VerifiableCredential {
             credential.issuer = jsonIssuer;
         }
         // generate proof
-        Proof proof = new Proof(claim.header.kid, credential.issuanceDate, claim.header.alg.proofPubKeyType(),
-                proofPurpose);
-        proof.jws = claim.jws;
-        credential.proof = proof;
+        credential.proof = claim.payload.vc.proof;
+        credential.proof.jws = claim.jws;
+        credential.proof.verificationMethod = claim.header.kid;
+        // generate credential subject
         if (claim.payload.vc.credentialSubject == null) {
             return credential;
         }

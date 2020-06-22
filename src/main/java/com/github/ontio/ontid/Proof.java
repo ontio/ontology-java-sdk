@@ -4,7 +4,7 @@ import com.alibaba.fastjson.annotation.JSONType;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Helper;
 
-@JSONType(orders = {"type", "created", "proofPurpose", "verificationMethod", "hex", "jws"})
+@JSONType(orders = {"type", "created", "challenge", "domain", "proofPurpose", "verificationMethod", "hex", "jws"})
 public class Proof {
     public PubKeyType type;
     public String created; // time stamp

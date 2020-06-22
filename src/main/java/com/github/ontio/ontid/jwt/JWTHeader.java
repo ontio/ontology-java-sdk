@@ -1,10 +1,7 @@
 package com.github.ontio.ontid.jwt;
 
 import com.alibaba.fastjson.annotation.JSONType;
-import com.github.ontio.ontid.ALG;
-import com.github.ontio.ontid.PubKeyType;
-import com.github.ontio.ontid.VerifiableCredential;
-import com.github.ontio.ontid.VerifiablePresentation;
+import com.github.ontio.ontid.*;
 
 @JSONType(orders = {"alg", "kid", "typ"})
 public class JWTHeader {
@@ -30,8 +27,8 @@ public class JWTHeader {
         this.kid = credential.proof.verificationMethod;
     }
 
-    public JWTHeader(VerifiablePresentation presentation) throws Exception {
-        this.alg = presentation.fetchProofType().getAlg();
-        this.kid = presentation.findVerificationMethod();
+    public JWTHeader(Proof proof) throws Exception {
+        this.alg = proof.type.getAlg();
+        this.kid = proof.verificationMethod;
     }
 }

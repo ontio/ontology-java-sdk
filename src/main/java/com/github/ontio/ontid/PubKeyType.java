@@ -19,6 +19,9 @@ public enum PubKeyType {
         this.algType = algType;
         this.curve = curve;
         this.hashMethod = hashMethod;
+
+        // inject self to alg pub key type
+        alg.setProofPubKeyType(this);
     }
 
     public ALG getAlg() {

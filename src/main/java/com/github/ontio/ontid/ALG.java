@@ -11,13 +11,7 @@ import com.github.ontio.sdk.exception.SDKException;
 // Ed25519VerificationKey2018             EdDSA    EDDSA Curve25519 SHA-256
 // SM2VerificationKey2019                 SM       SM2   SM2P256V1  SM3
 public enum ALG {
-    ES224(PubKeyType.EcdsaSecp224r1VerificationKey2019),
-    ES256(PubKeyType.EcdsaSecp256r1Signature2019),
-    ES384(PubKeyType.EcdsaSecp384r1VerificationKey2019),
-    ES512(PubKeyType.EcdsaSecp521r1VerificationKey2019),
-    ES256K(PubKeyType.EcdsaSecp256k1VerificationKey2019),
-    EdDSA(PubKeyType.Ed25519VerificationKey2018),
-    SM(PubKeyType.SM2VerificationKey2019);
+    ES224, ES256, ES384, ES512, ES256K, EdDSA, SM;
 
     public static final String TYPE_ECDSA = "ECDSA";
     public static final String TYPE_EDDSA = "EDDSA";
@@ -37,13 +31,16 @@ public enum ALG {
     public static final String HASH_512 = "SHA-512";
     public static final String HASH_SM3 = "SM3";
 
-    private final PubKeyType pubKeyType;
+    private PubKeyType pubKeyType;
 
-    ALG(PubKeyType pubKeyType) {
+    ALG() {
+    }
+
+    public void setProofPubKeyType(PubKeyType pubKeyType) {
         this.pubKeyType = pubKeyType;
     }
 
-    public PubKeyType proofType() {
+    public PubKeyType proofPubKeyType() {
         return pubKeyType;
     }
 

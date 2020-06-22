@@ -33,6 +33,12 @@ public class Util {
         if (object instanceof String) {
             return (String) object;
         }
+        if (object.getClass().isPrimitive()) {
+            return "";
+        }
+        if (object instanceof JSONArray) {
+            return "";
+        }
         if (object.getClass().isArray()) {
             return "";
         }

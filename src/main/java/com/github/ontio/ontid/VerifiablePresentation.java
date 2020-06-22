@@ -8,7 +8,6 @@ import com.github.ontio.ontid.jwt.JWTClaim;
 import com.github.ontio.sdk.exception.SDKException;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
@@ -39,7 +38,7 @@ public class VerifiablePresentation {
     }
 
     public String findSubjectId() {
-        if (this.verifiableCredential.length != 1) {
+        if (this.verifiableCredential.length == 1) {
             return this.verifiableCredential[0].findSubjectId();
         }
         return "";
@@ -78,12 +77,12 @@ public class VerifiablePresentation {
         presentation.holder = claim.payload.iss;
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         String created = "";
-        if (claim.payload.iat == null || claim.payload.iat.isEmpty()) {
-            created = formatter.format(new Date(Long.parseLong(claim.payload.nbf) * 1000));
-        } else {
+        if (claim.payload.iat != null && !claim.payload.iat.isEmpty()) {
             created = formatter.format(new Date(Long.parseLong(claim.payload.iat) * 1000));
+        } else if (claim.payload.nbf != null && !claim.payload.nbf.isEmpty()) {
+            created = formatter.format(new Date(Long.parseLong(claim.payload.nbf) * 1000));
         }
-        Proof proof = new Proof(claim.header.kid, created, claim.header.alg.proofType(), purpose);
+        Proof proof = new Proof(claim.header.kid, created, claim.header.alg.proofPubKeyType(), purpose);
         proof.jws = claim.jws;
         presentation.proof = new Proof[]{proof};
         int vcLength = claim.payload.vp.verifiableCredential.length;

@@ -72,7 +72,7 @@ public class VerifiableCredential {
             credential.issuer = jsonIssuer;
         }
         // generate proof
-        Proof proof = new Proof(claim.header.kid, credential.issuanceDate, claim.header.alg.proofType(),
+        Proof proof = new Proof(claim.header.kid, credential.issuanceDate, claim.header.alg.proofPubKeyType(),
                 proofPurpose);
         proof.jws = claim.jws;
         credential.proof = proof;

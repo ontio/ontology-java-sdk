@@ -36,7 +36,7 @@ public class VerifiableCredential {
 
     public byte[] genNeedSignData() {
         Proof proof = this.proof;
-        this.proof = null;
+        this.proof = this.proof.genNeedSignProof();
         String jsonStr = JSON.toJSONString(this);
         this.proof = proof;
         return Digest.sha256(jsonStr.getBytes());

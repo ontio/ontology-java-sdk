@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONType;
 import com.alibaba.fastjson.parser.Feature;
 import com.github.ontio.account.Account;
+import com.github.ontio.ontid.Proof;
 import com.github.ontio.ontid.VerifiableCredential;
 import com.github.ontio.ontid.VerifiablePresentation;
 import com.github.ontio.sdk.exception.SDKException;
@@ -50,20 +51,10 @@ public class JWTClaim {
     }
 
     // the proof signature should be jws
-    public JWTClaim(VerifiablePresentation presentation) throws Exception {
+    public JWTClaim(VerifiablePresentation presentation, Proof proof) throws Exception {
         this.jws = presentation.findJWS();
         this.header = new JWTHeader(presentation);
-        this.payload = new JWTPayload(presentation);
-    }
-
-    public Object parseToJSONLDObject() throws Exception {
-        if (this.payload.vc != null) {
-            return VerifiableCredential.deserializeFromJWT(this, null);
-        }
-        if (this.payload.vp != null) {
-            return VerifiablePresentation.deserializeFromJWT(this, null);
-        }
-        throw new SDKException("cannot find vp or vc attribute in payload");
+        this.payload = new JWTPayload(presentation, proof, "");
     }
 
     public static JWTClaim deserializeToJWTClaim(String jwt) throws Exception {

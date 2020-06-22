@@ -7,7 +7,7 @@ public class PubKeyTypeFactory {
         if ("EcdsaSecp224r1VerificationKey2019".equals(pubKeyType)) {
             return PubKeyType.EcdsaSecp224r1VerificationKey2019;
         } else if ("EcdsaSecp256r1Signature2019".equals(pubKeyType)) {
-            return PubKeyType.EcdsaSecp256r1Signature2019;
+            return PubKeyType.EcdsaSecp256r1VerificationKey2019;
         } else if ("EcdsaSecp384r1VerificationKey2019".equals(pubKeyType)) {
             return PubKeyType.EcdsaSecp384r1VerificationKey2019;
         } else if ("EcdsaSecp521r1VerificationKey2019".equals(pubKeyType)) {

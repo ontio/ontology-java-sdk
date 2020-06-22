@@ -23,7 +23,7 @@ public class OntId2Demo {
             ontSdk.neovm().claimRecord().setContractAddress("52df370680de17bc5d4262c446f102a0ee0d6312");
             testClaim(ontSdk);
             testDeserialize();
-//            testVerifyClaimSignature(ontSdk);
+            testVerifyClaimSignature(ontSdk);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -83,7 +83,7 @@ public class OntId2Demo {
                 ProofPurpose.assertionMethod);
         String jwt1 = issuer.createJWTClaim(credential.context, credential.type, issuerIdentity.ontid,
                 credentialSubject, expiration, CredentialStatusType.AttestContract,
-                PubKeyType.EcdsaSecp256r1Signature2019);
+                PubKeyType.EcdsaSecp256r1VerificationKey2019);
         // for debug, print verifiableCredential
         System.out.println("verifiableCredential: " + JSON.toJSONString(verifiableCredential));
         System.out.println("jwt1: " + jwt1);
@@ -121,7 +121,7 @@ public class OntId2Demo {
         String jwt2 = issuer.createJWTClaim(credential.context, credential.type,
                 exampleIssuer, new ExampleCredentialSubject[]{otherCredentialSubject}, expiration,
                 CredentialStatusType.AttestContract,
-                PubKeyType.EcdsaSecp256r1Signature2019);
+                PubKeyType.EcdsaSecp256r1VerificationKey2019);
         System.out.println("verifiableCredential2: " + JSON.toJSONString(verifiableCredential2));
         System.out.println("jwt2: " + jwt2);
         String otherCommitClaimHash = issuer.commitClaim(verifiableCredential2, ownerIdentity.ontid, payer,
@@ -160,7 +160,7 @@ public class OntId2Demo {
 //        System.out.println("jwtPresentation1: " + jwtPresentation1);
         String jwtPresentation2 = owner.createJWTPresentation(new String[]{jwt1, jwt2},
                 presentationContext, presentationType, ownerIdentity.ontid,
-                PubKeyType.EcdsaSecp256r1Signature2019, ProofPurpose.assertionMethod);
+                PubKeyType.EcdsaSecp256r1VerificationKey2019, ProofPurpose.assertionMethod);
         System.out.println("jwtPresentation2: " + jwtPresentation2);
         // verify presentation
         // verify each claim firstly
@@ -251,7 +251,7 @@ public class OntId2Demo {
     }
 
     public static void testVerifyClaimSignature(OntSdk ontSdk) throws Exception {
-        String jwtClaim = "eyJhbGciOiJFUzI1NiIsImtpZCI6ImRpZDpvbnQ6QUo0QzlhVFl4VEdVaEVwYVpkUGpGU3FDcXpNQ3FKRFJVZCNrZXlzLTIiLCJ0eXAiOiJKV1QifQ==.eyJqdGkiOiJ1cm46dXVpZDozZWI0M2JkYy1jNWNjLTQ3NmYtOGRmYi03YzFhNzNlOGQ3NmEiLCJpc3MiOiJkaWQ6b250OkFKNEM5YVRZeFRHVWhFcGFaZFBqRlNxQ3F6TUNxSkRSVWQiLCJuYmYiOiIxNTkyNzk1NjEwIiwiaWF0IjoiMTU5Mjc5NTYxMCIsImV4cCI6IjE1OTI4ODE5OTEiLCJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi8vb250aWQub250LmlvL2NyZWRlbnRpYWxzL3YxIl0sInR5cGUiOlsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCJSZWxhdGlvbnNoaXBDcmVkZW50aWFsIl0sImlzc3VlciI6eyJuYW1lIjoiaXNzdWVyIn0sImNyZWRlbnRpYWxTdWJqZWN0IjpbeyJpZCI6ImRpZDpvbnQ6MTExMTExIiwibmFtZSI6ImhlIiwic3BvdXNlIjoic2hlIn1dLCJjcmVkZW50aWFsU3RhdHVzIjp7ImlkIjoiNTJkZjM3MDY4MGRlMTdiYzVkNDI2MmM0NDZmMTAyYTBlZTBkNjMxMiIsInR5cGUiOiJBdHRlc3RDb250cmFjdCJ9fX0=.AUHdTiMxaS1voZDB1B3Hthh4DPi7qXBzfvccbOuVY2CsSVo8vonn2dUwVwqAQlFaeoxyektAfXL3Zb5Bw/5Xvko=";
+        String jwtClaim = "eyJhbGciOiJFUzI1NiIsImtpZCI6ImRpZDpvbnQ6QUo0QzlhVFl4VEdVaEVwYVpkUGpGU3FDcXpNQ3FKRFJVZCNrZXlzLTIiLCJ0eXAiOiJKV1QifQ==.eyJqdGkiOiJ1cm46dXVpZDpkOGM2MjZlNy04NGU2LTQzNGQtYjVlNi01NDkyYTAyMjNiMmQiLCJpc3MiOiJkaWQ6b250OkFKNEM5YVRZeFRHVWhFcGFaZFBqRlNxQ3F6TUNxSkRSVWQiLCJuYmYiOiIxNTkyNzk2ODY4IiwiaWF0IjoiMTU5Mjc5Njg2OCIsImV4cCI6IjE1OTI4ODMyMTciLCJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi8vb250aWQub250LmlvL2NyZWRlbnRpYWxzL3YxIl0sInR5cGUiOlsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCJSZWxhdGlvbnNoaXBDcmVkZW50aWFsIl0sImlzc3VlciI6eyJuYW1lIjoiaXNzdWVyIn0sImNyZWRlbnRpYWxTdWJqZWN0IjpbeyJpZCI6ImRpZDpvbnQ6MTExMTExIiwibmFtZSI6ImhlIiwic3BvdXNlIjoic2hlIn1dLCJjcmVkZW50aWFsU3RhdHVzIjp7ImlkIjoiNTJkZjM3MDY4MGRlMTdiYzVkNDI2MmM0NDZmMTAyYTBlZTBkNjMxMiIsInR5cGUiOiJBdHRlc3RDb250cmFjdCJ9fX0=.Ab5Z51nOBHasf4FVkbg8ay8NUlIyAE/9TqbVcOY7hIIi1GRcGx051BZQ7SU/8TEW10erAIOMyKPFhsHzBSwycbI=";
         OntId2 verifier = new OntId2("", null, ontSdk.neovm().claimRecord(), ontSdk.nativevm().ontId());
         System.out.println(verifier.verifyJWTClaimSignature(jwtClaim));
     }

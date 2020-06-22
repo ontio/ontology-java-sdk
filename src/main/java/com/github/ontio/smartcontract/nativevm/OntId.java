@@ -51,6 +51,7 @@ public class OntId {
     private OntSdk sdk;
     private String contractAddress = "0000000000000000000000000000000000000003";
 
+    private int ONT_ID_2_HEIGHT = 9000000;
 
     public OntId(OntSdk sdk) {
         this.sdk = sdk;
@@ -2112,18 +2113,35 @@ public class OntId {
             if (sendDid == null || receiverDid == null) {
                 throw new SDKException(ErrorCode.DidNull);
             }
-            String issuerDdo = sendGetDocument(sendDid);
-            JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("publicKey");
-            if (owners == null) {
-                throw new SDKException(ErrorCode.NotExistCliamIssuer);
-            }
+            int blockHeight = sdk.getConnect().getBlockHeight();
+            String issuerDdo;
             String pubkeyId = null;
             String pk = Helper.toHexString(pkAcc.serializePublicKey());
-            for (int i = 0; i < owners.size(); i++) {
-                JSONObject obj = owners.getJSONObject(i);
-                if (obj.getString("publicKeyHex").equals(pk)) {
-                    pubkeyId = obj.getString("id");
-                    break;
+            if (blockHeight < ONT_ID_2_HEIGHT) {
+                issuerDdo = sendGetDDO(sendDid);
+                JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("Owners");
+                if (owners == null) {
+                    throw new SDKException(ErrorCode.NotExistCliamIssuer);
+                }
+                for (int i = 0; i < owners.size(); i++) {
+                    JSONObject obj = owners.getJSONObject(i);
+                    if (obj.getString("Value").equals(pk)) {
+                        pubkeyId = obj.getString("PubKeyId");
+                        break;
+                    }
+                }
+            } else {
+                issuerDdo = sendGetDocument(sendDid);
+                JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("publicKey");
+                if (owners == null) {
+                    throw new SDKException(ErrorCode.NotExistCliamIssuer);
+                }
+                for (int i = 0; i < owners.size(); i++) {
+                    JSONObject obj = owners.getJSONObject(i);
+                    if (obj.getString("publicKeyHex").equals(pk)) {
+                        pubkeyId = obj.getString("id");
+                        break;
+                    }
                 }
             }
             if (pubkeyId == null) {
@@ -2163,8 +2181,16 @@ public class OntId {
             if (str.length != 3) {
                 throw new SDKException(ErrorCode.DidError);
             }
-            String issuerDdo = sendGetDocument(issuerDid);
-            JSONArray owners = JSON.parseObject(issuerDdo).getJSONArray("publicKey");
+            int blockHeight = sdk.getConnect().getBlockHeight();
+            String issuerDdo;
+            JSONArray owners;
+            if (blockHeight < ONT_ID_2_HEIGHT) {
+                issuerDdo = sendGetDDO(issuerDid);
+                owners = JSON.parseObject(issuerDdo).getJSONArray("Owners");
+            } else {
+                issuerDdo = sendGetDocument(issuerDid);
+                owners = JSON.parseObject(issuerDdo).getJSONArray("publicKey");
+            }
             if (owners == null) {
                 throw new SDKException(ErrorCode.NotExistCliamIssuer);
             }
@@ -2173,7 +2199,12 @@ public class OntId {
             JSONObject header = JSON.parseObject(new String(headerBytes));
             String kid = header.getString("kid");
             String id = kid.split("#keys-")[1];
-            String pubkeyStr = owners.getJSONObject(Integer.parseInt(id) - 1).getString("publicKeyHex");
+            String pubkeyStr;
+            if (blockHeight < ONT_ID_2_HEIGHT) {
+                pubkeyStr = owners.getJSONObject(Integer.parseInt(id) - 1).getString("Value");
+            } else {
+                pubkeyStr = owners.getJSONObject(Integer.parseInt(id) - 1).getString("publicKeyHex");
+            }
             sign = new DataSignature();
             byte[] data = (obj[0] + "." + obj[1]).getBytes();
             return sign.verifySignature(new Account(false, Helper.hexToBytes(pubkeyStr)), data, signatureBytes);

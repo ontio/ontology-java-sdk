@@ -27,7 +27,9 @@ public class VerifiablePresentation {
 
     public byte[] genNeedSignData() {
         Proof[] proofs = this.proof;
-        this.proof = null;
+        for (int i = 0; i < proofs.length; i++) {
+            this.proof[i] = this.proof[i].genNeedSignProof();
+        }
         String jsonStr = JSON.toJSONString(this);
         this.proof = proofs;
         return Digest.sha256(jsonStr.getBytes());

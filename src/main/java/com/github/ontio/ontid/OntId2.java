@@ -91,34 +91,33 @@ public class OntId2 {
         throw new SDKException("signer not found in ontId");
     }
 
-    public SignRequest genSignReq(String claim, ProofPurpose proofPurpose,
+    public SignRequest genSignReq(Object credentialSubject, ProofPurpose proofPurpose,
                                   boolean hasSignature) throws Exception {
         if (hasSignature) {
             Date current = new Date();
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
             Proof proof = new Proof(signer.pubKey.id, formatter.format(current), signer.pubKey.type, proofPurpose);
-            proof.fillSignature(signer.signer, Digest.sha256(claim.getBytes()));
-            return new SignRequest(claim, signer.ontId, proof);
+            SignRequest signReq = new SignRequest(credentialSubject, signer.ontId, proof);
+            proof.fillHexSignature(signer.signer, signer.hash(signReq.genNeedSignData()));
+            return signReq;
         } else {
-            return new SignRequest(claim, signer.ontId, null);
+            return new SignRequest(credentialSubject, signer.ontId, null);
         }
     }
 
     public boolean verifySignReq(SignRequest req) throws Exception {
-        return verifyOntIdSignature(req.ontId, Digest.sha256(req.claim.getBytes()), req.signature.parseSignature());
+        return verifyOntIdSignature(req.ontId, signer.hash(req.genNeedSignData()), req.proof.parseHexSignature());
     }
 
     public VerifiableCredential createClaim(String[] context, String[] type, Object issuer,
                                             Object credentialSubject, Date expiration,
                                             CredentialStatusType credentialStatusType,
                                             ProofPurpose proofPurpose) throws Exception {
-        VerifiableCredential credential = genCredentialWithoutProof(context, type, issuer, credentialSubject,
-                expiration, credentialStatusType);
+        VerifiableCredential credential = genCredentialWithoutSig(context, type, issuer, credentialSubject,
+                expiration, credentialStatusType, proofPurpose);
         // generate proof
-        Proof proof = new Proof(signer.pubKey.id, credential.issuanceDate, signer.pubKey.type, proofPurpose);
         byte[] needSignData = credential.genNeedSignData();
-        proof.fillSignature(signer.signer, needSignData);
-        credential.proof = proof;
+        credential.proof.fillHexSignature(signer.signer, needSignData);
         return credential;
     }
 
@@ -126,8 +125,8 @@ public class OntId2 {
                                  Date expiration, CredentialStatusType statusType,
                                  PubKeyType pubKeyType) throws Exception {
         JWTHeader header = new JWTHeader(pubKeyType.getAlg(), this.signer.pubKey.id);
-        JWTPayload payload = new JWTPayload(genCredentialWithoutProof(context, type, issuer, credentialSubject,
-                expiration, statusType));
+        JWTPayload payload = new JWTPayload(genCredentialWithoutSig(context, type, issuer, credentialSubject,
+                expiration, statusType, null)); // use default proof purpose
         JWTClaim claim = new JWTClaim(header, payload, signer.signer);
         return claim.toString();
     }
@@ -143,9 +142,9 @@ public class OntId2 {
 //        return claim.toString();
 //    }
 
-    private VerifiableCredential genCredentialWithoutProof(String[] context, String[] type, Object issuer,
-                                                           Object credentialSubject, Date expiration,
-                                                           CredentialStatusType statusType)
+    private VerifiableCredential genCredentialWithoutSig(String[] context, String[] type, Object issuer,
+                                                         Object credentialSubject, Date expiration,
+                                                         CredentialStatusType statusType, ProofPurpose purpose)
             throws Exception {
         VerifiableCredential credential = new VerifiableCredential();
         ArrayList<String> wholeContext = new ArrayList<>();
@@ -180,6 +179,7 @@ public class OntId2 {
             }
             credential.expirationDate = formatter.format(expiration);
         }
+        credential.proof = new Proof(signer.pubKey.id, credential.issuanceDate, signer.pubKey.type, purpose);
         return credential;
     }
 
@@ -249,7 +249,7 @@ public class OntId2 {
         if (!verifyJWTClaimOntIdCredible(credibleOntIds, jwtClaim)) {
             return false;
         }
-        if (!verifyJWTClaimNotExpired(jwtClaim)) {
+        if (!verifyJWTClaimDate(jwtClaim)) {
             return false;
         }
         if (!verifyJWTClaimSignature(jwtClaim)) {
@@ -295,26 +295,43 @@ public class OntId2 {
         }
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         Date expiration = formatter.parse(claim.expirationDate);
-        return expiration.after(new Date());
+        Date issuanceDate = formatter.parse(claim.issuanceDate);
+        Date current = new Date();
+        return expiration.after(current) && issuanceDate.before(current);
     }
 
-    public boolean verifyJWTClaimNotExpired(String claim) throws Exception {
+    public boolean verifyJWTClaimDate(String claim) throws Exception {
         JWTClaim jwtClaim = JWTClaim.deserializeToJWTClaim(claim);
         if (jwtClaim.payload.exp == null || jwtClaim.payload.exp.isEmpty()) {
             return true;
         }
-        return verifyJWTClaimNotExpired(jwtClaim);
+        return verifyJWTClaimDate(jwtClaim);
     }
 
-    private boolean verifyJWTClaimNotExpired(JWTClaim jwtClaim) {
+    private boolean verifyJWTClaimDate(JWTClaim jwtClaim) {
         long current = System.currentTimeMillis() / 1000;
-        long exp = Long.parseLong(jwtClaim.payload.exp);
-        return current < exp;
+        String exp = jwtClaim.payload.exp;
+        if (exp != null && !exp.isEmpty()) {
+            if (current > Long.parseLong(exp)) {
+                return false;
+            }
+        }
+        String nbf = jwtClaim.payload.nbf;
+        if (nbf != null && !nbf.isEmpty()) {
+            if (current < Long.parseLong(nbf)) {
+                return false;
+            }
+        }
+        String iat = jwtClaim.payload.iat;
+        if (iat != null && !iat.isEmpty()) {
+            return current >= Long.parseLong(iat);
+        }
+        return true;
     }
 
     public boolean verifyClaimSignature(VerifiableCredential claim) throws Exception {
         return verifyPubKeyIdSignature(claim.fetchIssuerOntId(), claim.proof.verificationMethod,
-                claim.genNeedSignData(), claim.proof.parseSignature());
+                claim.genNeedSignData(), claim.proof.parseHexSignature());
     }
 
     public boolean verifyJWTClaimSignature(String claim) throws Exception {
@@ -368,39 +385,48 @@ public class OntId2 {
     }
 
     public VerifiablePresentation createPresentation(VerifiableCredential[] claims, String[] context, String[] type,
-                                                     Object holderOntId, OntIdSigner[] otherSigners,
-                                                     ProofPurpose proofPurpose) throws Exception {
+                                                     String challenge, String domain, Object holderOntId,
+                                                     OntIdSigner[] otherSigners, ProofPurpose proofPurpose)
+            throws Exception {
         VerifiablePresentation presentation = genPresentationWithoutProof(claims, context, type, holderOntId);
-        Proof[] proofs = new Proof[otherSigners.length + 1];
         Date current = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         String currentTimeStamp = formatter.format(current);
+        ArrayList<Proof> proofs = new ArrayList<>();
+        ArrayList<OntIdSigner> signers = new ArrayList<>();
         Proof proof = new Proof(signer.pubKey.id, currentTimeStamp, signer.pubKey.type, proofPurpose);
-        byte[] needSignData = presentation.genNeedSignData();
-        proof.fillSignature(signer.signer, needSignData);
-        proofs[0] = proof;
-        int index = 0;
+        proofs.add(proof);
+        signers.add(signer);
         for (OntIdSigner signer :
                 otherSigners) {
-            Proof p = new Proof(signer.pubKey.id, currentTimeStamp, signer.pubKey.type, proofPurpose);
-            p.fillSignature(signer.signer, needSignData);
-            index++;
-            proofs[index] = p;
+            Proof p = new Proof(signer.pubKey.id, currentTimeStamp, signer.pubKey.type, proofPurpose, challenge, domain);
+            proofs.add(p);
+            signers.add(signer);
         }
-        presentation.proof = proofs;
+        presentation.proof = new Proof[]{};
+        presentation.proof = proofs.toArray(presentation.proof);
+        byte[] needSignData = presentation.genNeedSignData();
+        for (int i = 0; i < proofs.size(); i++) {
+            Proof p = proofs.get(i);
+            p.fillHexSignature(signers.get(i).signer, needSignData);
+        }
+        presentation.proof = proofs.toArray(presentation.proof);
         return presentation;
     }
 
     public String createJWTPresentation(VerifiableCredential[] claims, String[] context, String[] type,
+                                        Object audience, String nonce,
                                         Object holder, PubKeyType pubKeyType) throws Exception {
         JWTHeader header = new JWTHeader(pubKeyType.getAlg(), this.signer.pubKey.id);
-        JWTPayload payload = new JWTPayload(genPresentationWithoutProof(claims, context, type, holder));
+        JWTPayload payload = new JWTPayload(genPresentationWithoutProof(claims, context, type, holder),
+                audience, nonce);
         JWTClaim claim = new JWTClaim(header, payload, signer.signer);
         return claim.toString();
     }
 
     // claims: jwt claim array
     public String createJWTPresentation(String[] claims, String[] context, String[] type, Object holder,
+                                        Object audience, String nonce,
                                         PubKeyType pubKeyType, ProofPurpose purpose) throws Exception {
         JWTHeader header = new JWTHeader(pubKeyType.getAlg(), this.signer.pubKey.id);
         VerifiableCredential[] credentials = new VerifiableCredential[claims.length];
@@ -408,7 +434,8 @@ public class OntId2 {
             JWTClaim jwtClaim = JWTClaim.deserializeToJWTClaim(claims[i]);
             credentials[i] = VerifiableCredential.deserializeFromJWT(jwtClaim, purpose);
         }
-        JWTPayload payload = new JWTPayload(genPresentationWithoutProof(credentials, context, type, holder));
+        JWTPayload payload = new JWTPayload(genPresentationWithoutProof(credentials, context, type, holder),
+                audience, nonce);
         JWTClaim claim = new JWTClaim(header, payload, signer.signer);
         return claim.toString();
     }
@@ -443,14 +470,14 @@ public class OntId2 {
         }
         Proof proof = presentation.proof[proofIndex];
         if (proof.jws != null) {
-            JWTClaim jwtPresentation = new JWTClaim(presentation);
+            JWTClaim jwtPresentation = new JWTClaim(presentation, proof);
             byte[] needSignData = jwtPresentation.genNeedSignData();
             byte[] signature = jwtPresentation.parseSignature();
             return verifyPubKeyIdSignature(jwtPresentation.header.kid, needSignData, signature);
         } else {
             // verify presentation proof
             byte[] needSignData = presentation.genNeedSignData();
-            return verifyPubKeyIdSignature(proof.verificationMethod, needSignData, proof.parseSignature());
+            return verifyPubKeyIdSignature(proof.verificationMethod, needSignData, proof.parseHexSignature());
         }
     }
 

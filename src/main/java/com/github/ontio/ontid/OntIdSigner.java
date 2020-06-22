@@ -12,4 +12,8 @@ public class OntIdSigner {
         this.pubKey = pubKey;
         this.signer = signer;
     }
+
+    public byte[] hash(byte[] msg) throws Exception {
+        return pubKey.type.getAlg().hash(msg);
+    }
 }

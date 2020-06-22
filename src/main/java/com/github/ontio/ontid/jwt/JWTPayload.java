@@ -1,6 +1,7 @@
 package com.github.ontio.ontid.jwt;
 
 import com.alibaba.fastjson.annotation.JSONType;
+import com.github.ontio.ontid.Proof;
 import com.github.ontio.ontid.VerifiableCredential;
 import com.github.ontio.ontid.VerifiablePresentation;
 
@@ -19,7 +20,7 @@ public class JWTPayload {
     // VerifiableCredential credential id, if there are more than 1 credentialSubject, cannot parse to JWTPayload
     public String sub;
 
-    public String aud; // audience, may not present
+    public Object aud; // audience, may not present, String or String[]
     public String iat; // created date time, same with nbf, for example "1541493724", may not present, jwt的签发时间
     public String nonce; // in case of replay attack, generated form proof, may not present
     public JWTVC vc;
@@ -48,6 +49,9 @@ public class JWTPayload {
             this.sub = credentialSubjectId;
         }
         this.iat = this.nbf;
+        if (credential.proof != null) {
+            this.aud = credential.proof.domain;
+        }
         this.vc = new JWTVC(credential);
     }
 
@@ -61,5 +65,23 @@ public class JWTPayload {
         this.jti = presentation.id;
         this.sub = presentation.findSubjectId();
         this.vp = new JWTVP(presentation);
+    }
+
+    public JWTPayload(VerifiablePresentation presentation, Object audience, String nonce) throws Exception {
+        this.aud = audience;
+        this.nonce = nonce;
+        this.iss = presentation.fetchHolderOntId();
+        this.jti = presentation.id;
+        this.sub = presentation.findSubjectId();
+        this.vp = new JWTVP(presentation);
+    }
+
+    public JWTPayload(VerifiablePresentation presentation, Proof proof, String nonce) throws Exception {
+        this.aud = proof.domain;
+        this.nonce = nonce;
+        this.iss = presentation.fetchHolderOntId();
+        this.jti = presentation.id;
+        this.sub = presentation.findSubjectId();
+        this.vp = new JWTVP(presentation, proof);
     }
 }

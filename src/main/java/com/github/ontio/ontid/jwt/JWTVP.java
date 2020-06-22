@@ -43,5 +43,6 @@ public class JWTVP {
         this.proof = proof.genNeedSignProof();
         this.proof.hex = proof.hex;
         this.proof.verificationMethod = null;
+        this.proof.type = null;
     }
 }

@@ -30,6 +30,9 @@ public class Util {
     // if object doesn't contain "id" field, return ""
     // if object is array, return ""
     public static String fetchId(Object object) {
+        if (object == null) {
+            return "";
+        }
         if (object instanceof String) {
             return (String) object;
         }

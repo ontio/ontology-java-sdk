@@ -262,6 +262,13 @@ Issuer commit claim hash to ontology chain.
                   ontId to sign this transaction.
 
     param: `claim` is JWT verifiable claim, the others params are same with the former.
+    
+3. **public String commitClaimById(String claimId, String ownerOntId, Account payer,
+                                       long gasLimit, long gasPrice, OntSdk sdk)**
+                                       
+    comment: commit a claim to ontology chain.
+    
+    param: `claimId` is identification of claim, others param are same with above.
 
 ### Verify Claim
 
@@ -413,15 +420,14 @@ Owner could create presentation by using one or multi `VerifiableCredential`.
     
     return: instance of `VerifiablePresentation`.
     
-2. **public String createJWTPresentation(VerifiableCredential[] claims, String[] context, String[] type,
-                                             String challenge, Object domain, Object holder, String nonce,
-                                             ProofPurpose proofPurpose)**
+2. **public String createJWTPresentation(String[] claims, String[] context, String[] type, Object holder,
+                                                String challenge, Object domain, String nonce, ProofPurpose purpose)**
                                              
     comment: use multi `VerifiableCredential` instance to create a JWT claim.
     
     param:
     
-    * claims: same with above;
+    * claims: `claims` is array of JWT `VerifiableCredential`. Others params are same with above;
     * context: same with above;
     * type: same with above;
     * challenge: JWT presentation only has one jws, so there only need one challenge;
@@ -430,16 +436,7 @@ Owner could create presentation by using one or multi `VerifiableCredential`.
     * nonce: refer w3c specification;
     * proofPurpose: only use `assertionMethod` at current;
     
-    return: a JWT format of `VerifyPresentation`.
-    
-3. **public String createJWTPresentation(String[] claims, String[] context, String[] type, Object holder,
-                                           String challenge, Object domain, String nonce, ProofPurpose purpose)**
-
-    comment: use multi JWT claim to create a JWT claim.
-    
-    param: `claims` is array of JWT `VerifiableCredential`. Others params are same with above.
-    
-    return: a JWT format of `VerifyPresentation`.
+    return: a JWT format of `VerifiablePresentation`.
 
 ### Verify Presentation
 

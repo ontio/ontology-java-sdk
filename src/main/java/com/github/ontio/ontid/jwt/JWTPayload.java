@@ -58,7 +58,7 @@ public class JWTPayload {
 //        this.aud = audience;
 //    }
 
-    public JWTPayload(VerifiablePresentation presentation, Proof proof, String nonce) throws Exception {
+    public JWTPayload(VerifiablePresentation presentation, Proof proof) throws Exception {
         if (proof != null) {
             this.aud = proof.domain;
 
@@ -66,7 +66,6 @@ public class JWTPayload {
             this.nbf = formatter.parse(proof.created).getTime() / 1000;
             this.iat = this.nbf;
         }
-        this.nonce = nonce;
         this.iss = presentation.fetchHolderOntId();
         this.jti = presentation.id;
         this.sub = presentation.findSubjectId();

@@ -67,9 +67,8 @@ public class OntId2Demo {
         ExampleCredentialSubject credentialSubject = new ExampleCredentialSubject("did:ont:111111",
                 "Bob", "Alice");
         credential.credentialSubject = new ExampleCredentialSubject[]{credentialSubject};
-        String claim = JSON.toJSONString(credential);
         // generate a sign request
-        SignRequest req = owner.genSignReq(claim, ProofPurpose.assertionMethod, true);
+        SignRequest req = owner.genSignReq(credentialSubject, ProofPurpose.assertionMethod, true);
         // issuer verify sign request
         if (!issuer.verifySignReq(req)) {
             System.out.println("sign request not verified");
@@ -163,7 +162,7 @@ public class OntId2Demo {
 //                ProofType.EcdsaSecp256r1Signature2019);
 //        System.out.println("jwtPresentation1: " + jwtPresentation1);
         String jwtPresentation2 = owner.createJWTPresentation(new String[]{jwt1, jwt2},
-                presentationContext, presentationType, ownerIdentity.ontid, challenge.get(0), domain.get(0), "",
+                presentationContext, presentationType, ownerIdentity.ontid, challenge.get(0), domain.get(0),
                 ProofPurpose.assertionMethod);
         System.out.println("jwtPresentation2: " + jwtPresentation2);
         // verify presentation

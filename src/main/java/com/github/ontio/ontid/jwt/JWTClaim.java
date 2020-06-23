@@ -54,7 +54,7 @@ public class JWTClaim {
     }
 
     // the proof signature should be jws
-    public JWTClaim(VerifiablePresentation presentation, Proof proof, String nonce) throws Exception {
+    public JWTClaim(VerifiablePresentation presentation, Proof proof) throws Exception {
         if (proof == null) {
             throw new SDKException("proof is null");
         }
@@ -63,7 +63,7 @@ public class JWTClaim {
         }
         this.jws = proof.jws;
         this.header = new JWTHeader(proof);
-        this.payload = new JWTPayload(presentation, proof, nonce);
+        this.payload = new JWTPayload(presentation, proof);
     }
 
     public static JWTClaim deserializeToJWTClaim(String jwt) throws Exception {

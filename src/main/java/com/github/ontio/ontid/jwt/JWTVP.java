@@ -8,7 +8,7 @@ import com.github.ontio.ontid.Proof;
 import com.github.ontio.ontid.VerifiablePresentation;
 import com.github.ontio.sdk.exception.SDKException;
 
-@JSONType(orders = {"@context", "type", "challenge", "verifiableCredential", "proof"})
+@JSONType(orders = {"@context", "type", "challenge", "verifiableCredential", "holder", "proof"})
 public class JWTVP {
     @JSONField(name = "@context")
     public String[] context;

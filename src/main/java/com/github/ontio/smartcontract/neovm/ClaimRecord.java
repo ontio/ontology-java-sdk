@@ -249,7 +249,7 @@ public class ClaimRecord {
         if (contractAddress == null) {
             throw new SDKException(ErrorCode.NullCodeHash);
         }
-        Transaction tx = makeRemove2(ownerId, claimId, payerAcct.getAddressU160().toBase58(), pubkeyIndex, gaslimit, gasprice);
+        Transaction tx = makeRemove2(ownerId, claimId, pubkeyIndex, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
         sdk.signTx(tx, ownerId, password, salt);
         sdk.addSign(tx, payerAcct);
         boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
@@ -259,10 +259,10 @@ public class ClaimRecord {
         return null;
     }
 
-    public Transaction makeRemove2(String issuerOntid, String claimId, String payer, int pubkeyIndex, long gaslimit, long gasprice) throws Exception {
+    public Transaction makeRemove2(String ownerOntId, String claimId, int pubkeyIndex, String payer, long gaslimit, long gasprice) throws Exception {
         String name = "Remove";
         Parameter claimIdParam = new Parameter("claimId", Parameter.Type.String, claimId);
-        Parameter ownerIdParam = new Parameter("ownerId", Parameter.Type.String, issuerOntid);
+        Parameter ownerIdParam = new Parameter("ownerId", Parameter.Type.String, ownerOntId);
         Parameter indexParam = new Parameter("index", Parameter.Type.Integer, pubkeyIndex);
         AbiFunction func = new AbiFunction(name, claimIdParam, ownerIdParam, indexParam);
         byte[] params = BuildParams.serializeAbiFunction(func);

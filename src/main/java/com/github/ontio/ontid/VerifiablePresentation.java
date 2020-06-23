@@ -23,25 +23,17 @@ public class VerifiablePresentation {
         this.id = "urn:uuid:" + UUID.randomUUID().toString();
     }
 
-    public byte[] genNeedSignData() {
+    public byte[] genNeedSignData(Proof needSignProof) throws Exception {
         Proof[] proofs = this.proof;
-        for (int i = 0; i < proofs.length; i++) {
-            this.proof[i] = this.proof[i].genNeedSignProof();
-        }
+        this.proof = new Proof[]{needSignProof.genNeedSignProof()};
         String jsonStr = JSON.toJSONString(this);
+        System.out.println(jsonStr);
         this.proof = proofs;
-        return Digest.sha256(jsonStr.getBytes());
+        return needSignProof.type.getAlg().hash(jsonStr.getBytes());
     }
 
     public String fetchHolderOntId() {
         return Util.fetchId(holder);
-    }
-
-    public String findSubjectId() {
-        if (this.verifiableCredential.length == 1) {
-            return this.verifiableCredential[0].findSubjectId();
-        }
-        return "";
     }
 
     public static VerifiablePresentation deserializeFromJWT(JWTClaim claim)
@@ -58,9 +50,7 @@ public class VerifiablePresentation {
             jsonHolder.put("id", claim.payload.iss);
             presentation.holder = jsonHolder;
         }
-        presentation.proof = new Proof[]{claim.payload.vp.proof};
-        presentation.proof[0].jws = claim.jws;
-        presentation.proof[0].verificationMethod = claim.header.kid;
+        presentation.proof = new Proof[]{claim.parseProof()};
         int vcLength = claim.payload.vp.verifiableCredential.length;
         VerifiableCredential[] credentials = new VerifiableCredential[vcLength];
         for (int i = 0; i < vcLength; i++) {

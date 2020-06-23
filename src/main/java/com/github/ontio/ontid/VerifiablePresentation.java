@@ -6,7 +6,6 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
 import com.github.ontio.crypto.Digest;
 import com.github.ontio.ontid.jwt.JWTClaim;
-import com.github.ontio.sdk.exception.SDKException;
 
 import java.util.UUID;
 

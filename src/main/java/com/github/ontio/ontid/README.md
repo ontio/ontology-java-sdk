@@ -506,7 +506,25 @@ Because the SDK used by different roles, so we encapsulate a claim revoking inte
     param: `claim` is a JWT format of `VerifiableCredential` or `VerifiablePresentation`. Others param are same with above.
     
     return: transaction hash of revoking claim.
-    
+
+### Remove Claim
+
+1. **public String removeClaimById(String claimId, Account payer, long gasLimit, long gasPrice, OntSdk sdk)**
+
+    comment: remove claim by claim id.
+        
+    param: `claimId`  is identification of claim, other params are ontology transaction param;
+        
+    return: transaction hash of remove claim.
+
+2. **public String removeJWTClaim(String claim, Account payer, long gasLimit, long gasPrice, OntSdk sdk)**
+
+    comment: remove a JWT claim.
+        
+    param: `claim`  is JWT format of claim, other params are ontology transaction param;
+        
+    return: transaction hash of remove claim.
+
 ### Transition between JSON-LD and JWT
 
 We also provide some interface to parse verifiable credential between the format of JSON-LD and JWT.

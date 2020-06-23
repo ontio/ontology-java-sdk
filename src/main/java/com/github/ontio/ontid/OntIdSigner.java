@@ -4,7 +4,7 @@ import com.github.ontio.account.Account;
 
 public class OntIdSigner {
     String ontId;
-    OntIdPubKey pubKey; // pubkey URI
+    OntIdPubKey pubKey;
     Account signer;
 
     public OntIdSigner(String ontId, OntIdPubKey pubKey, Account signer) {

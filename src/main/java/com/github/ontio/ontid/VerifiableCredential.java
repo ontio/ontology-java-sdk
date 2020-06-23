@@ -6,6 +6,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
 import com.github.ontio.crypto.Digest;
 import com.github.ontio.ontid.jwt.JWTClaim;
+import com.github.ontio.sdk.exception.SDKException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,14 +18,14 @@ import java.util.UUID;
 public class VerifiableCredential {
     @JSONField(name = "@context")
     public String[] context;
-    public String id; // hash
+    public String id; // uuid
     public String[] type;
     public Object issuer; // issuer ontId, or an object contains ONTID
     public String issuanceDate;
     public String expirationDate;
     public Object credentialSubject;
     public CredentialStatus credentialStatus;
-    public Proof proof;
+    public Proof proof; // TODO: support multi
 
     public VerifiableCredential() {
         this.id = "urn:uuid:" + UUID.randomUUID().toString();
@@ -34,12 +35,12 @@ public class VerifiableCredential {
         return Util.fetchId(this.issuer);
     }
 
-    public byte[] genNeedSignData() {
+    public byte[] genNeedSignData() throws Exception {
         Proof proof = this.proof;
         this.proof = this.proof.genNeedSignProof();
         String jsonStr = JSON.toJSONString(this);
         this.proof = proof;
-        return Digest.sha256(jsonStr.getBytes());
+        return this.proof.type.getAlg().hash(jsonStr.getBytes());
     }
 
     public String findSubjectId() {
@@ -71,13 +72,8 @@ public class VerifiableCredential {
             credential.issuer = jsonIssuer;
         }
         // generate proof
-        credential.proof = claim.payload.vc.proof;
-        credential.proof.jws = claim.jws;
-        credential.proof.verificationMethod = claim.header.kid;
+        credential.proof = claim.parseProof();
         // generate credential subject
-        if (claim.payload.vc.credentialSubject == null) {
-            return credential;
-        }
         if (claim.payload.sub != null && !claim.payload.sub.isEmpty()) { // inject id to credential subject
             JSONObject subject = (JSONObject) JSONObject.toJSON(claim.payload.vc.credentialSubject);
             subject.put("id", claim.payload.sub);

@@ -8,7 +8,7 @@ import com.github.ontio.ontid.VerifiablePresentation;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@JSONType(orders = {"sub", "jti", "iss", "nbf", "iat", "exp", "aud", "nonce", "vc", "vp"})
+@JSONType(orders = {"iss", "sub", "aud", "exp", "nbf", "iat", "jti", "nonce", "vc", "vp"})
 public class JWTPayload {
     public long exp; // VerifiableCredential expiration, for example 1541493724
     public String iss; // VerifiableCredential issuer
@@ -39,16 +39,19 @@ public class JWTPayload {
             this.exp = exp.getTime() / 1000;
         }
         this.iss = credential.fetchIssuerOntId();
-        Date nbf = formatter.parse(credential.issuanceDate);
-        this.nbf = nbf.getTime() / 1000;
+        if (credential.issuanceDate != null && !credential.issuanceDate.isEmpty()) {
+            Date nbf = formatter.parse(credential.issuanceDate);
+            this.nbf = nbf.getTime() / 1000;
+            this.iat = this.nbf;
+        }
         this.jti = credential.id;
         String credentialSubjectId = credential.findSubjectId();
         if (!"".equals(credentialSubjectId)) {
             this.sub = credentialSubjectId;
         }
-        this.iat = this.nbf;
         if (credential.proof != null) {
             this.aud = credential.proof.domain;
+            this.nonce = credential.proof.challenge;
         }
         this.vc = new JWTVC(credential);
     }
@@ -61,14 +64,10 @@ public class JWTPayload {
     public JWTPayload(VerifiablePresentation presentation, Proof proof) throws Exception {
         if (proof != null) {
             this.aud = proof.domain;
-
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-            this.nbf = formatter.parse(proof.created).getTime() / 1000;
-            this.iat = this.nbf;
+            this.nonce = proof.challenge;
         }
         this.iss = presentation.fetchHolderOntId();
         this.jti = presentation.id;
-        this.sub = presentation.findSubjectId();
         this.vp = new JWTVP(presentation, proof);
     }
 }

@@ -152,15 +152,9 @@ public class OntId2Demo {
         // you can use any ontId as otherSigner if you want
         VerifiablePresentation presentation = owner.createPresentation(
                 new VerifiableCredential[]{verifiableCredential, verifiableCredential2},
-                presentationContext, presentationType, challenge, Collections.singletonList(domain), ownerIdentity.ontid,
-                new OntIdSigner[]{}, ProofPurpose.assertionMethod);
+                presentationContext, presentationType, challenge, domain,
+                ownerIdentity.ontid, new OntIdSigner[]{}, ProofPurpose.assertionMethod);
         System.out.println("presentation: " + JSON.toJSONString(presentation));
-        // the 2 credential has no jws
-//        String jwtPresentation1 = owner.createJWTPresentation(
-//                new VerifiableCredential[]{verifiableCredential, verifiableCredential2},
-//                presentationContext, presentationType, ownerIdentity.ontid,
-//                ProofType.EcdsaSecp256r1Signature2019);
-//        System.out.println("jwtPresentation1: " + jwtPresentation1);
         String jwtPresentation2 = owner.createJWTPresentation(new String[]{jwt1, jwt2},
                 presentationContext, presentationType, ownerIdentity.ontid, challenge.get(0), domain.get(0),
                 ProofPurpose.assertionMethod);
@@ -168,7 +162,7 @@ public class OntId2Demo {
         // verify presentation
         // verify each claim firstly
         for (VerifiableCredential credential1 : presentation.verifiableCredential) {
-            boolean v = issuer.verifyClaim(credibleOntIds, credential1);
+            boolean v = verifier.verifyClaim(credibleOntIds, credential1);
             System.out.println("presentation verify: " + v);
         }
         // verify each proof
@@ -176,9 +170,7 @@ public class OntId2Demo {
             boolean proofVerified = verifier.verifyPresentationProof(presentation, i);
             System.out.println(String.format("%d proof verify: %s", i, proofVerified));
         }
-//        boolean jwtPresentation1Verified = verifier.verifyJWTPresentation(credibleOntIds, jwtPresentation1);
         boolean jwtPresentation2Verified = verifier.verifyJWTPresentation(credibleOntIds, jwtPresentation2);
-//        System.out.println("jwtPresentation1Verified: " + jwtPresentation1Verified);
         System.out.println("jwtPresentation2Verified: " + jwtPresentation2Verified);
         // issuer revoke claim
         String issuerRevokeHash = issuer.revokeClaim(verifiableCredential, payer, gasLimit, gasPrice, ontSdk);
@@ -198,6 +190,20 @@ public class OntId2Demo {
         Thread.sleep(6000);
         ClaimRecordTxDemo.showEvent(ontSdk, "Revoke", revokeJWTClaimHash1);
         ClaimRecordTxDemo.showEvent(ontSdk, "Revoke", revokeJWTClaimHash2);
+
+        String removeCredential1 = owner.removeClaimById(verifiableCredential.id, payer, gasLimit, gasPrice, ontSdk);
+        String removeCredential2 = owner.removeClaimById(verifiableCredential2.id, payer, gasLimit, gasPrice, ontSdk);
+        String removeJWT1 = owner.removeJWTClaim(jwt1, payer, gasLimit, gasPrice, ontSdk);
+        String removeJWT2 = owner.removeJWTClaim(jwt2, payer, gasLimit, gasPrice, ontSdk);
+        System.out.println("removeCredential1: " + removeCredential1);
+        System.out.println("removeCredential2: " + removeCredential2);
+        System.out.println("removeJWT1: " + removeJWT1);
+        System.out.println("removeJWT2: " + removeJWT2);
+        Thread.sleep(6000);
+        ClaimRecordTxDemo.showEvent(ontSdk, "Remove", removeCredential1);
+        ClaimRecordTxDemo.showEvent(ontSdk, "Remove", removeCredential2);
+        ClaimRecordTxDemo.showEvent(ontSdk, "Remove", removeJWT1);
+        ClaimRecordTxDemo.showEvent(ontSdk, "Remove", removeJWT2);
     }
 
     public static void testDeserialize() throws Exception {

@@ -40,9 +40,6 @@ public class JWTVP {
             verifiableCredential[i] = jwtClaim.toString();
         }
         this.verifiableCredential = verifiableCredential;
-        this.proof = proof.genNeedSignProof();
-        this.proof.hex = proof.hex;
-        this.proof.verificationMethod = null;
-        this.proof.type = null;
+        this.proof = proof.genJWTProof();
     }
 }

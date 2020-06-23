@@ -15,6 +15,9 @@ public class Proof {
     public String hex;
     public String jws;
 
+    public Proof() {
+    }
+
     public Proof(String publicKeyURI, String created, PubKeyType type, ProofPurpose proofPurpose) {
         this.type = type;
         this.created = created;
@@ -34,6 +37,14 @@ public class Proof {
 
     public Proof genNeedSignProof() {
         return new Proof(verificationMethod, created, type, proofPurpose, challenge, domain);
+    }
+
+    public Proof genJWTProof() {
+        Proof proof = new Proof();
+        proof.created = created;
+        proof.proofPurpose = proofPurpose;
+        proof.hex = hex;
+        return proof;
     }
 
     public void fillHexSignature(Account account, byte[] needSignData) throws Exception {

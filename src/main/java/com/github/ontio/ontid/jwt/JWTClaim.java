@@ -81,6 +81,27 @@ public class JWTClaim {
         return this.header.alg.hash(needSignData.getBytes());
     }
 
+    public Proof parseProof() {
+        Proof p = null;
+        if (this.payload.vc != null) {
+            p = this.payload.vc.proof;
+        } else if (this.payload.vp != null) {
+            p = this.payload.vp.proof;
+        }
+        Proof proof = new Proof();
+        if (p != null) {
+            proof.proofPurpose = p.proofPurpose;
+            proof.hex = p.hex;
+            proof.created = p.created;
+        }
+        proof.type = this.header.alg.proofPubKeyType();
+        proof.verificationMethod = this.header.kid;
+        proof.jws = this.jws;
+        proof.domain = this.payload.aud;
+        proof.challenge = this.payload.nonce;
+        return proof;
+    }
+
     public byte[] parseSignature() {
         return Base64.getDecoder().decode(this.jws);
     }

@@ -27,11 +27,7 @@ public class JWTVC {
         this.type = credential.type;
         this.credentialStatus = credential.credentialStatus;
         if (credential.proof != null) {
-            // should not contain jws signature and verificationMethod
-            this.proof = credential.proof.genNeedSignProof();
-            this.proof.hex = credential.proof.hex;
-            this.proof.verificationMethod = null;
-            this.proof.type = null;
+            this.proof = credential.proof.genJWTProof();
         }
         if (credential.issuer.getClass().isPrimitive() || credential.issuer.getClass().isArray() ||
                 credential.issuer instanceof JSONArray) {

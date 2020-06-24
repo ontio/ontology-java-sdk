@@ -1,27 +1,21 @@
 package demo;
 
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.OntSdk;
-import com.github.ontio.common.Address;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.Helper;
-import com.github.ontio.core.block.Block;
-import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.network.exception.ConnectorException;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.sdk.info.AccountInfo;
 import com.github.ontio.sdk.wallet.Account;
 import com.github.ontio.sdk.wallet.Identity;
 
 import java.io.IOException;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class ClaimRecordTxDemo {
+public class CredentialRecordTxDemo {
     public static void main(String[] args) {
 
         try {
@@ -47,7 +41,7 @@ public class ClaimRecordTxDemo {
             clmRevMap.put("typ", "AttestContract");
             clmRevMap.put("addr", subjectIdentity.ontid.replace(Common.didont, ""));
 
-            ontSdk.neovm().claimRecord().setContractAddress("52df370680de17bc5d4262c446f102a0ee0d6312");
+            ontSdk.neovm().credentialRecord().setContractAddress("52df370680de17bc5d4262c446f102a0ee0d6312");
             String claim = ontSdk.nativevm().ontId().createOntIdClaim(issuerIdentity.ontid, payer,
                     "claim:context", map, map, clmRevMap, System.currentTimeMillis() / 1000 + 100000);
             System.out.println(claim);
@@ -68,7 +62,7 @@ public class ClaimRecordTxDemo {
                     "111111", "AazEvfQPcQ2GEFFPLF1ZLwQ7K5jDn81hve",
                     Base64.getDecoder().decode("0hAaO6CT+peDil9s5eoHyw=="));
             System.out.println(account.address);
-            String commitHash = ontSdk.neovm().claimRecord().sendCommit2(issuerIdentity.ontid, password,
+            String commitHash = ontSdk.neovm().credentialRecord().sendCommit2(issuerIdentity.ontid, password,
                     issuerIdentity.controls.get(0).getSalt(), subjectIdentity.ontid, claimId, 1,
                     payer, ontSdk.DEFAULT_GAS_LIMIT, 500);
             System.out.println("commitRes:" + commitHash);
@@ -79,34 +73,34 @@ public class ClaimRecordTxDemo {
             String[] credibleOntId = new String[]{
                     issuerIdentity.ontid, subjectIdentity.ontid
             };
-            boolean ontIdCredible = ontSdk.nativevm().ontId().verifyClaimOntIdCredible(claim, credibleOntId);
+            boolean ontIdCredible = ontSdk.nativevm().ontId().verifyCredOntIdCredible(claim, credibleOntId);
             System.out.println("claim ontIdCredible: " + ontIdCredible);
-            boolean notExpired = ontSdk.nativevm().ontId().verifyClaimNotExpired(claim);
+            boolean notExpired = ontSdk.nativevm().ontId().verifyCredNotExpired(claim);
             System.out.println("claim notExpired: " + notExpired);
-            boolean signatureValid = ontSdk.nativevm().ontId().verifyClaimSignature(claim);
+            boolean signatureValid = ontSdk.nativevm().ontId().verifyCredSignature(claim);
             System.out.println("claim signatureValid: " + signatureValid);
-            boolean notRevoked = ontSdk.nativevm().ontId().verifyClaimNotRevoked(claim);
+            boolean notRevoked = ontSdk.nativevm().ontId().verifyCredNotRevoked(claim);
             System.out.println("claim notRevoked: " + notRevoked);
 
-            String res = ontSdk.neovm().claimRecord().sendGetStatus2(claimId);
+            String res = ontSdk.neovm().credentialRecord().sendGetStatus2(claimId);
             System.out.println("before revoke: " + res);
             Thread.sleep(6000);
-            String revokeHash = ontSdk.neovm().claimRecord().sendRevoke2(subjectIdentity.ontid, password,
+            String revokeHash = ontSdk.neovm().credentialRecord().sendRevoke2(subjectIdentity.ontid, password,
                     subjectIdentity.controls.get(0).getSalt(), claimId, 1, payer, ontSdk.DEFAULT_GAS_LIMIT,
                     500);
             System.out.println("revokeRes: " + revokeHash);
             Thread.sleep(6000);
             System.out.println(ontSdk.getConnect().getSmartCodeEvent(revokeHash));
-            String revoked = ontSdk.neovm().claimRecord().sendGetStatus2(claimId);
+            String revoked = ontSdk.neovm().credentialRecord().sendGetStatus2(claimId);
             System.out.println("after revoke: " + revoked);
 
-            String removeHash = ontSdk.neovm().claimRecord().sendRemove2(subjectIdentity.ontid, password,
+            String removeHash = ontSdk.neovm().credentialRecord().sendRemove2(subjectIdentity.ontid, password,
                     subjectIdentity.controls.get(0).getSalt(), claimId, 1, payer, ontSdk.DEFAULT_GAS_LIMIT,
                     500);
             System.out.println("removeRes: " + removeHash);
             Thread.sleep(6000);
             System.out.println(ontSdk.getConnect().getSmartCodeEvent(removeHash));
-            String removed = ontSdk.neovm().claimRecord().sendGetStatus2(claimId);
+            String removed = ontSdk.neovm().credentialRecord().sendGetStatus2(claimId);
             System.out.println("after remove: " + removed);
         } catch (Exception e) {
             e.printStackTrace();

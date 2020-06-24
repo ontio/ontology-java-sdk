@@ -35,7 +35,7 @@ public class NeoVm {
     private Oep5 oep5Tx = null;
     private Oep8 oep8Tx = null;
     private Record recordTx = null;
-    private ClaimRecord claimRecordTx = null;
+    private CredentialRecord credentialRecordTx = null;
     private OntId2 ontId2 = null;
 
     private OntSdk sdk;
@@ -89,23 +89,23 @@ public class NeoVm {
         return recordTx;
     }
 
-    public ClaimRecord claimRecord() {
-        if (claimRecordTx == null) {
-            claimRecordTx = new ClaimRecord(sdk);
+    public CredentialRecord credentialRecord() {
+        if (credentialRecordTx == null) {
+            credentialRecordTx = new CredentialRecord(sdk);
         }
-        return claimRecordTx;
+        return credentialRecordTx;
     }
 
     public OntId2 ontId2() throws Exception {
         if (ontId2 == null) {
-            ontId2 = new OntId2("", null, claimRecordTx, sdk.nativevm().ontId());
+            ontId2 = new OntId2("", null, credentialRecordTx, sdk.nativevm().ontId());
         }
         return ontId2;
     }
 
     public OntId2 ontId2(String ontId, Account signer) throws Exception {
         if (ontId2 == null) {
-            ontId2 = new OntId2(ontId, signer, claimRecordTx, sdk.nativevm().ontId());
+            ontId2 = new OntId2(ontId, signer, credentialRecordTx, sdk.nativevm().ontId());
         } else {
             ontId2.updateOntIdAndSigner(ontId, signer);
         }

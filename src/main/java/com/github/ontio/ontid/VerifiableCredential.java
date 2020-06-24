@@ -4,15 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
-import com.github.ontio.crypto.Digest;
-import com.github.ontio.ontid.jwt.JWTClaim;
-import com.github.ontio.sdk.exception.SDKException;
+import com.github.ontio.ontid.jwt.JWTCredential;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-// Verifiable credential also called claim
+
 @JSONType(orders = {"@context", "id", "type", "issuer", "issuanceDate", "expirationDate",
         "credentialSubject", "credentialStatus", "proof"})
 public class VerifiableCredential {
@@ -47,39 +45,39 @@ public class VerifiableCredential {
         return Util.fetchId(credentialSubject);
     }
 
-    public static VerifiableCredential deserializeFromJWT(JWTClaim claim) {
+    public static VerifiableCredential deserializeFromJWT(JWTCredential jwtCred) {
         VerifiableCredential credential = new VerifiableCredential();
-        credential.context = claim.payload.vc.context;
-        credential.id = claim.payload.jti;
-        credential.type = claim.payload.vc.type;
+        credential.context = jwtCred.payload.vc.context;
+        credential.id = jwtCred.payload.jti;
+        credential.type = jwtCred.payload.vc.type;
         // set date
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        if (claim.payload.iat > 0) {
-            credential.issuanceDate = formatter.format(new Date(claim.payload.iat * 1000));
-        } else if (claim.payload.nbf > 0) {
-            credential.issuanceDate = formatter.format(new Date(claim.payload.nbf * 1000));
+        if (jwtCred.payload.iat > 0) {
+            credential.issuanceDate = formatter.format(new Date(jwtCred.payload.iat * 1000));
+        } else if (jwtCred.payload.nbf > 0) {
+            credential.issuanceDate = formatter.format(new Date(jwtCred.payload.nbf * 1000));
         }
-        if (claim.payload.exp > 0) {
-            credential.expirationDate = formatter.format(new Date(claim.payload.exp * 1000));
+        if (jwtCred.payload.exp > 0) {
+            credential.expirationDate = formatter.format(new Date(jwtCred.payload.exp * 1000));
         }
-        credential.credentialStatus = claim.payload.vc.credentialStatus;
+        credential.credentialStatus = jwtCred.payload.vc.credentialStatus;
         // assign issuer
-        if (claim.payload.vc.issuer == null) {
-            credential.issuer = claim.payload.iss;
+        if (jwtCred.payload.vc.issuer == null) {
+            credential.issuer = jwtCred.payload.iss;
         } else {
-            JSONObject jsonIssuer = (JSONObject) JSONObject.toJSON(claim.payload.vc.issuer);
-            jsonIssuer.put("id", claim.payload.iss);
+            JSONObject jsonIssuer = (JSONObject) JSONObject.toJSON(jwtCred.payload.vc.issuer);
+            jsonIssuer.put("id", jwtCred.payload.iss);
             credential.issuer = jsonIssuer;
         }
         // generate proof
-        credential.proof = claim.parseProof();
+        credential.proof = jwtCred.parseProof();
         // generate credential subject
-        if (claim.payload.sub != null && !claim.payload.sub.isEmpty()) { // inject id to credential subject
-            JSONObject subject = (JSONObject) JSONObject.toJSON(claim.payload.vc.credentialSubject);
-            subject.put("id", claim.payload.sub);
+        if (jwtCred.payload.sub != null && !jwtCred.payload.sub.isEmpty()) { // inject id to credential subject
+            JSONObject subject = (JSONObject) JSONObject.toJSON(jwtCred.payload.vc.credentialSubject);
+            subject.put("id", jwtCred.payload.sub);
             credential.credentialSubject = subject;
         } else {
-            credential.credentialSubject = claim.payload.vc.credentialSubject;
+            credential.credentialSubject = jwtCred.payload.vc.credentialSubject;
         }
         return credential;
     }

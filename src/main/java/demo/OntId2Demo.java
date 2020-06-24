@@ -5,12 +5,11 @@ import com.alibaba.fastjson.annotation.JSONType;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.ontid.*;
-import com.github.ontio.ontid.jwt.JWTClaim;
+import com.github.ontio.ontid.jwt.JWTCredential;
 import com.github.ontio.sdk.wallet.Identity;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 
 public class OntId2Demo {
@@ -20,18 +19,18 @@ public class OntId2Demo {
 
     public static void main(String[] args) {
         try {
-            OntSdk ontSdk = ClaimRecordTxDemo.getOntSdk();
-            // set claim contract address
-            ontSdk.neovm().claimRecord().setContractAddress("52df370680de17bc5d4262c446f102a0ee0d6312");
-            testClaim(ontSdk);
+            OntSdk ontSdk = CredentialRecordTxDemo.getOntSdk();
+            // set credential contract address
+            ontSdk.neovm().credentialRecord().setContractAddress("52df370680de17bc5d4262c446f102a0ee0d6312");
+            testCred(ontSdk);
             testDeserialize();
-            testVerifyClaimSignature(ontSdk);
+            testVerifyCredSignature(ontSdk);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void testClaim(OntSdk ontSdk) throws Exception {
+    public static void testCred(OntSdk ontSdk) throws Exception {
         Account payer = ontSdk.getWalletMgr().getAccount("AUNB7xQuBVg8hnRfVz9pyAuZQUqPBiDxDF", password);
         Identity issuerIdentity = ontSdk.getWalletMgr().getWallet().getIdentity(
                 "did:ont:AJ4C9aTYxTGUhEpaZdPjFSqCqzMCqJDRUd");
@@ -49,21 +48,21 @@ public class OntId2Demo {
 //            System.out.println("ownerRegTx: " + ownerRegTx);
 //            Thread.sleep(6000);
         OntId2 issuer = new OntId2(issuerIdentity.ontid, issuerSigner,
-                ontSdk.neovm().claimRecord(), ontSdk.nativevm().ontId());
+                ontSdk.neovm().credentialRecord(), ontSdk.nativevm().ontId());
         OntId2 owner = new OntId2(ownerIdentity.ontid, ownerSigner,
-                ontSdk.neovm().claimRecord(), ontSdk.nativevm().ontId());
+                ontSdk.neovm().credentialRecord(), ontSdk.nativevm().ontId());
         // verifier may not own ontId and signer
         OntId2 verifier = new OntId2("", null,
-                ontSdk.neovm().claimRecord(), ontSdk.nativevm().ontId());
-        // generate a example claim
+                ontSdk.neovm().credentialRecord(), ontSdk.nativevm().ontId());
+        // generate a example credential
         VerifiableCredential credential = new VerifiableCredential();
         credential.context = new String[]{};
         credential.type = new String[]{"RelationshipCredential"};
         Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         credential.expirationDate = formatter.format(expiration);
-        String noSubjectClaim = JSON.toJSONString(credential);
-        System.out.println("noSubjectClaim: " + noSubjectClaim);
+        String noSubjectCred = JSON.toJSONString(credential);
+        System.out.println("noSubjectCred: " + noSubjectCred);
         ExampleCredentialSubject credentialSubject = new ExampleCredentialSubject("did:ont:111111",
                 "Bob", "Alice");
         credential.credentialSubject = new ExampleCredentialSubject[]{credentialSubject};
@@ -74,38 +73,37 @@ public class OntId2Demo {
             System.out.println("sign request not verified");
             return;
         }
-        // create claim after verified
-        // the parameters that used to create claim should be unmarshal from signRequest.claim
+        // create credential after verified
         // for convenient, using those field at here
-        VerifiableCredential verifiableCredential = issuer.createClaim(credential.context, credential.type,
+        VerifiableCredential verifiableCredential = issuer.createCred(credential.context, credential.type,
                 issuerIdentity.ontid,
                 credential.credentialSubject, expiration,
                 CredentialStatusType.AttestContract,
                 ProofPurpose.assertionMethod);
-        String jwt1 = issuer.createJWTClaim(credential.context, credential.type, issuerIdentity.ontid,
+        String jwt1 = issuer.createJWTCred(credential.context, credential.type, issuerIdentity.ontid,
                 credentialSubject, expiration, CredentialStatusType.AttestContract, null);
         // for debug, print verifiableCredential
         System.out.println("verifiableCredential: " + JSON.toJSONString(verifiableCredential));
         System.out.println("jwt1: " + jwt1);
-        // commit claim to blcokchain
-        String commitClaimHash = issuer.commitClaim(verifiableCredential, ownerIdentity.ontid, payer, gasLimit,
+        // commit credential to blcokchain
+        String commitCredHash = issuer.commitCred(verifiableCredential, ownerIdentity.ontid, payer, gasLimit,
                 gasPrice, ontSdk);
-        String commitJWTClaimHash = issuer.commitClaim(jwt1, ownerIdentity.ontid, payer, gasLimit,
+        String commitJWTCredHash = issuer.commitCred(jwt1, ownerIdentity.ontid, payer, gasLimit,
                 gasPrice, ontSdk);
-        System.out.println("commit claim: " + verifiableCredential.id + ", txHash: " + commitClaimHash);
-        System.out.println("commit jwt claim, txHash: " + commitJWTClaimHash);
+        System.out.println("commit credential: " + verifiableCredential.id + ", txHash: " + commitCredHash);
+        System.out.println("commit jwt credential, txHash: " + commitJWTCredHash);
         Thread.sleep(6000);
-        ClaimRecordTxDemo.showEvent(ontSdk, "Commit", commitClaimHash);
-        ClaimRecordTxDemo.showEvent(ontSdk, "Commit", commitJWTClaimHash);
-        // verify claim
+        CredentialRecordTxDemo.showEvent(ontSdk, "Commit", commitCredHash);
+        CredentialRecordTxDemo.showEvent(ontSdk, "Commit", commitJWTCredHash);
+        // verify credential
         // user should own self credible ontIds, not only use issuerIdentity.ontid and ownerIdentity.ontid
         String[] credibleOntIds = new String[]{issuerIdentity.ontid, ownerIdentity.ontid};
-        boolean claimVerified = verifier.verifyClaim(credibleOntIds, verifiableCredential);
-        if (!claimVerified) {
-            System.out.println("claim not verified");
+        boolean credVerified = verifier.verifyCred(credibleOntIds, verifiableCredential);
+        if (!credVerified) {
+            System.out.println("credential not verified");
             return;
         }
-        boolean jwt1Verified = verifier.verifyJWTClaim(credibleOntIds, jwt1);
+        boolean jwt1Verified = verifier.verifyJWTCred(credibleOntIds, jwt1);
         if (!jwt1Verified) {
             System.out.println("jwt1 not verified");
             return;
@@ -114,30 +112,30 @@ public class OntId2Demo {
         ExampleIssuer exampleIssuer = new ExampleIssuer(issuerIdentity.ontid, "issuer");
         ExampleCredentialSubject otherCredentialSubject = new ExampleCredentialSubject("did:ont:111111",
                 "he", "she");
-        VerifiableCredential verifiableCredential2 = issuer.createClaim(credential.context, credential.type,
+        VerifiableCredential verifiableCredential2 = issuer.createCred(credential.context, credential.type,
                 exampleIssuer, new ExampleCredentialSubject[]{otherCredentialSubject}, expiration,
                 CredentialStatusType.AttestContract,
                 ProofPurpose.assertionMethod);
-        String jwt2 = issuer.createJWTClaim(credential.context, credential.type,
+        String jwt2 = issuer.createJWTCred(credential.context, credential.type,
                 exampleIssuer, new ExampleCredentialSubject[]{otherCredentialSubject}, expiration,
                 CredentialStatusType.AttestContract, null);
         System.out.println("verifiableCredential2: " + JSON.toJSONString(verifiableCredential2));
         System.out.println("jwt2: " + jwt2);
-        String otherCommitClaimHash = issuer.commitClaim(verifiableCredential2, ownerIdentity.ontid, payer,
+        String otherCommitCredHash = issuer.commitCred(verifiableCredential2, ownerIdentity.ontid, payer,
                 gasLimit, gasPrice, ontSdk);
-        System.out.println("commit claim: " + verifiableCredential2.id + ", txHash: " + otherCommitClaimHash);
-        String jwt2CommitClaimHash = issuer.commitClaim(jwt2, ownerIdentity.ontid, payer,
+        System.out.println("commit credential: " + verifiableCredential2.id + ", txHash: " + otherCommitCredHash);
+        String jwt2CommitCredHash = issuer.commitCred(jwt2, ownerIdentity.ontid, payer,
                 gasLimit, gasPrice, ontSdk);
-        System.out.println("commit other jwt claim, txHash: " + jwt2CommitClaimHash);
+        System.out.println("commit other jwt credential, txHash: " + jwt2CommitCredHash);
         Thread.sleep(6000);
-        ClaimRecordTxDemo.showEvent(ontSdk, "Commit", otherCommitClaimHash);
-        ClaimRecordTxDemo.showEvent(ontSdk, "Commit", jwt2CommitClaimHash);
-        boolean verifiableCredential2Verified = verifier.verifyClaim(credibleOntIds, verifiableCredential2);
+        CredentialRecordTxDemo.showEvent(ontSdk, "Commit", otherCommitCredHash);
+        CredentialRecordTxDemo.showEvent(ontSdk, "Commit", jwt2CommitCredHash);
+        boolean verifiableCredential2Verified = verifier.verifyCred(credibleOntIds, verifiableCredential2);
         if (!verifiableCredential2Verified) {
             System.out.println("verifiableCredential2Verified: " + verifiableCredential2Verified);
             return;
         }
-        boolean jwt2Verified = verifier.verifyJWTClaim(credibleOntIds, jwt2);
+        boolean jwt2Verified = verifier.verifyJWTCred(credibleOntIds, jwt2);
         if (!jwt2Verified) {
             System.out.println("jwt2Verified: " + jwt2Verified);
             return;
@@ -160,9 +158,9 @@ public class OntId2Demo {
                 ProofPurpose.assertionMethod);
         System.out.println("jwtPresentation2: " + jwtPresentation2);
         // verify presentation
-        // verify each claim firstly
+        // verify each cred firstly
         for (VerifiableCredential credential1 : presentation.verifiableCredential) {
-            boolean v = verifier.verifyClaim(credibleOntIds, credential1);
+            boolean v = verifier.verifyCred(credibleOntIds, credential1);
             System.out.println("presentation verify: " + v);
         }
         // verify each proof
@@ -172,38 +170,38 @@ public class OntId2Demo {
         }
         boolean jwtPresentation2Verified = verifier.verifyJWTPresentation(credibleOntIds, jwtPresentation2);
         System.out.println("jwtPresentation2Verified: " + jwtPresentation2Verified);
-        // issuer revoke claim
-        String issuerRevokeHash = issuer.revokeClaim(verifiableCredential, payer, gasLimit, gasPrice, ontSdk);
+        // issuer revoke credential
+        String issuerRevokeHash = issuer.revokeCred(verifiableCredential, payer, gasLimit, gasPrice, ontSdk);
         System.out.println("issuerRevokeHash: " + issuerRevokeHash);
         Thread.sleep(6000);
-        ClaimRecordTxDemo.showEvent(ontSdk, "Revoke", issuerRevokeHash);
-        // owner revoke claim
-        String ownerRevokeHash = owner.revokeClaimById(verifiableCredential2.id, payer, gasLimit, gasPrice, ontSdk);
+        CredentialRecordTxDemo.showEvent(ontSdk, "Revoke", issuerRevokeHash);
+        // owner revoke credential
+        String ownerRevokeHash = owner.revokeCredById(verifiableCredential2.id, payer, gasLimit, gasPrice, ontSdk);
         System.out.println("ownerRevokeHash: " + ownerRevokeHash);
         Thread.sleep(6000);
-        ClaimRecordTxDemo.showEvent(ontSdk, "Revoke", ownerRevokeHash);
+        CredentialRecordTxDemo.showEvent(ontSdk, "Revoke", ownerRevokeHash);
 
-        String revokeJWTClaimHash1 = owner.revokeJWTClaim(jwt1, payer, gasLimit, gasPrice, ontSdk);
-        String revokeJWTClaimHash2 = owner.revokeJWTClaim(jwt2, payer, gasLimit, gasPrice, ontSdk);
-        System.out.println("revokeJWTClaimHash1: " + revokeJWTClaimHash1);
-        System.out.println("revokeJWTClaimHash2: " + revokeJWTClaimHash2);
+        String revokeJWTCredHash1 = owner.revokeJWTCred(jwt1, payer, gasLimit, gasPrice, ontSdk);
+        String revokeJWTCredHash2 = owner.revokeJWTCred(jwt2, payer, gasLimit, gasPrice, ontSdk);
+        System.out.println("revokeJWTCredHash1: " + revokeJWTCredHash1);
+        System.out.println("revokeJWTCredHash2: " + revokeJWTCredHash2);
         Thread.sleep(6000);
-        ClaimRecordTxDemo.showEvent(ontSdk, "Revoke", revokeJWTClaimHash1);
-        ClaimRecordTxDemo.showEvent(ontSdk, "Revoke", revokeJWTClaimHash2);
+        CredentialRecordTxDemo.showEvent(ontSdk, "Revoke", revokeJWTCredHash1);
+        CredentialRecordTxDemo.showEvent(ontSdk, "Revoke", revokeJWTCredHash2);
 
-        String removeCredential1 = owner.removeClaimById(verifiableCredential.id, payer, gasLimit, gasPrice, ontSdk);
-        String removeCredential2 = owner.removeClaimById(verifiableCredential2.id, payer, gasLimit, gasPrice, ontSdk);
-        String removeJWT1 = owner.removeJWTClaim(jwt1, payer, gasLimit, gasPrice, ontSdk);
-        String removeJWT2 = owner.removeJWTClaim(jwt2, payer, gasLimit, gasPrice, ontSdk);
+        String removeCredential1 = owner.removeCredById(verifiableCredential.id, payer, gasLimit, gasPrice, ontSdk);
+        String removeCredential2 = owner.removeCredById(verifiableCredential2.id, payer, gasLimit, gasPrice, ontSdk);
+        String removeJWT1 = owner.removeJWTCred(jwt1, payer, gasLimit, gasPrice, ontSdk);
+        String removeJWT2 = owner.removeJWTCred(jwt2, payer, gasLimit, gasPrice, ontSdk);
         System.out.println("removeCredential1: " + removeCredential1);
         System.out.println("removeCredential2: " + removeCredential2);
         System.out.println("removeJWT1: " + removeJWT1);
         System.out.println("removeJWT2: " + removeJWT2);
         Thread.sleep(6000);
-        ClaimRecordTxDemo.showEvent(ontSdk, "Remove", removeCredential1);
-        ClaimRecordTxDemo.showEvent(ontSdk, "Remove", removeCredential2);
-        ClaimRecordTxDemo.showEvent(ontSdk, "Remove", removeJWT1);
-        ClaimRecordTxDemo.showEvent(ontSdk, "Remove", removeJWT2);
+        CredentialRecordTxDemo.showEvent(ontSdk, "Remove", removeCredential1);
+        CredentialRecordTxDemo.showEvent(ontSdk, "Remove", removeCredential2);
+        CredentialRecordTxDemo.showEvent(ontSdk, "Remove", removeJWT1);
+        CredentialRecordTxDemo.showEvent(ontSdk, "Remove", removeJWT2);
     }
 
     public static void testDeserialize() throws Exception {
@@ -259,18 +257,18 @@ public class OntId2Demo {
                 "ZDIzZDMyZDIiLCJkb21haW4iOlsiaHR0cHM6Ly9leGFtcGxlLmNvbSJdLCJwcm9vZlB1cnBvc2UiOiJhc3NlcnRpb25NZ" +
                 "XRob2QifX19.AbQD8FTwRpNeOmzjsUbgeDVKthLHVykxsgCejA8TsHVrx1DhTvOt+K/MY05OsYPLY5iI5DcAoq5zsAzKY" +
                 "eeSoWA=";
-        JWTClaim jwtClaim1 = JWTClaim.deserializeToJWTClaim(jwtCredential);
-        System.out.println(JSON.toJSONString(jwtClaim1));
-        VerifiableCredential credential = VerifiableCredential.deserializeFromJWT(jwtClaim1);
+        JWTCredential jwtCred1 = JWTCredential.deserializeToJWTCred(jwtCredential);
+        System.out.println(JSON.toJSONString(jwtCred1));
+        VerifiableCredential credential = VerifiableCredential.deserializeFromJWT(jwtCred1);
         System.out.println(JSON.toJSONString(credential));
-        JWTClaim jwtClaim2 = JWTClaim.deserializeToJWTClaim(jwtPresentation);
-        System.out.println(JSON.toJSONString(jwtClaim2));
-        VerifiablePresentation presentation = VerifiablePresentation.deserializeFromJWT(jwtClaim2);
+        JWTCredential jwtCred2 = JWTCredential.deserializeToJWTCred(jwtPresentation);
+        System.out.println(JSON.toJSONString(jwtCred2));
+        VerifiablePresentation presentation = VerifiablePresentation.deserializeFromJWT(jwtCred2);
         System.out.println(JSON.toJSONString(presentation));
     }
 
-    public static void testVerifyClaimSignature(OntSdk ontSdk) throws Exception {
-        String jwtClaim = "eyJhbGciOiJFUzI1NiIsImtpZCI6ImRpZDpvbnQ6QUo0QzlhVFl4VEdVaEVwYVpkUGpGU3FDcXpNQ3FKRFJ" +
+    public static void testVerifyCredSignature(OntSdk ontSdk) throws Exception {
+        String jwtCred = "eyJhbGciOiJFUzI1NiIsImtpZCI6ImRpZDpvbnQ6QUo0QzlhVFl4VEdVaEVwYVpkUGpGU3FDcXpNQ3FKRFJ" +
                 "VZCNrZXlzLTIiLCJ0eXAiOiJKV1QifQ==.eyJzdWIiOiJkaWQ6b250OjExMTExMSIsImp0aSI6InVybjp1dWlkOmNhNmM" +
                 "1ZmY1LTlkODMtNGM0Mi05OGVjLTQwYzYxOTFmMWZiNyIsImlzcyI6ImRpZDpvbnQ6QUo0QzlhVFl4VEdVaEVwYVpkUGpG" +
                 "U3FDcXpNQ3FKRFJVZCIsIm5iZiI6MTU5MjgxNTUwMCwiaWF0IjoxNTkyODE1NTAwLCJleHAiOjE1OTI5MDE5MDAsInZjI" +
@@ -281,8 +279,8 @@ public class OntId2Demo {
                 "kF0dGVzdENvbnRyYWN0In0sInByb29mIjp7InR5cGUiOiJFY2RzYVNlY3AyNTZyMVZlcmlmaWNhdGlvbktleTIwMTkiLC" +
                 "JjcmVhdGVkIjoiMjAyMC0wNi0yMlQxNjo0NTowMFoiLCJwcm9vZlB1cnBvc2UiOiJhc3NlcnRpb25NZXRob2QifX19.AY" +
                 "4NRJdnb1GUpDdqrbXLupB9cctLwop/YwE9PA7hen7DyJsMh+AOt8x3CrIEss6MXhgsQcuW46sKiZiAIUP8538=";
-        OntId2 verifier = new OntId2("", null, ontSdk.neovm().claimRecord(), ontSdk.nativevm().ontId());
-        System.out.println(verifier.verifyJWTClaimSignature(jwtClaim));
+        OntId2 verifier = new OntId2("", null, ontSdk.neovm().credentialRecord(), ontSdk.nativevm().ontId());
+        System.out.println(verifier.verifyJWTCredSignature(jwtCred));
     }
 }
 

@@ -5,12 +5,9 @@ import com.github.ontio.ontid.VerifiableCredential;
 import com.github.ontio.ontid.VerifiablePresentation;
 import junit.framework.TestCase;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+public class JWTCredentialTest extends TestCase {
 
-public class JWTClaimTest extends TestCase {
-
-    public void testDeserializeToJWTClaim() {
+    public void testDeserializeToJWTCred() {
         try {
             String jwtCredential = "eyJhbGciOiJFUzI1NiIsImtpZCI6ImRpZDpvbnQ6QUo0QzlhVFl4VEdVaEVwYVpkUGpGU3FDcXpNQ3" +
                     "FKRFJVZCNrZXlzLTIiLCJ0eXAiOiJKV1QifQ==.eyJzdWIiOiJkaWQ6b250OjExMTExMSIsImp0aSI6InVybjp1dWlkOm" +
@@ -64,20 +61,20 @@ public class JWTClaimTest extends TestCase {
                     "ZDIzZDMyZDIiLCJkb21haW4iOlsiaHR0cHM6Ly9leGFtcGxlLmNvbSJdLCJwcm9vZlB1cnBvc2UiOiJhc3NlcnRpb25NZ" +
                     "XRob2QifX19.AbQD8FTwRpNeOmzjsUbgeDVKthLHVykxsgCejA8TsHVrx1DhTvOt+K/MY05OsYPLY5iI5DcAoq5zsAzKY" +
                     "eeSoWA=";
-            JWTClaim jwtClaim1 = JWTClaim.deserializeToJWTClaim(jwtCredential);
-            assertNotNull(jwtClaim1.payload.vc);
-            VerifiableCredential credential = VerifiableCredential.deserializeFromJWT(jwtClaim1);
+            JWTCredential jwtCred1 = JWTCredential.deserializeToJWTCred(jwtCredential);
+            assertNotNull(jwtCred1.payload.vc);
+            VerifiableCredential credential = VerifiableCredential.deserializeFromJWT(jwtCred1);
             assertNotNull(credential);
-            JWTClaim jwtClaim2 = JWTClaim.deserializeToJWTClaim(jwtPresentation);
-            assertNotNull(jwtClaim2.payload.vp);
-            VerifiablePresentation presentation = VerifiablePresentation.deserializeFromJWT(jwtClaim2);
+            JWTCredential jwtCred2 = JWTCredential.deserializeToJWTCred(jwtPresentation);
+            assertNotNull(jwtCred2.payload.vp);
+            VerifiablePresentation presentation = VerifiablePresentation.deserializeFromJWT(jwtCred2);
             assertNotNull(presentation);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void testSerializeToJWTClaim() {
+    public void testSerializeToJWTCred() {
         try {
             String jsonCredential = "{" +
                     "\"@context\":[" +
@@ -102,22 +99,10 @@ public class JWTClaimTest extends TestCase {
             VerifiableCredential credential = JSON.parseObject(jsonCredential, VerifiableCredential.class);
             // assign jws, in case of transformation will fail
             credential.proof.jws = "aaa";
-            JWTClaim jwtClaim = new JWTClaim(credential);
-            assertNotNull(jwtClaim.toString());
+            JWTCredential jwtCred = new JWTCredential(credential);
+            assertNotNull(jwtCred.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-}
-
-class CredentialSubject {
-    String id;
-    String name;
-    String spouse;
-
-    public CredentialSubject(String id, String name, String spouse) {
-        this.id = id;
-        this.name = name;
-        this.spouse = spouse;
     }
 }

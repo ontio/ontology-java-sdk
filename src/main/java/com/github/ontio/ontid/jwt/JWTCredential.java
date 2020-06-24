@@ -12,17 +12,17 @@ import com.github.ontio.sdk.exception.SDKException;
 import java.util.Base64;
 
 @JSONType(orders = {"header", "payload", "jws"})
-public class JWTClaim {
+public class JWTCredential {
     public String jws;
     public JWTHeader header;
     public JWTPayload payload;
 
-    public JWTClaim() {
+    public JWTCredential() {
     }
 
     // payload.jti need to be recalculated
     // jti should be uuid, not json-ld hash
-    public JWTClaim(JWTHeader header, JWTPayload payload, Account signer) throws Exception {
+    public JWTCredential(JWTHeader header, JWTPayload payload, Account signer) throws Exception {
         this.header = header;
         this.payload = payload;
         byte[] needSignData = this.genNeedSignData();
@@ -30,7 +30,7 @@ public class JWTClaim {
         jws = Base64.getEncoder().encodeToString(sig);
     }
 
-    private JWTClaim(String header, String payload, String jws) {
+    private JWTCredential(String header, String payload, String jws) {
         this.jws = jws;
         Base64.Decoder decoder = Base64.getDecoder();
         byte[] decodedHeader = decoder.decode(header);
@@ -41,7 +41,7 @@ public class JWTClaim {
     }
 
     // the proof signature should be jws
-    public JWTClaim(VerifiableCredential credential) throws Exception {
+    public JWTCredential(VerifiableCredential credential) throws Exception {
         if (credential.proof == null) {
             throw new SDKException("proof is null");
         }
@@ -54,7 +54,7 @@ public class JWTClaim {
     }
 
     // the proof signature should be jws
-    public JWTClaim(VerifiablePresentation presentation, Proof proof) throws Exception {
+    public JWTCredential(VerifiablePresentation presentation, Proof proof) throws Exception {
         if (proof == null) {
             throw new SDKException("proof is null");
         }
@@ -66,12 +66,12 @@ public class JWTClaim {
         this.payload = new JWTPayload(presentation, proof);
     }
 
-    public static JWTClaim deserializeToJWTClaim(String jwt) throws Exception {
+    public static JWTCredential deserializeToJWTCred(String jwt) throws Exception {
         String[] parts = jwt.split("\\.");
         if (parts.length != 3) {
-            throw new SDKException("invalid jwt claim");
+            throw new SDKException("invalid jwt cred");
         }
-        return new JWTClaim(parts[0], parts[1], parts[2]);
+        return new JWTCredential(parts[0], parts[1], parts[2]);
     }
 
     public byte[] genNeedSignData() throws Exception {

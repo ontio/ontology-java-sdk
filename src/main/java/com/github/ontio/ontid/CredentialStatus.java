@@ -6,7 +6,7 @@ import com.alibaba.fastjson.annotation.JSONType;
 @JSONType(orders = {"id", "type"})
 public class CredentialStatus {
 
-    public String id; // should be claim contract address
+    public String id; // should be CredentialRecord contract address
     public CredentialStatusType type;
 
     public CredentialStatus() {

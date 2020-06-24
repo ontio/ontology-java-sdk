@@ -40,7 +40,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ClaimRecord {
+public class CredentialRecord {
     private OntSdk sdk;
     private String contractAddress = "36bb5c053b6b839c8f6b923fe852f91239b9fccc";
 
@@ -48,7 +48,7 @@ public class ClaimRecord {
 
     private String abi2 = "{\"hash\":\"52df370680de17bc5d4262c446f102a0ee0d6312\",\"entrypoint\":\"Main\",\"functions\":[{\"name\":\"Commit\",\"parameters\":[{\"name\":\"claimId\",\"type\":\"\"},{\"name\":\"commiterId\",\"type\":\"\"},{\"name\":\"index\",\"type\":\"\"},{\"name\":\"ownerId\",\"type\":\"\"}]},{\"name\":\"Revoke\",\"parameters\":[{\"name\":\"claimId\",\"type\":\"\"},{\"name\":\"ontId\",\"type\":\"\"},{\"name\":\"index\",\"type\":\"\"}]},{\"name\":\"Remove\",\"parameters\":[{\"name\":\"claimId\",\"type\":\"\"},{\"name\":\"ownerId\",\"type\":\"\"},{\"name\":\"index\",\"type\":\"\"}]},{\"name\":\"GetStatus\",\"parameters\":[{\"name\":\"claimId\",\"type\":\"\"}]},{\"name\":\"Upgrade\",\"parameters\":[{\"name\":\"code\",\"type\":\"\"},{\"name\":\"needStorage\",\"type\":\"\"},{\"name\":\"name\",\"type\":\"\"},{\"name\":\"version\",\"type\":\"\"},{\"name\":\"author\",\"type\":\"\"},{\"name\":\"email\",\"type\":\"\"},{\"name\":\"description\",\"type\":\"\"}]}]}";
 
-    public ClaimRecord(OntSdk sdk) {
+    public CredentialRecord(OntSdk sdk) {
         this.sdk = sdk;
     }
 

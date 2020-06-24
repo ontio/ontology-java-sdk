@@ -20,16 +20,9 @@
 package demo;
 
 import com.github.ontio.OntSdk;
-import com.github.ontio.account.Account;
-import com.github.ontio.common.ErrorCode;
 import com.github.ontio.common.Helper;
-import com.github.ontio.common.UInt256;
-import com.github.ontio.merkle.MerkleVerifier;
-import com.github.ontio.network.rpc.*;
-import com.github.ontio.sdk.exception.SDKException;
 import com.github.ontio.sdk.wallet.Identity;
 
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

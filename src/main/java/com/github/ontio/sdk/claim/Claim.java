@@ -33,6 +33,8 @@ import java.util.*;
 
 /**
  * Claim
+ *
+ * @deprecated use VerifiableCredential or JWTCredential in new version
  */
 public class Claim {
     private String context = "";

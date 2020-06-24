@@ -2214,11 +2214,11 @@ public class OntId {
         }
     }
 
-    public boolean verifyClaimOntIdCredible(String claim, String[] credibleIds) throws Exception {
-        if ("".equals(claim)) {
-            throw new SDKException(ErrorCode.ParamErr("claim should not be null"));
+    public boolean verifyCredOntIdCredible(String cred, String[] credibleIds) throws Exception {
+        if ("".equals(cred)) {
+            throw new SDKException(ErrorCode.ParamErr("cred should not be null"));
         }
-        String[] obj = claim.split("\\.");
+        String[] obj = cred.split("\\.");
         if (obj.length != 3) {
             throw new SDKException(ErrorCode.ParamError);
         }
@@ -2234,29 +2234,40 @@ public class OntId {
         return false;
     }
 
-    public boolean verifyClaimNotExpired(String claim) throws Exception {
-        if ("".equals(claim)) {
-            throw new SDKException(ErrorCode.ParamErr("claim should not be null"));
+    public boolean verifyCredNotExpired(String cred) throws Exception {
+        if ("".equals(cred)) {
+            throw new SDKException(ErrorCode.ParamErr("cred should not be null"));
         }
-        String[] obj = claim.split("\\.");
+        String[] obj = cred.split("\\.");
         if (obj.length != 3) {
             throw new SDKException(ErrorCode.ParamError);
         }
         byte[] payloadBytes = Base64.getDecoder().decode(obj[1].getBytes());
         JSONObject payloadObj = JSON.parseObject(new String(payloadBytes));
-        int expiration = payloadObj.getInteger("exp");
         long currentTime = System.currentTimeMillis() / 1000;
-        return currentTime <= (long) expiration;
+        long expiration = payloadObj.getLong("exp");
+        if (expiration > 0 && expiration < currentTime) {
+            return false;
+        }
+        long iat = payloadObj.getLong("iat");
+        if (iat > 0 && iat > currentTime) {
+            return false;
+        }
+        long nbf = payloadObj.getLong("nbf");
+        if (nbf > 0 && nbf > currentTime) {
+            return false;
+        }
+        return true;
     }
 
-    public boolean verifyClaimSignature(String claim) throws Exception {
-        if ("".equals(claim)) {
-            throw new SDKException(ErrorCode.ParamErr("claim should not be null"));
+    public boolean verifyCredSignature(String cred) throws Exception {
+        if ("".equals(cred)) {
+            throw new SDKException(ErrorCode.ParamErr("cred should not be null"));
         }
         DataSignature sign = null;
         try {
 
-            String[] obj = claim.split("\\.");
+            String[] obj = cred.split("\\.");
             if (obj.length != 3) {
                 throw new SDKException(ErrorCode.ParamError);
             }
@@ -2286,18 +2297,18 @@ public class OntId {
         }
     }
 
-    public boolean verifyClaimNotRevoked(String claim) throws Exception {
-        if ("".equals(claim)) {
-            throw new SDKException(ErrorCode.ParamErr("claim should not be null"));
+    public boolean verifyCredNotRevoked(String cred) throws Exception {
+        if ("".equals(cred)) {
+            throw new SDKException(ErrorCode.ParamErr("cred should not be null"));
         }
-        String[] obj = claim.split("\\.");
+        String[] obj = cred.split("\\.");
         if (obj.length != 3) {
             throw new SDKException(ErrorCode.ParamError);
         }
         byte[] payloadBytes = Base64.getDecoder().decode(obj[1].getBytes());
         JSONObject payloadObj = JSON.parseObject(new String(payloadBytes));
         String claimId = payloadObj.getString("jti");
-        return "01".equals(sdk.neovm().claimRecord().sendGetStatus2(claimId));
+        return "01".equals(sdk.neovm().credentialRecord().sendGetStatus2(claimId));
     }
 
     /**

@@ -4,8 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
-import com.github.ontio.crypto.Digest;
-import com.github.ontio.ontid.jwt.JWTClaim;
+import com.github.ontio.ontid.jwt.JWTCredential;
 
 import java.util.UUID;
 
@@ -36,26 +35,26 @@ public class VerifiablePresentation {
         return Util.fetchId(holder);
     }
 
-    public static VerifiablePresentation deserializeFromJWT(JWTClaim claim)
+    public static VerifiablePresentation deserializeFromJWT(JWTCredential jwtCred)
             throws Exception {
         VerifiablePresentation presentation = new VerifiablePresentation();
-        presentation.context = claim.payload.vp.context;
-        presentation.id = claim.payload.jti;
-        presentation.type = claim.payload.vp.type;
+        presentation.context = jwtCred.payload.vp.context;
+        presentation.id = jwtCred.payload.jti;
+        presentation.type = jwtCred.payload.vp.type;
         // assign issuer
-        if (claim.payload.vp.holder == null) {
-            presentation.holder = claim.payload.iss;
+        if (jwtCred.payload.vp.holder == null) {
+            presentation.holder = jwtCred.payload.iss;
         } else {
-            JSONObject jsonHolder = (JSONObject) JSONObject.toJSON(claim.payload.vp.holder);
-            jsonHolder.put("id", claim.payload.iss);
+            JSONObject jsonHolder = (JSONObject) JSONObject.toJSON(jwtCred.payload.vp.holder);
+            jsonHolder.put("id", jwtCred.payload.iss);
             presentation.holder = jsonHolder;
         }
-        presentation.proof = new Proof[]{claim.parseProof()};
-        int vcLength = claim.payload.vp.verifiableCredential.length;
+        presentation.proof = new Proof[]{jwtCred.parseProof()};
+        int vcLength = jwtCred.payload.vp.verifiableCredential.length;
         VerifiableCredential[] credentials = new VerifiableCredential[vcLength];
         for (int i = 0; i < vcLength; i++) {
-            String vc = claim.payload.vp.verifiableCredential[i];
-            JWTClaim vcJWT = JWTClaim.deserializeToJWTClaim(vc);
+            String vc = jwtCred.payload.vp.verifiableCredential[i];
+            JWTCredential vcJWT = JWTCredential.deserializeToJWTCred(vc);
             VerifiableCredential credential = VerifiableCredential.deserializeFromJWT(vcJWT);
             credentials[i] = credential;
         }

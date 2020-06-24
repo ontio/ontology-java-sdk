@@ -29,8 +29,8 @@ public class OntId2Test extends TestCase {
             ontSdk.setRestful(restUrl);
             ontSdk.setDefaultConnect(ontSdk.getRestful());
             ontSdk.openWalletFile("wallet.json");
-            // set claim contract address
-            ontSdk.neovm().claimRecord().setContractAddress("52df370680de17bc5d4262c446f102a0ee0d6312");
+            // set credential contract address
+            ontSdk.neovm().credentialRecord().setContractAddress("52df370680de17bc5d4262c446f102a0ee0d6312");
             payer = ontSdk.getWalletMgr().getAccount("AUNB7xQuBVg8hnRfVz9pyAuZQUqPBiDxDF", password);
             issuerIdentity = ontSdk.getWalletMgr().getWallet().getIdentity(
                     "did:ont:AJ4C9aTYxTGUhEpaZdPjFSqCqzMCqJDRUd");
@@ -41,12 +41,12 @@ public class OntId2Test extends TestCase {
             ownerSigner = ontSdk.getWalletMgr().getAccount(ownerIdentity.ontid, password,
                     ownerIdentity.controls.get(0).getSalt());
             issuer = new OntId2(issuerIdentity.ontid, issuerSigner,
-                    ontSdk.neovm().claimRecord(), ontSdk.nativevm().ontId());
+                    ontSdk.neovm().credentialRecord(), ontSdk.nativevm().ontId());
             owner = new OntId2(ownerIdentity.ontid, ownerSigner,
-                    ontSdk.neovm().claimRecord(), ontSdk.nativevm().ontId());
+                    ontSdk.neovm().credentialRecord(), ontSdk.nativevm().ontId());
             // verifier may not own ontId and signer
             verifier = new OntId2("", null,
-                    ontSdk.neovm().claimRecord(), ontSdk.nativevm().ontId());
+                    ontSdk.neovm().credentialRecord(), ontSdk.nativevm().ontId());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -72,11 +72,11 @@ public class OntId2Test extends TestCase {
         }
     }
 
-    public void testCreateClaim() {
+    public void testCreateCred() {
         try {
             CredentialSubject subject = new CredentialSubject(ownerIdentity.ontid, "nnn", "sss");
             Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
-            VerifiableCredential credential = issuer.createClaim(null, null, issuerIdentity.ontid,
+            VerifiableCredential credential = issuer.createCred(null, null, issuerIdentity.ontid,
                     subject, expiration, CredentialStatusType.AttestContract, ProofPurpose.assertionMethod);
             assertNotNull(credential);
             assertNotNull(credential.proof);
@@ -86,70 +86,70 @@ public class OntId2Test extends TestCase {
         }
     }
 
-    public void testCreateJWTClaim() {
+    public void testCreateJWTCred() {
         try {
             CredentialSubject subject = new CredentialSubject(ownerIdentity.ontid, "nnn", "sss");
             Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
-            String jwtClaim = issuer.createJWTClaim(null, null, issuerIdentity.ontid,
+            String jwtCred = issuer.createJWTCred(null, null, issuerIdentity.ontid,
                     subject, expiration, CredentialStatusType.AttestContract, ProofPurpose.assertionMethod);
-            assertNotNull(jwtClaim);
+            assertNotNull(jwtCred);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void testCommitClaim() {
+    public void testCommitCred() {
         try {
             CredentialSubject subject = new CredentialSubject(ownerIdentity.ontid, "nnn", "sss");
             Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
-            VerifiableCredential credential = issuer.createClaim(null, null, issuerIdentity.ontid,
+            VerifiableCredential credential = issuer.createCred(null, null, issuerIdentity.ontid,
                     subject, expiration, CredentialStatusType.AttestContract, ProofPurpose.assertionMethod);
-            String txHash = issuer.commitClaim(credential, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
+            String txHash = issuer.commitCred(credential, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
             assertNotNull(txHash);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void testCommitJWTClaim() {
+    public void testCommitJWTCred() {
         try {
             CredentialSubject subject = new CredentialSubject(ownerIdentity.ontid, "nnn", "sss");
             Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
-            String jwtClaim = issuer.createJWTClaim(null, null, issuerIdentity.ontid,
+            String jwtCred = issuer.createJWTCred(null, null, issuerIdentity.ontid,
                     subject, expiration, CredentialStatusType.AttestContract, ProofPurpose.assertionMethod);
-            String txHash = owner.commitClaim(jwtClaim, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
+            String txHash = owner.commitCred(jwtCred, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
             assertNotNull(txHash);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void testVerifyClaim() {
+    public void testVerifyCred() {
         try {
             CredentialSubject subject = new CredentialSubject(ownerIdentity.ontid, "nnn", "sss");
             Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
-            VerifiableCredential credential = issuer.createClaim(null, null, issuerIdentity.ontid,
+            VerifiableCredential credential = issuer.createCred(null, null, issuerIdentity.ontid,
                     subject, expiration, CredentialStatusType.AttestContract, ProofPurpose.assertionMethod);
             String[] credibleOntIds = new String[]{issuerIdentity.ontid, ownerIdentity.ontid};
-            issuer.commitClaim(credential, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
+            issuer.commitCred(credential, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
             Thread.sleep(6000);
-            boolean verified = verifier.verifyClaim(credibleOntIds, credential);
+            boolean verified = verifier.verifyCred(credibleOntIds, credential);
             assertTrue(verified);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void testVerifyJWTClaim() {
+    public void testVerifyJWTCred() {
         try {
             CredentialSubject subject = new CredentialSubject(ownerIdentity.ontid, "nnn", "sss");
             Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
-            String jwtClaim = issuer.createJWTClaim(null, null, issuerIdentity.ontid,
+            String jwtCred = issuer.createJWTCred(null, null, issuerIdentity.ontid,
                     subject, expiration, CredentialStatusType.AttestContract, ProofPurpose.assertionMethod);
             String[] credibleOntIds = new String[]{issuerIdentity.ontid, ownerIdentity.ontid};
-            issuer.commitClaim(jwtClaim, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
+            issuer.commitCred(jwtCred, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
             Thread.sleep(6000);
-            boolean verified = verifier.verifyJWTClaim(credibleOntIds, jwtClaim);
+            boolean verified = verifier.verifyJWTCred(credibleOntIds, jwtCred);
             assertTrue(verified);
         } catch (Exception e) {
             e.printStackTrace();
@@ -161,9 +161,9 @@ public class OntId2Test extends TestCase {
             CredentialSubject subject1 = new CredentialSubject(ownerIdentity.ontid, "nnn", "sss");
             CredentialSubject subject2 = new CredentialSubject(issuerIdentity.ontid, "iii", "ddd");
             Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
-            VerifiableCredential credential1 = issuer.createClaim(null, null, issuerIdentity.ontid,
+            VerifiableCredential credential1 = issuer.createCred(null, null, issuerIdentity.ontid,
                     subject1, expiration, CredentialStatusType.AttestContract, ProofPurpose.assertionMethod);
-            VerifiableCredential credential2 = issuer.createClaim(null, null, issuerIdentity.ontid,
+            VerifiableCredential credential2 = issuer.createCred(null, null, issuerIdentity.ontid,
                     subject2, expiration, CredentialStatusType.AttestContract, ProofPurpose.assertionMethod);
             ArrayList<String> challenge = new ArrayList<>();
             challenge.add("d1b23d3...3d23d32d2");
@@ -184,13 +184,13 @@ public class OntId2Test extends TestCase {
             CredentialSubject subject1 = new CredentialSubject(ownerIdentity.ontid, "nnn", "sss");
             CredentialSubject subject2 = new CredentialSubject(ownerIdentity.ontid, "iii", "ddd");
             Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
-            String jwtClaim1 = issuer.createJWTClaim(null, null, issuerIdentity.ontid,
+            String jwtCred1 = issuer.createJWTCred(null, null, issuerIdentity.ontid,
                     subject1, expiration, CredentialStatusType.AttestContract, ProofPurpose.assertionMethod);
-            String jwtClaim2 = issuer.createJWTClaim(null, null, issuerIdentity.ontid,
+            String jwtCred2 = issuer.createJWTCred(null, null, issuerIdentity.ontid,
                     subject2, expiration, CredentialStatusType.AttestContract, ProofPurpose.assertionMethod);
             String challenge = "d1b23d3...3d23d32d2";
             String[] domain = new String[]{"https://example.com"};
-            String jwtPresentation = issuer.createJWTPresentation(new String[]{jwtClaim1, jwtClaim2}, null,
+            String jwtPresentation = issuer.createJWTPresentation(new String[]{jwtCred1, jwtCred2}, null,
                     null, ownerIdentity.ontid, challenge, domain, ProofPurpose.assertionMethod);
             assertNotNull(jwtPresentation);
         } catch (Exception e) {
@@ -203,12 +203,12 @@ public class OntId2Test extends TestCase {
             CredentialSubject subject1 = new CredentialSubject(ownerIdentity.ontid, "nnn", "sss");
             CredentialSubject subject2 = new CredentialSubject(issuerIdentity.ontid, "iii", "ddd");
             Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
-            VerifiableCredential credential1 = issuer.createClaim(null, null, issuerIdentity.ontid,
+            VerifiableCredential credential1 = issuer.createCred(null, null, issuerIdentity.ontid,
                     subject1, expiration, CredentialStatusType.AttestContract, ProofPurpose.assertionMethod);
-            issuer.commitClaim(credential1, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
-            VerifiableCredential credential2 = issuer.createClaim(null, null, issuerIdentity.ontid,
+            issuer.commitCred(credential1, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
+            VerifiableCredential credential2 = issuer.createCred(null, null, issuerIdentity.ontid,
                     subject2, expiration, CredentialStatusType.AttestContract, ProofPurpose.assertionMethod);
-            issuer.commitClaim(credential2, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
+            issuer.commitCred(credential2, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
             Thread.sleep(6000);
             ArrayList<String> challenge = new ArrayList<>();
             challenge.add("d1b23d3...3d23d32d2");
@@ -229,16 +229,16 @@ public class OntId2Test extends TestCase {
             CredentialSubject subject1 = new CredentialSubject(ownerIdentity.ontid, "nnn", "sss");
             CredentialSubject subject2 = new CredentialSubject(ownerIdentity.ontid, "iii", "ddd");
             Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
-            String jwtClaim1 = issuer.createJWTClaim(null, null, issuerIdentity.ontid,
+            String jwtCred1 = issuer.createJWTCred(null, null, issuerIdentity.ontid,
                     subject1, expiration, CredentialStatusType.AttestContract, ProofPurpose.assertionMethod);
-            issuer.commitClaim(jwtClaim1, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
-            String jwtClaim2 = issuer.createJWTClaim(null, null, issuerIdentity.ontid,
+            issuer.commitCred(jwtCred1, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
+            String jwtCred2 = issuer.createJWTCred(null, null, issuerIdentity.ontid,
                     subject2, expiration, CredentialStatusType.AttestContract, ProofPurpose.assertionMethod);
-            issuer.commitClaim(jwtClaim2, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
+            issuer.commitCred(jwtCred2, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
             Thread.sleep(6000);
             String challenge = "d1b23d3...3d23d32d2";
             String[] domain = new String[]{"https://example.com"};
-            String jwtPresentation = issuer.createJWTPresentation(new String[]{jwtClaim1, jwtClaim2}, null,
+            String jwtPresentation = issuer.createJWTPresentation(new String[]{jwtCred1, jwtCred2}, null,
                     null, ownerIdentity.ontid, challenge, domain, ProofPurpose.assertionMethod);
             String[] credibleOntIds = new String[]{issuerIdentity.ontid, ownerIdentity.ontid};
             boolean presentationVerified = verifier.verifyJWTPresentation(credibleOntIds, jwtPresentation);
@@ -252,12 +252,12 @@ public class OntId2Test extends TestCase {
         CredentialSubject subject1 = new CredentialSubject(ownerIdentity.ontid, "nnn", "sss");
         CredentialSubject subject2 = new CredentialSubject(issuerIdentity.ontid, "iii", "ddd");
         Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
-        VerifiableCredential credential1 = issuer.createClaim(null, null, issuerIdentity.ontid,
+        VerifiableCredential credential1 = issuer.createCred(null, null, issuerIdentity.ontid,
                 subject1, expiration, CredentialStatusType.AttestContract, ProofPurpose.assertionMethod);
-        issuer.commitClaim(credential1, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
-        VerifiableCredential credential2 = issuer.createClaim(null, null, issuerIdentity.ontid,
+        issuer.commitCred(credential1, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
+        VerifiableCredential credential2 = issuer.createCred(null, null, issuerIdentity.ontid,
                 subject2, expiration, CredentialStatusType.AttestContract, ProofPurpose.assertionMethod);
-        issuer.commitClaim(credential2, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
+        issuer.commitCred(credential2, ownerIdentity.ontid, payer, gasLimit, gasPrice, ontSdk);
         Thread.sleep(6000);
         ArrayList<String> challenge = new ArrayList<>();
         challenge.add("d1b23d3...3d23d32d2");
@@ -270,7 +270,7 @@ public class OntId2Test extends TestCase {
         presentation = JSON.parseObject(jsonPresentation, VerifiablePresentation.class);
         String[] credibleOntIds = new String[]{issuerIdentity.ontid, ownerIdentity.ontid};
         for (VerifiableCredential c : presentation.verifiableCredential) {
-            boolean v = verifier.verifyClaim(credibleOntIds, c);
+            boolean v = verifier.verifyCred(credibleOntIds, c);
             assertTrue(v);
         }
         // verify each proof

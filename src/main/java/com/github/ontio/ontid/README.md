@@ -2,15 +2,15 @@
 
 ## Role
 
-owner: claim owner, who hold some claims and create presentation;
+owner: credential owner, who hold some credentials and create presentation;
 
-issuer: claim issuer, who issue claim;
+issuer: credential issuer, who issue credential;
 
-verifier: claim verifier, who verify claim and presentation.
+verifier: credential verifier, who verify credential and presentation.
 
 ## Class Specification
 
-There are two formats of verifiable claim, `JSON-LD` and `JWT`.
+There are two formats of verifiable credential, `JSON-LD` and `JWT`.
 
 Refer: https://www.w3.org/TR/vc-data-model/#basic-concepts
 Refer: https://www.w3.org/TR/vc-data-model/#json-web-token
@@ -25,7 +25,7 @@ Refer: https://www.w3.org/TR/vc-data-model/#status
 
 There are two type credential status now, `AttestContract` and `RevocationList`.
 
-If `CredentialStatus.type` equals `AttestContract`, `CredentialStatus.id` should be `ClaimRecord` contract address.
+If `CredentialStatus.type` equals `AttestContract`, `CredentialStatus.id` should be `CredentialRecord` contract address.
 
 #### VerifiableCredential
 
@@ -61,11 +61,11 @@ VerifiablePresentation.holder: maybe an ontId of String type or an object that h
 
 ### JWT Format
 
-#### JWTClaim
+#### JWTCredential
 
-[code](./jwt/JWTClaim.java)
+[code](./jwt/JWTCredential.java)
 
-The verifiable claim with JWT format.
+The verifiable credential with JWT format.
 
 #### JWTHeader
 
@@ -107,7 +107,7 @@ There are some utility class.
 
 [code](./SignRequest.java)
 
-Claim owner send `SignRequest` to issuer to create claim.
+Credential owner send `SignRequest` to issuer to create credential.
 
 #### OntIdPubKey
 
@@ -161,7 +161,7 @@ The OntId2 class is ONTID 2.0 protocol SDK class.
 
 It's ONTID2 SDK class, all ontId 2.0 function should entry from here.
 
-OntId2.ClaimRecord: claim contract;
+OntId2.CredentialRecord: credential record contract;
 
 OntId2.OntId: ontId contract.
 
@@ -171,7 +171,7 @@ There are many interfaces to use ONTID 2.0 protocol.
 
 ### Constructor and Updater
 
-1. **public OntId2(String ontId, Account signer, ClaimRecord claimRecord, OntId ontIdContract)**
+1. **public OntId2(String ontId, Account signer, CredentialRecord credRecord, OntId ontIdContract)**
 
     Generate OntId2 object.
 
@@ -185,21 +185,21 @@ There are many interfaces to use ONTID 2.0 protocol.
 
 ### GenSignRequest and VerifySignRequest
 
-1. **public SignRequest genSignReq(String claim, boolean hasSignature)**
+1. **public SignRequest genSignReq(Object credentialSubject, ProofPurpose proofPurpose, boolean hasSignature)**
 
-    * calculate claim sha256 bytes;
+    * generate `SignRequest` object, calculate its' hash;
     * if hasSignature, use self `signer` to sign hash;
     * return SignRequest object.
 
 2. **public boolean verifySignReq(SignRequest req)**
 
-    * use `req.ontId` to verify `req.signature` of `req.claim`.
+    * use `req.ontId` to verify `req.signature` of `req`.
 
-### Create Claim
+### Create Credential
 
-Issuer create claim.
+Issuer create credential.
 
-1. **public VerifiableCredential createClaim(String[] context, String[] type, Object issuer,
+1. **public VerifiableCredential createCred(String[] context, String[] type, Object issuer,
                                                  Object credentialSubject, Date expiration,
                                                  CredentialStatusType credentialStatusType,
                                                  ProofPurpose proofPurpose)**
@@ -218,12 +218,12 @@ Issuer create claim.
     * issuer: maybe an ontId of String type or an object that has "id" attribute and "id" must be ontId;
     * credentialSubject: refer w3c definition;
     * expiration: refer w3c definition;
-    * credentialStatusType: only use `ClaimContract` and `RevocationList` at current;
+    * credentialStatusType: only use `AttestContract` and `RevocationList` at current;
     * proofPurpose: only use `assertionMethod` at current;
     
     return: `VerifiableCredential`
 
-2. **public String createJWTClaim(String[] context, String[] type, Object issuer, Object credentialSubject,
+2. **public String createJWTCred(String[] context, String[] type, Object issuer, Object credentialSubject,
                                       Date expiration, CredentialStatusType statusType, ProofPurpose purpose)**
    
    comment:
@@ -233,160 +233,160 @@ Issuer create claim.
    
    param: same with above.
    
-   return: JWT claim.
+   return: JWT credential.
 
-### Commit Claim
+### Commit Credential
 
-Issuer commit claim hash to ontology chain.
+Issuer commit credential hash to ontology chain.
 
-1. **public String commitClaim(VerifiableCredential claim, String ownerOntId, Account payer, long gasLimit,
+1. **public String commitCred(VerifiableCredential cred, String ownerOntId, Account payer, long gasLimit,
                                long gasPrice, OntSdk sdk)**
 
-    comment: issuer invoke this method to commit a verifiable claim(JSON-LD) to ontology chain, issuer should use self
+    comment: issuer invoke this method to commit a verifiable credential(JSON-LD) to ontology chain, issuer should use self
      ontId to sign this transaction.
     
     param:
     
-    * claim: a instance of verifiable credential;
-    * ownerOntId: ontId of claim owner;
+    * cred: a instance of verifiable credential;
+    * ownerOntId: ontId of credential owner;
     * payer: transaction payer;
     * gasLimit & gasPrice: transaction gas limit and price;
     * sdk: a instance of OntSdk.
     
     return: transaction hash.
 
-2. **public String commitClaim(String claim, String ownerOntId, Account payer,
+2. **public String commitCred(String cred, String ownerOntId, Account payer,
                                    long gasLimit, long gasPrice, OntSdk sdk)**
 
-    comment: issuer invoke this method to commit a verifiable claim(JWT) to ontology chain, issuer should use self
+    comment: issuer invoke this method to commit a verifiable credential(JWT) to ontology chain, issuer should use self
                   ontId to sign this transaction.
 
-    param: `claim` is JWT verifiable claim, the others params are same with the former.
+    param: `cred` is JWT verifiable credential, the others params are same with the former.
     
-3. **public String commitClaimById(String claimId, String ownerOntId, Account payer,
+3. **public String commitCredById(String credId, String ownerOntId, Account payer,
                                        long gasLimit, long gasPrice, OntSdk sdk)**
                                        
-    comment: commit a claim to ontology chain.
+    comment: commit a credential to ontology chain.
     
-    param: `claimId` is identification of claim, others param are same with above.
+    param: `credId` is identification of credential, others param are same with above.
 
-### Verify Claim
+### Verify Credential
 
-Verifier could verify claim.
+Verifier could verify credential.
 
-The process consists of 4 aspects: `verifyClaimOntIdCredible`, `verifyClaimNotExpired`, `verifyClaimSignature`, `verifyClaimNotRevoked`.
+The process consists of 4 aspects: `verifyCredOntIdCredible`, `verifyCredNotExpired`, `verifyCredSignature`, `verifyCredNotRevoked`.
 
-1. **public boolean verifyClaim(String[] credibleOntIds, VerifiableCredential claim)**
+1. **public boolean verifyCred(String[] credibleOntIds, VerifiableCredential cred)**
 
-    comment: Verify claim from four aspects.
-    
-    param:
-    
-    * credibleOntIds: credible ONTID list, similar to trust certificate;
-    * claim: instance of `VerifiableCredential`.
-    
-    return: boolean value of whether claim valid or invalid.
-
-2. **public boolean verifyJWTClaim(String[] credibleOntIds, String claim)**
-
-    comment: verify JWT claim;
+    comment: Verify credential from four aspects.
     
     param:
     
     * credibleOntIds: credible ONTID list, similar to trust certificate;
-    * claim: `claim` is JWT format of verifiable claim.
+    * cred: instance of `VerifiableCredential`.
     
-    return: boolean value of whether claim valid or invalid.
+    return: boolean value of whether credential valid or invalid.
 
-#### Verify Claim OntId Is Credible
+2. **public boolean verifyJWTCred(String[] credibleOntIds, String cred)**
 
-1. **public boolean verifyClaimOntIdCredible(String[] credibleOntIds, VerifiableCredential claim)**
+    comment: verify JWT credential;
+    
+    param:
+    
+    * credibleOntIds: credible ONTID list, similar to trust certificate;
+    * cred: `cred` is JWT format of verifiable credential.
+    
+    return: boolean value of whether credential valid or invalid.
+
+#### Verify Credential OntId Is Credible
+
+1. **public boolean verifyCredOntIdCredible(String[] credibleOntIds, VerifiableCredential cred)**
 
     comment:
     
-    * check `claim.proof.verificationMethod` is `claim.issuer`;
-    * check `claim.proof.verificationMethod` is existed in `credibleOntIds`.
+    * check `cred.proof.verificationMethod` is `cred.issuer`;
+    * check `cred.proof.verificationMethod` is existed in `credibleOntIds`.
     
     param:
     
     * credibleOntIds: credible ONTID list, similar to trust certificate;
-    * claim: a instance of `VerifiableCredential`.
+    * cred: a instance of `VerifiableCredential`.
     
     return: boolean.
 
-2. **public boolean verifyJWTClaimOntIdCredible(String[] credibleOntIds, String claim)**
+2. **public boolean verifyJWTCredOntIdCredible(String[] credibleOntIds, String cred)**
 
-    comment: verify `claim.payload.iss` existed in credibleOntIds.
+    comment: verify `cred.payload.iss` existed in credibleOntIds.
     
-    param: `claim` is JWT format of verifiable claim.
+    param: `cred` is JWT format of verifiable credential.
     
     return: boolean.
     
-#### Verify Claim Not Expired
+#### Verify Credential Not Expired
 
-1. **public boolean verifyClaimDate(VerifiableCredential claim)**
+1. **public boolean verifyCredDate(VerifiableCredential cred)**
 
-    comment: check claim not expired, check claim issuance date before current.
+    comment: check credential not expired, check credential issuance date before current.
     
-    param: `claim` is an instance of `VerifiableCredential`.
+    param: `cred` is an instance of `VerifiableCredential`.
         
     return: boolean.
 
-2. **public boolean verifyJWTClaimDate(String claim)**
+2. **public boolean verifyJWTCredDate(String cred)**
 
-    comment: check `claim.payload.exp` not expired, check `claim.payload.iat` and `claim.payload.nbf` before current.
+    comment: check `cred.payload.exp` not expired, check `cred.payload.iat` and `cred.payload.nbf` before current.
         
-    param: `claim` is JWT format of verifiable claim.
+    param: `cred` is JWT format of verifiable credential.
             
     return: boolean.
 
-#### Verify Claim Signature Is Valid
+#### Verify Credential Signature Is Valid
 
-1. **public boolean verifyClaimSignature(VerifiableCredential claim)**
+1. **public boolean verifyCredSignature(VerifiableCredential cred)**
 
     comment:
     
-    * check `claim.proof.verificationMethod` is `claim.issuer`;
-    * use `claim.proof.verificationMethod` as public key to verify `claim.proof`.
+    * check `cred.proof.verificationMethod` is `cred.issuer`;
+    * use `cred.proof.verificationMethod` as public key to verify `cred.proof`.
     
-    param: `claim` is an instance of `VerifiableCredential`.
+    param: `cred` is an instance of `VerifiableCredential`.
         
     return: boolean.
     
-2. **public boolean verifyJWTClaimSignature(String claim)**
+2. **public boolean verifyJWTCredSignature(String cred)**
 
-    comment: verify JWT claim signature valid.
+    comment: verify JWT credential signature valid.
     
-    param: `claim` is JWT format of verifiable claim.
+    param: `cred` is JWT format of verifiable credential.
     
     return: value.
 
-#### Verify Claim Has Not Been Revoked
+#### Verify Credential Has Not Been Revoked
 
-1. **public boolean verifyClaimNotRevoked(VerifiableCredential claim)**
+1. **public boolean verifyCredNotRevoked(VerifiableCredential cred)**
 
     comment:
     
-    * query status of claim from `ClaimRecord` contract that identified by `claim.credentialStatus.id` if 
-    `claim.credentialStatus.type == AttestContract`;
+    * query status of credential from `CredentialRecord` contract that identified by `cred.credentialStatus.id` if 
+    `cred.credentialStatus.type == AttestContract`;
     * check status equals `01`.
     
     param:
     
-    * claim: a instance of `VerifiableCredential`.
+    * cred: a instance of `VerifiableCredential`.
     
     return: boolean.
 
-2. **public boolean verifyJWTClaimNotRevoked(String claim)**
+2. **public boolean verifyJWTCredNotRevoked(String cred)**
 
     comment:
     
-    * deserialize `claim` to `JWTClaim` instance;
-    * query status of claim from `ClaimRecord` contract that identified by `claim.credentialStatus.id` if 
-    `claim.credentialStatus.type == AttestContract`;
+    * deserialize `cred` to `JWTCredential` instance;
+    * query status of credential from `CredentialRecord` contract that identified by `cred.credentialStatus.id` if 
+    `cred.credentialStatus.type == AttestContract`;
     * check status equals `01`.
     
-    param: `claim` is JWT format of verifiable claim.
+    param: `cred` is JWT format of verifiable credential.
     
     return: boolean value.
 
@@ -396,7 +396,7 @@ Refer: https://www.w3.org/TR/vc-data-model/#presentations-0.
 
 Owner could create presentation by using one or multi `VerifiableCredential`.
 
-1. **public VerifiablePresentation createPresentation(VerifiableCredential[] claims, String[] context,
+1. **public VerifiablePresentation createPresentation(VerifiableCredential[] creds, String[] context,
                                                           String[] type, List<String> challenge,
                                                           List<Object> domain, Object holder,
                                                           OntIdSigner[] otherSigners, ProofPurpose proofPurpose)**
@@ -409,7 +409,7 @@ Owner could create presentation by using one or multi `VerifiableCredential`.
     
     param:
     
-    * claims: array instance of verifiable claim;
+    * creds: array instance of verifiable credential;
     * context: refer w3c definition;
     * type: refer w3c definition;
     * challenge: each proof should contain a challenge to prevent replay attack;
@@ -420,14 +420,14 @@ Owner could create presentation by using one or multi `VerifiableCredential`.
     
     return: instance of `VerifiablePresentation`.
     
-2. **public String createJWTPresentation(String[] claims, String[] context, String[] type, Object holder,
+2. **public String createJWTPresentation(String[] creds, String[] context, String[] type, Object holder,
                                                 String challenge, Object domain, String nonce, ProofPurpose purpose)**
                                              
-    comment: use multi `VerifiableCredential` instance to create a JWT claim.
+    comment: use multi `VerifiableCredential` instance to create a JWT credential.
     
     param:
     
-    * claims: `claims` is array of JWT `VerifiableCredential`. Others params are same with above;
+    * creds: `creds` is array of JWT `VerifiableCredential`. Others params are same with above;
     * context: same with above;
     * type: same with above;
     * challenge: JWT presentation only has one jws, so there only need one challenge;
@@ -457,9 +457,9 @@ Verifier could verify presentation.
 
     comment:
     
-    * parse `presentation` to `JWTClaim`;
-    * verify each `JWTClaim.vc`;
-    * verify `JWTClaim.jws`.
+    * parse `presentation` to `JWTCredential`;
+    * verify each `JWTCredential.vc`;
+    * verify `JWTCredential.jws`.
     
     param:
     
@@ -468,62 +468,62 @@ Verifier could verify presentation.
     
     return: boolean value.
 
-### Revoke Claim
+### Revoke Credential
 
-Because the SDK used by different roles, so we encapsulate a claim revoking interface. User would use these interface at different circumstance.
+Because the SDK used by different roles, so we encapsulate a credential revoking interface. User would use these interface at different circumstance.
 
-1. **public String revokeClaim(VerifiableCredential claim, Account payer,
+1. **public String revokeCred(VerifiableCredential cred, Account payer,
                                    long gasLimit, long gasPrice, OntSdk sdk)**
 
-    comment: revoke a claim by an instance of `VerifiableCredential`.
+    comment: revoke a credential by an instance of `VerifiableCredential`.
     
     param:
     
-    * claim: an instance of `VerifiableCredential`;
+    * cred: an instance of `VerifiableCredential`;
     * payer: transaction payer;
     * gasLimit & gasPrice: transaction param;
     * sdk: an instance of `OntSdk`;
     
-    return: transaction hash of revoking claim.
+    return: transaction hash of revoking credential.
     
-2. **public String revokeClaimById(String claimId, Account payer, long gasLimit, long gasPrice,
+2. **public String revokeCredById(String credId, Account payer, long gasLimit, long gasPrice,
                                        OntSdk sdk)**
 
-    comment: revoke claim by claim id.
+    comment: revoke credential by credential id.
     
-    param: `claimId`  is identification of claim, others param are same with above;
+    param: `credId`  is identification of credential, others param are same with above;
     
-    return: transaction hash of revoking claim.
+    return: transaction hash of revoking credential.
     
-3. **public String revokeJWTClaim(String claim, Account payer, long gasLimit, long gasPrice,
+3. **public String revokeJWTCred(String cred, Account payer, long gasLimit, long gasPrice,
                                       OntSdk sdk)**
                                       
-    comment: revoke claim by JWT format claim.
+    comment: revoke credential by JWT format credential.
     
-    * parse claim to `JWTClaim` instance;
-    * use `JWTClaim.payload.jti` to revoke this claim;
+    * parse credential to `JWTCredential` instance;
+    * use `JWTCredential.payload.jti` to revoke this credential;
     
-    param: `claim` is a JWT format of `VerifiableCredential` or `VerifiablePresentation`. Others param are same with above.
+    param: `cred` is a JWT format of `VerifiableCredential` or `VerifiablePresentation`. Others param are same with above.
     
-    return: transaction hash of revoking claim.
+    return: transaction hash of revoking credential.
 
-### Remove Claim
+### Remove Credential
 
-1. **public String removeClaimById(String claimId, Account payer, long gasLimit, long gasPrice, OntSdk sdk)**
+1. **public String removeCredById(String credId, Account payer, long gasLimit, long gasPrice, OntSdk sdk)**
 
-    comment: remove claim by claim id.
+    comment: remove credential by credential id.
         
-    param: `claimId`  is identification of claim, other params are ontology transaction param;
+    param: `credId`  is identification of credential, other params are ontology transaction param;
         
-    return: transaction hash of remove claim.
+    return: transaction hash of remove credential.
 
-2. **public String removeJWTClaim(String claim, Account payer, long gasLimit, long gasPrice, OntSdk sdk)**
+2. **public String removeJWTCred(String cred, Account payer, long gasLimit, long gasPrice, OntSdk sdk)**
 
-    comment: remove a JWT claim.
+    comment: remove a JWT credential.
         
-    param: `claim`  is JWT format of claim, other params are ontology transaction param;
+    param: `cred`  is JWT format of credential, other params are ontology transaction param;
         
-    return: transaction hash of remove claim.
+    return: transaction hash of remove credential.
 
 ### Transition between JSON-LD and JWT
 
@@ -531,7 +531,7 @@ We also provide some interface to parse verifiable credential between the format
 
 #### Parse JSON-LD to JWT
 
-1. **public JWTClaim(VerifiableCredential credential)**
+1. **public JWTCredential(VerifiableCredential credential)**
 
     comment:
     
@@ -542,9 +542,9 @@ We also provide some interface to parse verifiable credential between the format
     
     param: `credential` is an instance of `VerifiableCredential`.
 
-    return: an instance of `JWTClaim`.
+    return: an instance of `JWTCredential`.
     
-2. **public JWTClaim(VerifiablePresentation presentation, Proof proof, String nonce)**
+2. **public JWTCredential(VerifiablePresentation presentation, Proof proof, String nonce)**
 
     comment: Because there maybe many proof in presentation, you must specify the proof instance when you want to parse 
     `VerifiablePresentation` instance to JWT.
@@ -554,64 +554,64 @@ We also provide some interface to parse verifiable credential between the format
     * presentation: an instance of `VerifiablePresntation`;
     * proof: an instance of `Proof`;
     * nonce: refer w3c specification;
-    
-    return: an instance of `JWTClaim` that represent `VerifiablePresntation`.
+    deserializeToJWTCred
+    return: an instance of `JWTCredential` that represent `VerifiablePresntation`.
 
-3. **public static JWTClaim deserializeToJWTClaim(String jwt)**
+3. **public static JWTCredential deserializeToJWTCred(String jwt)**
 
-    comment: deserialize a jwt string to `JWTClaim` object.
+    comment: deserialize a jwt string to `JWTCredential` object.
     
     param: a JWT format string of `VerifiableCredential` or `VerifiablePresentation`.
     
-    return: an instance of `JWTClaim`.
+    return: an instance of `JWTCredential`.
 
 #### Parse JWT to JSON-LD
 
-1. **public static VerifiableCredential deserializeFromJWT(JWTClaim claim)**
+1. **public static VerifiableCredential deserializeFromJWT(JWTCredential cred)**
 
-    comment: parse `JWTClaim` to `VerifiableCredential`;
+    comment: parse `JWTCredential` to `VerifiableCredential`;
     
-    param: `claim` is an instance of `JWTClaim`;
-    
-    return: an instance of `VerifiableCredential`.
-    
-2. **public static VerifiablePresentation deserializeFromJWT(JWTClaim claim)**
-
-    comment: parse `JWTClaim` to `VerifiablePresentation`;
-    
-    param: `claim` is an instance of `JWTClaim`;
+    param: `cred` is an instance of `JWTCredential`;
     
     return: an instance of `VerifiableCredential`.
+    
+2. **public static VerifiablePresentation deserializeFromJWT(JWTCredential cred)**
 
-## Claim Record Contract
+    comment: parse `JWTCredential` to `VerifiablePresentation`;
+    
+    param: `cred` is an instance of `JWTCredential`;
+    
+    return: an instance of `VerifiableCredential`.
 
-[code](../smartcontract/neovm/ClaimRecord.java)
+## Credential Record Contract
 
-OntId 2.0 use a new version ClaimRecord contract. There are 4 new interface.
+[code](../smartcontract/neovm/CredentialRecord.java)
+
+OntId 2.0 use a new version CredentialRecord contract. There are 4 new interface.
 
 ### Commit
 
-**public String sendCommit2(String issuerOntid, String password, byte[] salt, String subjectOntid, String claimId, int pubkeyIndex, Account payerAcct, long gaslimit, long gasprice)**
+**public String sendCommit2(String issuerOntid, String password, byte[] salt, String subjectOntid, String credId, int pubkeyIndex, Account payerAcct, long gaslimit, long gasprice)**
 
-Used to commit a claim id to ontology chain.
+Used to commit a credential id to ontology chain.
 
 ### Revoke
 
-**public String sendRevoke2(String ownerId, String password, byte[] salt, String claimId, int pubkeyIndex, Account payerAcct, long gaslimit, long gasprice)**
+**public String sendRevoke2(String ownerId, String password, byte[] salt, String credId, int pubkeyIndex, Account payerAcct, long gaslimit, long gasprice)**
 
-Used to revoke a recorded claim id.
+Used to revoke a recorded credential id.
 
 ### Remove
 
-**public String sendRemove2(String ownerId, String password, byte[] salt, String claimId, int pubkeyIndex, Account payerAcct, long gaslimit, long gasprice)**
+**public String sendRemove2(String ownerId, String password, byte[] salt, String credId, int pubkeyIndex, Account payerAcct, long gaslimit, long gasprice)**
 
-Used to remove a recorded claim id.
+Used to remove a recorded credential id.
 
 ### GetStatus
 
-**public String sendGetStatus2(String claimId)**
+**public String sendGetStatus2(String credId)**
 
-Used to query claim status by claim id, there are 3 return value:
+Used to query credential status by cred id, there are 3 return value:
 
 * "00": revoked.
 * "01": committed;
@@ -619,18 +619,18 @@ Used to query claim status by claim id, there are 3 return value:
 
 ## Compatibility
 
-Considering that there are a lot of old version of claim, the protocol upgrade must be compatible with old data. The main
-difference between the new and old protocol is in the form of claim.
+Considering that there are a lot of old version of credential, the protocol upgrade must be compatible with old data. The main
+difference between the new and old protocol is in the form of credential.
 
-The old ONTID protocol use [OntId](../smartcontract/nativevm/OntId.java) to generate and verify claim. However, the new
-use [OntId2](./OntId2.java) to generate and verify claim. 
+The old ONTID protocol use [OntId](../smartcontract/nativevm/OntId.java) to generate and verify credential. However, the new
+use [OntId2](./OntId2.java) to generate and verify credential. 
 
-In the other hands, we also provide the methods that verify old claim by new ClaimRecord contract:
+In the other hands, we also provide the methods that verify old credential by new CredentialRecord contract:
 
-* **public boolean verifyClaimOntIdCredible(String claim, String[] credibleIds)**
-* **public boolean verifyClaimNotExpired(String claim)**
-* **public boolean verifyClaimSignature(String claim)**
-* **public boolean verifyClaimNotRevoked(String claim)**
+* **public boolean verifyCredOntIdCredible(String cred, String[] credibleIds)**
+* **public boolean verifyCredNotExpired(String cred)**
+* **public boolean verifyCredSignature(String cred)**
+* **public boolean verifyCredNotRevoked(String cred)**
 
 See these code at [here](../smartcontract/nativevm/OntId.java#L2186-L2258).
 

@@ -36,8 +36,8 @@ public class JWTVP {
         this.type = presentation.type;
         String[] verifiableCredential = new String[presentation.verifiableCredential.length];
         for (int i = 0; i < presentation.verifiableCredential.length; i++) {
-            JWTClaim jwtClaim = new JWTClaim(presentation.verifiableCredential[i]);
-            verifiableCredential[i] = jwtClaim.toString();
+            JWTCredential jwtCred = new JWTCredential(presentation.verifiableCredential[i]);
+            verifiableCredential[i] = jwtCred.toString();
         }
         this.verifiableCredential = verifiableCredential;
         this.proof = proof.genJWTProof();

@@ -1,4 +1,4 @@
-# ONTID 2.0 Java SDK
+# Ontology Verifiable Credential 2.0 Java SDK
 
 ## Role
 
@@ -153,13 +153,13 @@ Providing some static method.
 
 ### SDK
 
-The OntId2 class is ONTID 2.0 protocol SDK class.
+The OntId2 class is Ontology Verifiable Credential 2.0 protocol SDK class.
 
 #### OntId2
 
 [code](./OntId2.java)
 
-It's ONTID2 SDK class, all ontId 2.0 function should entry from here.
+It's ONTID2 SDK class, all Ontology Verifiable Credential 2.0 function should entry from here.
 
 OntId2.CredentialRecord: credential record contract;
 
@@ -167,7 +167,7 @@ OntId2.OntId: ontId contract.
 
 ## API
 
-There are many interfaces to use ONTID 2.0 protocol.
+There are many interfaces to use Ontology Verifiable Credential 2.0 protocol.
 
 ### Constructor and Updater
 
@@ -587,7 +587,7 @@ We also provide some interface to parse verifiable credential between the format
 
 [code](../smartcontract/neovm/CredentialRecord.java)
 
-OntId 2.0 use a new version CredentialRecord contract. There are 4 new interface.
+Ontology Verifiable Credential 2.0 use a new version CredentialRecord contract. There are 4 new interface.
 
 ### Commit
 
@@ -636,6 +636,6 @@ See these code at [here](../smartcontract/nativevm/OntId.java#L2186-L2258).
 
 ## How to Use
 
-The [document](./how%20to%20use.md) is a simple introduction about how to use ONT ID 2.0.
+The [document](./how%20to%20use.md) is a simple introduction about how to use Ontology Verifiable Credential 2.0.
 
-There are some [code](../../../../demo/OntId2Demo.java) to illustrate how to use ONTID 2.0 sdk.
+There are some [code](../../../../demo/OntId2Demo.java) to illustrate how to use Ontology Verifiable Credential 2.0 sdk.

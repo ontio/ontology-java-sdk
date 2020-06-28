@@ -1,8 +1,8 @@
-# How to Use ONT ID 2.0?
+# How to Use Ontology Verifiable Credential 2.0?
 
 ![roles](./roles.png)
 
-As the illustration above, there are three roles in the ONTID 2.0 protocol: owner, issuer, verifier.
+As the illustration above, there are three roles in the Ontology Verifiable Credential 2.0 protocol: owner, issuer, verifier.
 
 **Owner** holds some **verifiable credential** issued by the **issuer**. In the other hands, owner create some **verifiable presentation** by consolidating multi
 **verifiable credential**. Owner spread these presentations at somewhere, and **verifier** would verify them to confirm they are valid or not.

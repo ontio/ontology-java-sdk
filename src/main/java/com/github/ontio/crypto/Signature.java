@@ -45,6 +45,31 @@ public class Signature {
             this.value = Arrays.copyOfRange(data, 1, data.length);
         }
     }
+    // parse a serialized bytes to signature structure
+    public Signature(byte[] data, SignatureScheme signatureScheme) throws Exception {
+        if (data == null) {
+            throw new SDKException(ErrorCode.ParamError);
+        }
+
+        if (data.length < 2) {
+            throw new Exception(ErrorCode.InvalidSignatureDataLen);
+        }
+
+        this.scheme = signatureScheme;
+        if (scheme == SignatureScheme.SM3WITHSM2) {
+            int i = 0;
+            while (i < data.length && data[i] != 0){
+                i++;
+            }
+            if (i >= data.length) {
+                throw new Exception(ErrorCode.InvalidSignatureData);
+            }
+            this.param = new SM2ParameterSpec(Arrays.copyOfRange(data, 1, i));
+            this.value = Arrays.copyOfRange(data, i + 1, data.length);
+        } else {
+            this.value = Arrays.copyOfRange(data, 1, data.length);
+        }
+    }
 
     // serialize to byte array
     public byte[] toBytes() {

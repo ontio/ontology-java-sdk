@@ -397,8 +397,8 @@ Refer: https://www.w3.org/TR/vc-data-model/#presentations-0.
 Owner could create presentation by using one or multi `VerifiableCredential`.
 
 1. **public VerifiablePresentation createPresentation(VerifiableCredential[] creds, String[] context,
-                                                          String[] type, List<String> challenge,
-                                                          List<Object> domain, Object holder,
+                                                          String[] type, List`<`String`>` challenge,
+                                                          List`<`Object`>` domain, Object holder,
                                                           OntIdSigner[] otherSigners, ProofPurpose proofPurpose)**
 
     comment:

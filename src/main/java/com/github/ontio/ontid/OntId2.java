@@ -570,6 +570,8 @@ public class OntId2 {
         if (!pubKeyId.startsWith(ontId)) {
             return false;
         }
+        System.out.println(Helper.toHexString(needSignData));
+        System.out.println(Helper.toHexString(signature));
         return verifyPubKeyIdSignature(pubKeyId, needSignData, signature);
     }
 
@@ -582,7 +584,7 @@ public class OntId2 {
                 allPubKeys) {
             if (pubKey.id.equals(pubKeyId)) {
                 Account account = new Account(false, Helper.hexToBytes(pubKey.publicKeyHex));
-                return account.verifySignature(needSignData, signature);
+                return account.verifySignature(needSignData, signature, pubKey.type.getSignatureScheme());
             }
         }
         return false;
@@ -594,7 +596,7 @@ public class OntId2 {
         for (OntIdPubKey pubKey :
                 allPubKeys) {
             Account account = new Account(false, Helper.hexToBytes(pubKey.publicKeyHex));
-            if (account.verifySignature(needSignData, signature)) {
+            if (account.verifySignature(needSignData, signature, pubKey.type.getSignatureScheme())) {
                 return true;
             }
         }

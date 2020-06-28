@@ -3,6 +3,7 @@ package com.github.ontio.ontid;
 import com.alibaba.fastjson.JSON;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
+import com.github.ontio.ontid.jwt.JWTCredential;
 import com.github.ontio.sdk.wallet.Identity;
 import junit.framework.TestCase;
 
@@ -278,6 +279,13 @@ public class OntId2Test extends TestCase {
             boolean proofVerified = verifier.verifyPresentationProof(presentation, i);
             assertTrue(proofVerified);
         }
+    }
+
+    public void testVerifyStringJWTCred() throws Exception {
+        String cred = "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImRpZDpvbnQ6VEE3YzljSmVob0xKTERCcXRFNVNXQXJXeGNyZ1dYdzdaNyNrZXlzLTEifQ==.eyJpc3MiOiJkaWQ6b250OlRBN2M5Y0plaG9MSkxEQnF0RTVTV0FyV3hjcmdXWHc3WjciLCJleHAiOjE1OTMzMjQyNjQsIm5iZiI6MTU5MzMyMzk2NCwiaWF0IjoxNTkzMzIzOTY0LCJqdGkiOiJ1cm46dXVpZDo4NmRmZTJiMS01NTgzLTQ2ZGQtYTUyNC0yZTNkZmNlNzljOTQiLCJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi8vb250aWQub250LmlvL2NyZWRlbnRpYWxzL3YxIiwiY29udGV4dDEiLCJjb250ZXh0MiJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiUmVsYXRpb25zaGlwQ3JlZGVudGlhbCJdLCJpc3N1ZXIiOm51bGwsImNyZWRlbnRpYWxTdWJqZWN0IjpbeyJpZCI6ImRpZDpleGFtcGxlOmViZmViMWY3MTJlYmM2ZjFjMjc2ZTEyZWMyMSIsIm5hbWUiOiJKYXlkZW4gRG9lIiwic3BvdXNlIjoiZGlkOmV4YW1wbGU6YzI3NmUxMmVjMjFlYmZlYjFmNzEyZWJjNmYxIn0seyJpZCI6ImRpZDpleGFtcGxlOmMyNzZlMTJlYzIxZWJmZWIxZjcxMmViYzZmMSIsIm5hbWUiOiJNb3JnYW4gRG9lIiwic3BvdXNlIjoiZGlkOmV4YW1wbGU6ZWJmZWIxZjcxMmViYzZmMWMyNzZlMTJlYzIxIn1dLCJjcmVkZW50aWFsU3RhdHVzIjp7ImlkIjoiNTJkZjM3MDY4MGRlMTdiYzVkNDI2MmM0NDZmMTAyYTBlZTBkNjMxMiIsInR5cGUiOiJBdHRlc3RDb250cmFjdCJ9LCJwcm9vZiI6eyJjcmVhdGVkIjoiMjAyMC0wNi0yOFQxMzo1OToyNFoiLCJkb21haW4iOiIiLCJwcm9vZlB1cnBvc2UiOiJhc3NlcnRpb25NZXRob2QifX19.ukxzYIfv3oP58SlpQmtlHZgIKDzooytQdDUQWAIMF2N9YEFsHP2nVfp3Mk9c+x8vs7VFZfRqo/wpKVjHR0a2Qw==";
+        String[] credibleOntIds = new String[]{"did:ont:TA7c9cJehoLJLDBqtE5SWArWxcrgWXw7Z7"};
+        boolean verified = verifier.verifyJWTCred(credibleOntIds, cred);
+        assertTrue(verified);
     }
 }
 

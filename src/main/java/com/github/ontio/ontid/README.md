@@ -634,8 +634,8 @@ In the other hands, we also provide the methods that verify old credential by ne
 
 See these code at [here](../smartcontract/nativevm/OntId.java#L2186-L2258).
 
-## Demo
+## How to Use
 
-There are some code to illustrate how to use ONTID 2.0 sdk.
+The [document](./how%20to%20use.md) is a simple introduction about how to use ONT ID 2.0.
 
-[code](../../../../demo/OntId2Demo.java)
+There are some [code](../../../../demo/OntId2Demo.java) to illustrate how to use ONTID 2.0 sdk.

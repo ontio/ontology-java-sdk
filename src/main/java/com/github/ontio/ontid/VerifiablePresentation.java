@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.ontio.ontid.jwt.JWTCredential;
 
 import java.util.UUID;
@@ -22,10 +23,10 @@ public class VerifiablePresentation {
         this.id = "urn:uuid:" + UUID.randomUUID().toString();
     }
 
-    public byte[] genNeedSignData(Proof needSignProof) throws Exception {
+    public byte[] genNeedSignData(Proof needSignProof) {
         Proof[] proofs = this.proof;
         this.proof = new Proof[]{needSignProof.genNeedSignProof()};
-        String jsonStr = JSON.toJSONString(this);
+        String jsonStr = JSON.toJSONString(this, SerializerFeature.MapSortField);
         this.proof = proofs;
         return jsonStr.getBytes();
     }

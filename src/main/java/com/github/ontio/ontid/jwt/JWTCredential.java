@@ -3,6 +3,7 @@ package com.github.ontio.ontid.jwt;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONType;
 import com.alibaba.fastjson.parser.Feature;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.ontio.account.Account;
 import com.github.ontio.ontid.Proof;
 import com.github.ontio.ontid.VerifiableCredential;
@@ -74,11 +75,12 @@ public class JWTCredential {
         return new JWTCredential(parts[0], parts[1], parts[2]);
     }
 
-    public byte[] genNeedSignData() throws Exception {
-        String header = Base64.getEncoder().encodeToString(JSON.toJSONString(this.header).getBytes());
-        String payload = Base64.getEncoder().encodeToString(JSON.toJSONString(this.payload).getBytes());
+    public byte[] genNeedSignData() {
+        String header = Base64.getEncoder().encodeToString(
+                JSON.toJSONString(this.header, SerializerFeature.MapSortField).getBytes());
+        String payload = Base64.getEncoder().encodeToString(
+                JSON.toJSONString(this.payload, SerializerFeature.MapSortField).getBytes());
         String needSignData = header + "." + payload;
-        System.out.println(needSignData);
         return needSignData.getBytes();
     }
 
@@ -109,8 +111,10 @@ public class JWTCredential {
 
     @Override
     public String toString() {
-        String header = Base64.getEncoder().encodeToString(JSON.toJSONString(this.header).getBytes());
-        String payload = Base64.getEncoder().encodeToString(JSON.toJSONString(this.payload).getBytes());
+        String header = Base64.getEncoder().encodeToString(
+                JSON.toJSONString(this.header, SerializerFeature.MapSortField).getBytes());
+        String payload = Base64.getEncoder().encodeToString(
+                JSON.toJSONString(this.payload, SerializerFeature.MapSortField).getBytes());
         return header + "." + payload + "." + jws;
     }
 }

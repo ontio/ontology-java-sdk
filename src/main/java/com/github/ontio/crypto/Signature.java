@@ -7,6 +7,7 @@ import org.bouncycastle.jcajce.spec.SM2ParameterSpec;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.spec.AlgorithmParameterSpec;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Signature {
@@ -26,39 +27,24 @@ public class Signature {
             throw new SDKException(ErrorCode.ParamError);
         }
 
-        if (data.length < 2) {
-            throw new Exception(ErrorCode.InvalidSignatureDataLen);
-        }
-
-        this.scheme = SignatureScheme.values()[data[0]];
-        if (scheme == SignatureScheme.SM3WITHSM2) {
-            int i = 0;
-            while (i < data.length && data[i] != 0){
-                i++;
+        if (data.length == 65) {
+            SignatureScheme[] schemes = SignatureScheme.values();
+            if (data[0] > schemes.length) {
+                throw new SDKException(ErrorCode.UnsupportedSignatureScheme);
             }
-            if (i >= data.length) {
-                throw new Exception(ErrorCode.InvalidSignatureData);
-            }
-            this.param = new SM2ParameterSpec(Arrays.copyOfRange(data, 1, i));
-            this.value = Arrays.copyOfRange(data, i + 1, data.length);
+            this.scheme = schemes[data[0]];
+        } else if (data.length == 64) { // use default scheme
+            byte[] temp = new byte[65];
+            temp[0] = 1;
+            System.arraycopy(data, 0, temp, 1, 64);
+            data = temp;
+            this.scheme = SignatureScheme.SHA256WITHECDSA;
         } else {
-            this.value = Arrays.copyOfRange(data, 1, data.length);
-        }
-    }
-    // parse a serialized bytes to signature structure
-    public Signature(byte[] data, SignatureScheme signatureScheme) throws Exception {
-        if (data == null) {
-            throw new SDKException(ErrorCode.ParamError);
-        }
-
-        if (data.length < 2) {
             throw new Exception(ErrorCode.InvalidSignatureDataLen);
         }
-
-        this.scheme = signatureScheme;
         if (scheme == SignatureScheme.SM3WITHSM2) {
             int i = 0;
-            while (i < data.length && data[i] != 0){
+            while (i < data.length && data[i] != 0) {
                 i++;
             }
             if (i >= data.length) {
@@ -75,23 +61,24 @@ public class Signature {
     public byte[] toBytes() {
         ByteArrayOutputStream bs = new ByteArrayOutputStream();
         try {
-            bs.write((byte)scheme.ordinal());
+            bs.write((byte) scheme.ordinal());
             if (scheme == SignatureScheme.SM3WITHSM2) {
                 // adding the ID
-                bs.write(((SM2ParameterSpec)param).getID());
+                bs.write(((SM2ParameterSpec) param).getID());
                 // padding a 0 as the terminator
-                bs.write((byte)0);
+                bs.write((byte) 0);
             }
             bs.write(value);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
         return bs.toByteArray();
     }
 
-    public SignatureScheme getScheme() { return scheme; }
+    public SignatureScheme getScheme() {
+        return scheme;
+    }
 
     public byte[] getValue() {
         return this.value;

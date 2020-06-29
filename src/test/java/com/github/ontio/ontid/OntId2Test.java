@@ -3,6 +3,9 @@ package com.github.ontio.ontid;
 import com.alibaba.fastjson.JSON;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
+import com.github.ontio.common.Helper;
+import com.github.ontio.crypto.Digest;
+import com.github.ontio.crypto.SignatureScheme;
 import com.github.ontio.sdk.wallet.Identity;
 import junit.framework.TestCase;
 
@@ -281,10 +284,19 @@ public class OntId2Test extends TestCase {
     }
 
     public void testVerifyStringJWTCred() throws Exception {
-        String cred = "eyJhbGciOiJFUzI1NiIsImtpZCI6ImRpZDpvbnQ6VEY4RUdHRzdHUHZ1UWVibzZwSDJBcllTYjVHTGFYdmZ2RiNrZXlzLTEiLCJ0eXAiOiJKV1QifQ==.eyJpc3MiOiJkaWQ6b250OlRGOEVHR0c3R1B2dVFlYm82cEgyQXJZU2I1R0xhWHZmdkYiLCJleHAiOjE1OTM0MTY4MTUsIm5iZiI6MTU5MzMzMDQxNSwiaWF0IjoxNTkzMzMwNDE1LCJqdGkiOiJ1cm46dXVpZDowNzgzZTRhMi0zZTg0LTQzMTEtOWE2YS0yYTM3MmNlYWY2OGEiLCJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi8vb250aWQub250LmlvL2NyZWRlbnRpYWxzL3YxIiwiY29udGV4dDEiLCJjb250ZXh0MiJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiUmVsYXRpb25zaGlwQ3JlZGVudGlhbCJdLCJjcmVkZW50aWFsU3ViamVjdCI6W3siaWQiOiJkaWQ6ZXhhbXBsZTplYmZlYjFmNzEyZWJjNmYxYzI3NmUxMmVjMjEiLCJuYW1lIjoiSmF5ZGVuIERvZSIsInNwb3VzZSI6ImRpZDpleGFtcGxlOmMyNzZlMTJlYzIxZWJmZWIxZjcxMmViYzZmMSJ9LHsiaWQiOiJkaWQ6ZXhhbXBsZTpjMjc2ZTEyZWMyMWViZmViMWY3MTJlYmM2ZjEiLCJuYW1lIjoiTW9yZ2FuIERvZSIsInNwb3VzZSI6ImRpZDpleGFtcGxlOmViZmViMWY3MTJlYmM2ZjFjMjc2ZTEyZWMyMSJ9XSwiY3JlZGVudGlhbFN0YXR1cyI6eyJpZCI6IjUyZGYzNzA2ODBkZTE3YmM1ZDQyNjJjNDQ2ZjEwMmEwZWUwZDYzMTIiLCJ0eXBlIjoiQXR0ZXN0Q29udHJhY3QifSwicHJvb2YiOnsiY3JlYXRlZCI6IjIwMjAtMDYtMjhUMTU6NDY6NTVaIiwiZG9tYWluIjoiIiwicHJvb2ZQdXJwb3NlIjoiYXNzZXJ0aW9uTWV0aG9kIn19fQ==.u+RTbttu0wTULCaLhHCY0AGgLpSTbRP+/sxU0HsD+W2sVMwZfNj3RMNLGcv7lVsFgLzwNNLa5rmDA7llPOs9YQ==";
-        String[] credibleOntIds = new String[]{"did:ont:TF8EGGG7GPvuQebo6pH2ArYSb5GLaXvfvF"};
+        String cred = "eyJhbGciOiJFUzI1NiIsImtpZCI6ImRpZDpvbnQ6VFdhelZTTmpjcmI3cmk2aG41end1QXB1ZnFXazFMMzFkbyNrZXlzLTEiLCJ0eXAiOiJKV1QifQ==.eyJpc3MiOiJkaWQ6b250OlRXYXpWU05qY3JiN3JpNmhuNXp3dUFwdWZxV2sxTDMxZG8iLCJleHAiOjE1OTM0MjQ5OTcsIm5iZiI6MTU5MzMzODU5NywiaWF0IjoxNTkzMzM4NTk3LCJqdGkiOiJ1cm46dXVpZDo5NWVlYjNmYy04NThiLTQxMTctYWJkMC00ZmYzMjY0NzdiOGYiLCJ2YyI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSIsImh0dHBzOi8vb250aWQub250LmlvL2NyZWRlbnRpYWxzL3YxIiwiY29udGV4dDEiLCJjb250ZXh0MiJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiUmVsYXRpb25zaGlwQ3JlZGVudGlhbCJdLCJjcmVkZW50aWFsU3ViamVjdCI6W3siaWQiOiJkaWQ6ZXhhbXBsZTplYmZlYjFmNzEyZWJjNmYxYzI3NmUxMmVjMjEiLCJuYW1lIjoiSmF5ZGVuIERvZSIsInNwb3VzZSI6ImRpZDpleGFtcGxlOmMyNzZlMTJlYzIxZWJmZWIxZjcxMmViYzZmMSJ9LHsiaWQiOiJkaWQ6ZXhhbXBsZTpjMjc2ZTEyZWMyMWViZmViMWY3MTJlYmM2ZjEiLCJuYW1lIjoiTW9yZ2FuIERvZSIsInNwb3VzZSI6ImRpZDpleGFtcGxlOmViZmViMWY3MTJlYmM2ZjFjMjc2ZTEyZWMyMSJ9XSwiY3JlZGVudGlhbFN0YXR1cyI6eyJpZCI6IjUyZGYzNzA2ODBkZTE3YmM1ZDQyNjJjNDQ2ZjEwMmEwZWUwZDYzMTIiLCJ0eXBlIjoiQXR0ZXN0Q29udHJhY3QifSwicHJvb2YiOnsiY3JlYXRlZCI6IjIwMjAtMDYtMjhUMTA6MDM6MTdaIiwiZG9tYWluIjoiIiwicHJvb2ZQdXJwb3NlIjoiYXNzZXJ0aW9uTWV0aG9kIn19fQ==.Qc0mCU74Y2ui4tNoIe8u4UJeDkTfcm+BCPgVx78bo8YKFVkWPNgQh6XL3UXbA6cjEWFE6gXExva3zA1Tqt+LsA==";
+        String[] credibleOntIds = new String[]{"did:ont:TWazVSNjcrb7ri6hn5zwuApufqWk1L31do"};
         boolean verified = verifier.verifyJWTCred(credibleOntIds, cred);
         assertTrue(verified);
+    }
+
+    public void testGolangSignature() throws Exception {
+        byte[] pubKeyData = Helper.hexToBytes("02fe02f80bce49f59f7d34f39fd2a81e8dff91e04d9892a35425a81e0ff12acee7");
+        Account account = new Account(false, pubKeyData);
+        String original = "asdkhfakfhakfj";
+        byte[] needSignData = Digest.sha256(original.getBytes());
+        byte[] sig = Helper.hexToBytes("2e663b13811a24a9d65b746a72b788da111bd23460caefa419c7997d46247dc04edeafb399c3d94c33a32df479326a145c9d0cde2c61c8a4d2d3f565671e1757");
+        assertTrue(account.verifySignature(needSignData, sig));
     }
 }
 

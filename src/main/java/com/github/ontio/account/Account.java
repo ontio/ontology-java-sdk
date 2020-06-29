@@ -147,11 +147,6 @@ public class Account {
         }
     }
 
-    public Account(boolean fromPrivate, byte[] pubkey, SignatureScheme signatureScheme) throws Exception {
-        this(false, pubkey);
-        this.signatureScheme = signatureScheme;
-    }
-
     /**
      * Private Key From WIF
      *
@@ -305,19 +300,6 @@ public class Account {
         SignatureHandler ctx = new SignatureHandler(keyType, sig.getScheme());
         return ctx.verifySignature(publicKey, msg, sig.getValue());
     }
-
-    public boolean verifySignature(byte[] msg, byte[] signature, SignatureScheme signatureScheme) throws Exception {
-        if (msg == null || signature == null || msg.length == 0 || signature.length == 0 || signatureScheme == null) {
-            throw new Exception(ErrorCode.AccountInvalidInput);
-        }
-        if (this.publicKey == null) {
-            throw new Exception(ErrorCode.AccountWithoutPublicKey);
-        }
-        Signature sig = new Signature(signature, signatureScheme);
-        SignatureHandler ctx = new SignatureHandler(keyType, sig.getScheme());
-        return ctx.verifySignature(publicKey, msg, sig.getValue());
-    }
-
 
     public byte[] serializePublicKey() {
         ByteArrayOutputStream bs = new ByteArrayOutputStream();

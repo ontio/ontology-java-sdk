@@ -13,7 +13,7 @@ public class OntIdSigner {
         this.signer = signer;
     }
 
-    public byte[] hash(byte[] msg) throws Exception {
-        return pubKey.type.getAlg().hash(msg);
-    }
+//    public byte[] hash(byte[] msg) throws Exception {
+//        return pubKey.type.getAlg().hash(msg);
+//    }
 }

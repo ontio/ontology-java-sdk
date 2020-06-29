@@ -98,7 +98,7 @@ public class OntId2 {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
             Proof proof = new Proof(signer.pubKey.id, formatter.format(current), signer.pubKey.type, proofPurpose);
             SignRequest signReq = new SignRequest(credentialSubject, signer.ontId, proof);
-            proof.fillHexSignature(signer.signer, signer.hash(signReq.genNeedSignData()));
+            proof.fillHexSignature(signer.signer, signReq.genNeedSignData());
             return signReq;
         } else {
             return new SignRequest(credentialSubject, signer.ontId, null);
@@ -106,7 +106,7 @@ public class OntId2 {
     }
 
     public boolean verifySignReq(SignRequest req) throws Exception {
-        return verifyOntIdSignature(req.ontId, signer.hash(req.genNeedSignData()), req.proof.parseHexSignature());
+        return verifyOntIdSignature(req.ontId, req.genNeedSignData(), req.proof.parseHexSignature());
     }
 
     public VerifiableCredential createCred(String[] context, String[] type, Object issuer,
@@ -570,8 +570,6 @@ public class OntId2 {
         if (!pubKeyId.startsWith(ontId)) {
             return false;
         }
-        System.out.println(Helper.toHexString(needSignData));
-        System.out.println(Helper.toHexString(signature));
         return verifyPubKeyIdSignature(pubKeyId, needSignData, signature);
     }
 
@@ -584,7 +582,7 @@ public class OntId2 {
                 allPubKeys) {
             if (pubKey.id.equals(pubKeyId)) {
                 Account account = new Account(false, Helper.hexToBytes(pubKey.publicKeyHex));
-                return account.verifySignature(needSignData, signature, pubKey.type.getSignatureScheme());
+                return account.verifySignature(needSignData, signature);
             }
         }
         return false;
@@ -596,7 +594,7 @@ public class OntId2 {
         for (OntIdPubKey pubKey :
                 allPubKeys) {
             Account account = new Account(false, Helper.hexToBytes(pubKey.publicKeyHex));
-            if (account.verifySignature(needSignData, signature, pubKey.type.getSignatureScheme())) {
+            if (account.verifySignature(needSignData, signature)) {
                 return true;
             }
         }

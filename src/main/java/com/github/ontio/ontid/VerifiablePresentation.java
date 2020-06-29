@@ -26,9 +26,8 @@ public class VerifiablePresentation {
         Proof[] proofs = this.proof;
         this.proof = new Proof[]{needSignProof.genNeedSignProof()};
         String jsonStr = JSON.toJSONString(this);
-        System.out.println(jsonStr);
         this.proof = proofs;
-        return needSignProof.type.getAlg().hash(jsonStr.getBytes());
+        return jsonStr.getBytes();
     }
 
     public String fetchHolderOntId() {

@@ -100,14 +100,14 @@ public class SignatureHandler {
         } else {
             res = new byte[sl * 2];
         }
-        System.arraycopy(r, ri, res, res.length/2 - rl, rl);
-        System.arraycopy(s, si, res, res.length-sl, sl);
+        System.arraycopy(r, ri, res, res.length / 2 - rl, rl);
+        System.arraycopy(s, si, res, res.length - sl, sl);
         return res;
     }
 
     private byte[] DSAPlaintoDER(byte[] sig) throws IOException {
-        BigInteger r = new BigInteger(1, Arrays.copyOfRange(sig, 0, sig.length/2));
-        BigInteger s = new BigInteger(1, Arrays.copyOfRange(sig, sig.length/2, sig.length));
+        BigInteger r = new BigInteger(1, Arrays.copyOfRange(sig, 0, sig.length / 2));
+        BigInteger s = new BigInteger(1, Arrays.copyOfRange(sig, sig.length / 2, sig.length));
 
         ASN1EncodableVector var3 = new ASN1EncodableVector();
         var3.add(new ASN1Integer(r));

@@ -79,7 +79,7 @@ public class JWTCredential {
         String payload = Base64.getEncoder().encodeToString(JSON.toJSONString(this.payload).getBytes());
         String needSignData = header + "." + payload;
         System.out.println(needSignData);
-        return this.header.alg.hash(needSignData.getBytes());
+        return needSignData.getBytes();
     }
 
     public Proof parseProof() {

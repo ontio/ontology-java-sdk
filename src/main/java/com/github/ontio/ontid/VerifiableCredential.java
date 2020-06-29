@@ -38,7 +38,7 @@ public class VerifiableCredential {
         this.proof = this.proof.genNeedSignProof();
         String jsonStr = JSON.toJSONString(this);
         this.proof = proof;
-        return this.proof.type.getAlg().hash(jsonStr.getBytes());
+        return jsonStr.getBytes();
     }
 
     public String findSubjectId() {

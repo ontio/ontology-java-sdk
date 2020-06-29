@@ -44,22 +44,22 @@ public enum ALG {
         return pubKeyType;
     }
 
-    public byte[] hash(byte[] msg) throws Exception {
-        switch (this) {
-            case ES224:
-                return Digest.sha224(msg);
-            case ES256:
-            case ES256K:
-            case EdDSA:
-                return Digest.sha256(msg);
-            case ES384:
-                return Digest.sha384(msg);
-            case ES512:
-                return Digest.sha512(msg);
-            case SM:
-                return Digest.sm3(msg);
-            default:
-                throw new SDKException("unsupport hash method");
-        }
-    }
+//    public byte[] hash(byte[] msg) throws Exception {
+//        switch (this) {
+//            case ES224:
+//                return Digest.sha224(msg);
+//            case ES256:
+//            case ES256K:
+//            case EdDSA:
+//                return Digest.sha256(msg);
+//            case ES384:
+//                return Digest.sha384(msg);
+//            case ES512:
+//                return Digest.sha512(msg);
+//            case SM:
+//                return Digest.sm3(msg);
+//            default:
+//                throw new SDKException("unsupport hash method");
+//        }
+//    }
 }

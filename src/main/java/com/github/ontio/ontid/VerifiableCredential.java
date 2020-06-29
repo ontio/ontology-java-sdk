@@ -4,10 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
+import com.alibaba.fastjson.parser.Feature;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.ontio.ontid.jwt.JWTCredential;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.UUID;
 
 
@@ -33,10 +36,10 @@ public class VerifiableCredential {
         return Util.fetchId(this.issuer);
     }
 
-    public byte[] genNeedSignData() throws Exception {
+    public byte[] genNeedSignData() {
         Proof proof = this.proof;
         this.proof = this.proof.genNeedSignProof();
-        String jsonStr = JSON.toJSONString(this);
+        String jsonStr = JSON.toJSONString(this, SerializerFeature.MapSortField);
         this.proof = proof;
         return jsonStr.getBytes();
     }
@@ -52,6 +55,7 @@ public class VerifiableCredential {
         credential.type = jwtCred.payload.vc.type;
         // set date
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
         if (jwtCred.payload.iat > 0) {
             credential.issuanceDate = formatter.format(new Date(jwtCred.payload.iat * 1000));
         } else if (jwtCred.payload.nbf > 0) {

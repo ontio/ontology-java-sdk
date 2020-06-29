@@ -14,10 +14,7 @@ import com.github.ontio.smartcontract.neovm.CredentialRecord;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class OntId2 {
     public static final String CRED_DEFAULT_CONTEXT1 = "https://www.w3.org/2018/credentials/v1";
@@ -96,6 +93,7 @@ public class OntId2 {
         if (hasSignature) {
             Date current = new Date();
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
             Proof proof = new Proof(signer.pubKey.id, formatter.format(current), signer.pubKey.type, proofPurpose);
             SignRequest signReq = new SignRequest(credentialSubject, signer.ontId, proof);
             proof.fillHexSignature(signer.signer, signReq.genNeedSignData());
@@ -165,6 +163,7 @@ public class OntId2 {
         credential.issuer = issuer;
         credential.credentialStatus = new CredentialStatus(credRecord.getContractAddress(), statusType);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date current = new Date();
         credential.issuanceDate = formatter.format(current);
         if (expiration != null) {
@@ -294,6 +293,7 @@ public class OntId2 {
 
     public boolean verifyCredDate(VerifiableCredential cred) throws Exception {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date current = new Date();
         if (cred.expirationDate != null && !cred.expirationDate.isEmpty()) {
             Date expiration = formatter.parse(cred.expirationDate);
@@ -392,6 +392,7 @@ public class OntId2 {
         VerifiablePresentation presentation = genPresentationWithoutProof(creds, context, type, holder);
         Date current = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
         String currentTimeStamp = formatter.format(current);
         ArrayList<Proof> proofs = new ArrayList<>();
         ArrayList<OntIdSigner> signers = new ArrayList<>();
@@ -428,6 +429,7 @@ public class OntId2 {
             credentials[i] = VerifiableCredential.deserializeFromJWT(jwtCred);
         }
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
         String created = formatter.format(new Date());
         Proof proof = new Proof(signer.pubKey.id, created, signer.pubKey.type, purpose, challenge, domain);
         JWTPayload payload = new JWTPayload(genPresentationWithoutProof(credentials, context, type, holder), proof);

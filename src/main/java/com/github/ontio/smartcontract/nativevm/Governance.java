@@ -41,10 +41,10 @@ import com.github.ontio.smartcontract.nativevm.abi.Struct;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class Governance {
     private OntSdk sdk;
@@ -62,6 +62,7 @@ public class Governance {
     private final long[] UNBOUND_GENERATION_AMOUNT = new long[]{5, 4, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
     private final int UNBOUND_TIME_INTERVAL = 31536000;
     private final long ONT_TOTAL_SUPPLY = 1000000000;
+
     public Governance(OntSdk sdk) {
         this.sdk = sdk;
     }
@@ -864,7 +865,7 @@ public class Governance {
         }
     }
 
-    public long getPeerUbindOng(String address) throws ConnectorException, IOException, SDKException {
+    public long getPeerUbindOng(String address) throws ConnectorException, IOException, SDKException, ParseException {
         int timestamp0 = 1530316800;//创世块时间戳
         int current_height = sdk.getConnect().getBlockHeight();
         Block block = sdk.getConnect().getBlock(current_height);
@@ -876,12 +877,13 @@ public class Governance {
         return calcUnbindOng(totalStake.stake,totalStake.timeOffset,timestamp);
     }
 
-    public long calcUnbindOng(long balance, int startOffset, int endOffset){
+    public long calcUnbindOng(long balance, int startOffset, int endOffset) throws ParseException {
         long amount = 0;
         if(startOffset >= endOffset){
             return 0;
         }
-        int unboundDeadLine = unboundDeadLine();
+        int unboundDeadLine = unboundDeadLineNew();
+
         if(startOffset < unboundDeadLine){
             int ustart = startOffset / UNBOUND_TIME_INTERVAL;
             int istart = startOffset % UNBOUND_TIME_INTERVAL;
@@ -908,6 +910,41 @@ public class Governance {
         count *= UNBOUND_TIME_INTERVAL;
         int numInterval = UNBOUND_GENERATION_AMOUNT.length;
         return (int) (UNBOUND_TIME_INTERVAL * numInterval - (count - ONT_TOTAL_SUPPLY));
+    }
+
+    private long utcToLocal(String utcTime){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date utcDate = null;
+        try {
+            utcDate = sdf.parse(utcTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        sdf.setTimeZone(TimeZone.getDefault());
+        Date locatlDate = null;
+        String localTime = sdf.format(utcDate.getTime());
+        try {
+            locatlDate = sdf.parse(localTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return locatlDate.getTime()/1000;
+    }
+
+    public int unboundDeadLineNew() throws ParseException {
+        long GENESIS_BLOCK_TIMESTAMP = utcToLocal("2018-06-30 0:0:0");
+        String url = sdk.getConnect().getUrl();
+        if (url.contains("polaris")){
+            long CHANGE_UNBOUND_TIMESTAMP_POLARIS = utcToLocal("2020-06-28 0:0:0");
+            return (int)(CHANGE_UNBOUND_TIMESTAMP_POLARIS-GENESIS_BLOCK_TIMESTAMP);
+        } else if (url.contains("dappnode")) {
+            long CHANGE_UNBOUND_TIMESTAMP_MAINNET = utcToLocal("2020-07-07 0:0:0");
+            long res = CHANGE_UNBOUND_TIMESTAMP_MAINNET-GENESIS_BLOCK_TIMESTAMP;
+            return (int)res;
+        } else {
+            return 0;
+        }
     }
 
     private TotalStake getTotalStake(String address) throws SDKException, ConnectorException, IOException {

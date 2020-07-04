@@ -95,7 +95,7 @@ public class ConnectMgr {
         this.connector = connector;
     }
 
-    private String getUrl() {
+    public String getUrl() {
         return connector.getUrl();
     }
 

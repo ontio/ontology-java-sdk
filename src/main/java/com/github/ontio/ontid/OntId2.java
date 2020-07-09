@@ -303,31 +303,66 @@ public class OntId2 {
         }
         if (cred.issuanceDate != null && !cred.issuanceDate.isEmpty()) {
             Date issuanceDate = formatter.parse(cred.issuanceDate);
-            return !issuanceDate.after(current);
+            return issuanceDate.before(current);
+        }
+        return true;
+    }
+
+    public boolean verifyCredExp(VerifiableCredential cred) throws Exception {
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date current = new Date();
+        if (cred.expirationDate != null && !cred.expirationDate.isEmpty()) {
+            Date expiration = formatter.parse(cred.expirationDate);
+            return expiration.after(current);
+        }
+        return true;
+    }
+
+    public boolean verifyCredIssuanceDate(VerifiableCredential cred) throws Exception {
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date current = new Date();
+        if (cred.issuanceDate != null && !cred.issuanceDate.isEmpty()) {
+            Date issuanceDate = formatter.parse(cred.issuanceDate);
+            return issuanceDate.before(current);
         }
         return true;
     }
 
     public boolean verifyJWTCredDate(String cred) throws Exception {
         JWTCredential jwtCred = JWTCredential.deserializeToJWTCred(cred);
-        if (jwtCred.payload.exp == 0) {
-            return true;
-        }
         return verifyJWTCredDate(jwtCred);
     }
 
+    public boolean verifyJWTCredExp(String cred) throws Exception {
+        JWTCredential jwtCred = JWTCredential.deserializeToJWTCred(cred);
+        return verifyJWTCredExp(jwtCred);
+    }
+
+    public boolean verifyJWTCredIssuanceDate(String cred) throws Exception {
+        JWTCredential jwtCred = JWTCredential.deserializeToJWTCred(cred);
+        return verifyJWTCredIssuanceDate(jwtCred);
+    }
+
     private boolean verifyJWTCredDate(JWTCredential jwtCred) {
+        return verifyJWTCredExp(jwtCred) && verifyJWTCredIssuanceDate(jwtCred);
+    }
+
+    // if jwtCred.payload.exp < 0, consider it is invalid
+    private boolean verifyJWTCredExp(JWTCredential jwtCred) {
+        return jwtCred.payload.exp == 0 || jwtCred.payload.exp > System.currentTimeMillis() / 1000;
+    }
+
+    private boolean verifyJWTCredIssuanceDate(JWTCredential jwtCred) {
         long current = System.currentTimeMillis() / 1000;
-        if (jwtCred.payload.exp > 0 && current > jwtCred.payload.exp) {
+        if (jwtCred.payload.iat < 0 || jwtCred.payload.nbf < 0) {
             return false;
         }
         if (jwtCred.payload.nbf > 0 && current < jwtCred.payload.nbf) {
             return false;
         }
-        if (jwtCred.payload.iat <= 0) {
-            return true;
-        }
-        return current >= jwtCred.payload.iat;
+        return jwtCred.payload.iat == 0 || current >= jwtCred.payload.iat;
     }
 
     public boolean verifyCredSignature(VerifiableCredential cred) throws Exception {

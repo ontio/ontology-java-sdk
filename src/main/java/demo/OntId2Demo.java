@@ -14,7 +14,7 @@ import java.util.Date;
 
 public class OntId2Demo {
     static long gasLimit = 2000000;
-    static long gasPrice = 500;
+    static long gasPrice = 2500;
     static String password = "passwordtest";
 
     public static void main(String[] args) {

@@ -472,6 +472,22 @@ public class OntId2 {
         return jwtCred.toString();
     }
 
+    // creds: old version jwt cred array
+    public String createPresentationFromOldCred(String[] creds, String[] context, String[] type, Object holder,
+                                                String challenge, Object domain, ProofPurpose purpose)
+            throws Exception {
+        JWTHeader header = new JWTHeader(signer.pubKey.type.getAlg(), this.signer.pubKey.id);
+
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String created = formatter.format(new Date());
+        Proof proof = new Proof(signer.pubKey.id, created, signer.pubKey.type, purpose, challenge, domain);
+        JWTPayload payload = new JWTPayload(genPresentationWithoutProof(null, context, type, holder), proof);
+        payload.vp.verifiableCredential = creds;
+        JWTCredential jwtCred = new JWTCredential(header, payload, signer.signer);
+        return jwtCred.toString();
+    }
+
     private VerifiablePresentation genPresentationWithoutProof(VerifiableCredential[] creds, String[] context,
                                                                String[] type, Object holder) {
         VerifiablePresentation presentation = new VerifiablePresentation();
@@ -602,16 +618,16 @@ public class OntId2 {
         return "";
     }
 
-    private boolean verifyPubKeyIdSignature(String ontId, String pubKeyId, byte[] needSignData,
-                                            byte[] signature) throws Exception {
+    public boolean verifyPubKeyIdSignature(String ontId, String pubKeyId, byte[] needSignData,
+                                           byte[] signature) throws Exception {
         if (!pubKeyId.startsWith(ontId)) {
             return false;
         }
         return verifyPubKeyIdSignature(pubKeyId, needSignData, signature);
     }
 
-    private boolean verifyPubKeyIdSignature(String pubKeyId, byte[] needSignData,
-                                            byte[] signature) throws Exception {
+    public boolean verifyPubKeyIdSignature(String pubKeyId, byte[] needSignData,
+                                           byte[] signature) throws Exception {
         String ontId = Util.getOntIdFromPubKeyURI(pubKeyId);
         String allPubKeysJson = ontIdContract.sendGetPublicKeys(ontId);
         ArrayList<OntIdPubKey> allPubKeys = new ArrayList<>(JSON.parseArray(allPubKeysJson, OntIdPubKey.class));
@@ -625,7 +641,7 @@ public class OntId2 {
         return false;
     }
 
-    private boolean verifyOntIdSignature(String ontId, byte[] needSignData, byte[] signature) throws Exception {
+    public boolean verifyOntIdSignature(String ontId, byte[] needSignData, byte[] signature) throws Exception {
         String allPubKeysJson = ontIdContract.sendGetPublicKeys(ontId);
         ArrayList<OntIdPubKey> allPubKeys = new ArrayList<>(JSON.parseArray(allPubKeysJson, OntIdPubKey.class));
         for (OntIdPubKey pubKey :

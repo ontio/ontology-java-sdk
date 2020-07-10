@@ -5,6 +5,7 @@ import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Helper;
 import com.github.ontio.crypto.Digest;
+import com.github.ontio.ontid.jwt.JWTCredential;
 import com.github.ontio.sdk.wallet.Identity;
 import junit.framework.TestCase;
 
@@ -197,6 +198,31 @@ public class OntId2Test extends TestCase {
             assertNotNull(jwtPresentation);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void testPresentationFromOldCred() throws Exception {
+        String oldCred = "eyJraWQiOiJkaWQ6b250OkFIelVmcnFwTndIQmZYQTcyRDlIY2lOQUt1Q3I4M1N6REcja2V5cy0xIiwidHlwIjoiSldULVgiLCJhbGciOiJPTlQtRVMyNTYifQ==.eyJjbG0tcmV2Ijp7InR5cCI6IkF0dGVzdENvbnRyYWN0IiwiYWRkciI6IjM2YmI1YzA1M2I2YjgzOWM4ZjZiOTIzZmU4NTJmOTEyMzliOWZjY2MifSwic3ViIjoiZGlkOm9udDpBWmtLZzRyZlg5ZkJiVjVRNU1QMWJNdjdmYVFHNkFieTRBIiwidmVyIjoidjEuMCIsImNsbSI6eyJJc3N1ZXJOYW1lIjoiQ0ZDQSIsIuWnk+WQjSI6IuacseWImiIsIui6q+S7veivgeWPtyI6IjMyMDcyMzE5OTQwMjA1MDAxOCJ9LCJpc3MiOiJkaWQ6b250OkFIelVmcnFwTndIQmZYQTcyRDlIY2lOQUt1Q3I4M1N6REciLCJleHAiOjE2MjU4MTM5OTksImlhdCI6MTU5NDI3Nzk5OSwiQGNvbnRleHQiOiJjbGFpbTpjZmNhX2F1dGhlbnRpY2F0aW9uIiwianRpIjoiNjU3OGM5Nzc0MzRlOGEwOTM4ZTg4OGZmNDgzNGRmMGUzZmRlNjA0OWRmZjhiNWRmNmY4OWJjOTI5ZWQ3NzYyMSJ9.ARqkTHL43HepObuPQeToLfzW+ed3fsse7V3xfnPLrucYTLKWrw3bdcgOBqFdsD2wmQ5N3o3haFYjz5E/vBJ1NeI=";
+        String challenge = "d1b23d3...3d23d32d2";
+        String[] domain = new String[]{"https://example.com"};
+        String presentation = owner.createPresentationFromOldCred(new String[]{oldCred}, null,
+                null, ownerIdentity.ontid, challenge, domain, ProofPurpose.assertionMethod);
+        assertNotNull(presentation);
+        JWTCredential jwtCred = JWTCredential.deserializeToJWTCred(presentation);
+        // check jws
+        byte[] needSignData = jwtCred.genNeedSignData();
+        byte[] signature = jwtCred.parseSignature();
+        boolean presentationSigValid = verifier.verifyPubKeyIdSignature(jwtCred.header.kid, needSignData, signature);
+        assertTrue(presentationSigValid);
+        String[] credibleOntIds = new String[]{"did:ont:AHzUfrqpNwHBfXA72D9HciNAKuCr83SzDG"};
+        for (String vc : jwtCred.payload.vp.verifiableCredential) {
+            assertTrue(ontSdk.nativevm().ontId().verifyCredNotExpired(vc));
+            assertTrue(ontSdk.nativevm().ontId().verifyCredIssuanceDate(vc));
+            assertTrue(ontSdk.nativevm().ontId().verifyCredOntIdCredible(vc, credibleOntIds));
+            assertTrue(ontSdk.nativevm().ontId().verifyCredSignature(vc));
+            // use corresponding credential record contract to verify credential status
+//            ontSdk.neovm().credentialRecord().setContractAddress("36bb5c053b6b839c8f6b923fe852f91239b9fccc");
+//            assertTrue(ontSdk.nativevm().ontId().verifyCredNotRevoked(vc));
         }
     }
 

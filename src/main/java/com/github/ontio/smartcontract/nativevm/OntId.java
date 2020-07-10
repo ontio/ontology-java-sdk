@@ -2246,18 +2246,25 @@ public class OntId {
         JSONObject payloadObj = JSON.parseObject(new String(payloadBytes));
         long currentTime = System.currentTimeMillis() / 1000;
         long expiration = payloadObj.getLong("exp");
-        if (expiration > 0 && expiration < currentTime) {
-            return false;
+        return expiration <= 0 || expiration >= currentTime;
+    }
+
+    public boolean verifyCredIssuanceDate(String cred) throws Exception {
+        if ("".equals(cred)) {
+            throw new SDKException(ErrorCode.ParamErr("cred should not be null"));
         }
+        String[] obj = cred.split("\\.");
+        if (obj.length != 3) {
+            throw new SDKException(ErrorCode.ParamError);
+        }
+        byte[] payloadBytes = Base64.getDecoder().decode(obj[1].getBytes());
+        JSONObject payloadObj = JSON.parseObject(new String(payloadBytes));
+        long currentTime = System.currentTimeMillis() / 1000;
         long iat = payloadObj.getLong("iat");
-        if (iat > 0 && iat > currentTime) {
+        if (iat < 0) {
             return false;
         }
-        long nbf = payloadObj.getLong("nbf");
-        if (nbf > 0 && nbf > currentTime) {
-            return false;
-        }
-        return true;
+        return iat == 0 || iat <= currentTime;
     }
 
     public boolean verifyCredSignature(String cred) throws Exception {

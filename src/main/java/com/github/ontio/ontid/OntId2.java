@@ -359,10 +359,10 @@ public class OntId2 {
         if (jwtCred.payload.iat < 0 || jwtCred.payload.nbf < 0) {
             return false;
         }
-        if (jwtCred.payload.nbf > 0 && current < jwtCred.payload.nbf) {
+        if (current < jwtCred.payload.nbf) {
             return false;
         }
-        return jwtCred.payload.iat == 0 || current >= jwtCred.payload.iat;
+        return current >= jwtCred.payload.iat;
     }
 
     public boolean verifyCredSignature(VerifiableCredential cred) throws Exception {

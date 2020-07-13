@@ -2246,7 +2246,10 @@ public class OntId {
         JSONObject payloadObj = JSON.parseObject(new String(payloadBytes));
         long currentTime = System.currentTimeMillis() / 1000;
         long expiration = payloadObj.getLong("exp");
-        return expiration <= 0 || expiration >= currentTime;
+        if (expiration < 0) {
+            return false;
+        }
+        return expiration == 0 || expiration >= currentTime;
     }
 
     public boolean verifyCredIssuanceDate(String cred) throws Exception {

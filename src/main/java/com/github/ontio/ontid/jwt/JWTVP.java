@@ -34,12 +34,14 @@ public class JWTVP {
         }
         this.context = presentation.context;
         this.type = presentation.type;
-        String[] verifiableCredential = new String[presentation.verifiableCredential.length];
-        for (int i = 0; i < presentation.verifiableCredential.length; i++) {
-            JWTCredential jwtCred = new JWTCredential(presentation.verifiableCredential[i]);
-            verifiableCredential[i] = jwtCred.toString();
+        if (presentation.verifiableCredential != null) {
+            String[] verifiableCredential = new String[presentation.verifiableCredential.length];
+            for (int i = 0; i < presentation.verifiableCredential.length; i++) {
+                JWTCredential jwtCred = new JWTCredential(presentation.verifiableCredential[i]);
+                verifiableCredential[i] = jwtCred.toString();
+            }
+            this.verifiableCredential = verifiableCredential;
         }
-        this.verifiableCredential = verifiableCredential;
         this.proof = proof.genJWTProof();
     }
 }

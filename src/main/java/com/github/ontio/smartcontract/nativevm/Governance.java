@@ -855,6 +855,25 @@ public class Governance {
         ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(res));
         BinaryReader reader = new BinaryReader(bais);
         peerAttributes2.deserialize(reader);
+        if (peerAttributes2.t2StakeCost == 0) {
+            peerAttributes2.t2StakeCost = peerAttributes2.t2PeerCost;
+        }
+        if (peerAttributes2.t1StakeCost == 0) {
+            peerAttributes2.t1StakeCost = peerAttributes2.t1PeerCost;
+        }
+        if (peerAttributes2.tStakeCost == 0) {
+            peerAttributes2.tStakeCost = peerAttributes2.tPeerCost;
+        }
+
+        if (peerAttributes2.t2StakeCost == 101) {
+            peerAttributes2.t2StakeCost = 0;
+        }
+        if (peerAttributes2.t1StakeCost == 101) {
+            peerAttributes2.t1StakeCost = 0;
+        }
+        if (peerAttributes2.tStakeCost == 101) {
+            peerAttributes2.tStakeCost = 0;
+        }
         return peerAttributes2.toJson();
     }
 

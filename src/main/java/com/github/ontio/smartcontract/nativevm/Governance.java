@@ -1252,9 +1252,12 @@ class PeerAttributes implements Serializable {
         this.t2PeerCost = reader.readLong();
         this.t1PeerCost = reader.readLong();
         this.tPeerCost = reader.readLong();
-        this.t2StakeCost = reader.readLong();
-        this.t1StakeCost = reader.readLong();
-        this.tStakeCost = reader.readLong();
+        byte[] t2StakeCostBs = reader.readVarBytes();
+        this.t2StakeCost = Helper.BigIntFromNeoBytes(t2StakeCostBs).longValue();
+        byte[] t1StakeCostBs = reader.readVarBytes();
+        this.t1StakeCost = Helper.BigIntFromNeoBytes(t1StakeCostBs).longValue();
+        byte[] tStakeCostBs = reader.readVarBytes();
+        this.tStakeCost = Helper.BigIntFromNeoBytes(tStakeCostBs).longValue();
         this.field4 = reader.readVarBytes();
     }
 

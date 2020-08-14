@@ -809,6 +809,31 @@ public class Governance {
         return null;
     }
 
+    public String SetFeePercentage(Account account, String peerPubkey, int peerCost, int stakeCost, Account payerAcct, long gaslimit, long gasprice) throws Exception {
+        if (account == null || peerPubkey == null || peerPubkey.equals("") || payerAcct == null) {
+            throw new SDKException(ErrorCode.ParamErr("parameters should not be null"));
+        }
+        if (gaslimit < 0 || gasprice < 0) {
+            throw new SDKException(ErrorCode.ParamErr("gaslimit and gasprice should not be less than 0"));
+        }
+        if (peerCost < 0 || peerCost > 100) {
+            throw new SDKException(ErrorCode.ParamErr("peerCost is wrong, it should be 0 <= peerCost <= 100"));
+        }
+        List list = new ArrayList();
+        list.add(new Struct().add(peerPubkey, account.getAddressU160(), peerCost, stakeCost));
+        byte[] args = NativeBuildParams.createCodeParamsScript(list);
+        Transaction tx = sdk.vm().buildNativeParams(new Address(Helper.hexToBytes(contractAddress)), "setFeePercentage", args, payerAcct.getAddressU160().toBase58(), gaslimit, gasprice);
+        sdk.signTx(tx, new Account[][]{{account}});
+        if (!account.equals(payerAcct)) {
+            sdk.addSign(tx, payerAcct);
+        }
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
+        if (b) {
+            return tx.hash().toString();
+        }
+        return null;
+    }
+
     /**
      * @param peerPubkey
      * @return
@@ -830,8 +855,28 @@ public class Governance {
         ByteArrayInputStream bais = new ByteArrayInputStream(Helper.hexToBytes(res));
         BinaryReader reader = new BinaryReader(bais);
         peerAttributes2.deserialize(reader);
+        if (peerAttributes2.t2StakeCost == 0) {
+            peerAttributes2.t2StakeCost = peerAttributes2.t2PeerCost;
+        }
+        if (peerAttributes2.t1StakeCost == 0) {
+            peerAttributes2.t1StakeCost = peerAttributes2.t1PeerCost;
+        }
+        if (peerAttributes2.tStakeCost == 0) {
+            peerAttributes2.tStakeCost = peerAttributes2.tPeerCost;
+        }
+
+        if (peerAttributes2.t2StakeCost == 101) {
+            peerAttributes2.t2StakeCost = 0;
+        }
+        if (peerAttributes2.t1StakeCost == 101) {
+            peerAttributes2.t1StakeCost = 0;
+        }
+        if (peerAttributes2.tStakeCost == 101) {
+            peerAttributes2.tStakeCost = 0;
+        }
         return peerAttributes2.toJson();
     }
+
 
     public String getSplitFeeAddress(String address) throws Exception {
         byte[] splitFeeAddressBytes = SPLIT_FEE_ADDRESS.getBytes();
@@ -1184,9 +1229,9 @@ class PeerAttributes implements Serializable {
     public long t2PeerCost; //old peer cost, active when current view - SetCostView < 2
     public long t1PeerCost; //new peer cost, active when current view - SetCostView >= 2
     public long tPeerCost; //the view when when set new peer cost
-    public byte[] field1;
-    public byte[] field2;
-    public byte[] field3;
+    public long t2StakeCost;
+    public long t1StakeCost;
+    public long tStakeCost;
     public byte[] field4;
 
     PeerAttributes() {
@@ -1207,9 +1252,12 @@ class PeerAttributes implements Serializable {
         this.t2PeerCost = reader.readLong();
         this.t1PeerCost = reader.readLong();
         this.tPeerCost = reader.readLong();
-        this.field1 = reader.readVarBytes();
-        this.field2 = reader.readVarBytes();
-        this.field3 = reader.readVarBytes();
+        byte[] t2StakeCostBs = reader.readVarBytes();
+        this.t2StakeCost = Helper.BigIntFromNeoBytes(t2StakeCostBs).longValue();
+        byte[] t1StakeCostBs = reader.readVarBytes();
+        this.t1StakeCost = Helper.BigIntFromNeoBytes(t1StakeCostBs).longValue();
+        byte[] tStakeCostBs = reader.readVarBytes();
+        this.tStakeCost = Helper.BigIntFromNeoBytes(tStakeCostBs).longValue();
         this.field4 = reader.readVarBytes();
     }
 

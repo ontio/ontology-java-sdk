@@ -1243,6 +1243,9 @@ class PeerAttributes implements Serializable {
         this.t2PeerCost = 100;
         this.t1PeerCost = 100;
         this.tPeerCost = 100;
+        this.t2StakeCost = 100;
+        this.t1StakeCost = 100;
+        this.tStakeCost = 100;
     }
 
     @Override

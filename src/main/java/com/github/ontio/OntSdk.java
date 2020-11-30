@@ -82,6 +82,10 @@ public class OntSdk {
     private OntSdk() {
     }
 
+    public OntSdk(String restfulUrl) {
+        this.connRestful = new ConnectMgr(restfulUrl, "restful");
+    }
+
     public SignServer getSignServer() throws SDKException {
         if (signServer == null) {
             throw new SDKException(ErrorCode.OtherError("signServer null"));

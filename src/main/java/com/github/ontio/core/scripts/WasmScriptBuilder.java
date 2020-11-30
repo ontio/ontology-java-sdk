@@ -13,7 +13,7 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.List;
 
-public class WasmScriptBuilder implements AutoCloseable{
+public class WasmScriptBuilder implements AutoCloseable {
 
     private ByteArrayOutputStream ms;
 
@@ -69,6 +69,8 @@ public class WasmScriptBuilder implements AutoCloseable{
             push((Integer) val);
         } else if (val instanceof Long) {
             push((Long) val);
+        } else if (val instanceof BigInteger) {
+            push((BigInteger) val);
         } else if (val instanceof UInt256) {
             push(((UInt256) val));
         } else if (val instanceof List) {
@@ -92,7 +94,7 @@ public class WasmScriptBuilder implements AutoCloseable{
 
     private byte[] packAsArray() {
         WasmScriptBuilder finalBuilder = new WasmScriptBuilder();
-        finalBuilder.push( this.toByteArray());
+        finalBuilder.push(this.toByteArray());
         return finalBuilder.toByteArray();
     }
 

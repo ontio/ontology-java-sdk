@@ -34,4 +34,13 @@ public class InvokeWasmCode extends Transaction {
     protected void serializeExclusiveData(BinaryWriter writer) throws IOException {
         writer.writeVarBytes(invokeCode);
     }
+    
+    @Override
+    public Object json() {
+        Map obj = (Map) super.json();
+        Map payload = new HashMap();
+        payload.put("Code", Helper.toHexString(invokeCode));
+        obj.put("Payload", payload);
+        return obj;
+    }
 }

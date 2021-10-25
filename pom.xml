@@ -133,6 +133,8 @@
                         <exclude>**/OngTest.java</exclude>
                         <exclude>**/NeoVmTest.java</exclude>
                         <exclude>**/AuthTest.java</exclude>
+                        <exclude>**/OngV2Test.java</exclude>
+                        <exclude>**/OntV2Test.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>

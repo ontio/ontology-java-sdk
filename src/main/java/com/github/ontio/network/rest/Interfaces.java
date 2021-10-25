@@ -198,6 +198,15 @@ class Interfaces {
         }
     }
 
+    public String getBalanceV2(String address) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            return http.get(url + UrlConsts.Url_get_account_balance_v2 + address, params);
+        } catch (Exception e) {
+            throw new RestfulException(ErrorCode.ConnectUrlErr + url, e);
+        }
+    }
+
     public String getTransactionJson(String txhash) throws RestfulException {
         Map<String, String> params = new HashMap<String, String>();
         try {
@@ -233,6 +242,15 @@ class Interfaces {
             throw new RestfulException(ErrorCode.ConnectUrlErr + url, e);
         }
     }
+    public String getAllowanceV2(String asset, String from, String to) throws RestfulException {
+        Map<String, String> params = new HashMap<String, String>();
+        try {
+            return http.get(url + UrlConsts.Url_get_allowance_V2 + asset + "/" + from + "/" + to, params);
+        } catch (Exception e) {
+            throw new RestfulException(ErrorCode.ConnectUrlErr + url, e);
+        }
+    }
+
     public String getVersion() throws RestfulException {
         Map<String, String> params = new HashMap<String, String>();
         try {

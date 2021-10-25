@@ -40,7 +40,7 @@ public class WebsocketClient extends AbstractConnector {
     public static String wsUrl = "";
     private WebsocketClient wsClient = null;
 
-    public WebsocketClient(String url,Object lock) {
+    public WebsocketClient(String url, Object lock) {
         wsUrl = url;
         this.lock = lock;
         wsClient = this;
@@ -62,8 +62,9 @@ public class WebsocketClient extends AbstractConnector {
                 });
         thread.start();
     }
+
     @Override
-    public String getUrl(){
+    public String getUrl() {
         return wsUrl;
     }
 
@@ -74,42 +75,48 @@ public class WebsocketClient extends AbstractConnector {
         map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
     }
+
     public void sendSubscribe(Map map) {
         map.put("Action", "subscribe");
         map.put("Version", "V1.0.0");
         map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
     }
+
     public void send(Map map) {
         mWebSocket.send(JSON.toJSONString(map));
     }
-    public void setReqId(long reqId){
+
+    public void setReqId(long reqId) {
         this.reqId = reqId;
     }
-    private long generateReqId(){
-        if(reqId == 0) {
+
+    private long generateReqId() {
+        if (reqId == 0) {
             return new Random().nextInt() & Integer.MAX_VALUE;
         }
         return reqId;
     }
+
     @Override
-    public Object sendRawTransaction(boolean preExec,String userid,String hexData) throws ConnectorException, IOException{
+    public Object sendRawTransaction(boolean preExec, String userid, String hexData) throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "sendrawtransaction");
         map.put("Version", "1.0.0");
         map.put("Data", hexData);
         map.put("Id", generateReqId());
-        if(preExec){
+        if (preExec) {
             map.put("PreExec", "1");
         }
         mWebSocket.send(JSON.toJSONString(map));
-        if(preExec){
+        if (preExec) {
             return "0";
         }
         return "";
     }
+
     @Override
-    public Object sendRawTransaction(String hexData) throws ConnectorException, IOException{
+    public Object sendRawTransaction(String hexData) throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "sendrawtransaction");
         map.put("Version", "1.0.0");
@@ -118,8 +125,9 @@ public class WebsocketClient extends AbstractConnector {
         mWebSocket.send(JSON.toJSONString(map));
         return "";
     }
+
     @Override
-    public Transaction getRawTransaction(String txhash) throws ConnectorException, IOException{
+    public Transaction getRawTransaction(String txhash) throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "gettransaction");
         map.put("Version", "1.0.0");
@@ -129,8 +137,9 @@ public class WebsocketClient extends AbstractConnector {
         mWebSocket.send(JSON.toJSONString(map));
         return null;
     }
+
     @Override
-    public Object getRawTransactionJson(String txhash) throws ConnectorException, IOException{
+    public Object getRawTransactionJson(String txhash) throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "gettransaction");
         map.put("Version", "1.0.0");
@@ -140,8 +149,9 @@ public class WebsocketClient extends AbstractConnector {
         mWebSocket.send(JSON.toJSONString(map));
         return null;
     }
+
     @Override
-    public int getNodeCount() throws ConnectorException, IOException{
+    public int getNodeCount() throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "getconnectioncount");
         map.put("Version", "1.0.0");
@@ -149,8 +159,9 @@ public class WebsocketClient extends AbstractConnector {
         mWebSocket.send(JSON.toJSONString(map));
         return 0;
     }
+
     @Override
-    public int getBlockHeight() throws ConnectorException, IOException{
+    public int getBlockHeight() throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "getblockheight");
         map.put("Version", "1.0.0");
@@ -158,80 +169,99 @@ public class WebsocketClient extends AbstractConnector {
         mWebSocket.send(JSON.toJSONString(map));
         return 0;
     }
+
     @Override
-    public Block getBlock(int height) throws ConnectorException, IOException{
+    public Block getBlock(int height) throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "getblockbyheight");
         map.put("Version", "1.0.0");
-        map.put("Height",height);
-        map.put("Raw","1");
+        map.put("Height", height);
+        map.put("Raw", "1");
         map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
         return null;
     }
+
     @Override
-    public Block getBlock(String hash) throws ConnectorException, IOException{
+    public Block getBlock(String hash) throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "getblockbyhash");
         map.put("Version", "1.0.0");
-        map.put("Hash",hash);
-        map.put("Raw","1");
+        map.put("Hash", hash);
+        map.put("Raw", "1");
         map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
         return null;
     }
+
     @Override
-    public Block getBlockJson(int height) throws ConnectorException, IOException{
+    public Block getBlockJson(int height) throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "getblockbyheight");
         map.put("Version", "1.0.0");
-        map.put("Height",height);
+        map.put("Height", height);
         map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
         return null;
     }
+
     @Override
-    public Block getBlockJson(String hash) throws ConnectorException, IOException{
+    public Block getBlockJson(String hash) throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "getblockbyhash");
         map.put("Version", "1.0.0");
-        map.put("Hash",hash);
+        map.put("Hash", hash);
         map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
         return null;
     }
+
     @Override
-    public Object getBalance(String address) throws ConnectorException, IOException{
+    public Object getBalance(String address) throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "getbalance");
         map.put("Version", "1.0.0");
-        map.put("Addr",address);
+        map.put("Addr", address);
         map.put("Id", generateReqId());
         mWebSocket.send(JSON.toJSONString(map));
         return null;
     }
+
     @Override
-    public Object getContract(String hash) throws ConnectorException, IOException{
+    public Object getBalanceV2(String address) throws ConnectorException, IOException {
+        Map map = new HashMap<>();
+        map.put("Action", "getbalanceV2");
+        map.put("Version", "1.0.0");
+        map.put("Addr", address);
+        map.put("Id", generateReqId());
+        mWebSocket.send(JSON.toJSONString(map));
+        return null;
+    }
+
+    @Override
+    public Object getContract(String hash) throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "getcontract");
         map.put("Version", "1.0.0");
-        map.put("Raw","1");
+        map.put("Raw", "1");
         map.put("Hash", hash);
         map.put("Id", generateReqId());
         return mWebSocket.send(JSON.toJSONString(map));
     }
+
     @Override
-    public Object getContractJson(String hash) throws ConnectorException, IOException{
+    public Object getContractJson(String hash) throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "getcontract");
         map.put("Version", "1.0.0");
-        map.put("Raw","0");
+        map.put("Raw", "0");
         map.put("Hash", hash);
         map.put("Id", generateReqId());
         return mWebSocket.send(JSON.toJSONString(map));
     }
+
     @Override
-    public Object getSmartCodeEvent(int height) throws ConnectorException, IOException{
+    public Object getSmartCodeEvent(int height) throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "getsmartcodeeventbyheight");
         map.put("Version", "1.0.0");
@@ -239,16 +269,18 @@ public class WebsocketClient extends AbstractConnector {
         map.put("Id", generateReqId());
         return mWebSocket.send(JSON.toJSONString(map));
     }
+
     @Override
-    public Object getSmartCodeEvent(String hash) throws ConnectorException, IOException{
+    public Object getSmartCodeEvent(String hash) throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "getsmartcodeeventbyhash");
         map.put("Version", "1.0.0");
         map.put("Hash", hash);
         return mWebSocket.send(JSON.toJSONString(map));
     }
+
     @Override
-    public int getBlockHeightByTxHash(String hash) throws ConnectorException, IOException{
+    public int getBlockHeightByTxHash(String hash) throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "getblockheightbytxhash");
         map.put("Version", "1.0.0");
@@ -269,8 +301,9 @@ public class WebsocketClient extends AbstractConnector {
         mWebSocket.send(JSON.toJSONString(map));
         return "";
     }
+
     @Override
-    public Object getMerkleProof(String hash) throws ConnectorException, IOException{
+    public Object getMerkleProof(String hash) throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "getmerkleproof");
         map.put("Version", "1.0.0");
@@ -279,8 +312,9 @@ public class WebsocketClient extends AbstractConnector {
         mWebSocket.send(JSON.toJSONString(map));
         return "";
     }
+
     @Override
-    public String getAllowance(String asset,String from,String to) throws ConnectorException, IOException{
+    public String getAllowance(String asset, String from, String to) throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "getallowance");
         map.put("Version", "1.0.0");
@@ -291,8 +325,22 @@ public class WebsocketClient extends AbstractConnector {
         mWebSocket.send(JSON.toJSONString(map));
         return "";
     }
+
     @Override
-    public Object getMemPoolTxCount() throws ConnectorException, IOException{
+    public String getAllowanceV2(String asset, String from, String to) throws ConnectorException, IOException {
+        Map map = new HashMap<>();
+        map.put("Action", "getallowancev2");
+        map.put("Version", "1.0.0");
+        map.put("Asset", asset);
+        map.put("From", from);
+        map.put("To", to);
+        map.put("Id", generateReqId());
+        mWebSocket.send(JSON.toJSONString(map));
+        return "";
+    }
+
+    @Override
+    public Object getMemPoolTxCount() throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "getmempooltxcount");
         map.put("Version", "1.0.0");
@@ -300,8 +348,9 @@ public class WebsocketClient extends AbstractConnector {
         mWebSocket.send(JSON.toJSONString(map));
         return "";
     }
+
     @Override
-    public Object getMemPoolTxState(String hash) throws ConnectorException, IOException{
+    public Object getMemPoolTxState(String hash) throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "getmempooltxstate");
         map.put("Version", "1.0.0");
@@ -310,8 +359,9 @@ public class WebsocketClient extends AbstractConnector {
         mWebSocket.send(JSON.toJSONString(map));
         return "";
     }
+
     @Override
-    public String getVersion() throws ConnectorException, IOException{
+    public String getVersion() throws ConnectorException, IOException {
         Map map = new HashMap<>();
         map.put("Action", "getversion");
         map.put("Version", "1.0.0");
@@ -340,6 +390,7 @@ public class WebsocketClient extends AbstractConnector {
         mWebSocket.send(JSON.toJSONString(map));
         return 0;
     }
+
     @Override
     public Object getNodeSyncStatus() throws ConnectorException, IOException {
         Map map = new HashMap<>();
@@ -349,6 +400,7 @@ public class WebsocketClient extends AbstractConnector {
         mWebSocket.send(JSON.toJSONString(map));
         return 0;
     }
+
     @Override
     public String getSideChainData(String sideChainID) throws ConnectorException, IOException {
         return null;

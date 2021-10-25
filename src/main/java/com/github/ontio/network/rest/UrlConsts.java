@@ -32,6 +32,7 @@ public class UrlConsts {
 	public static String Url_get_block_by_height = "/api/v1/block/details/height/";
 	public static String Url_get_block_by_hash = "/api/v1/block/details/hash/";
 	public static String Url_get_account_balance = "/api/v1/balance/";
+	public static String Url_get_account_balance_v2 = "/api/v1/balancev2/";
 	public static String Url_get_contract_state = "/api/v1/contract/";
 	public static String Url_get_smartcodeevent_txs_by_height = "/api/v1/smartcode/event/transactions/";
 	public static String Url_get_smartcodeevent_by_txhash = "/api/v1/smartcode/event/txhash/";
@@ -41,6 +42,7 @@ public class UrlConsts {
 	public static String Url_get_mem_pool_tx_count= "/api/v1/mempool/txcount";
 	public static String Url_get_mem_pool_tx_state = "/api/v1/mempool/txstate/";
 	public static String Url_get_allowance = "/api/v1/allowance/";
+	public static String Url_get_allowance_V2 = "/api/v1/allowancev2/";
 	public static String Url_get_version = "/api/v1/version";
 	public static String Url_get_grant_ong = "/api/v1/grantong";
 	public static String Url_get_networkid = "/api/v1/networkid";

@@ -48,9 +48,16 @@ public class RpcClient extends AbstractConnector {
     }
 
     @Override
-    public Object getBalance(String address) throws ConnectorException,IOException {
+    public Object getBalance(String address) throws ConnectorException, IOException {
         Object result = null;
         result = rpc.call("getbalance", address);
+        return result;
+    }
+
+    @Override
+    public Object getBalanceV2(String address) throws ConnectorException, IOException {
+        Object result = null;
+        result = rpc.call("getbalancev2", address);
         return result;
     }
 
@@ -63,9 +70,9 @@ public class RpcClient extends AbstractConnector {
     @Override
     public Object sendRawTransaction(boolean preExec, String userid, String sData) throws RpcException, IOException {
         Object result = null;
-        if(preExec){
-            result = rpc.call("sendrawtransaction", sData,1);
-        }else {
+        if (preExec) {
+            result = rpc.call("sendrawtransaction", sData, 1);
+        } else {
             result = rpc.call("sendrawtransaction", sData);
         }
         return result;
@@ -97,30 +104,30 @@ public class RpcClient extends AbstractConnector {
     }
 
     @Override
-    public Object getBlockJson(int index) throws RpcException,IOException {
+    public Object getBlockJson(int index) throws RpcException, IOException {
         Object result = null;
         result = rpc.call("getblock", index, 1);
         return result;
     }
 
     @Override
-    public Object getBlockJson(String hash) throws RpcException,IOException {
+    public Object getBlockJson(String hash) throws RpcException, IOException {
         Object result = null;
         result = rpc.call("getblock", hash, 1);
         return result;
     }
 
     @Override
-    public Object getContract(String hash) throws RpcException,IOException {
+    public Object getContract(String hash) throws RpcException, IOException {
         Object result = null;
         result = rpc.call("getcontractstate", hash);
         return result;
     }
 
     @Override
-    public Object getContractJson(String hash) throws RpcException,IOException {
+    public Object getContractJson(String hash) throws RpcException, IOException {
         Object result = null;
-        result = rpc.call("getcontractstate", hash,1);
+        result = rpc.call("getcontractstate", hash, 1);
         return result;
     }
 
@@ -191,7 +198,7 @@ public class RpcClient extends AbstractConnector {
     public int getBlockHeightByTxHash(String hash) throws ConnectorException, IOException {
         Object result = rpc.call("getblockheightbytxhash", hash.toString());
         try {
-            return (int)result;
+            return (int) result;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -201,11 +208,12 @@ public class RpcClient extends AbstractConnector {
     public String getStorage(String codehash, String key) throws ConnectorException, IOException {
         Object result = rpc.call("getstorage", codehash, key);
         try {
-            return (String)result;
+            return (String) result;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
     @Override
     public Object getMerkleProof(String hash) throws ConnectorException, IOException {
         Object result = rpc.call("getmerkleproof", hash);
@@ -215,15 +223,27 @@ public class RpcClient extends AbstractConnector {
             throw new RuntimeException(e);
         }
     }
+
     @Override
-    public String getAllowance(String asset,String from,String to) throws ConnectorException, IOException {
-        Object result = rpc.call("getallowance", asset,from,to);
+    public String getAllowance(String asset, String from, String to) throws ConnectorException, IOException {
+        Object result = rpc.call("getallowance", asset, from, to);
         try {
-            return (String)result;
+            return (String) result;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public String getAllowanceV2(String asset, String from, String to) throws ConnectorException, IOException {
+        Object result = rpc.call("getallowancev2", asset, from, to);
+        try {
+            return (String) result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public Object getMemPoolTxCount() throws ConnectorException, IOException {
         Object result = rpc.call("getmempooltxcount");
@@ -233,6 +253,7 @@ public class RpcClient extends AbstractConnector {
             throw new RuntimeException(e);
         }
     }
+
     @Override
     public Object getMemPoolTxState(String hash) throws ConnectorException, IOException {
         Object result = rpc.call("getmempooltxstate", hash);
@@ -242,11 +263,12 @@ public class RpcClient extends AbstractConnector {
             throw new RuntimeException(e);
         }
     }
+
     @Override
     public String getVersion() throws ConnectorException, IOException {
         Object result = rpc.call("getversion");
         try {
-            return (String)result;
+            return (String) result;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -254,7 +276,7 @@ public class RpcClient extends AbstractConnector {
 
     @Override
     public String getGrantOng(String address) throws ConnectorException, IOException {
-        Object result = rpc.call("getgrantong",address);
+        Object result = rpc.call("getgrantong", address);
         try {
             return (String) result;
         } catch (Exception e) {
@@ -266,11 +288,12 @@ public class RpcClient extends AbstractConnector {
     public int getNetworkId() throws ConnectorException, IOException {
         Object result = rpc.call("getnetworkid");
         try {
-            return (int)result;
+            return (int) result;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
     @Override
     public Object getNodeSyncStatus() throws ConnectorException, IOException {
         Object result = rpc.call("getsyncstatus");
@@ -280,6 +303,7 @@ public class RpcClient extends AbstractConnector {
             throw new RuntimeException(e);
         }
     }
+
     @Override
     public String getSideChainData(String sideChainID) throws ConnectorException, IOException {
         Object result = rpc.call("getsidechaindata", sideChainID);

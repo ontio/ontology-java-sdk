@@ -26,7 +26,9 @@ import com.github.ontio.smartcontract.nativevm.*;
 
 public class NativeVm {
     private Ont ont = null;
+    private OntV2 ontV2 = null;
     private Ong ong = null;
+    private OngV2 ongV2 = null;
     private OntId ontId = null;
     private GlobalParams globalParams = null;
     private Auth auth = null;
@@ -49,12 +51,24 @@ public class NativeVm {
         }
         return ont;
     }
+    public OntV2 ontV2() {
+        if (ontV2 == null) {
+            ontV2 = new OntV2(sdk);
+        }
+        return ontV2;
+    }
 
     public Ong ong() {
         if (ong == null) {
             ong = new Ong(sdk);
         }
         return ong;
+    }
+    public OngV2 ongV2() {
+        if (ongV2 == null) {
+            ongV2 = new OngV2(sdk);
+        }
+        return ongV2;
     }
 
     public OntId ontId() {

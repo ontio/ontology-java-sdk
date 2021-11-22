@@ -49,7 +49,7 @@ public class ConnectMgr {
     }
 
     public ConnectMgr(String url, String type) {
-        url = url.replace("://localhost","://127.0.0.1");
+        url = url.replace("://localhost", "://127.0.0.1");
         if (type.equals("rpc")) {
             setConnector(new RpcClient(url));
         } else if (type.equals("restful")) {
@@ -128,8 +128,10 @@ public class ConnectMgr {
         }
         return false;
     }
+
     /**
      * wait result after send
+     *
      * @param hexData
      * @return
      * @throws ConnectorException
@@ -141,6 +143,7 @@ public class ConnectMgr {
 
     /**
      * wait result after send
+     *
      * @param hexData
      * @return
      * @throws ConnectorException
@@ -202,6 +205,10 @@ public class ConnectMgr {
         return connector.getBalance(address);
     }
 
+    public Object getBalanceV2(String address) throws ConnectorException, IOException {
+        return connector.getBalanceV2(address);
+    }
+
     public Object getBlockJson(int height) throws ConnectorException, IOException {
         return connector.getBlockJson(height);
     }
@@ -247,6 +254,10 @@ public class ConnectMgr {
         return connector.getAllowance(asset, from, to);
     }
 
+    public String getAllowanceV2(String asset, String from, String to) throws ConnectorException, IOException {
+        return connector.getAllowanceV2(asset, from, to);
+    }
+
     public Object getMemPoolTxCount() throws ConnectorException, IOException {
         return connector.getMemPoolTxCount();
     }
@@ -255,6 +266,7 @@ public class ConnectMgr {
         hash = hash.replace("0x", "");
         return connector.getMemPoolTxState(hash);
     }
+
     public String getVersion() throws ConnectorException, IOException {
         return connector.getVersion();
     }
@@ -262,12 +274,15 @@ public class ConnectMgr {
     public String getGrantOng(String address) throws ConnectorException, IOException {
         return connector.getGrantOng(address);
     }
+
     public int getNetworkId() throws ConnectorException, IOException {
         return connector.getNetworkId();
     }
+
     public Object getNodeSyncStatus() throws ConnectorException, IOException {
         return connector.getNodeSyncStatus();
     }
+
     public String getSideChainData(String sideChianId) throws ConnectorException, IOException {
         return connector.getSideChainData(sideChianId);
     }
@@ -291,7 +306,7 @@ public class ConnectMgr {
             } catch (Exception e) {
                 if (e.getMessage().contains("UNKNOWN TRANSACTION") && e.getMessage().contains("getmempooltxstate")) {
                     notInpool++;
-                    if ((objEvent.equals("") || objEvent == null) && notInpool >1){
+                    if ((objEvent.equals("") || objEvent == null) && notInpool > 1) {
                         throw new SDKException(e.getMessage());
                     }
                 } else {

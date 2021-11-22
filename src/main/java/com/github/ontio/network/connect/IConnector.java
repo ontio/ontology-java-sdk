@@ -20,40 +20,68 @@
 package com.github.ontio.network.connect;
 
 import java.io.IOException;
+
 import com.github.ontio.core.block.Block;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.network.exception.ConnectorException;
 
 public interface IConnector {
 
-	String getUrl();
-	Object sendRawTransaction(boolean preExec,String userid,String hexData) throws ConnectorException, IOException;
-	Object sendRawTransaction(String hexData) throws ConnectorException, IOException;
-	Transaction getRawTransaction(String txhash) throws ConnectorException, IOException;
-	Object getRawTransactionJson(String txhash) throws ConnectorException, IOException;
-	int getNodeCount() throws ConnectorException, IOException;
-	int getBlockHeight() throws ConnectorException, IOException;
-	Block getBlock(int height) throws ConnectorException, IOException;
-	Block getBlock(String hash) throws ConnectorException, IOException ;
-	Object getBlockJson(int height) throws ConnectorException, IOException;
-	Object getBlockJson(String hash) throws ConnectorException, IOException;
+    String getUrl();
 
-	Object getBalance(String address) throws ConnectorException, IOException;
+    Object sendRawTransaction(boolean preExec, String userid, String hexData) throws ConnectorException, IOException;
 
-	Object getContract(String hash) throws ConnectorException, IOException;
-	Object getContractJson(String hash) throws ConnectorException, IOException;
-	Object getSmartCodeEvent(int height) throws ConnectorException, IOException;
-	Object getSmartCodeEvent(String hash) throws ConnectorException, IOException;
-	int getBlockHeightByTxHash(String hash) throws ConnectorException, IOException;
+    Object sendRawTransaction(String hexData) throws ConnectorException, IOException;
 
-	String getStorage(String codehash,String key) throws ConnectorException, IOException;
-	Object getMerkleProof(String hash) throws ConnectorException, IOException;
-	String getAllowance(String asset,String from,String to) throws ConnectorException, IOException;
-	Object getMemPoolTxCount() throws ConnectorException, IOException;
-	Object getMemPoolTxState(String hash) throws ConnectorException, IOException;
-	String getVersion() throws ConnectorException, IOException;
-	String getGrantOng(String address) throws ConnectorException, IOException;
-	int getNetworkId() throws ConnectorException, IOException;
-	Object getNodeSyncStatus() throws ConnectorException, IOException;
-	String getSideChainData(String sideChainID) throws ConnectorException, IOException;
+    Transaction getRawTransaction(String txhash) throws ConnectorException, IOException;
+
+    Object getRawTransactionJson(String txhash) throws ConnectorException, IOException;
+
+    int getNodeCount() throws ConnectorException, IOException;
+
+    int getBlockHeight() throws ConnectorException, IOException;
+
+    Block getBlock(int height) throws ConnectorException, IOException;
+
+    Block getBlock(String hash) throws ConnectorException, IOException;
+
+    Object getBlockJson(int height) throws ConnectorException, IOException;
+
+    Object getBlockJson(String hash) throws ConnectorException, IOException;
+
+    Object getBalance(String address) throws ConnectorException, IOException;
+
+    Object getBalanceV2(String address) throws ConnectorException, IOException;
+
+    Object getContract(String hash) throws ConnectorException, IOException;
+
+    Object getContractJson(String hash) throws ConnectorException, IOException;
+
+    Object getSmartCodeEvent(int height) throws ConnectorException, IOException;
+
+    Object getSmartCodeEvent(String hash) throws ConnectorException, IOException;
+
+    int getBlockHeightByTxHash(String hash) throws ConnectorException, IOException;
+
+    String getStorage(String codehash, String key) throws ConnectorException, IOException;
+
+    Object getMerkleProof(String hash) throws ConnectorException, IOException;
+
+    String getAllowance(String asset, String from, String to) throws ConnectorException, IOException;
+
+    String getAllowanceV2(String asset, String from, String to) throws ConnectorException, IOException;
+
+    Object getMemPoolTxCount() throws ConnectorException, IOException;
+
+    Object getMemPoolTxState(String hash) throws ConnectorException, IOException;
+
+    String getVersion() throws ConnectorException, IOException;
+
+    String getGrantOng(String address) throws ConnectorException, IOException;
+
+    int getNetworkId() throws ConnectorException, IOException;
+
+    Object getNodeSyncStatus() throws ConnectorException, IOException;
+
+    String getSideChainData(String sideChainID) throws ConnectorException, IOException;
 }

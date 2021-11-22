@@ -141,7 +141,17 @@ public class RestClient extends AbstractConnector {
     }
 
     @Override
-    public Object getRawTransactionJson(String txhash) throws RestfulException,IOException {
+    public Object getBalanceV2(String address) throws RestfulException {
+        String rs = api.getBalanceV2(address);
+        Result rr = JSON.parseObject(rs, Result.class);
+        if (rr.Error == 0) {
+            return rr.Result;
+        }
+        throw new RestfulException(to(rr));
+    }
+
+    @Override
+    public Object getRawTransactionJson(String txhash) throws RestfulException, IOException {
         String rs = api.getTransaction(txhash, true);
         Result rr = JSON.parseObject(rs, Result.class);
         if (rr.Error == 0) {
@@ -217,22 +227,23 @@ public class RestClient extends AbstractConnector {
         String rs = api.getBlockHeightByTxHash(hash);
         Result rr = JSON.parseObject(rs, Result.class);
         if (rr.Error == 0) {
-            return (int)rr.Result;
+            return (int) rr.Result;
         }
         throw new RestfulException(to(rr));
     }
 
     @Override
-    public String getStorage(String codehash,String key) throws ConnectorException, IOException {
-        String rs = api.getStorage(codehash,key);
+    public String getStorage(String codehash, String key) throws ConnectorException, IOException {
+        String rs = api.getStorage(codehash, key);
         Result rr = JSON.parseObject(rs, Result.class);
         if (rr.Error == 0) {
-            return (String)rr.Result;
+            return (String) rr.Result;
         }
         throw new RestfulException(to(rr));
     }
+
     @Override
-    public Object getMerkleProof(String hash) throws ConnectorException, IOException{
+    public Object getMerkleProof(String hash) throws ConnectorException, IOException {
         String rs = api.getMerkleProof(hash);
         Result rr = JSON.parseObject(rs, Result.class);
         if (rr.Error == 0) {
@@ -240,17 +251,29 @@ public class RestClient extends AbstractConnector {
         }
         throw new RestfulException(to(rr));
     }
+
     @Override
-    public String getAllowance(String asset,String from,String to) throws ConnectorException, IOException{
-        String rs = api.getAllowance(asset,from,to);
+    public String getAllowance(String asset, String from, String to) throws ConnectorException, IOException {
+        String rs = api.getAllowance(asset, from, to);
         Result rr = JSON.parseObject(rs, Result.class);
         if (rr.Error == 0) {
-            return (String)rr.Result;
+            return (String) rr.Result;
         }
         throw new RestfulException(to(rr));
     }
+
     @Override
-    public Object getMemPoolTxCount() throws ConnectorException, IOException{
+    public String getAllowanceV2(String asset, String from, String to) throws ConnectorException, IOException {
+        String rs = api.getAllowanceV2(asset, from, to);
+        Result rr = JSON.parseObject(rs, Result.class);
+        if (rr.Error == 0) {
+            return (String) rr.Result;
+        }
+        throw new RestfulException(to(rr));
+    }
+
+    @Override
+    public Object getMemPoolTxCount() throws ConnectorException, IOException {
         String rs = api.getMemPoolTxCount();
         Result rr = JSON.parseObject(rs, Result.class);
         if (rr.Error == 0) {
@@ -260,7 +283,7 @@ public class RestClient extends AbstractConnector {
     }
 
     @Override
-    public Object getMemPoolTxState(String hash) throws ConnectorException, IOException{
+    public Object getMemPoolTxState(String hash) throws ConnectorException, IOException {
         String rs = api.getMemPoolTxState(hash);
         Result rr = JSON.parseObject(rs, Result.class);
         if (rr.Error == 0) {
@@ -268,12 +291,13 @@ public class RestClient extends AbstractConnector {
         }
         throw new RestfulException(to(rr));
     }
+
     @Override
-    public String getVersion() throws ConnectorException, IOException{
+    public String getVersion() throws ConnectorException, IOException {
         String rs = api.getVersion();
         Result rr = JSON.parseObject(rs, Result.class);
         if (rr.Error == 0) {
-            return (String)rr.Result;
+            return (String) rr.Result;
         }
         throw new RestfulException(to(rr));
     }
@@ -283,7 +307,7 @@ public class RestClient extends AbstractConnector {
         String rs = api.getGrantOng(address);
         Result rr = JSON.parseObject(rs, Result.class);
         if (rr.Error == 0) {
-            return (String)rr.Result;
+            return (String) rr.Result;
         }
         throw new RestfulException(to(rr));
     }
@@ -293,10 +317,11 @@ public class RestClient extends AbstractConnector {
         String rs = api.getNetworkId();
         Result rr = JSON.parseObject(rs, Result.class);
         if (rr.Error == 0) {
-            return (int)rr.Result;
+            return (int) rr.Result;
         }
         throw new RestfulException(to(rr));
     }
+
     @Override
     public Object getNodeSyncStatus() throws ConnectorException, IOException {
         String rs = api.getNodeSyncStatus();

@@ -67,8 +67,8 @@ public abstract class Transaction extends Inventory {
             byte ver = reader.readByte();
             TransactionType type = TransactionType.valueOf(reader.readByte());
             if (type == TransactionType.EIP155) {
-                Transaction a = EIP155.deserializeEIP155(reader);
-                return a;
+                Transaction tx = EIP155.deserializeEIP155(reader);
+                return tx;
             }
             String typeName = "com.github.ontio.core.payload." + type.toString();
             Transaction transaction = (Transaction) Class.forName(typeName).newInstance();

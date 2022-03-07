@@ -28,6 +28,7 @@ import com.github.ontio.common.*;
 import com.github.ontio.core.Inventory;
 import com.github.ontio.core.InventoryType;
 import com.github.ontio.core.asset.Sig;
+import com.github.ontio.core.payload.EIP155;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
 
@@ -44,6 +45,7 @@ public abstract class Transaction extends Inventory {
     public Address payer = new Address();
     public Attribute[] attributes;
     public Sig[] sigs = new Sig[0];
+
     protected Transaction(TransactionType type) {
         this.txType = type;
     }
@@ -64,6 +66,10 @@ public abstract class Transaction extends Inventory {
         try {
             byte ver = reader.readByte();
             TransactionType type = TransactionType.valueOf(reader.readByte());
+            if (type == TransactionType.EIP155) {
+                Transaction tx = EIP155.deserializeEIP155(reader);
+                return tx;
+            }
             String typeName = "com.github.ontio.core.payload." + type.toString();
             Transaction transaction = (Transaction) Class.forName(typeName).newInstance();
             transaction.nonce = reader.readInt();
@@ -81,6 +87,7 @@ public abstract class Transaction extends Inventory {
             throw new IOException(ex);
         }
     }
+
     @Override
     public void deserialize(BinaryReader reader) throws IOException {
         deserializeUnsigned(reader);
@@ -176,11 +183,11 @@ public abstract class Transaction extends Inventory {
         Map json = new HashMap();
         json.put("Hash", hash().toString());
         json.put("Version", (int) version);
-        json.put("Nonce", nonce& 0xFFFFFFFF);
+        json.put("Nonce", nonce & 0xFFFFFFFF);
         json.put("TxType", txType.value() & 0xFF);
-        json.put("GasPrice",gasPrice);
-        json.put("GasLimit",gasLimit);
-        json.put("Payer",payer.toBase58());
+        json.put("GasPrice", gasPrice);
+        json.put("GasLimit", gasLimit);
+        json.put("Payer", payer.toBase58());
         json.put("Attributes", Arrays.stream(attributes).map(p -> p.json()).toArray(Object[]::new));
         json.put("Sigs", Arrays.stream(sigs).map(p -> p.json()).toArray(Object[]::new));
         return json;

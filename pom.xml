@@ -6,7 +6,7 @@
 
     <groupId>com.github.ontio</groupId>
     <artifactId>ontology-sdk-java</artifactId>
-    <version>1.10.7</version>
+    <version>1.10.8</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -66,6 +66,7 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.13</version>
         </dependency>
+
         <dependency>
             <groupId>io.github.novacrypto</groupId>
             <artifactId>BIP39</artifactId>
@@ -101,6 +102,12 @@
             <artifactId>junit</artifactId>
             <version>4.13.1</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ethereum</groupId>
+            <artifactId>ethereumj-core</artifactId>
+            <version>1.8.1-RELEASE</version>
         </dependency>
 
         <dependency>

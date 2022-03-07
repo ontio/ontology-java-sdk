@@ -7,6 +7,7 @@ import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.core.transaction.TransactionType;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
+import com.github.ontio.sdk.exception.SDKException;
 import org.ethereum.util.RLP;
 import org.spongycastle.util.BigIntegers;
 
@@ -34,8 +35,7 @@ public class EIP155 extends Transaction {
             code.rlpParse();
             byte[] sender = code.getSender();
             Transaction transaction = new EIP155(code);
-            BigInteger nonce = BigIntegers.fromUnsignedByteArray(code.getNonce());
-            transaction.nonce = nonce.intValue();
+            transaction.nonce = BigIntegers.fromUnsignedByteArray(code.getNonce()).intValue();
             transaction.version = 0;
             transaction.gasPrice = BigIntegers.fromUnsignedByteArray(code.getGasPrice()).longValue();
             transaction.gasLimit = BigIntegers.fromUnsignedByteArray(code.getGasLimit()).longValue();
@@ -48,16 +48,11 @@ public class EIP155 extends Transaction {
 
     @Override
     protected void deserializeExclusiveData(BinaryReader reader) throws IOException {
-        try {
-//            code = reader.readVarBytes();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
     protected void serializeExclusiveData(BinaryWriter writer) throws IOException {
-//        writer.writeVarBytes(code);
+        throw new IOException("can not serialize");
     }
 
     @Override

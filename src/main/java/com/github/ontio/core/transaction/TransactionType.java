@@ -31,22 +31,25 @@ public enum TransactionType {
     DeployCode(0xd0),
     InvokeCode(0xd1),
     InvokeWasmCode(0xd2),
-    TransferTransaction(0x80);
+    TransferTransaction(0x80),
+    EIP155(0xd3);
 
     private byte value;
+
     TransactionType(int v) {
-        value = (byte)v;
+        value = (byte) v;
     }
+
     public byte value() {
         return value;
     }
 
     public static TransactionType valueOf(byte v) {
-    	for (TransactionType e : TransactionType.values()) {
-    		if (e.value == v) {
-    			return e;
-    		}
-    	}
-    	throw new IllegalArgumentException();
+        for (TransactionType e : TransactionType.values()) {
+            if (e.value == v) {
+                return e;
+            }
+        }
+        throw new IllegalArgumentException();
     }
 }

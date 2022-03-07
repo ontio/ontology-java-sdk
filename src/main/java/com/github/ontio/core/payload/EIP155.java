@@ -2,7 +2,9 @@ package com.github.ontio.core.payload;
 
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
+import com.github.ontio.common.UInt256;
 import com.github.ontio.core.asset.Sig;
+import com.github.ontio.core.transaction.Attribute;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.core.transaction.TransactionType;
 import com.github.ontio.io.BinaryReader;
@@ -40,6 +42,8 @@ public class EIP155 extends Transaction {
             transaction.gasPrice = BigIntegers.fromUnsignedByteArray(code.getGasPrice()).longValue();
             transaction.gasLimit = BigIntegers.fromUnsignedByteArray(code.getGasLimit()).longValue();
             transaction.payer = new Address(sender);
+            transaction.attributes = new Attribute[]{};
+            transaction.sigs = new Sig[]{};
             return transaction;
         } catch (Exception e) {
             throw new IOException(e);
@@ -63,9 +67,11 @@ public class EIP155 extends Transaction {
     @Override
     public Object json() {
         Map obj = (Map) super.json();
-        Map payload = new HashMap();
-        payload.put("Code", code);
-        obj.put("Payload", payload);
+        obj.put("Payload", Helper.toHexString(code.getEncoded()));
         return obj;
+    }
+
+    public UInt256 hash() {
+        return new UInt256(this.code.getHash());
     }
 }

@@ -27,24 +27,16 @@ public class Signature {
             throw new SDKException(ErrorCode.ParamError);
         }
 
-        if (data.length == 65) {
-            SignatureScheme[] schemes = SignatureScheme.values();
-            if (data[0] > schemes.length) {
-                throw new SDKException(ErrorCode.UnsupportedSignatureScheme);
-            }
-            this.scheme = schemes[data[0]];
-        } else if (data.length == 64) { // use default scheme
-            byte[] temp = new byte[65];
-            temp[0] = 1;
-            System.arraycopy(data, 0, temp, 1, 64);
-            data = temp;
+        if (data.length == 64) {
+            this.value = data;
             this.scheme = SignatureScheme.SHA256WITHECDSA;
-        } else {
-            throw new Exception(ErrorCode.InvalidSignatureDataLen);
+            return;
         }
+
+        this.scheme = SignatureScheme.values()[data[0]];
         if (scheme == SignatureScheme.SM3WITHSM2) {
             int i = 0;
-            while (i < data.length && data[i] != 0) {
+            while (i < data.length && data[i] != 0){
                 i++;
             }
             if (i >= data.length) {

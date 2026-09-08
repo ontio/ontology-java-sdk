@@ -54,9 +54,12 @@
     </developers>
 
     <repositories>
+        <!-- jcenter was sunset in 2022; these two novacrypto artifacts were
+             never published anywhere else, so they're pulled from JitPack,
+             which builds them straight from GitHub. -->
         <repository>
-            <id>jcenter</id>
-            <url>https://jcenter.bintray.com/</url>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
@@ -67,14 +70,22 @@
             <version>4.5.13</version>
         </dependency>
 
+        <!-- io.github.novacrypto:BIP39:0.1.9 is unavailable now that jcenter
+             is gone, and 0.1.9 was never git-tagged upstream so JitPack can't
+             build it either (com.github.NovaCrypto:BIP39:0c4ad2db, the commit
+             tagged "0.1.9" in the changelog, fails to build on JitPack: its
+             own build.gradle still pulls Gradle plugins from jcenter). 0.1.8
+             is the closest buildable release; the only change since is to
+             MnemonicValidator/SeedCalculatorByWordListLookUp, neither of
+             which this SDK uses (see MnemonicCode.java, HdPrivateKey.java). -->
         <dependency>
-            <groupId>io.github.novacrypto</groupId>
+            <groupId>com.github.NovaCrypto</groupId>
             <artifactId>BIP39</artifactId>
-            <version>0.1.9</version>
+            <version>0.1.8</version>
         </dependency>
 
         <dependency>
-            <groupId>io.github.novacrypto</groupId>
+            <groupId>com.github.NovaCrypto</groupId>
             <artifactId>Base58</artifactId>
             <version>0.1.2</version>
         </dependency>

@@ -20,8 +20,6 @@
 package com.github.ontio.smartcontract;
 
 import com.github.ontio.OntSdk;
-import com.github.ontio.ontid.OntId2;
-import com.github.ontio.sdk.manager.ConnectMgr;
 import com.github.ontio.smartcontract.nativevm.*;
 
 public class NativeVm {

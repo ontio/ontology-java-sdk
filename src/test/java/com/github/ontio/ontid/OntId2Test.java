@@ -1,6 +1,8 @@
 package com.github.ontio.ontid;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Helper;
@@ -9,8 +11,7 @@ import com.github.ontio.ontid.jwt.JWTCredential;
 import com.github.ontio.sdk.wallet.Identity;
 import junit.framework.TestCase;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 
 public class OntId2Test extends TestCase {
     static long gasLimit = 2000000;
@@ -33,14 +34,14 @@ public class OntId2Test extends TestCase {
             ontSdk.setDefaultConnect(ontSdk.getRestful());
             ontSdk.openWalletFile("wallet.json");
             // set credential contract address
-            ontSdk.neovm().credentialRecord().setContractAddress("52df370680de17bc5d4262c446f102a0ee0d6312");
-            payer = ontSdk.getWalletMgr().getAccount("AUNB7xQuBVg8hnRfVz9pyAuZQUqPBiDxDF", password);
+            ontSdk.neovm().credentialRecord().setContractAddress("4f7f159ac4b9913bb185fdf1895705f61b7d0cc6");
+            payer = ontSdk.getWalletMgr().getAccount("AbG3ZgFrMK6fqwXWR1WkQ1d1EYVunCwknu", password);
             issuerIdentity = ontSdk.getWalletMgr().getWallet().getIdentity(
-                    "did:ont:AJ4C9aTYxTGUhEpaZdPjFSqCqzMCqJDRUd");
+                    "did:ont:ARr6ApK24EU7nufND4s1SWpwULHBertpJb");
             issuerSigner = ontSdk.getWalletMgr().getAccount(issuerIdentity.ontid, password,
                     issuerIdentity.controls.get(0).getSalt());
             ownerIdentity = ontSdk.getWalletMgr().getWallet().getIdentity(
-                    "did:ont:AVe4zVZzteo6HoLpdBwpKNtDXLjJBzB9fv");
+                    "did:ont:AL6r48EwwzTRwc8Cyc3BB4R8bn2NYGmKYD");
             ownerSigner = ontSdk.getWalletMgr().getAccount(ownerIdentity.ontid, password,
                     ownerIdentity.controls.get(0).getSalt());
             issuer = new OntId2(issuerIdentity.ontid, issuerSigner,
@@ -87,6 +88,88 @@ public class OntId2Test extends TestCase {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void testCreateCredV2() {
+        try {
+            Map<String, Object> subject = new TreeMap<>();
+            Map<String, Object> profile = new TreeMap<>();
+            Map<String, Object> library = new TreeMap<>();
+            Map<String, Object> dna1 = new TreeMap<>();
+            Map<String, Object> dna2 = new TreeMap<>();
+            Map<String, Object> dna3 = new TreeMap<>();
+            profile.put("id","76561197960434622");
+            profile.put("name", "al");
+            profile.put("icon", "https://avatars.steamstatic.com/fdaef0111714471445bb422b8021d3a887c86a99_full.jpg");
+            profile.put("lv", "10");
+            profile.put("estValue", "10000");
+            profile.put("badge", "13");
+            profile.put("country", "US");
+            profile.put("joined", "2015");
+            library.put("game",542);
+            library.put("totalPlay","4.5K h");
+            library.put("recentPlay","64.5h");
+            dna1.put("tag","RPG");
+            dna1.put("percent","40%");
+            dna2.put("tag","Open World");
+            dna2.put("percent","20%");
+            dna3.put("tag","Other");
+            dna3.put("percent","10%");
+            List<Map<String, Object>> dnaList = Arrays.asList(dna1, dna2, dna3);
+            subject.put("profile",profile);
+            subject.put("library",library);
+            subject.put("dna",dnaList);
+            subject.put("id",ownerIdentity.ontid);
+
+            System.out.println(JSON.toJSONString(subject, SerializerFeature.MapSortField));
+
+            Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
+            VerifiableCredentialV2 credential = issuer.createCredV2(null, new String[]{"claim:steam_auth"}, issuerIdentity.ontid, ownerIdentity.ontid,
+                    subject, expiration, ProofPurpose.assertionMethod, payer, 20000, 500, ontSdk);
+            assertNotNull(credential);
+            assertNotNull(credential.proof);
+            assertNotNull(credential.proof.proofValue);
+            System.out.println(JSON.toJSONString(credential));
+            System.out.println(credential.evidence.get(0).id);
+            System.out.println(Helper.toHexString(credential.genNeedSignData()));
+            System.out.println(new String(credential.genNeedSignData()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void testVerifyCredV2() throws Exception {
+        String credStr = "{\"@context\":[\"https://www.w3.org/ns/credentials/v2\",\"https://ontid.ont.io/credentials/v2\"],\"credentialStatus\":{\"id\":\"did:ont:contract:4f7f159ac4b9913bb185fdf1895705f61b7d0cc6\",\"statusPurpose\":\"revocation\",\"statusReference\":\"urn:uuid:7a4ac1dd-a6d7-4f42-8ee2-6daae21780d4\",\"type\":\"BlockchainSmartContractStatus\"},\"credentialSubject\":{\"library\":{\"game\":129,\"recentPlay\":\"0h\",\"totalPlay\":\"998.7h\"},\"dna\":[{\"tag\":\"Adventure\",\"percent\":0.22},{\"tag\":\"Action\",\"percent\":0.218},{\"tag\":\"Sports\",\"percent\":0.129},{\"tag\":\"Simulation\",\"percent\":0.121},{\"tag\":\"Free to Play\",\"percent\":0.119}],\"profile\":{\"badge\":6,\"country\":\"CN\",\"estValue\":2413.57,\"joined\":\"2015\",\"icon\":\"https://avatars.steamstatic.com/77cf08789570a5a970c581032a7ca5fe5323d01a_full.jpg\",\"name\":\"Someday_Even\",\"lv\":\"10\",\"id\":\"76561198262890532\"},\"detail\":[{\"game\":\"PUBG: BATTLEGROUNDS\",\"recentPlay\":\"0h\",\"totalPlay\":\"266.4h\"},{\"game\":\"Grand Theft Auto V Legacy\",\"recentPlay\":\"0h\",\"totalPlay\":\"171h\"},{\"game\":\"NBA 2K19\",\"recentPlay\":\"0h\",\"totalPlay\":\"141.5h\"},{\"game\":\"NBA 2K18\",\"recentPlay\":\"0h\",\"totalPlay\":\"101.5h\"},{\"game\":\"DiRT 3 Complete Edition\",\"recentPlay\":\"0h\",\"totalPlay\":\"63.7h\"},{\"game\":\"NBA 2K23\",\"recentPlay\":\"0h\",\"totalPlay\":\"49.8h\"},{\"game\":\"Dota 2\",\"recentPlay\":\"0h\",\"totalPlay\":\"27h\"},{\"game\":\"Monster Train\",\"recentPlay\":\"0h\",\"totalPlay\":\"24.6h\"},{\"game\":\"NBA 2K16\",\"recentPlay\":\"0h\",\"totalPlay\":\"20.1h\"},{\"game\":\"It Takes Two\",\"recentPlay\":\"0h\",\"totalPlay\":\"19.7h\"},{\"game\":\"Rise of the Tomb Raider\",\"recentPlay\":\"0h\",\"totalPlay\":\"16.9h\"},{\"game\":\"Revenge on gold diggers \",\"recentPlay\":\"0h\",\"totalPlay\":\"15.3h\"},{\"game\":\"隐形守护者 The Invisible Guardian\",\"recentPlay\":\"0h\",\"totalPlay\":\"13.2h\"},{\"game\":\"Hogwarts Legacy\",\"recentPlay\":\"0h\",\"totalPlay\":\"10.7h\"},{\"game\":\"Little Nightmares\",\"recentPlay\":\"0h\",\"totalPlay\":\"9.1h\"},{\"game\":\"Hypnosis Card 2 Happy Life\",\"recentPlay\":\"0h\",\"totalPlay\":\"8.8h\"},{\"game\":\"Lethal Company\",\"recentPlay\":\"0h\",\"totalPlay\":\"7.3h\"},{\"game\":\"Grand Theft Auto IV: The Complete Edition\",\"recentPlay\":\"0h\",\"totalPlay\":\"4.7h\"},{\"game\":\"Biped\",\"recentPlay\":\"0h\",\"totalPlay\":\"4.2h\"},{\"game\":\"428 Shibuya Scramble\",\"recentPlay\":\"0h\",\"totalPlay\":\"4.1h\"},{\"game\":\"Senren＊Banka\",\"recentPlay\":\"0h\",\"totalPlay\":\"3.6h\"},{\"game\":\"Sea of Thieves\",\"recentPlay\":\"0h\",\"totalPlay\":\"3h\"},{\"game\":\"Subnautica\",\"recentPlay\":\"0h\",\"totalPlay\":\"2.7h\"},{\"game\":\"Wallpaper Engine\",\"recentPlay\":\"0h\",\"totalPlay\":\"2.6h\"},{\"game\":\"The Witcher 3: Wild Hunt\",\"recentPlay\":\"0h\",\"totalPlay\":\"1.2h\"},{\"game\":\"The Elder Scrolls V: Skyrim Special Edition\",\"recentPlay\":\"0h\",\"totalPlay\":\"1.1h\"},{\"game\":\"Forza Horizon 4\",\"recentPlay\":\"0h\",\"totalPlay\":\"0.8h\"},{\"game\":\"Mortal Kombat 11\",\"recentPlay\":\"0h\",\"totalPlay\":\"0.7h\"},{\"game\":\"METAL SLUG\",\"recentPlay\":\"0h\",\"totalPlay\":\"0.6h\"},{\"game\":\"Brothers - A Tale of Two Sons\",\"recentPlay\":\"0h\",\"totalPlay\":\"0.5h\"},{\"game\":\"Need for Speed™ Heat \",\"recentPlay\":\"0h\",\"totalPlay\":\"0.3h\"},{\"game\":\"HITMAN™ 2\",\"recentPlay\":\"0h\",\"totalPlay\":\"0.3h\"},{\"game\":\"METAL SLUG X\",\"recentPlay\":\"0h\",\"totalPlay\":\"0.2h\"},{\"game\":\"NEEDY STREAMER OVERLOAD\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Sword and Fairy 5 Prequel\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"There Is No Game: Wrong Dimension\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Monument Valley\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Brotato\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Muse Dash\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Fury Unleashed\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Sword and Fairy 6\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Agent A: A puzzle in disguise\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"DISTRAINT 2\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"The Room 4: Old Sins\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Ori and the Blind Forest\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Sizeable\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Assassin's Creed Odyssey\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Counter-Strike: Source\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"METAL SLUG 3\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Euro Truck Simulator 2\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Darkwood\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Sword and Fairy 4\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Mr. Pumpkin 2: Kowloon walled city\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Hellslave\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Carto\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Marvel's Guardians of the Galaxy\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Danganronpa V3: Killing Harmony\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Undertale\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Little Nightmares Enhanced Edition\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Monument Valley 2\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Ultimate Fishing Simulator®\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"The Pedestrian\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Warhammer 40,000: Gladius - Relics of War\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Ori and the Will of the Wisps\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"ASTLIBRA ～生きた証～ Revision\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"STAR WARS Jedi: Fallen Order™ \",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Otaku's Adventure\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Sherlock Holmes: The Devil's Daughter\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"TOEM\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Shelldiver\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Borderlands 2\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"INSIDE\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Little Nightmares II\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Sword and Fairy 7\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"The Last Campfire\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Everhood\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Rusty Lake Paradise\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Spiritfarer®: Farewell Edition\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Down in Bermuda\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"shapez\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"LiEat\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Dark Sector\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"FIGHT KNIGHT\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Nubs!\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Sniper Elite 4\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Slay the Spire\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"A Way Out\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Scheming Through The Zombie Apocalypse: The Beginning\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Soda Crisis\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"What Remains of Edith Finch\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Yuppie Psycho\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Amnesia: The Dark Descent\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Crash Bandicoot™ N. Sane Trilogy\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Detroit: Become Human\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"DISTRAINT: Deluxe Edition\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Sherlock Holmes: Crimes and Punishments\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Metro 2033 Redux\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Omno\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"This War of Mine\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"STEINS;GATE\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Danganronpa Another Episode: Ultra Despair Girls\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Injustice™ 2\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Look Outside\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"The Rewinder\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Riders Republic\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"American Truck Simulator\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Golden Light\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Danganronpa: Trigger Happy Havoc\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Before Your Eyes\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Besiege\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Gorogoa\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"STEINS;GATE 0\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"The Deed\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Mr. Pumpkin Adventure\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Disco Elysium\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Grand Theft Auto V Enhanced\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Black Mesa\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Sword and Fairy 5\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Danganronpa 2: Goodbye Despair\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Darkest Dungeon®\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Helheim Hassle\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Battlefield™ 1\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Tormented Souls\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Party Club\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Beholder\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"AtmaSphere\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Braid, Anniversary Edition\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Mark of the Ninja: Remastered\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"},{\"game\":\"Contraband Police\",\"recentPlay\":\"0h\",\"totalPlay\":\"0h\"}],\"id\":\"did:ont:7654321\"},\"evidence\":[{\"description\":\"Issuance transaction hash on Ontology blockchain\",\"id\":\"6e88774983822d8d2534d7f59cbc412b8549d5d1a1af8c5a4249034f55e4837c\",\"type\":[\"BlockchainTransactionEvidence\"]}],\"id\":\"urn:uuid:7a4ac1dd-a6d7-4f42-8ee2-6daae21780d4\",\"issuer\":\"did:ont:ARr6ApK24EU7nufND4s1SWpwULHBertpJb\",\"proof\":{\"created\":\"2026-04-23T08:33:51Z\",\"cryptosuite\":\"ecdsa-rdfc-2019\",\"proofPurpose\":\"assertionMethod\",\"proofValue\":\"z7ekyvSKbR3uNWaZbLWtLJKCfJmF1AHbdnajtt3xthY3hUmJwVhFvCFEhuMXaSoLEpuhvPCFEGNrZRvn4jMVwb7po\",\"type\":\"DataIntegrityProof\",\"verificationMethod\":\"did:ont:ARr6ApK24EU7nufND4s1SWpwULHBertpJb#keys-1\"},\"type\":[\"VerifiableCredential\",\"claim:x_auth\"],\"validFrom\":\"2026-04-23T08:33:51Z\",\"validUntil\":\"2026-04-24T08:33:51Z\"}";
+
+//        Object sortedMap = toSortedMap(JSONObject.parseObject(credStr));
+//        System.out.println(JSON.toJSONString(sortedMap));
+
+        VerifiableCredentialV2 credential = JSONObject.parseObject(credStr, VerifiableCredentialV2.class);
+        System.out.println(Helper.toHexString(credential.genNeedSignData()));
+        System.out.println(new String(credential.genNeedSignData()));
+        String jsonStr = JSON.toJSONString(credential, SerializerFeature.MapSortField);
+        System.out.println(jsonStr);
+        boolean verified = issuer.verifyCredSignatureV2(credential);
+        System.out.println(verified);
+    }
+
+    public static Object toSortedMap(Object obj) {
+        if (obj instanceof Map) {
+            TreeMap<String, Object> sortedMap = new TreeMap<>();
+            Map<String, Object> map = (Map<String, Object>) obj;
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+                sortedMap.put(entry.getKey(), toSortedMap(entry.getValue()));
+            }
+            return sortedMap;
+        } else if (obj instanceof List) {
+            List<Object> list = (List<Object>) obj;
+            List<Object> sortedList = new ArrayList<>();
+            for (Object item : list) {
+                sortedList.add(toSortedMap(item));
+            }
+            return sortedList;
+        }
+        return obj;
     }
 
     public void testCreateJWTCred() {

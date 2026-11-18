@@ -9,12 +9,16 @@ import com.github.ontio.ontid.Proof;
 import com.github.ontio.ontid.VerifiableCredential;
 import com.github.ontio.sdk.exception.SDKException;
 
-@JSONType(orders = {"@context", "type", "issuer", "credentialSubject", "credentialStatus", "proof"})
+@JSONType(orders = {"@context", "id", "type", "issuer", "validFrom", "validUntil",
+        "credentialSubject", "credentialStatus", "proof"})
 public class JWTVC {
     @JSONField(name = "@context")
     public String[] context;
+    public String id;
     public String[] type;
     public Object issuer;
+    public String validFrom;
+    public String validUntil;
     public Object credentialSubject;
     public CredentialStatus credentialStatus;
     public Proof proof;
@@ -24,8 +28,11 @@ public class JWTVC {
 
     public JWTVC(VerifiableCredential credential) throws Exception {
         this.context = credential.context;
+        this.id = credential.id;
         this.type = credential.type;
         this.credentialStatus = credential.credentialStatus;
+        this.validFrom = credential.validFrom;
+        this.validUntil = credential.validUntil;
         if (credential.proof != null) {
             this.proof = credential.proof.genJWTProof();
         }
@@ -39,6 +46,8 @@ public class JWTVC {
             if (jsonObject.size() > 0) {
                 this.issuer = jsonObject;
             }
+        } else {
+            this.issuer = credential.issuer;
         }
         // remove id attribute
         if (credential.credentialSubject != null && !credential.credentialSubject.getClass().isArray()

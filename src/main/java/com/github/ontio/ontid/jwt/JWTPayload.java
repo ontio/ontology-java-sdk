@@ -42,13 +42,13 @@ public class JWTPayload {
     public JWTPayload(VerifiableCredential credential) throws Exception {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-        if (credential.expirationDate != null && !credential.expirationDate.isEmpty()) {
-            Date exp = formatter.parse(credential.expirationDate);
+        if (credential.validUntil != null && !credential.validUntil.isEmpty()) {
+            Date exp = formatter.parse(credential.validUntil);
             this.exp = exp.getTime() / 1000;
         }
         this.iss = credential.fetchIssuerOntId();
-        if (credential.issuanceDate != null && !credential.issuanceDate.isEmpty()) {
-            Date nbf = formatter.parse(credential.issuanceDate);
+        if (credential.validFrom != null && !credential.validFrom.isEmpty()) {
+            Date nbf = formatter.parse(credential.validFrom);
             this.nbf = nbf.getTime() / 1000;
             this.iat = this.nbf;
         }

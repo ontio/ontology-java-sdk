@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
-import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.ontio.ontid.jwt.JWTCredential;
 
@@ -14,7 +13,7 @@ import java.util.TimeZone;
 import java.util.UUID;
 
 
-@JSONType(orders = {"@context", "id", "type", "issuer", "issuanceDate", "expirationDate",
+@JSONType(orders = {"@context", "id", "type", "issuer", "validFrom", "validUntil",
         "credentialSubject", "credentialStatus", "proof"})
 public class VerifiableCredential {
     @JSONField(name = "@context")
@@ -22,8 +21,8 @@ public class VerifiableCredential {
     public String id; // uuid
     public String[] type;
     public Object issuer; // issuer ontId, or an object contains ONTID
-    public String issuanceDate;
-    public String expirationDate;
+    public String validFrom;
+    public String validUntil;
     public Object credentialSubject;
     public CredentialStatus credentialStatus;
     public Proof proof; // TODO: support multi
@@ -57,12 +56,12 @@ public class VerifiableCredential {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
         if (jwtCred.payload.iat > 0) {
-            credential.issuanceDate = formatter.format(new Date(jwtCred.payload.iat * 1000));
+            credential.validFrom = formatter.format(new Date(jwtCred.payload.iat * 1000));
         } else if (jwtCred.payload.nbf > 0) {
-            credential.issuanceDate = formatter.format(new Date(jwtCred.payload.nbf * 1000));
+            credential.validFrom = formatter.format(new Date(jwtCred.payload.nbf * 1000));
         }
         if (jwtCred.payload.exp > 0) {
-            credential.expirationDate = formatter.format(new Date(jwtCred.payload.exp * 1000));
+            credential.validUntil = formatter.format(new Date(jwtCred.payload.exp * 1000));
         }
         credential.credentialStatus = jwtCred.payload.vc.credentialStatus;
         // assign issuer

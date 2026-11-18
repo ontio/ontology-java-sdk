@@ -4,18 +4,13 @@ import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.common.UInt256;
 import com.github.ontio.core.asset.Sig;
-import com.github.ontio.core.transaction.Attribute;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.core.transaction.TransactionType;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
-import com.github.ontio.sdk.exception.SDKException;
-import org.ethereum.util.RLP;
 import org.spongycastle.util.BigIntegers;
 
 import java.io.IOException;
-import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.Map;
 
 public class EIP155 extends Transaction {
@@ -42,7 +37,7 @@ public class EIP155 extends Transaction {
             transaction.gasPrice = BigIntegers.fromUnsignedByteArray(code.getGasPrice()).longValue();
             transaction.gasLimit = BigIntegers.fromUnsignedByteArray(code.getGasLimit()).longValue();
             transaction.payer = new Address(sender);
-            transaction.attributes = new Attribute[]{};
+            transaction.extraSigners = new Address[]{};
             transaction.sigs = new Sig[]{};
             return transaction;
         } catch (Exception e) {

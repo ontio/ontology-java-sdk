@@ -276,6 +276,23 @@ public class OntSdk {
                 throw new SDKException(ErrorCode.ParamErr("the number of transaction signatures should not be over 16"));
             }
         }
+        if (!tx.payer.toBase58().equals(acct.getAddressU160().toBase58())) {
+            boolean addExtraSigner = true;
+            for (Address extraSigner : tx.extraSigners) {
+                if (extraSigner.toBase58().equals(acct.getAddressU160().toBase58())) {
+                    addExtraSigner = false;
+                    break;
+                }
+            }
+            if (addExtraSigner) {
+                Address[] extraSigners = new Address[tx.extraSigners.length + 1];
+                for (int i = 0; i < tx.extraSigners.length; i++) {
+                    extraSigners[i] = tx.extraSigners[i];
+                }
+                extraSigners[tx.extraSigners.length] = acct.getAddressU160();
+                tx.extraSigners = extraSigners;
+            }
+        }
         Sig[] sigs = new Sig[tx.sigs.length + 1];
         for (int i = 0; i < tx.sigs.length; i++) {
             sigs[i] = tx.sigs[i];
@@ -357,11 +374,25 @@ public class OntSdk {
      * @return
      */
     public Transaction signTx(Transaction tx, Account[][] accounts) throws Exception {
-        if (accounts.length > Common.TX_MAX_SIG_SIZE) {
+        int length = accounts.length;
+        if (length > Common.TX_MAX_SIG_SIZE) {
             throw new SDKException(ErrorCode.ParamErr("the number of transaction signatures should not be over 16"));
         }
-        Sig[] sigs = new Sig[accounts.length];
-        for (int i = 0; i < accounts.length; i++) {
+        Set<Address> extraSignerList = new HashSet<>();
+        for (int i = 0; i < length; i++) {
+            for (int j = 0; j < accounts[i].length; j++) {
+                Account account = accounts[i][j];
+                String accountAddress = account.getAddressU160().toBase58();
+                if (!tx.payer.toBase58().equals(accountAddress)) {
+                    extraSignerList.add(account.getAddressU160());
+                }
+            }
+        }
+        if (!extraSignerList.isEmpty()) {
+            tx.extraSigners = extraSignerList.toArray(new Address[0]);
+        }
+        Sig[] sigs = new Sig[length];
+        for (int i = 0; i < length; i++) {
             sigs[i] = new Sig();
             sigs[i].pubKeys = new byte[accounts[i].length][];
             sigs[i].sigData = new byte[accounts[i].length][];

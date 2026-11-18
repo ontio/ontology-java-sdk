@@ -22,7 +22,6 @@ package com.github.ontio.core.payload;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.VmType;
-import com.github.ontio.core.transaction.Attribute;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.core.transaction.TransactionType;
 import com.github.ontio.io.BinaryReader;
@@ -50,7 +49,7 @@ public class DeployWasmCode extends Transaction {
                           String description, Address payer, long gasLimit, long gasPrice) {
         super(TransactionType.DeployCode);
         this.vmType = VmType.WASMVM;
-        this.attributes = new Attribute[0];
+        this.extraSigners = new Address[0];
         this.code = Helper.hexToBytes(codeStr);
         this.name = name;
         this.version = codeVersion;

@@ -19,18 +19,20 @@
 
 package com.github.ontio.core.transaction;
 
-import java.io.*;
-import java.util.*;
-import java.util.stream.*;
-
-import com.alibaba.fastjson.JSON;
-import com.github.ontio.common.*;
+import com.github.ontio.common.Address;
 import com.github.ontio.core.Inventory;
 import com.github.ontio.core.InventoryType;
 import com.github.ontio.core.asset.Sig;
 import com.github.ontio.core.payload.EIP155;
 import com.github.ontio.io.BinaryReader;
 import com.github.ontio.io.BinaryWriter;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 /**
  *
@@ -43,7 +45,7 @@ public abstract class Transaction extends Inventory {
     public long gasPrice = 0;
     public long gasLimit = 0;
     public Address payer = new Address();
-    public Attribute[] attributes;
+    public Address[] extraSigners = new Address[0];
     public Sig[] sigs = new Sig[0];
 
     protected Transaction(TransactionType type) {
@@ -78,6 +80,10 @@ public abstract class Transaction extends Inventory {
             transaction.gasLimit = reader.readLong();
             transaction.payer = reader.readSerializable(Address.class);
             transaction.deserializeUnsignedWithoutType(reader);
+            transaction.extraSigners = new Address[(int) reader.readVarInt()];
+            for (int i = 0; i < transaction.extraSigners.length; i++) {
+                transaction.extraSigners[i] = reader.readSerializable(Address.class);
+            }
             transaction.sigs = new Sig[(int) reader.readVarInt()];
             for (int i = 0; i < transaction.sigs.length; i++) {
                 transaction.sigs[i] = reader.readSerializable(Sig.class);
@@ -118,8 +124,7 @@ public abstract class Transaction extends Inventory {
     private void deserializeUnsignedWithoutType(BinaryReader reader) throws IOException {
         try {
             deserializeExclusiveData(reader);
-            attributes = reader.readSerializableArray(Attribute.class);
-        } catch (InstantiationException | IllegalAccessException ex) {
+        } catch (Exception ex) {
             throw new IOException(ex);
         }
     }
@@ -142,7 +147,7 @@ public abstract class Transaction extends Inventory {
         writer.writeLong(gasLimit);
         writer.writeSerializable(payer);
         serializeExclusiveData(writer);
-        writer.writeSerializableArray(attributes);
+        writer.writeSerializableArray(extraSigners);
     }
 
     protected void serializeExclusiveData(BinaryWriter writer) throws IOException {
@@ -188,7 +193,7 @@ public abstract class Transaction extends Inventory {
         json.put("GasPrice", gasPrice);
         json.put("GasLimit", gasLimit);
         json.put("Payer", payer.toBase58());
-        json.put("Attributes", Arrays.stream(attributes).map(p -> p.json()).toArray(Object[]::new));
+        json.put("ExtraSigners", Arrays.stream(extraSigners).map(p -> p.toBase58()).toArray(Object[]::new));
         json.put("Sigs", Arrays.stream(sigs).map(p -> p.json()).toArray(Object[]::new));
         return json;
     }

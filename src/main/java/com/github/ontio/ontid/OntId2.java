@@ -17,8 +17,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class OntId2 {
-    public static final String CRED_DEFAULT_CONTEXT1 = "https://www.w3.org/2018/credentials/v1";
-    public static final String CRED_DEFAULT_CONTEXT2 = "https://ontid.ont.io/credentials/v1";
+    public static final String CRED_DEFAULT_CONTEXT1 = "https://www.w3.org/ns/credentials/v2";
+    public static final String CRED_DEFAULT_CONTEXT2 = "https://ontid.ont.io/credentials/v2";
 
     public static final String CRED_DEFAULT_TYPE = "VerifiableCredential";
 
@@ -122,6 +122,17 @@ public class OntId2 {
         return credential;
     }
 
+    public VerifiableCredentialV2 createCredV2(String[] context, String[] type, Object issuer, String subjectOntid,
+                                               Object credentialSubject, Date expiration, ProofPurpose proofPurpose,
+                                               Account payer, long gasLimit, long gasPrice, OntSdk sdk) throws Exception {
+        VerifiableCredentialV2 credential = genCredentialWithoutSigV2(context, type, issuer, subjectOntid, credentialSubject,
+                expiration, proofPurpose, payer, gasLimit, gasPrice, sdk);
+        // generate proof
+        byte[] needSignData = credential.genNeedSignData();
+        credential.proof.fillMultibaseSignature(signer.signer, needSignData);
+        return credential;
+    }
+
     public String createJWTCred(String[] context, String[] type, Object issuer, Object credentialSubject,
                                 Date expiration, CredentialStatusType statusType, ProofPurpose purpose)
             throws Exception {
@@ -165,15 +176,62 @@ public class OntId2 {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date current = new Date();
-        credential.issuanceDate = formatter.format(current);
+        credential.validFrom = formatter.format(current);
         if (expiration != null) {
             // check expiration
             if (expiration.before(current)) {
                 throw new SDKException("cred expired");
             }
-            credential.expirationDate = formatter.format(expiration);
+            credential.validUntil = formatter.format(expiration);
         }
-        credential.proof = new Proof(signer.pubKey.id, credential.issuanceDate, signer.pubKey.type, purpose);
+        credential.proof = new Proof(signer.pubKey.id, credential.validFrom, signer.pubKey.type, purpose);
+        return credential;
+    }
+
+    private VerifiableCredentialV2 genCredentialWithoutSigV2(String[] context, String[] type, Object issuer, String subjectOntid,
+                                                             Object credentialSubject, Date expiration, ProofPurpose purpose,
+                                                             Account payer, long gasLimit, long gasPrice, OntSdk sdk)
+            throws Exception {
+        VerifiableCredentialV2 credential = new VerifiableCredentialV2();
+        ArrayList<String> wholeContext = new ArrayList<>();
+        wholeContext.add(CRED_DEFAULT_CONTEXT1);
+        wholeContext.add(CRED_DEFAULT_CONTEXT2);
+        if (context != null) {
+            wholeContext.addAll(Arrays.asList(context));
+        }
+        credential.context = new String[]{};
+        credential.context = wholeContext.toArray(credential.context);
+        ArrayList<String> wholeType = new ArrayList<>();
+        wholeType.add(CRED_DEFAULT_TYPE);
+        if (type != null) {
+            wholeType.addAll(Arrays.asList(type));
+        }
+        credential.type = new String[]{};
+        credential.type = wholeType.toArray(credential.type);
+        credential.credentialSubject = credentialSubject;
+        String issuerId = Util.fetchId(issuer);
+        if (!signer.ontId.equals(issuerId)) {
+            throw new SDKException(String.format("param issuer %s vs self signer %s", issuerId, signer.ontId));
+        }
+        credential.issuer = issuer;
+        credential.credentialStatus = new CredentialStatusV2(credRecord.getContractAddress(), credential.id);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date current = new Date();
+        credential.validFrom = formatter.format(current);
+        if (expiration != null) {
+            if (expiration.before(current)) {
+                throw new SDKException("cred expired");
+            }
+            credential.validUntil = formatter.format(expiration);
+        }
+        credential.proof = new ProofV2(signer.pubKey.id, credential.validFrom, purpose);
+
+        String txHash = commitCredV2(credential, subjectOntid, payer, gasLimit, gasPrice, sdk);
+//        Transaction tx = credRecord.makeCommit2(signer.ontId, subjectOntid, credential.id,
+//                Util.getIndexFromPubKeyURI(credential.proof.verificationMethod), payer, gasLimit, gasPrice);
+        Evidence evidence = new Evidence(txHash);
+        credential.evidence = Collections.singletonList(evidence);
         return credential;
     }
 
@@ -184,6 +242,20 @@ public class OntId2 {
     // The function itself does not provide asynchronous locks.
     public String commitCred(VerifiableCredential cred, String ownerOntId, Account payer,
                              long gasLimit, long gasPrice, OntSdk sdk) throws Exception {
+        Transaction tx = credRecord.makeCommit2(signer.ontId, ownerOntId, cred.id,
+                Util.getIndexFromPubKeyURI(cred.proof.verificationMethod), payer.getAddressU160().toBase58(),
+                gasLimit, gasPrice);
+        sdk.addSign(tx, signer.signer);
+        sdk.addSign(tx, payer);
+        boolean b = sdk.getConnect().sendRawTransaction(tx.toHexString());
+        if (b) {
+            return tx.hash().toString();
+        }
+        return "";
+    }
+
+    public String commitCredV2(VerifiableCredentialV2 cred, String ownerOntId, Account payer,
+                               long gasLimit, long gasPrice, OntSdk sdk) throws Exception {
         Transaction tx = credRecord.makeCommit2(signer.ontId, ownerOntId, cred.id,
                 Util.getIndexFromPubKeyURI(cred.proof.verificationMethod), payer.getAddressU160().toBase58(),
                 gasLimit, gasPrice);
@@ -243,6 +315,22 @@ public class OntId2 {
         return verifyCredNotRevoked(cred);
     }
 
+    public boolean verifyCredV2(String[] credibleOntIds, VerifiableCredentialV2 cred) throws Exception {
+        if (!verifyCredOntIdCredibleV2(credibleOntIds, cred)) {
+            return false;
+        }
+        if (!verifyCredDateV2(cred)) {
+            return false;
+        }
+        if (cred.proof == null) {
+            return false;
+        }
+        if (!verifyCredSignatureV2(cred)) {
+            return false;
+        }
+        return verifyCredNotRevokedV2(cred);
+    }
+
     public boolean verifyJWTCred(String[] credibleOntIds, String cred) throws Exception {
         JWTCredential jwtCred = JWTCredential.deserializeToJWTCred(cred);
         if (jwtCred.payload.vc == null) {
@@ -261,6 +349,21 @@ public class OntId2 {
     }
 
     public boolean verifyCredOntIdCredible(String[] credibleOntIds, VerifiableCredential cred) {
+        // insure proof is generated by issuer
+        if (!cred.proof.verificationMethod.startsWith(cred.fetchIssuerOntId())) {
+            return false;
+        }
+        for (String ontId :
+                credibleOntIds) {
+            // check ontID equals
+            if (cred.proof.verificationMethod.startsWith(ontId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean verifyCredOntIdCredibleV2(String[] credibleOntIds, VerifiableCredentialV2 cred) {
         // insure proof is generated by issuer
         if (!cred.proof.verificationMethod.startsWith(cred.fetchIssuerOntId())) {
             return false;
@@ -295,14 +398,31 @@ public class OntId2 {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date current = new Date();
-        if (cred.expirationDate != null && !cred.expirationDate.isEmpty()) {
-            Date expiration = formatter.parse(cred.expirationDate);
+        if (cred.validUntil != null && !cred.validUntil.isEmpty()) {
+            Date expiration = formatter.parse(cred.validUntil);
             if (expiration.before(current)) {
                 return false;
             }
         }
-        if (cred.issuanceDate != null && !cred.issuanceDate.isEmpty()) {
-            Date issuanceDate = formatter.parse(cred.issuanceDate);
+        if (cred.validFrom != null && !cred.validFrom.isEmpty()) {
+            Date issuanceDate = formatter.parse(cred.validFrom);
+            return issuanceDate.before(current);
+        }
+        return true;
+    }
+
+    public boolean verifyCredDateV2(VerifiableCredentialV2 cred) throws Exception {
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date current = new Date();
+        if (cred.validUntil != null && !cred.validUntil.isEmpty()) {
+            Date expiration = formatter.parse(cred.validUntil);
+            if (expiration.before(current)) {
+                return false;
+            }
+        }
+        if (cred.validFrom != null && !cred.validFrom.isEmpty()) {
+            Date issuanceDate = formatter.parse(cred.validFrom);
             return issuanceDate.before(current);
         }
         return true;
@@ -312,8 +432,19 @@ public class OntId2 {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date current = new Date();
-        if (cred.expirationDate != null && !cred.expirationDate.isEmpty()) {
-            Date expiration = formatter.parse(cred.expirationDate);
+        if (cred.validUntil != null && !cred.validUntil.isEmpty()) {
+            Date expiration = formatter.parse(cred.validUntil);
+            return expiration.after(current);
+        }
+        return true;
+    }
+
+    public boolean verifyCredExpV2(VerifiableCredentialV2 cred) throws Exception {
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date current = new Date();
+        if (cred.validUntil != null && !cred.validUntil.isEmpty()) {
+            Date expiration = formatter.parse(cred.validUntil);
             return expiration.after(current);
         }
         return true;
@@ -323,8 +454,19 @@ public class OntId2 {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date current = new Date();
-        if (cred.issuanceDate != null && !cred.issuanceDate.isEmpty()) {
-            Date issuanceDate = formatter.parse(cred.issuanceDate);
+        if (cred.validFrom != null && !cred.validFrom.isEmpty()) {
+            Date issuanceDate = formatter.parse(cred.validFrom);
+            return issuanceDate.before(current);
+        }
+        return true;
+    }
+
+    public boolean verifyCredIssuanceDateV2(VerifiableCredentialV2 cred) throws Exception {
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date current = new Date();
+        if (cred.validFrom != null && !cred.validFrom.isEmpty()) {
+            Date issuanceDate = formatter.parse(cred.validFrom);
             return issuanceDate.before(current);
         }
         return true;
@@ -370,6 +512,11 @@ public class OntId2 {
                 cred.genNeedSignData(), cred.proof.parseHexSignature());
     }
 
+    public boolean verifyCredSignatureV2(VerifiableCredentialV2 cred) throws Exception {
+        return verifyPubKeyIdSignature(cred.fetchIssuerOntId(), cred.proof.verificationMethod,
+                cred.genNeedSignData(), cred.proof.parseMultibaseSignature());
+    }
+
     public boolean verifyJWTCredSignature(String cred) throws Exception {
         JWTCredential jwtCred = JWTCredential.deserializeToJWTCred(cred);
         return verifyJWTCredSignature(jwtCred);
@@ -391,6 +538,19 @@ public class OntId2 {
                 return notRevoked;
             case RevocationList: // TODO: verify this
                 return false;
+            default:
+                return false;
+        }
+    }
+
+    public boolean verifyCredNotRevokedV2(VerifiableCredentialV2 cred) throws Exception {
+        switch (cred.credentialStatus.type) {
+            case "BlockchainSmartContractStatus":
+                String defaultContractAddr = this.credRecord.getContractAddress();
+                this.credRecord.setContractAddress(cred.credentialStatus.id.replace("did:ont:contract:", ""));
+                boolean notRevoked = CRED_COMMITTED.equals(this.credRecord.sendGetStatus2(cred.id));
+                this.credRecord.setContractAddress(defaultContractAddr);
+                return notRevoked;
             default:
                 return false;
         }

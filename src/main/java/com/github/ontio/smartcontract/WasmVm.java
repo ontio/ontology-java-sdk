@@ -55,7 +55,7 @@ public class WasmVm {
         tx.payer = payer;
         tx.gasLimit = gasLimit;
         tx.gasPrice = gasPrice;
-        tx.attributes = new Attribute[0];
+        tx.extraSigners = new Address[0];
         tx.nonce = new Random().nextInt();
         return tx;
     }

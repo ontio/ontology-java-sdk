@@ -19,21 +19,20 @@
 
 package com.github.ontio.smartcontract;
 
+import com.github.ontio.OntSdk;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Common;
 import com.github.ontio.common.ErrorCode;
-import com.github.ontio.core.scripts.ScriptOp;
-import com.github.ontio.core.transaction.Attribute;
-import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.payload.DeployCode;
 import com.github.ontio.core.payload.InvokeCode;
 import com.github.ontio.core.scripts.ScriptBuilder;
-import com.github.ontio.OntSdk;
+import com.github.ontio.core.scripts.ScriptOp;
+import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.exception.SDKException;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Random;
 
 /**
  *
@@ -77,7 +76,7 @@ public class Vm {
         if(payer != null){
             tx.payer = Address.decodeBase58(payer.replace(Common.didont,""));
         }
-        tx.attributes = new Attribute[0];
+        tx.extraSigners = new Address[0];
         tx.nonce = new Random().nextInt();
         tx.code = Helper.hexToBytes(codeStr);
         tx.version = codeVersion;
@@ -95,7 +94,7 @@ public class Vm {
         params = Helper.addBytes(params,new byte[]{0x67});
         params = Helper.addBytes(params, Address.parse(codeAddr).toArray());
         InvokeCode tx = new InvokeCode();
-        tx.attributes = new Attribute[0];
+        tx.extraSigners = new Address[0];
         tx.nonce = new Random().nextInt();
         tx.code = params;
         tx.gasLimit = gaslimit;
@@ -117,7 +116,7 @@ public class Vm {
     public InvokeCode makeInvokeCodeTransaction(byte[] params,String payer,long gaslimit,long gasprice) throws SDKException {
 
         InvokeCode tx = new InvokeCode();
-        tx.attributes = new Attribute[0];
+        tx.extraSigners = new Address[0];
         tx.nonce = new Random().nextInt();
         tx.code = params;
         tx.gasLimit = gaslimit;

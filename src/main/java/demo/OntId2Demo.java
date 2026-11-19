@@ -60,7 +60,7 @@ public class OntId2Demo {
         credential.type = new String[]{"RelationshipCredential"};
         Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        credential.expirationDate = formatter.format(expiration);
+        credential.validUntil = formatter.format(expiration);
         String noSubjectCred = JSON.toJSONString(credential);
         System.out.println("noSubjectCred: " + noSubjectCred);
         ExampleCredentialSubject credentialSubject = new ExampleCredentialSubject("did:ont:111111",
